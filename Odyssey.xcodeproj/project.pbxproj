@@ -7,6 +7,22 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F96AA732B49FD6600999B84 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 5F96AA722B49FD6600999B84 /* Lottie */; };
+		5F96AA762B49FE9600999B84 /* rotating_earth.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F96AA752B49FE9500999B84 /* rotating_earth.json */; };
+		5F96AA792B4A07B600999B84 /* DailyEntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA782B4A07B600999B84 /* DailyEntryViewModel.swift */; };
+		5F96AA7C2B4A09E700999B84 /* UIColor+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA7B2B4A09E700999B84 /* UIColor+Extensions.swift */; };
+		5F96AA7E2B4A0CF400999B84 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA7D2B4A0CF400999B84 /* ExportView.swift */; };
+		5F96AA802B4A0E7700999B84 /* OdysseyAppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA7F2B4A0E7700999B84 /* OdysseyAppDelegate.swift */; };
+		5F96AA832B4A100100999B84 /* BackgroundDataFetch.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA822B4A100100999B84 /* BackgroundDataFetch.swift */; };
+		5F96AA882B4C30AD00999B84 /* ScreenTimeSelectAppsModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA872B4C30AD00999B84 /* ScreenTimeSelectAppsModel.swift */; };
+		5F96AA8A2B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AA892B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift */; };
+		5F96AAA72B4C38DD00999B84 /* DeviceActivity.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5F96AAA62B4C38DD00999B84 /* DeviceActivity.framework */; };
+		5F96AAAA2B4C38DD00999B84 /* DeviceActivityMonitorExtension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AAA92B4C38DD00999B84 /* DeviceActivityMonitorExtension.swift */; };
+		5F96AAAF2B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = 5F96AAA42B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		5F96AABB2B4C410D00999B84 /* OdysseyDeviceActivityReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AABA2B4C410D00999B84 /* OdysseyDeviceActivityReport.swift */; };
+		5F96AABD2B4C410D00999B84 /* TotalActivityReport.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AABC2B4C410D00999B84 /* TotalActivityReport.swift */; };
+		5F96AABF2B4C410D00999B84 /* TotalActivityView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F96AABE2B4C410D00999B84 /* TotalActivityView.swift */; };
+		5F96AAC42B4C410D00999B84 /* OdysseyDeviceActivityReport.appex in Embed ExtensionKit Extensions */ = {isa = PBXBuildFile; fileRef = 5F96AAB82B4C410D00999B84 /* OdysseyDeviceActivityReport.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		5FAFBC0A2B49E1A60018504E /* OdysseyApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC092B49E1A60018504E /* OdysseyApp.swift */; };
 		5FAFBC0C2B49E1A60018504E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC0B2B49E1A60018504E /* ContentView.swift */; };
 		5FAFBC0E2B49E1A80018504E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5FAFBC0D2B49E1A80018504E /* Assets.xcassets */; };
@@ -16,9 +32,28 @@
 		5FAFBC202B49E1A80018504E /* OdysseyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC1F2B49E1A80018504E /* OdysseyTests.swift */; };
 		5FAFBC2A2B49E1A80018504E /* OdysseyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC292B49E1A80018504E /* OdysseyUITests.swift */; };
 		5FAFBC2C2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */; };
+		5FAFBC3A2B49E7180018504E /* DailyPromptsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC392B49E7180018504E /* DailyPromptsView.swift */; };
+		5FAFBC3D2B49E7CF0018504E /* LocationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC3C2B49E7CF0018504E /* LocationManager.swift */; };
+		5FAFBC412B49EFA00018504E /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC402B49EFA00018504E /* HomeView.swift */; };
+		5FAFBC432B49F19A0018504E /* AnalysisView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC422B49F19A0018504E /* AnalysisView.swift */; };
+		5FAFBC482B49F70B0018504E /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC472B49F70B0018504E /* LottieView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		5F96AAAD2B4C38DD00999B84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5FAFBBFE2B49E1A60018504E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5F96AAA32B4C38DD00999B84;
+			remoteInfo = OdysseyDeviceActivityMonitor;
+		};
+		5F96AAC22B4C410D00999B84 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5FAFBBFE2B49E1A60018504E /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5F96AAB72B4C410D00999B84;
+			remoteInfo = OdysseyDeviceActivityReport;
+		};
 		5FAFBC1C2B49E1A80018504E /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 5FAFBBFE2B49E1A60018504E /* Project object */;
@@ -35,7 +70,53 @@
 		};
 /* End PBXContainerItemProxy section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		5F96AA9F2B4C36AA00999B84 /* Embed ExtensionKit Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "$(EXTENSIONS_FOLDER_PATH)";
+			dstSubfolderSpec = 16;
+			files = (
+				5F96AAC42B4C410D00999B84 /* OdysseyDeviceActivityReport.appex in Embed ExtensionKit Extensions */,
+			);
+			name = "Embed ExtensionKit Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F96AAB32B4C38DD00999B84 /* Embed Foundation Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				5F96AAAF2B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex in Embed Foundation Extensions */,
+			);
+			name = "Embed Foundation Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
+		5F96AA752B49FE9500999B84 /* rotating_earth.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = rotating_earth.json; sourceTree = "<group>"; };
+		5F96AA782B4A07B600999B84 /* DailyEntryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEntryViewModel.swift; sourceTree = "<group>"; };
+		5F96AA7B2B4A09E700999B84 /* UIColor+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extensions.swift"; sourceTree = "<group>"; };
+		5F96AA7D2B4A0CF400999B84 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
+		5F96AA7F2B4A0E7700999B84 /* OdysseyAppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyAppDelegate.swift; sourceTree = "<group>"; };
+		5F96AA822B4A100100999B84 /* BackgroundDataFetch.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundDataFetch.swift; sourceTree = "<group>"; };
+		5F96AA842B4A105B00999B84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		5F96AA862B4C2EC200999B84 /* Odyssey.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Odyssey.entitlements; sourceTree = "<group>"; };
+		5F96AA872B4C30AD00999B84 /* ScreenTimeSelectAppsModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeSelectAppsModel.swift; sourceTree = "<group>"; };
+		5F96AA892B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScreenTimeSelectAppsContentView.swift; sourceTree = "<group>"; };
+		5F96AAA42B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OdysseyDeviceActivityMonitor.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F96AAA62B4C38DD00999B84 /* DeviceActivity.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = DeviceActivity.framework; path = System/Library/Frameworks/DeviceActivity.framework; sourceTree = SDKROOT; };
+		5F96AAA92B4C38DD00999B84 /* DeviceActivityMonitorExtension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceActivityMonitorExtension.swift; sourceTree = "<group>"; };
+		5F96AAAB2B4C38DD00999B84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F96AAAC2B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OdysseyDeviceActivityMonitor.entitlements; sourceTree = "<group>"; };
+		5F96AAB82B4C410D00999B84 /* OdysseyDeviceActivityReport.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.extensionkit-extension"; includeInIndex = 0; path = OdysseyDeviceActivityReport.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		5F96AABA2B4C410D00999B84 /* OdysseyDeviceActivityReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyDeviceActivityReport.swift; sourceTree = "<group>"; };
+		5F96AABC2B4C410D00999B84 /* TotalActivityReport.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalActivityReport.swift; sourceTree = "<group>"; };
+		5F96AABE2B4C410D00999B84 /* TotalActivityView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TotalActivityView.swift; sourceTree = "<group>"; };
+		5F96AAC02B4C410D00999B84 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		5F96AAC12B4C410D00999B84 /* OdysseyDeviceActivityReport.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = OdysseyDeviceActivityReport.entitlements; sourceTree = "<group>"; };
 		5FAFBC062B49E1A60018504E /* Odyssey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Odyssey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FAFBC092B49E1A60018504E /* OdysseyApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyApp.swift; sourceTree = "<group>"; };
 		5FAFBC0B2B49E1A60018504E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -48,13 +129,34 @@
 		5FAFBC252B49E1A80018504E /* OdysseyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OdysseyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FAFBC292B49E1A80018504E /* OdysseyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyUITests.swift; sourceTree = "<group>"; };
 		5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		5FAFBC392B49E7180018504E /* DailyPromptsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyPromptsView.swift; sourceTree = "<group>"; };
+		5FAFBC3C2B49E7CF0018504E /* LocationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationManager.swift; sourceTree = "<group>"; };
+		5FAFBC402B49EFA00018504E /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
+		5FAFBC422B49F19A0018504E /* AnalysisView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalysisView.swift; sourceTree = "<group>"; };
+		5FAFBC472B49F70B0018504E /* LottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		5F96AAA12B4C38DD00999B84 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F96AAA72B4C38DD00999B84 /* DeviceActivity.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F96AAB52B4C410D00999B84 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5FAFBC032B49E1A60018504E /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F96AA732B49FD6600999B84 /* Lottie in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -75,12 +177,77 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		5F96AA742B49FE7700999B84 /* Lottie */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AA752B49FE9500999B84 /* rotating_earth.json */,
+			);
+			path = Lottie;
+			sourceTree = "<group>";
+		};
+		5F96AA772B4A073500999B84 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AA782B4A07B600999B84 /* DailyEntryViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		5F96AA7A2B4A09B100999B84 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AA7B2B4A09E700999B84 /* UIColor+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		5F96AA812B4A0FA600999B84 /* Operations */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AA822B4A100100999B84 /* BackgroundDataFetch.swift */,
+			);
+			path = Operations;
+			sourceTree = "<group>";
+		};
+		5F96AAA52B4C38DD00999B84 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AAA62B4C38DD00999B84 /* DeviceActivity.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		5F96AAA82B4C38DD00999B84 /* OdysseyDeviceActivityMonitor */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AAA92B4C38DD00999B84 /* DeviceActivityMonitorExtension.swift */,
+				5F96AAAB2B4C38DD00999B84 /* Info.plist */,
+				5F96AAAC2B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.entitlements */,
+			);
+			path = OdysseyDeviceActivityMonitor;
+			sourceTree = "<group>";
+		};
+		5F96AAB92B4C410D00999B84 /* OdysseyDeviceActivityReport */ = {
+			isa = PBXGroup;
+			children = (
+				5F96AABA2B4C410D00999B84 /* OdysseyDeviceActivityReport.swift */,
+				5F96AABC2B4C410D00999B84 /* TotalActivityReport.swift */,
+				5F96AABE2B4C410D00999B84 /* TotalActivityView.swift */,
+				5F96AAC02B4C410D00999B84 /* Info.plist */,
+				5F96AAC12B4C410D00999B84 /* OdysseyDeviceActivityReport.entitlements */,
+			);
+			path = OdysseyDeviceActivityReport;
+			sourceTree = "<group>";
+		};
 		5FAFBBFD2B49E1A60018504E = {
 			isa = PBXGroup;
 			children = (
 				5FAFBC082B49E1A60018504E /* Odyssey */,
 				5FAFBC1E2B49E1A80018504E /* OdysseyTests */,
 				5FAFBC282B49E1A80018504E /* OdysseyUITests */,
+				5F96AAA82B4C38DD00999B84 /* OdysseyDeviceActivityMonitor */,
+				5F96AAB92B4C410D00999B84 /* OdysseyDeviceActivityReport */,
+				5F96AAA52B4C38DD00999B84 /* Frameworks */,
 				5FAFBC072B49E1A60018504E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -91,6 +258,8 @@
 				5FAFBC062B49E1A60018504E /* Odyssey.app */,
 				5FAFBC1B2B49E1A80018504E /* OdysseyTests.xctest */,
 				5FAFBC252B49E1A80018504E /* OdysseyUITests.xctest */,
+				5F96AAA42B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex */,
+				5F96AAB82B4C410D00999B84 /* OdysseyDeviceActivityReport.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -98,7 +267,16 @@
 		5FAFBC082B49E1A60018504E /* Odyssey */ = {
 			isa = PBXGroup;
 			children = (
+				5F96AA862B4C2EC200999B84 /* Odyssey.entitlements */,
+				5F96AA842B4A105B00999B84 /* Info.plist */,
+				5F96AA812B4A0FA600999B84 /* Operations */,
+				5F96AA7A2B4A09B100999B84 /* Extensions */,
+				5F96AA772B4A073500999B84 /* ViewModels */,
+				5F96AA742B49FE7700999B84 /* Lottie */,
+				5FAFBC3B2B49E7B90018504E /* Models */,
+				5FAFBC382B49E7090018504E /* Views */,
 				5FAFBC092B49E1A60018504E /* OdysseyApp.swift */,
+				5F96AA7F2B4A0E7700999B84 /* OdysseyAppDelegate.swift */,
 				5FAFBC0B2B49E1A60018504E /* ContentView.swift */,
 				5FAFBC0D2B49E1A80018504E /* Assets.xcassets */,
 				5FAFBC122B49E1A80018504E /* Persistence.swift */,
@@ -133,9 +311,65 @@
 			path = OdysseyUITests;
 			sourceTree = "<group>";
 		};
+		5FAFBC382B49E7090018504E /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				5FAFBC392B49E7180018504E /* DailyPromptsView.swift */,
+				5FAFBC402B49EFA00018504E /* HomeView.swift */,
+				5FAFBC422B49F19A0018504E /* AnalysisView.swift */,
+				5FAFBC472B49F70B0018504E /* LottieView.swift */,
+				5F96AA7D2B4A0CF400999B84 /* ExportView.swift */,
+				5F96AA892B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		5FAFBC3B2B49E7B90018504E /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				5FAFBC3C2B49E7CF0018504E /* LocationManager.swift */,
+				5F96AA872B4C30AD00999B84 /* ScreenTimeSelectAppsModel.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		5F96AAA32B4C38DD00999B84 /* OdysseyDeviceActivityMonitor */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F96AAB02B4C38DD00999B84 /* Build configuration list for PBXNativeTarget "OdysseyDeviceActivityMonitor" */;
+			buildPhases = (
+				5F96AAA02B4C38DD00999B84 /* Sources */,
+				5F96AAA12B4C38DD00999B84 /* Frameworks */,
+				5F96AAA22B4C38DD00999B84 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OdysseyDeviceActivityMonitor;
+			productName = OdysseyDeviceActivityMonitor;
+			productReference = 5F96AAA42B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex */;
+			productType = "com.apple.product-type.app-extension";
+		};
+		5F96AAB72B4C410D00999B84 /* OdysseyDeviceActivityReport */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5F96AAC52B4C410D00999B84 /* Build configuration list for PBXNativeTarget "OdysseyDeviceActivityReport" */;
+			buildPhases = (
+				5F96AAB42B4C410D00999B84 /* Sources */,
+				5F96AAB52B4C410D00999B84 /* Frameworks */,
+				5F96AAB62B4C410D00999B84 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = OdysseyDeviceActivityReport;
+			productName = OdysseyDeviceActivityReport;
+			productReference = 5F96AAB82B4C410D00999B84 /* OdysseyDeviceActivityReport.appex */;
+			productType = "com.apple.product-type.extensionkit-extension";
+		};
 		5FAFBC052B49E1A60018504E /* Odyssey */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5FAFBC2F2B49E1A90018504E /* Build configuration list for PBXNativeTarget "Odyssey" */;
@@ -143,12 +377,19 @@
 				5FAFBC022B49E1A60018504E /* Sources */,
 				5FAFBC032B49E1A60018504E /* Frameworks */,
 				5FAFBC042B49E1A60018504E /* Resources */,
+				5F96AA9F2B4C36AA00999B84 /* Embed ExtensionKit Extensions */,
+				5F96AAB32B4C38DD00999B84 /* Embed Foundation Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				5F96AAAE2B4C38DD00999B84 /* PBXTargetDependency */,
+				5F96AAC32B4C410D00999B84 /* PBXTargetDependency */,
 			);
 			name = Odyssey;
+			packageProductDependencies = (
+				5F96AA722B49FD6600999B84 /* Lottie */,
+			);
 			productName = Odyssey;
 			productReference = 5FAFBC062B49E1A60018504E /* Odyssey.app */;
 			productType = "com.apple.product-type.application";
@@ -199,6 +440,12 @@
 				LastSwiftUpdateCheck = 1400;
 				LastUpgradeCheck = 1400;
 				TargetAttributes = {
+					5F96AAA32B4C38DD00999B84 = {
+						CreatedOnToolsVersion = 14.0;
+					};
+					5F96AAB72B4C410D00999B84 = {
+						CreatedOnToolsVersion = 14.0;
+					};
 					5FAFBC052B49E1A60018504E = {
 						CreatedOnToolsVersion = 14.0;
 					};
@@ -221,6 +468,9 @@
 				Base,
 			);
 			mainGroup = 5FAFBBFD2B49E1A60018504E;
+			packageReferences = (
+				5F96AA712B49FD6600999B84 /* XCRemoteSwiftPackageReference "lottie-spm" */,
+			);
 			productRefGroup = 5FAFBC072B49E1A60018504E /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
@@ -228,17 +478,34 @@
 				5FAFBC052B49E1A60018504E /* Odyssey */,
 				5FAFBC1A2B49E1A80018504E /* OdysseyTests */,
 				5FAFBC242B49E1A80018504E /* OdysseyUITests */,
+				5F96AAA32B4C38DD00999B84 /* OdysseyDeviceActivityMonitor */,
+				5F96AAB72B4C410D00999B84 /* OdysseyDeviceActivityReport */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		5F96AAA22B4C38DD00999B84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F96AAB62B4C410D00999B84 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5FAFBC042B49E1A60018504E /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 				5FAFBC112B49E1A80018504E /* Preview Assets.xcassets in Resources */,
 				5FAFBC0E2B49E1A80018504E /* Assets.xcassets in Resources */,
+				5F96AA762B49FE9600999B84 /* rotating_earth.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -259,12 +526,42 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5F96AAA02B4C38DD00999B84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F96AAAA2B4C38DD00999B84 /* DeviceActivityMonitorExtension.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		5F96AAB42B4C410D00999B84 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				5F96AABF2B4C410D00999B84 /* TotalActivityView.swift in Sources */,
+				5F96AABB2B4C410D00999B84 /* OdysseyDeviceActivityReport.swift in Sources */,
+				5F96AABD2B4C410D00999B84 /* TotalActivityReport.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5FAFBC022B49E1A60018504E /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F96AA832B4A100100999B84 /* BackgroundDataFetch.swift in Sources */,
 				5FAFBC162B49E1A80018504E /* Odyssey.xcdatamodeld in Sources */,
+				5F96AA802B4A0E7700999B84 /* OdysseyAppDelegate.swift in Sources */,
+				5FAFBC412B49EFA00018504E /* HomeView.swift in Sources */,
+				5FAFBC482B49F70B0018504E /* LottieView.swift in Sources */,
+				5F96AA792B4A07B600999B84 /* DailyEntryViewModel.swift in Sources */,
 				5FAFBC132B49E1A80018504E /* Persistence.swift in Sources */,
+				5FAFBC3D2B49E7CF0018504E /* LocationManager.swift in Sources */,
+				5FAFBC432B49F19A0018504E /* AnalysisView.swift in Sources */,
+				5F96AA8A2B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift in Sources */,
+				5FAFBC3A2B49E7180018504E /* DailyPromptsView.swift in Sources */,
+				5F96AA882B4C30AD00999B84 /* ScreenTimeSelectAppsModel.swift in Sources */,
+				5F96AA7E2B4A0CF400999B84 /* ExportView.swift in Sources */,
+				5F96AA7C2B4A09E700999B84 /* UIColor+Extensions.swift in Sources */,
 				5FAFBC0C2B49E1A60018504E /* ContentView.swift in Sources */,
 				5FAFBC0A2B49E1A60018504E /* OdysseyApp.swift in Sources */,
 			);
@@ -290,6 +587,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		5F96AAAE2B4C38DD00999B84 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5F96AAA32B4C38DD00999B84 /* OdysseyDeviceActivityMonitor */;
+			targetProxy = 5F96AAAD2B4C38DD00999B84 /* PBXContainerItemProxy */;
+		};
+		5F96AAC32B4C410D00999B84 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5F96AAB72B4C410D00999B84 /* OdysseyDeviceActivityReport */;
+			targetProxy = 5F96AAC22B4C410D00999B84 /* PBXContainerItemProxy */;
+		};
 		5FAFBC1D2B49E1A80018504E /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = 5FAFBC052B49E1A60018504E /* Odyssey */;
@@ -303,6 +610,112 @@
 /* End PBXTargetDependency section */
 
 /* Begin XCBuildConfiguration section */
+		5F96AAB12B4C38DD00999B84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = OdysseyDeviceActivityMonitor/OdysseyDeviceActivityMonitor.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OdysseyDeviceActivityMonitor/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityMonitor;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnlarkin.Odyssey.OdysseyDeviceActivityMonitor;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5F96AAB22B4C38DD00999B84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = OdysseyDeviceActivityMonitor/OdysseyDeviceActivityMonitor.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OdysseyDeviceActivityMonitor/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityMonitor;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnlarkin.Odyssey.OdysseyDeviceActivityMonitor;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		5F96AAC62B4C410D00999B84 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = OdysseyDeviceActivityReport/OdysseyDeviceActivityReport.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OdysseyDeviceActivityReport/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityReport;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnlarkin.Odyssey.OdysseyDeviceActivityReport;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		5F96AAC72B4C410D00999B84 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = OdysseyDeviceActivityReport/OdysseyDeviceActivityReport.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = OdysseyDeviceActivityReport/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityReport;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.johnlarkin.Odyssey.OdysseyDeviceActivityReport;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
 		5FAFBC2D2B49E1A90018504E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -420,14 +833,21 @@
 		5FAFBC302B49E1A90018504E /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Odyssey/Odyssey.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Odyssey/Preview Content\"";
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Odyssey/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM. That is the only time this App uses your location.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your privacy is important to us! We only collect location data once a day at 11:55 PM to help you track your daily journey. This data is stored only on your device and is not shared.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -449,14 +869,21 @@
 		5FAFBC312B49E1A90018504E /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = Odyssey/Odyssey.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "\"Odyssey/Preview Content\"";
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = Odyssey/Info.plist;
+				INFOPLIST_KEY_LSApplicationCategoryType = "";
+				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM. That is the only time this App uses your location.";
+				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM.";
+				INFOPLIST_KEY_NSLocationWhenInUseUsageDescription = "Your privacy is important to us! We only collect location data once a day at 11:55 PM to help you track your daily journey. This data is stored only on your device and is not shared.";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -554,6 +981,24 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5F96AAB02B4C38DD00999B84 /* Build configuration list for PBXNativeTarget "OdysseyDeviceActivityMonitor" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F96AAB12B4C38DD00999B84 /* Debug */,
+				5F96AAB22B4C38DD00999B84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		5F96AAC52B4C410D00999B84 /* Build configuration list for PBXNativeTarget "OdysseyDeviceActivityReport" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5F96AAC62B4C410D00999B84 /* Debug */,
+				5F96AAC72B4C410D00999B84 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		5FAFBC012B49E1A60018504E /* Build configuration list for PBXProject "Odyssey" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -591,6 +1036,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		5F96AA712B49FD6600999B84 /* XCRemoteSwiftPackageReference "lottie-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/airbnb/lottie-spm.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		5F96AA722B49FD6600999B84 /* Lottie */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 5F96AA712B49FD6600999B84 /* XCRemoteSwiftPackageReference "lottie-spm" */;
+			productName = Lottie;
+		};
+/* End XCSwiftPackageProductDependency section */
 
 /* Begin XCVersionGroup section */
 		5FAFBC142B49E1A80018504E /* Odyssey.xcdatamodeld */ = {

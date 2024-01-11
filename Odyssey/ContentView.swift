@@ -9,77 +9,41 @@ import SwiftUI
 import CoreData
 
 struct ContentView: View {
-    @Environment(\.managedObjectContext) private var viewContext
-
-    @FetchRequest(
-        sortDescriptors: [NSSortDescriptor(keyPath: \Item.timestamp, ascending: true)],
-        animation: .default)
-    private var items: FetchedResults<Item>
+    @State private var hasSubmittedData = false // Track if the daily entry has been submitted
+    @State private var showingHomeView = true // Initially, we want to show the HomeView
 
     var body: some View {
-        NavigationView {
-            List {
-                ForEach(items) { item in
-                    NavigationLink {
-                        Text("Item at \(item.timestamp!, formatter: itemFormatter)")
-                    } label: {
-                        Text(item.timestamp!, formatter: itemFormatter)
+        ZStack {
+            // The main TabView for daily input and analysis, which will be shown after HomeView is dismissed
+            TabView {
+                DailyPromptsView()
+                    .tabItem {
+                        Image(systemName: "pencil.circle")
+                        Text("Daily Input")
                     }
-                }
-                .onDelete(perform: deleteItems)
-            }
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    EditButton()
-                }
-                ToolbarItem {
-                    Button(action: addItem) {
-                        Label("Add Item", systemImage: "plus")
+                    .disabled(hasSubmittedData) // Disable this tab if data has been submitted today
+
+                AnalysisView()
+                    .tabItem {
+                        Image(systemName: "chart.xyaxis.line")
+                        Text("Year Analysis")
                     }
-                }
+                
+                ExportView()
+                    .tabItem {
+                        Image(systemName: "square.and.arrow.up")
+                        Text("Export Data")
+                    }
             }
-            Text("Select an item")
-        }
-    }
+            .opacity(showingHomeView ? 0 : 1) // Hide the TabView when showingHomeView is true
 
-    private func addItem() {
-        withAnimation {
-            let newItem = Item(context: viewContext)
-            newItem.timestamp = Date()
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
-            }
-        }
-    }
-
-    private func deleteItems(offsets: IndexSet) {
-        withAnimation {
-            offsets.map { items[$0] }.forEach(viewContext.delete)
-
-            do {
-                try viewContext.save()
-            } catch {
-                // Replace this implementation with code to handle the error appropriately.
-                // fatalError() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-                let nsError = error as NSError
-                fatalError("Unresolved error \(nsError), \(nsError.userInfo)")
+            // Conditionally show HomeView as a full-screen modal presentation
+            if showingHomeView {
+                HomeView(showingHomeView: $showingHomeView)
             }
         }
     }
 }
-
-private let itemFormatter: DateFormatter = {
-    let formatter = DateFormatter()
-    formatter.dateStyle = .short
-    formatter.timeStyle = .medium
-    return formatter
-}()
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
