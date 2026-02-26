@@ -20,33 +20,58 @@ enum DateRange: String, CaseIterable, Identifiable {
         case .allTime: return calendar.date(byAdding: .year, value: -10, to: now)!
         }
     }
+
+    var formattedRange: String {
+        let now = Date()
+        let formatter = DateFormatter()
+        switch self {
+        case .allTime:
+            return "All Entries"
+        case .year:
+            formatter.dateFormat = "MMM d, yyyy"
+            return "\(formatter.string(from: startDate)) – \(formatter.string(from: now))"
+        default:
+            let sameYear = Calendar.current.component(.year, from: startDate) == Calendar.current.component(.year, from: now)
+            formatter.dateFormat = sameYear ? "MMM d" : "MMM d, yyyy"
+            let startStr = formatter.string(from: startDate)
+            formatter.dateFormat = "MMM d, yyyy"
+            let endStr = formatter.string(from: now)
+            return "\(startStr) – \(endStr)"
+        }
+    }
 }
 
 struct DateRangePicker: View {
     @Binding var selection: DateRange
 
     var body: some View {
-        ScrollView(.horizontal, showsIndicators: false) {
-            HStack(spacing: 8) {
-                ForEach(DateRange.allCases) { range in
-                    Button {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            selection = range
+        VStack(spacing: 6) {
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(DateRange.allCases) { range in
+                        Button {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selection = range
+                            }
+                        } label: {
+                            Text(range.rawValue)
+                                .font(.subheadline.weight(.medium))
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(
+                                    Capsule()
+                                        .fill(selection == range ? Color.accentAmber : Color.cardSurface)
+                                )
+                                .foregroundStyle(selection == range ? .black : .white)
                         }
-                    } label: {
-                        Text(range.rawValue)
-                            .font(.subheadline.weight(.medium))
-                            .padding(.horizontal, 16)
-                            .padding(.vertical, 8)
-                            .background(
-                                Capsule()
-                                    .fill(selection == range ? Color.accentAmber : Color.cardSurface)
-                            )
-                            .foregroundStyle(selection == range ? .black : .white)
                     }
                 }
+                .padding(.horizontal, 16)
             }
-            .padding(.horizontal, 16)
+
+            Text(selection.formattedRange)
+                .font(.caption)
+                .foregroundStyle(.secondary)
         }
     }
 }

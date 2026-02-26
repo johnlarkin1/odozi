@@ -19,13 +19,20 @@ struct ReviewWordsCard: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
 
-                VStack(spacing: 16) {
-                    ForEach(words.prefix(5), id: \.word) { item in
+                FlowLayout(spacing: 10) {
+                    ForEach(words.prefix(10), id: \.word) { item in
                         Text(item.word)
                             .font(.system(size: fontSize(for: item), weight: .bold, design: .rounded))
                             .foregroundStyle(colorFor(item.word))
+                            .padding(.horizontal, 10)
+                            .padding(.vertical, 5)
+                            .background(
+                                RoundedRectangle(cornerRadius: 12)
+                                    .fill(colorFor(item.word).opacity(0.15))
+                            )
                     }
                 }
+                .padding(.horizontal, 24)
 
                 Spacer()
                 Spacer()
@@ -36,11 +43,11 @@ struct ReviewWordsCard: View {
     private func fontSize(for item: (word: String, count: Int)) -> CGFloat {
         let maxCount = words.first?.count ?? 1
         let ratio = Double(item.count) / Double(max(maxCount, 1))
-        return 24 + ratio * 32
+        return 20 + ratio * 28
     }
 
     private func colorFor(_ word: String) -> Color {
-        let colors: [Color] = [.accentAmber, .accentTeal, .coralRed, .successGreen, .purple]
+        let colors: [Color] = [.accentAmber, .accentTeal, .coralRed, .successGreen, .purple, .cyan, .mint, .orange]
         let index = abs(word.hashValue) % colors.count
         return colors[index]
     }
