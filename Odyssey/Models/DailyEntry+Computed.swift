@@ -63,4 +63,10 @@ extension DailyEntry {
     var hasPromptData: Bool {
         !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
     }
+
+    var hasPhotos: Bool {
+        if let attached = attachedPhotoData, !attached.isEmpty { return true }
+        if let auto = autoPhotoIdentifiers, !auto.isEmpty { return true }
+        return false
+    }
 }

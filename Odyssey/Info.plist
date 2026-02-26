@@ -19,5 +19,7 @@
 	<string>Odyssey captures your location once daily to add context to your journal entries and show where your journey takes you.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Odyssey captures your location to add context to your journal entries.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Odyssey surfaces photos from your library to enrich your journal entries with visual memories from each day.</string>
 </dict>
 </plist>
