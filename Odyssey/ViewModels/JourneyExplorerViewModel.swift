@@ -9,7 +9,9 @@ final class JourneyExplorerViewModel {
     var dateRange: DateRange = .allTime
     var selectedEntry: DailyEntry?
     var selectedIndex: Double = 0
-    var cameraPosition: MapCameraPosition = .automatic
+    var cameraPosition: MapCameraPosition = .camera(
+        MapCamera(centerCoordinate: .init(latitude: 20, longitude: 0), distance: 40_000_000)
+    )
 
     var autoPhotoThumbnails: [UIImage] = []
     var isLoadingPhotos = false
