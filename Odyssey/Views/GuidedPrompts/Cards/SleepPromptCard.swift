@@ -3,36 +3,24 @@ import SwiftUI
 struct SleepPromptCard: View {
     @Binding var sleepQuality: Int
 
-    private let sleepLabels = [
-        (1, "🌑", "Terrible"),
-        (2, "🌑", "Very Poor"),
-        (3, "🌘", "Poor"),
-        (4, "🌗", "Below Avg"),
-        (5, "🌗", "Average"),
-        (6, "🌖", "Decent"),
-        (7, "🌖", "Good"),
-        (8, "🌕", "Great"),
-        (9, "🌕", "Excellent"),
-        (10, "⭐", "Perfect")
+    private let sleepLabels: [(value: Int, label: String)] = [
+        (1, "Terrible"), (2, "Very Poor"), (3, "Poor"), (4, "Below Avg"),
+        (5, "Average"), (6, "Decent"), (7, "Good"), (8, "Great"),
+        (9, "Excellent"), (10, "Perfect")
     ]
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.sleep.emoji,
+            iconName: PromptStep.sleep.iconName,
+            iconColor: PromptStep.sleep.iconColor,
             title: PromptStep.sleep.title,
             subtitle: PromptStep.sleep.subtitle
         ) {
             VStack(spacing: 32) {
-                // Large display
-                VStack(spacing: 8) {
-                    Text(currentLabel.1)
-                        .font(.system(size: 64))
-                    Text(currentLabel.2)
-                        .font(.title3.weight(.medium))
-                        .foregroundStyle(Color.accentTeal)
-                }
+                Text(currentLabel)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(sleepColor(for: sleepQuality))
 
-                // Custom slider
                 VStack(spacing: 8) {
                     HStack(spacing: 6) {
                         ForEach(1...10, id: \.self) { value in
@@ -42,7 +30,7 @@ struct SleepPromptCard: View {
                                 }
                             } label: {
                                 RoundedRectangle(cornerRadius: 4)
-                                    .fill(value <= sleepQuality ? Color.accentTeal : Color.white.opacity(0.15))
+                                    .fill(value <= sleepQuality ? sleepColor(for: value) : Color.white.opacity(0.15))
                                     .frame(height: 40)
                             }
                         }
@@ -61,12 +49,21 @@ struct SleepPromptCard: View {
 
                 Text("\(sleepQuality) / 10")
                     .font(.system(size: 32, weight: .bold, design: .rounded))
-                    .foregroundStyle(Color.accentTeal)
+                    .foregroundStyle(sleepColor(for: sleepQuality))
             }
         }
     }
 
-    private var currentLabel: (Int, String, String) {
-        sleepLabels.first { $0.0 == sleepQuality } ?? (5, "🌗", "Average")
+    private var currentLabel: String {
+        sleepLabels.first { $0.value == sleepQuality }?.label ?? "Average"
+    }
+
+    private func sleepColor(for value: Int) -> Color {
+        let t = Double(value - 1) / 9.0
+        return Color(
+            red: 0.90 - t * 0.72,
+            green: 0.45 + t * 0.32,
+            blue: 0.45 + t * 0.26
+        )
     }
 }

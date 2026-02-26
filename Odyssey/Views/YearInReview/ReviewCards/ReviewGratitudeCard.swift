@@ -25,8 +25,9 @@ struct ReviewGratitudeCard: View {
                     ForEach(Array(gratitudes.prefix(5).enumerated()), id: \.offset) { index, text in
                         if index < visibleCount {
                             HStack(alignment: .top, spacing: 12) {
-                                Text("🙏")
-                                    .font(.title3)
+                                Image(systemName: "heart.fill")
+                                    .font(.subheadline)
+                                    .foregroundStyle(.secondary)
                                 Text(text)
                                     .font(.body)
                                     .foregroundStyle(.white)

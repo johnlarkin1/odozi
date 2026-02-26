@@ -5,7 +5,8 @@ struct WinPromptCard: View {
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.win.emoji,
+            iconName: PromptStep.win.iconName,
+            iconColor: PromptStep.win.iconColor,
             title: PromptStep.win.title,
             subtitle: PromptStep.win.subtitle
         ) {

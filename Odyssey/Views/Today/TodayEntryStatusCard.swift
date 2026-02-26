@@ -18,9 +18,12 @@ struct TodayEntryStatusCard: View {
                                 .font(.headline)
                         }
 
-                        Text("Mood: \(entry.moodEmoji) \(entry.feeling)/10")
-                            .font(.subheadline)
-                            .foregroundStyle(.secondary)
+                        HStack(spacing: 6) {
+                            MoodIndicator(feeling: entry.feeling, size: 8)
+                            Text("Mood: \(entry.feeling)/10")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
 
                         if !entry.singleWordFeeling.isEmpty {
                             Text("Feeling: \(entry.singleWordFeeling)")

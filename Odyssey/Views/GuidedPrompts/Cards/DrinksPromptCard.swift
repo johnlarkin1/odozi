@@ -5,7 +5,8 @@ struct DrinksPromptCard: View {
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.drinks.emoji,
+            iconName: PromptStep.drinks.iconName,
+            iconColor: PromptStep.drinks.iconColor,
             title: PromptStep.drinks.title,
             subtitle: PromptStep.drinks.subtitle
         ) {

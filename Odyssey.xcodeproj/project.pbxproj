@@ -85,7 +85,7 @@
 		DD5D9E4B98511AF942D08EC9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E72678E81212E7CFB2CF8AA8 /* HealthKit.framework */; };
 		E4A2E9C2219FD4DFEFD15F17 /* ReviewTitleCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB6A88E8244B730D7D27C7E8 /* ReviewTitleCard.swift */; };
 		E51C5D58A81FAA85D118A4C6 /* AnimatedCounter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9FB7114F962B90CD63A24D6E /* AnimatedCounter.swift */; };
-		E8D334533BE7C377C480D6EE /* EmojiMoodSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2DD8A18D7C6C4E7E6C3BD73 /* EmojiMoodSelector.swift */; };
+		E8D334533BE7C377C480D6EE /* MoodIndicator.swift in Sources */ = {isa = PBXBuildFile; fileRef = C2DD8A18D7C6C4E7E6C3BD73 /* MoodIndicator.swift */; };
 		EAC3D92FB78A015CDBF03AFA /* YearInReviewViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 81868973E39D9AF68D1C4E7A /* YearInReviewViewModel.swift */; };
 		F1057D5C62AEFC256406AD3A /* SingleLocationDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = AF44E24756450498E15BBCA3 /* SingleLocationDelegate.swift */; };
 		F6B0C354AD19D6E7FB5A0CDD /* MainTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C635C49F97ED57570F72EFF6 /* MainTabView.swift */; };
@@ -256,7 +256,7 @@
 		BA1BE678DC5FD26071896478 /* ShareableCardRenderer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareableCardRenderer.swift; sourceTree = "<group>"; };
 		BA225FCEB3893F396EEFEE89 /* PromptNavigationBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PromptNavigationBar.swift; sourceTree = "<group>"; };
 		BBC6E83295929A28AAC6929A /* ReviewBestDayCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewBestDayCard.swift; sourceTree = "<group>"; };
-		C2DD8A18D7C6C4E7E6C3BD73 /* EmojiMoodSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EmojiMoodSelector.swift; sourceTree = "<group>"; };
+		C2DD8A18D7C6C4E7E6C3BD73 /* MoodIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoodIndicator.swift; sourceTree = "<group>"; };
 		C635C49F97ED57570F72EFF6 /* MainTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		D167085E6095764E803C5AF7 /* WordCloudView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WordCloudView.swift; sourceTree = "<group>"; };
 		DB343ACF8CB79A156682C1FB /* LocationCaptureService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocationCaptureService.swift; sourceTree = "<group>"; };
@@ -359,7 +359,7 @@
 			children = (
 				046380EAD84D6A25DCE661D6 /* DateRangePicker.swift */,
 				E40EA6B9C8DAA6C8610945BB /* InsightCard.swift */,
-				C2DD8A18D7C6C4E7E6C3BD73 /* EmojiMoodSelector.swift */,
+				C2DD8A18D7C6C4E7E6C3BD73 /* MoodIndicator.swift */,
 				9FB7114F962B90CD63A24D6E /* AnimatedCounter.swift */,
 				BA1BE678DC5FD26071896478 /* ShareableCardRenderer.swift */,
 			);
@@ -878,7 +878,7 @@
 				FB9339CF5117A006B134CC83 /* CompletionCard.swift in Sources */,
 				13CDB25508C558905357DB09 /* DateRangePicker.swift in Sources */,
 				27241EE143C7E3E2C42F0F97 /* InsightCard.swift in Sources */,
-				E8D334533BE7C377C480D6EE /* EmojiMoodSelector.swift in Sources */,
+				E8D334533BE7C377C480D6EE /* MoodIndicator.swift in Sources */,
 				E51C5D58A81FAA85D118A4C6 /* AnimatedCounter.swift in Sources */,
 				403B0A5F4F972B5C9E96BAD6 /* ShareableCardRenderer.swift in Sources */,
 				CF3339ADAB86B293A60EAD64 /* InsightsDashboardView.swift in Sources */,

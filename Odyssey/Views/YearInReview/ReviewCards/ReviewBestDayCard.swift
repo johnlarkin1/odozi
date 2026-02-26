@@ -20,16 +20,17 @@ struct ReviewBestDayCard: View {
                         .font(.title3)
                         .foregroundStyle(.secondary)
 
-                    Text(entry.moodEmoji)
-                        .font(.system(size: 64))
+                    Text("\(entry.feeling)")
+                        .font(.system(size: 64, weight: .bold, design: .rounded))
+                        .foregroundStyle(entry.moodGradientColor)
 
                     Text(entry.date.shortFormatted)
                         .font(.title2.bold())
                         .foregroundStyle(.white)
 
-                    Text("Mood: \(entry.feeling)/10")
+                    Text("out of 10")
                         .font(.title3)
-                        .foregroundStyle(Color.accentAmber)
+                        .foregroundStyle(.secondary)
 
                     if !entry.journalEntry.isEmpty {
                         Text("\"\(String(entry.journalEntry.prefix(120)))...\"")

@@ -5,7 +5,8 @@ struct GratitudePromptCard: View {
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.gratitude.emoji,
+            iconName: PromptStep.gratitude.iconName,
+            iconColor: PromptStep.gratitude.iconColor,
             title: PromptStep.gratitude.title,
             subtitle: PromptStep.gratitude.subtitle
         ) {

@@ -5,14 +5,14 @@ extension DailyEntry {
         Color(UIColor.fromHexString(feelingColorHex))
     }
 
-    var moodEmoji: String {
+    var moodLabel: String {
         switch feeling {
-        case 1...2: return "😢"
-        case 3...4: return "😕"
-        case 5...6: return "😐"
-        case 7...8: return "😊"
-        case 9...10: return "😄"
-        default: return "😐"
+        case 1...2: return "Low"
+        case 3...4: return "Below Avg"
+        case 5...6: return "Neutral"
+        case 7...8: return "Good"
+        case 9...10: return "Great"
+        default: return "Neutral"
         }
     }
 

@@ -4,18 +4,7 @@ struct FeelingPromptCard: View {
     @Binding var word: String
     @Binding var colorHex: String
 
-    private let colorOptions: [(name: String, hex: String)] = [
-        ("Coral", "#E57373"),
-        ("Rose", "#F06292"),
-        ("Lavender", "#BA68C8"),
-        ("Indigo", "#7986CB"),
-        ("Sky", "#64B5F6"),
-        ("Teal", "#4DB6AC"),
-        ("Mint", "#81C784"),
-        ("Lime", "#AED581"),
-        ("Amber", "#FFD54F"),
-        ("Orange", "#FFB74D"),
-        ("Peach", "#FF8A65"),
+    private let neutrals: [(name: String, hex: String)] = [
         ("Sand", "#A1887F"),
         ("Silver", "#90A4AE"),
         ("Pearl", "#E0E0E0"),
@@ -25,7 +14,8 @@ struct FeelingPromptCard: View {
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.feeling.emoji,
+            iconName: PromptStep.feeling.iconName,
+            iconColor: PromptStep.feeling.iconColor,
             title: PromptStep.feeling.title,
             subtitle: PromptStep.feeling.subtitle
         ) {
@@ -42,12 +32,33 @@ struct FeelingPromptCard: View {
                             .fill(Color.cardSurface)
                     )
 
-                Text("Pick a color")
+                Text("Pick a color that fits")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
 
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 4), spacing: 12) {
-                    ForEach(colorOptions, id: \.hex) { option in
+                GeometryReader { geo in
+                    RoundedRectangle(cornerRadius: 8)
+                        .fill(
+                            LinearGradient(
+                                colors: [.red, .orange, .yellow, .green, .cyan, .blue, .indigo, .purple, .pink],
+                                startPoint: .leading,
+                                endPoint: .trailing
+                            )
+                        )
+                        .gesture(
+                            DragGesture(minimumDistance: 0)
+                                .onChanged { value in
+                                    let x = max(0, min(value.location.x, geo.size.width))
+                                    let hue = x / geo.size.width
+                                    let uiColor = UIColor(hue: hue, saturation: 0.6, brightness: 0.85, alpha: 1.0)
+                                    colorHex = uiColor.toHexString()
+                                }
+                        )
+                }
+                .frame(height: 36)
+
+                HStack(spacing: 12) {
+                    ForEach(neutrals, id: \.hex) { option in
                         Button {
                             withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                                 colorHex = option.hex
@@ -55,12 +66,11 @@ struct FeelingPromptCard: View {
                         } label: {
                             Circle()
                                 .fill(Color(hex: option.hex))
-                                .frame(width: 44, height: 44)
+                                .frame(width: 28, height: 28)
                                 .overlay(
                                     Circle()
-                                        .stroke(Color.white, lineWidth: colorHex == option.hex ? 3 : 0)
+                                        .stroke(Color.white, lineWidth: colorHex == option.hex ? 2 : 0)
                                 )
-                                .scaleEffect(colorHex == option.hex ? 1.15 : 1.0)
                         }
                     }
                 }
