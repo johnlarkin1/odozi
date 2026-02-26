@@ -4,6 +4,7 @@ import DeviceActivity
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
+    @State private var selectAppsModel = ScreenTimeSelectAppsModel()
 
     @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
     @State private var filter = DeviceActivityFilter(
@@ -22,7 +23,7 @@ struct ProfileView: View {
                         .frame(height: 60)
 
                     NavigationLink("Select Apps to Monitor") {
-                        ScreenTimeSelectAppsContentView(model: ScreenTimeSelectAppsModel())
+                        ScreenTimeSelectAppsContentView(model: selectAppsModel)
                     }
                 }
 

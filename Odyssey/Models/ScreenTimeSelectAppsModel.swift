@@ -7,9 +7,30 @@
 
 import Foundation
 import FamilyControls
+import Observation
 
-class ScreenTimeSelectAppsModel: ObservableObject {
-    @Published var activitySelection = FamilyActivitySelection()
+@Observable
+class ScreenTimeSelectAppsModel {
+    var activitySelection = FamilyActivitySelection()
 
-    init() { }
+    private static let defaultsKey = "selectedAppsToMonitor"
+
+    init() {
+        loadSelection()
+    }
+
+    func saveSelection() {
+        let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
+        if let encoded = try? JSONEncoder().encode(activitySelection) {
+            defaults?.set(encoded, forKey: Self.defaultsKey)
+        }
+    }
+
+    private func loadSelection() {
+        let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
+        if let data = defaults?.data(forKey: Self.defaultsKey),
+           let decoded = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) {
+            activitySelection = decoded
+        }
+    }
 }

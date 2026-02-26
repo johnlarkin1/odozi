@@ -6,21 +6,54 @@
 //
 
 import SwiftUI
+import FamilyControls
 
 struct ScreenTimeSelectAppsContentView: View {
     @State private var pickerIsPresented = false
-    @ObservedObject var model: ScreenTimeSelectAppsModel
+    @Bindable var model: ScreenTimeSelectAppsModel
 
     var body: some View {
-        Button {
-            pickerIsPresented = true
-        } label: {
-            Text("Select Apps")
+        List {
+            Section {
+                Button {
+                    pickerIsPresented = true
+                } label: {
+                    Label("Choose Apps", systemImage: "apps.iphone")
+                }
+            }
+
+            if !model.activitySelection.applicationTokens.isEmpty {
+                Section("Selected Apps (\(model.activitySelection.applicationTokens.count))") {
+                    ForEach(Array(model.activitySelection.applicationTokens), id: \.self) { token in
+                        Label(token)
+                    }
+                }
+            }
+
+            if !model.activitySelection.categoryTokens.isEmpty {
+                Section("Selected Categories (\(model.activitySelection.categoryTokens.count))") {
+                    ForEach(Array(model.activitySelection.categoryTokens), id: \.self) { token in
+                        Label(token)
+                    }
+                }
+            }
+
+            if model.activitySelection.applicationTokens.isEmpty &&
+               model.activitySelection.categoryTokens.isEmpty {
+                Section {
+                    Text("No apps selected")
+                        .foregroundStyle(.secondary)
+                }
+            }
         }
+        .navigationTitle("Select Apps")
         .familyActivityPicker(
             isPresented: $pickerIsPresented,
             selection: $model.activitySelection
         )
+        .onChange(of: model.activitySelection) {
+            model.saveSelection()
+        }
     }
 }
 
