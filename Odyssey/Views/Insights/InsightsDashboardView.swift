@@ -95,13 +95,23 @@ struct InsightsDashboardView: View {
                             }
                             .padding(.horizontal, 16)
 
-                            // Year in Review banner
-                            NavigationLink(destination: YearInReviewView()) {
-                                HStack {
+                            // Journey Explorer banner
+                            NavigationLink(destination: JourneyExplorerView()) {
+                                HStack(spacing: 14) {
+                                    Image(systemName: "globe.americas.fill")
+                                        .font(.title2)
+                                        .foregroundStyle(
+                                            LinearGradient(
+                                                colors: [Color.accentTeal, Color.accentAmber],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+
                                     VStack(alignment: .leading, spacing: 4) {
-                                        Text("Year in Review")
+                                        Text("Journey Explorer")
                                             .font(.title3.bold())
-                                        Text("Your Odyssey, wrapped")
+                                        Text("Explore your world")
                                             .font(.subheadline)
                                             .foregroundStyle(.secondary)
                                     }
@@ -114,7 +124,7 @@ struct InsightsDashboardView: View {
                                     RoundedRectangle(cornerRadius: 16)
                                         .fill(
                                             LinearGradient(
-                                                colors: [Color.accentAmber.opacity(0.3), Color.accentTeal.opacity(0.3)],
+                                                colors: [Color.accentTeal.opacity(0.2), Color.accentAmber.opacity(0.2)],
                                                 startPoint: .leading,
                                                 endPoint: .trailing
                                             )

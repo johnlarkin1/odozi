@@ -36,6 +36,10 @@ final class DailyEntry {
     var screenTimeSeconds: Double?
     var pickups: Int?
 
+    // Photos
+    @Attribute(.externalStorage) var attachedPhotoData: [Data]?
+    var autoPhotoIdentifiers: [String]?
+
     // Metadata
     var createdAt: Date
     var updatedAt: Date
