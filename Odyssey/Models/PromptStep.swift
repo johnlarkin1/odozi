@@ -1,4 +1,4 @@
-import Foundation
+import SwiftUI
 
 enum PromptStep: Int, CaseIterable, Identifiable {
     case mood = 0
@@ -38,16 +38,29 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         }
     }
 
-    var emoji: String {
+    var iconName: String {
         switch self {
-        case .mood: return "🌤️"
-        case .feeling: return "🎨"
-        case .sleep: return "🌙"
-        case .gratitude: return "🙏"
-        case .win: return "🏆"
-        case .tension: return "💭"
-        case .journal: return "📝"
-        case .drinks: return "🍷"
+        case .mood: return "sun.max.fill"
+        case .feeling: return "paintpalette.fill"
+        case .sleep: return "moon.stars.fill"
+        case .gratitude: return "heart.fill"
+        case .win: return "trophy.fill"
+        case .tension: return "cloud.fill"
+        case .journal: return "note.text"
+        case .drinks: return "wineglass.fill"
+        }
+    }
+
+    var iconColor: Color {
+        switch self {
+        case .mood: return .accentAmber
+        case .feeling: return .purple
+        case .sleep: return .accentTeal
+        case .gratitude: return .accentAmber
+        case .win: return .successGreen
+        case .tension: return .coralRed
+        case .journal: return .accentAmber
+        case .drinks: return .accentTeal
         }
     }
 }

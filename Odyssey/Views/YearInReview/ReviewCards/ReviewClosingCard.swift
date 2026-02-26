@@ -20,8 +20,9 @@ struct ReviewClosingCard: View {
 
                 if showContent {
                     VStack(spacing: 16) {
-                        Text("⛵")
-                            .font(.system(size: 64))
+                        Image(systemName: "safari.fill")
+                            .font(.title)
+                            .foregroundStyle(Color.accentAmber)
 
                         Text("Keep Sailing")
                             .font(.system(size: 36, weight: .bold, design: .rounded))

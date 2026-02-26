@@ -15,8 +15,9 @@ struct ReviewSleepCard: View {
             VStack(spacing: 24) {
                 Spacer()
 
-                Text("🌙")
-                    .font(.system(size: 64))
+                Image(systemName: "moon.stars.fill")
+                    .font(.title)
+                    .foregroundStyle(Color.accentTeal)
 
                 Text("Sleep Quality")
                     .font(.title3)

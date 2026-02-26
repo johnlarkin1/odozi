@@ -83,8 +83,7 @@ struct JournalView: View {
 
             Spacer()
 
-            Text(entry.moodEmoji)
-                .font(.title3)
+            MoodIndicator(feeling: entry.feeling, size: 10)
 
             Text("\(entry.feeling)")
                 .font(.subheadline.weight(.medium))

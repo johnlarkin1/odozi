@@ -6,7 +6,7 @@ extension Color {
     static let accentTeal = Color(red: 0.18, green: 0.77, blue: 0.71)      // #2EC4B6
     static let successGreen = Color(red: 0.30, green: 0.69, blue: 0.31)    // #4CAF50
     static let coralRed = Color(red: 0.90, green: 0.45, blue: 0.45)        // E57373
-    static let cardSurface = Color(.secondarySystemBackground)
+    static let cardSurface = Color(red: 0.11, green: 0.11, blue: 0.12)
 
     static func moodGradient(for value: Int) -> Color {
         let t = Double(max(1, min(10, value)) - 1) / 9.0

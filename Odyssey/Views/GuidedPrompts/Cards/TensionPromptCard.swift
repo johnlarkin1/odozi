@@ -5,7 +5,8 @@ struct TensionPromptCard: View {
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.tension.emoji,
+            iconName: PromptStep.tension.iconName,
+            iconColor: PromptStep.tension.iconColor,
             title: PromptStep.tension.title,
             subtitle: PromptStep.tension.subtitle
         ) {

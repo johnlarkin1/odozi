@@ -1,7 +1,8 @@
 import SwiftUI
 
 struct PromptCardContainer<Content: View>: View {
-    let emoji: String
+    let iconName: String
+    let iconColor: Color
     let title: String
     let subtitle: String
     @ViewBuilder let content: () -> Content
@@ -10,13 +11,15 @@ struct PromptCardContainer<Content: View>: View {
         VStack(spacing: 20) {
             Spacer()
 
-            Text(emoji)
-                .font(.system(size: 56))
-
-            Text(title)
-                .font(.title3.bold())
-                .fontDesign(.rounded)
-                .foregroundStyle(.white)
+            HStack(spacing: 8) {
+                Image(systemName: iconName)
+                    .font(.title3.weight(.medium))
+                    .foregroundStyle(iconColor)
+                Text(title)
+                    .font(.title3.bold())
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.white)
+            }
 
             Text(subtitle)
                 .font(.subheadline)

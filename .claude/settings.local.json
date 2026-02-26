@@ -6,7 +6,8 @@
       "Bash(xargs cat:*)",
       "Bash(xcrun simctl:*)",
       "Skill(generate-pr)",
-      "Bash(make run:*)"
+      "Bash(make run:*)",
+      "Bash(find:*)"
     ]
   }
 }

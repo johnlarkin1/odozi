@@ -5,7 +5,8 @@ struct JournalPromptCard: View {
 
     var body: some View {
         PromptCardContainer(
-            emoji: PromptStep.journal.emoji,
+            iconName: PromptStep.journal.iconName,
+            iconColor: PromptStep.journal.iconColor,
             title: PromptStep.journal.title,
             subtitle: PromptStep.journal.subtitle
         ) {
