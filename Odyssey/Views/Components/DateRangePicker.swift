@@ -1,0 +1,52 @@
+import SwiftUI
+
+enum DateRange: String, CaseIterable, Identifiable {
+    case week = "Week"
+    case month = "Month"
+    case threeMonths = "3 Months"
+    case year = "Year"
+    case allTime = "All Time"
+
+    var id: String { rawValue }
+
+    var startDate: Date {
+        let calendar = Calendar.current
+        let now = Date()
+        switch self {
+        case .week: return calendar.date(byAdding: .day, value: -7, to: now)!
+        case .month: return calendar.date(byAdding: .month, value: -1, to: now)!
+        case .threeMonths: return calendar.date(byAdding: .month, value: -3, to: now)!
+        case .year: return calendar.date(byAdding: .year, value: -1, to: now)!
+        case .allTime: return calendar.date(byAdding: .year, value: -10, to: now)!
+        }
+    }
+}
+
+struct DateRangePicker: View {
+    @Binding var selection: DateRange
+
+    var body: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(DateRange.allCases) { range in
+                    Button {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selection = range
+                        }
+                    } label: {
+                        Text(range.rawValue)
+                            .font(.subheadline.weight(.medium))
+                            .padding(.horizontal, 16)
+                            .padding(.vertical, 8)
+                            .background(
+                                Capsule()
+                                    .fill(selection == range ? Color.accentAmber : Color.cardSurface)
+                            )
+                            .foregroundStyle(selection == range ? .black : .white)
+                    }
+                }
+            }
+            .padding(.horizontal, 16)
+        }
+    }
+}

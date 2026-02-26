@@ -1,23 +1,22 @@
-//
-//  DeviceActivityMonitorExtension.swift
-//  OdysseyDeviceActivityMonitor
-//
-//  Created by John Larkin on 1/8/24.
-//
-
 import DeviceActivity
+import Foundation
 
-// Optionally override any of the functions below.
-// Make sure that your class name matches the NSExtensionPrincipalClass in your Info.plist.
 class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     override func intervalDidEnd(for activity: DeviceActivityName) {
         super.intervalDidEnd(for: activity)
-        
-//        // Fetch the day's activity data
-//        fetchDataForDay()
-//
-//        // Save data to CoreData
-//        saveDataToCoreData()
+
+        // Write timestamp to shared defaults so main app knows data is available
+        let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
+        defaults?.set(Date().timeIntervalSince1970, forKey: "lastIntervalEnd")
+
+        // Post Darwin notification to wake main app if in foreground
+        let name = "com.johnlarkin.Odyssey.intervalEnded" as CFString
+        CFNotificationCenterPostNotification(
+            CFNotificationCenterGetDarwinNotifyCenter(),
+            CFNotificationName(name),
+            nil,
+            nil,
+            true
+        )
     }
-    
 }

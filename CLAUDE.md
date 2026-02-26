@@ -4,13 +4,16 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Odyssey is an iOS mental wellness tracking app built with SwiftUI. It collects daily mood data, sleep quality, journal entries, and integrates Apple's Screen Time API via FamilyControls/DeviceActivity frameworks. Uses Core Data for persistence and CoreLocation for background location tracking.
+Odyssey is an iOS mental wellness tracking app built with SwiftUI. It features a guided step-by-step daily journaling flow, passive background data capture (GPS + reverse geocoding, HealthKit, Screen Time), rich visualizations (mood trends, maps, streaks, word clouds), and a Spotify Wrapped-style year-in-review feature with shareable cards. Uses SwiftData for persistence and targets iOS 17+.
 
 ## Build Commands
 
 ```bash
-# Build (requires physical device destination for FamilyControls)
+# Build (requires physical device destination for FamilyControls, or use iphoneos SDK)
 make build
+
+# Build without code signing (CI)
+xcodebuild -project Odyssey.xcodeproj -target Odyssey -configuration Debug -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
 
 # Run tests
 make test
@@ -22,36 +25,74 @@ make clean
 make help
 ```
 
-Or directly with xcodebuild:
-```bash
-xcodebuild -project Odyssey.xcodeproj -scheme Odyssey -configuration Debug build
-xcodebuild -project Odyssey.xcodeproj -scheme Odyssey test
-```
-
 ## Architecture
 
-**Pattern:** MVVM with SwiftUI
+**Pattern:** MVVM with SwiftUI + `@Observable` (iOS 17+)
 
 **Targets:**
 - **Odyssey** — Main app target
 - **OdysseyDeviceActivityMonitor** — Extension that monitors device activity via DeviceActivityMonitor (runs out-of-process)
-- **OdysseyDeviceActivityReport** — ExtensionKit extension that renders Screen Time reports using DeviceActivityReportExtension
-- **OdysseyTests / OdysseyUITests** — Test targets (currently template stubs)
+- **OdysseyDeviceActivityReport** — ExtensionKit extension that renders Screen Time reports and writes data to shared UserDefaults
+- **OdysseyTests / OdysseyUITests** — Test targets
+
+**Data layer:**
+- `SwiftData` with `@Model` class `DailyEntry` (see `Odyssey/Models/DailyEntry.swift`)
+- `DataContainer.swift` manages `ModelContainer` + App Group storage
+- `@Attribute(originalName:)` on `feelingColorHex` and `screenTimeSeconds` enables migration from old Core Data fields
+- Shared data between app and extensions via `UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")`
 
 **Key data flow:**
-1. `OdysseyApp` is the @main entry point; requests location + Screen Time permissions on appear
-2. `AppDelegate` registers background refresh task (`com.odyssey.refresh`) scheduled nightly at 11:55 PM
-3. `BackgroundDataFetch` (NSOperation) runs during background refresh to collect location/device data
-4. `DailyEntryViewModel` manages Core Data CRUD for the `DailyEntry` entity
-5. `ContentView` provides tab navigation; `HomeView` shows Lottie welcome animation
+1. `OdysseyApp` is the @main entry point; requests location, Screen Time, HealthKit permissions
+2. `AppDelegate` registers dual background tasks: `com.odyssey.snapshot` (8 PM) and `com.odyssey.processing` (2 AM fallback)
+3. `BackgroundSnapshotService` runs location + HealthKit concurrently via `async let`, reads Screen Time from shared defaults
+4. `LocationCaptureService` uses `requestLocation()` single-shot + `CLGeocoder` reverse geocoding
+5. `HealthKitService` fetches steps, walking distance, and sleep analysis
+6. Screen Time pipeline: `TotalActivityReport.makeConfiguration()` writes to shared UserDefaults → main app reads on foreground
+7. Foreground catch-up: on every `.active` scene phase, checks if today's snapshot exists and runs if missing
 
-**Core Data model:** `Odyssey.xcdatamodeld` with `DailyEntry` entity (date, feeling, sleepQuality, journalEntry, drinks, win, tension, gratitude, latitude, longitude, screenTime, pickups, etc.)
+**Navigation (4 tabs):**
+- **Today** — Greeting, entry status card, launches GuidedPromptFlowView as fullScreenCover
+- **Journal** — Calendar view, searchable entry list, detail view
+- **Insights** — Dashboard grid with mood trends, map, streaks, word cloud, color palette, year-in-review
+- **Profile** — Screen Time report, app selection, CSV export
 
-**Dependency:** Lottie (SPM, ~>4.0) — used for animated Earth in HomeView
+**Guided Prompts:**
+- 8-step paged flow: Mood → Feeling → Sleep → Gratitude → Win → Tension → Journal → Drinks
+- Each step skippable, completion card with animation on submit
+- `GuidedPromptViewModel` manages flow state, `PromptResponses` struct holds in-progress answers
+
+**Visualizations:**
+- Swift Charts for mood trends, streak bars, year-in-review sparklines
+- MapKit with color-coded mood pins
+- Custom `FlowLayout` for word cloud
+- `ImageRenderer` for shareable year-in-review cards
+
+**Core Data model (legacy):** `Odyssey.xcdatamodeld` still present for migration. SwiftData handles new persistence.
+
+**Dependency:** Lottie (SPM, ~>4.0) — used for animated Earth in Year-in-Review title card
+
+## Key File Locations
+
+| Area | Path |
+|------|------|
+| Data model | `Odyssey/Models/DailyEntry.swift` |
+| Persistence | `Odyssey/Models/DataContainer.swift` |
+| Background services | `Odyssey/Services/` |
+| Guided prompts | `Odyssey/Views/GuidedPrompts/` |
+| Prompt cards | `Odyssey/Views/GuidedPrompts/Cards/` |
+| Visualizations | `Odyssey/Views/Insights/` |
+| Year-in-Review | `Odyssey/Views/YearInReview/ReviewCards/` |
+| Design tokens | `Odyssey/Extensions/Color+Extensions.swift` |
+| Shared defaults | `Odyssey/Services/SharedDefaults.swift` |
 
 ## Key Conventions
 
-- Dark mode is enforced app-wide via `.environment(\.colorScheme, .dark)`
-- Colors stored as hex strings in Core Data (see `UIColor+Extensions.swift`)
+- iOS 17+ target (SwiftData, new MapKit, Swift Charts)
+- Dark mode enforced app-wide via `.environment(\.colorScheme, .dark)`
+- Design tokens in `Color+Extensions.swift`: `.accentAmber`, `.accentTeal`, `.successGreen`, `.coralRed`, `.cardSurface`
+- Colors stored as hex strings in SwiftData (see `UIColor+Extensions.swift`)
+- All ViewModels use `@Observable` macro, take `ModelContext` as injected dependency
 - FamilyControls/DeviceActivity APIs require a **physical device** — simulator builds will fail for extension targets
-- The two extensions share the `com.apple.developer.family-controls` entitlement
+- App Group `group.com.johnlarkin.Odyssey` shared across all 3 targets
+- HealthKit entitlement on main app target only
+- BGTaskScheduler identifiers: `com.odyssey.snapshot`, `com.odyssey.processing`
