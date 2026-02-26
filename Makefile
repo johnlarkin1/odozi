@@ -24,8 +24,8 @@ setup-simulator: ## Download iOS platform and create iPhone 16 simulator
 run: ## Build and run on iOS Simulator
 	xcrun simctl boot "iPhone 16" 2>/dev/null || true
 	open -a Simulator
-	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' build
-	xcrun simctl install booted build/Debug-iphonesimulator/Odyssey.app
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' -derivedDataPath build build
+	xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Odyssey.app
 	xcrun simctl launch booted com.johnlarkin.Odyssey
 
 build: ## Build debug configuration
