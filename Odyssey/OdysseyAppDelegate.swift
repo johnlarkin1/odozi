@@ -1,74 +1,111 @@
-//
-//  OdysseyAppDelegate.swift
-//  Odyssey
-//
-//  Created by John Larkin on 1/6/24.
-//
-
 import Foundation
 import BackgroundTasks
 import UIKit
+import SwiftData
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    let persistenceController = PersistenceController.shared
-    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.refresh", using: nil) { task in
-            // Downcast the parameter to an app refresh task as this identifier is used for a refresh request.
-            self.handleAppRefresh(task: task as! BGAppRefreshTask)
+        // Register primary snapshot task (8 PM)
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.snapshot", using: nil) { task in
+            self.handleSnapshot(task: task as! BGAppRefreshTask)
         }
+
+        // Register fallback processing task (2 AM)
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.processing", using: nil) { task in
+            self.handleProcessing(task: task as! BGProcessingTask)
+        }
+
+        scheduleSnapshotTask()
+        scheduleProcessingTask()
+
         return true
     }
 
-    func handleAppRefresh(task: BGAppRefreshTask) {
-        // Schedule a new refresh task
-        scheduleAppRefresh()
-        
-        // Create an operation that performs the main part of the background task
-        let context = persistenceController.container.viewContext
-        let operation = BackgroundDataFetch(context: context)
-        
-        // Provide an expiration handler for the background task
+    // MARK: - Primary: BGAppRefreshTask at 8 PM
+
+    private func handleSnapshot(task: BGAppRefreshTask) {
+        scheduleSnapshotTask()
+
+        let snapshotTask = Task {
+            do {
+                let container = try DataContainer.create()
+                let context = ModelContext(container)
+                let service = BackgroundSnapshotService()
+                await service.captureSnapshot(modelContext: context)
+                task.setTaskCompleted(success: true)
+            } catch {
+                print("Snapshot failed: \(error)")
+                task.setTaskCompleted(success: false)
+            }
+        }
+
         task.expirationHandler = {
-            operation.cancel()
+            snapshotTask.cancel()
         }
-        
-        // Inform the system that the background task is complete
-        // when the operation is done
-        operation.completionBlock = {
-            task.setTaskCompleted(success: !operation.isCancelled)
-        }
-        
-        // Start the operation
-        let operationQueue = OperationQueue()
-        operationQueue.addOperation(operation)
     }
 
-    func scheduleAppRefresh() {
-        let request = BGAppRefreshTaskRequest(identifier: "com.odyssey.refresh")
+    private func scheduleSnapshotTask() {
+        let request = BGAppRefreshTaskRequest(identifier: "com.odyssey.snapshot")
 
-        // Calculate time until 11:55 PM today or tomorrow
+        let calendar = Calendar.current
         let now = Date()
-        var calendar = Calendar.current
-        calendar.timeZone = .current // Use the device's time zone
-        let elevenFiftyFiveToday = calendar.date(
-            bySettingHour: 23, minute: 55, second: 0, of: now)!
-        let timeUntilElevenFiftyFive = elevenFiftyFiveToday.timeIntervalSince(now)
-        
-        // If it's past 11:55 PM, schedule for the next day
-        if timeUntilElevenFiftyFive < 0 {
-            if let elevenFiftyFiveTomorrow = calendar.date(byAdding: .day, value: 1, to: elevenFiftyFiveToday) {
-                request.earliestBeginDate = elevenFiftyFiveTomorrow
-            }
-        } else {
-            request.earliestBeginDate = elevenFiftyFiveToday
+        var target = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: now)!
+
+        if target <= now {
+            target = calendar.date(byAdding: .day, value: 1, to: target)!
         }
 
-        // Submit the request
+        request.earliestBeginDate = target
+
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            print("Could not schedule app refresh: \(error)")
+            print("Could not schedule snapshot task: \(error)")
+        }
+    }
+
+    // MARK: - Fallback: BGProcessingTask at 2 AM
+
+    private func handleProcessing(task: BGProcessingTask) {
+        scheduleProcessingTask()
+
+        let processingTask = Task {
+            do {
+                let container = try DataContainer.create()
+                let context = ModelContext(container)
+                let service = BackgroundSnapshotService()
+                await service.captureSnapshot(modelContext: context)
+                task.setTaskCompleted(success: true)
+            } catch {
+                print("Processing failed: \(error)")
+                task.setTaskCompleted(success: false)
+            }
+        }
+
+        task.expirationHandler = {
+            processingTask.cancel()
+        }
+    }
+
+    private func scheduleProcessingTask() {
+        let request = BGProcessingTaskRequest(identifier: "com.odyssey.processing")
+        request.requiresNetworkConnectivity = false
+        request.requiresExternalPower = false
+
+        let calendar = Calendar.current
+        let now = Date()
+        var target = calendar.date(bySettingHour: 2, minute: 0, second: 0, of: now)!
+
+        if target <= now {
+            target = calendar.date(byAdding: .day, value: 1, to: target)!
+        }
+
+        request.earliestBeginDate = target
+
+        do {
+            try BGTaskScheduler.shared.submit(request)
+        } catch {
+            print("Could not schedule processing task: \(error)")
         }
     }
 }

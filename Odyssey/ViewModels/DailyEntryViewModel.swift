@@ -1,84 +1,123 @@
-//
-//  DailyEntryViewModel.swift
-//  Odyssey
-//
-//  Created by John Larkin on 1/6/24.
-//
-
 import SwiftUI
-import CoreData
+import SwiftData
 
-class DailyEntryViewModel: ObservableObject {
-    private let context = PersistenceController.shared.container.viewContext
-    @Published var hasSubmittedData = false
-    @Published var submissionMessage = ""
+@Observable
+final class DailyEntryViewModel {
+    var hasSubmittedData = false
+    var submissionMessage = ""
 
-    init() {
-        checkForTodayEntry() // Check for today's entry when the ViewModel is initialized
+    private let modelContext: ModelContext
+
+    init(modelContext: ModelContext) {
+        self.modelContext = modelContext
+        checkForTodayEntry()
     }
 
     func checkForTodayEntry() {
         let today = Calendar.current.startOfDay(for: Date())
-        let fetchRequest: NSFetchRequest<DailyEntry> = DailyEntry.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "date == %@", today as NSDate)
-        fetchRequest.fetchLimit = 1
+        let predicate = #Predicate<DailyEntry> { $0.date == today }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1
 
         do {
-            let results = try context.fetch(fetchRequest)
-            DispatchQueue.main.async {
-                if !results.isEmpty {
-                    self.hasSubmittedData = true
-                    self.submissionMessage = "Already completed entry for today."
-                } else {
-                    self.hasSubmittedData = false
-                }
+            let results = try modelContext.fetch(descriptor)
+            hasSubmittedData = !results.isEmpty
+            if hasSubmittedData {
+                submissionMessage = "Already completed entry for today."
             }
         } catch {
             print("Failed to fetch data for today: \(error)")
         }
     }
 
-    func submitData(feeling: Double, sleepQuality: Double, singleWordFeeling: String, feelingColor: Color, journalEntry: String, drinks: Int, win: String, tension: String, gratitude: String) {
+    func fetchTodayEntry() -> DailyEntry? {
         let today = Calendar.current.startOfDay(for: Date())
-        let fetchRequest: NSFetchRequest<DailyEntry> = DailyEntry.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "date == %@", today as NSDate)
-        fetchRequest.fetchLimit = 1
+        let predicate = #Predicate<DailyEntry> { $0.date == today }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1
+
+        return try? modelContext.fetch(descriptor).first
+    }
+
+    func fetchEntry(for date: Date) -> DailyEntry? {
+        let targetDate = Calendar.current.startOfDay(for: date)
+        let predicate = #Predicate<DailyEntry> { $0.date == targetDate }
+        var descriptor = FetchDescriptor(predicate: predicate)
+        descriptor.fetchLimit = 1
+
+        return try? modelContext.fetch(descriptor).first
+    }
+
+    func fetchEntries(from startDate: Date, to endDate: Date) -> [DailyEntry] {
+        let start = Calendar.current.startOfDay(for: startDate)
+        let end = Calendar.current.startOfDay(for: endDate)
+        let predicate = #Predicate<DailyEntry> { $0.date >= start && $0.date <= end }
+        let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\.date, order: .reverse)])
+
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    func fetchAllEntries() -> [DailyEntry] {
+        let descriptor = FetchDescriptor<DailyEntry>(sortBy: [SortDescriptor(\.date, order: .reverse)])
+        return (try? modelContext.fetch(descriptor)) ?? []
+    }
+
+    func submitData(
+        feeling: Int,
+        singleWordFeeling: String,
+        feelingColorHex: String,
+        sleepQuality: Int,
+        gratitude: String,
+        win: String,
+        tension: String,
+        journalEntry: String,
+        drinks: Int
+    ) {
+        let today = Calendar.current.startOfDay(for: Date())
+        let entry: DailyEntry
+
+        if let existing = fetchTodayEntry() {
+            entry = existing
+        } else {
+            entry = DailyEntry(date: today)
+            modelContext.insert(entry)
+        }
+
+        entry.feeling = feeling
+        entry.singleWordFeeling = singleWordFeeling
+        entry.feelingColorHex = feelingColorHex
+        entry.sleepQuality = sleepQuality
+        entry.gratitude = gratitude
+        entry.win = win
+        entry.tension = tension
+        entry.journalEntry = journalEntry
+        entry.drinks = drinks
+        entry.updatedAt = Date()
 
         do {
-            let results = try context.fetch(fetchRequest)
-            let entry: DailyEntry
-            if results.isEmpty {
-                // No existing entry with this date, create a new one
-                entry = DailyEntry(context: context)
-                entry.date = today
-            } else {
-                // An entry already exists with this date, update it
-                entry = results.first!
-            }
-
-            // Convert the SwiftUI Color to UIColor then to a hex string
-            let uiColor = UIColor(feelingColor)
-            let colorHex = uiColor.toHexString()
-
-            // Set properties for both new and existing entries
-            entry.feeling = Int16(feeling)
-            entry.sleepQuality = Int16(sleepQuality)
-            entry.singleWordFeeling = singleWordFeeling
-            entry.feelingColor = colorHex  // Save the hex string
-            entry.journalEntry = journalEntry
-            entry.drinks = Int16(drinks)
-            entry.win = win
-            entry.tension = tension
-            entry.gratitude = gratitude
-
-            try context.save()
-            DispatchQueue.main.async {
-                self.hasSubmittedData = true
-                self.submissionMessage = "Successfully saved today's entry."
-            }
+            try modelContext.save()
+            hasSubmittedData = true
+            submissionMessage = "Successfully saved today's entry."
         } catch {
             print("Failed to save or update the entry: \(error)")
         }
     }
 
+    var currentStreak: Int {
+        let entries = fetchAllEntries().sorted { $0.date > $1.date }
+        let calendar = Calendar.current
+        var streak = 0
+        var expectedDate = calendar.startOfDay(for: Date())
+
+        for entry in entries {
+            let entryDate = calendar.startOfDay(for: entry.date)
+            if entryDate == expectedDate && entry.hasPromptData {
+                streak += 1
+                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
+            } else if entryDate < expectedDate {
+                break
+            }
+        }
+        return streak
+    }
 }

@@ -1,0 +1,94 @@
+import HealthKit
+
+actor HealthKitService {
+    private let store = HKHealthStore()
+
+    static var isAvailable: Bool {
+        HKHealthStore.isHealthDataAvailable()
+    }
+
+    func requestAuthorization() async throws {
+        guard HealthKitService.isAvailable else { return }
+
+        let readTypes: Set<HKObjectType> = [
+            HKQuantityType(.stepCount),
+            HKQuantityType(.distanceWalkingRunning),
+            HKCategoryType(.sleepAnalysis)
+        ]
+
+        try await store.requestAuthorization(toShare: [], read: readTypes)
+    }
+
+    func fetchSteps(for date: Date) async throws -> Int? {
+        let interval = dayInterval(for: date)
+        let type = HKQuantityType(.stepCount)
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: HKSamplePredicate.quantitySample(type: type, predicate: predicate),
+            options: .cumulativeSum
+        )
+
+        let result = try await descriptor.result(for: store)
+        guard let sum = result?.sumQuantity() else { return nil }
+        return Int(sum.doubleValue(for: HKUnit.count()))
+    }
+
+    func fetchWalkingDistance(for date: Date) async throws -> Double? {
+        let interval = dayInterval(for: date)
+        let type = HKQuantityType(.distanceWalkingRunning)
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: HKSamplePredicate.quantitySample(type: type, predicate: predicate),
+            options: .cumulativeSum
+        )
+
+        let result = try await descriptor.result(for: store)
+        guard let sum = result?.sumQuantity() else { return nil }
+        return sum.doubleValue(for: HKUnit.meter())
+    }
+
+    func fetchSleepHours(for date: Date) async throws -> Double? {
+        let interval = sleepInterval(for: date)
+        let type = HKCategoryType(.sleepAnalysis)
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+
+        let sampleDescriptor = HKSampleQueryDescriptor(
+            predicates: [.categorySample(type: type, predicate: predicate)],
+            sortDescriptors: [SortDescriptor(\.startDate)]
+        )
+
+        let samples = try await sampleDescriptor.result(for: store)
+
+        // Filter to asleep states only (not inBed)
+        let asleepValues: Set<Int> = [
+            HKCategoryValueSleepAnalysis.asleepCore.rawValue,
+            HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
+            HKCategoryValueSleepAnalysis.asleepREM.rawValue,
+            HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue
+        ]
+
+        let totalSeconds = samples
+            .filter { asleepValues.contains($0.value) }
+            .reduce(0.0) { $0 + $1.endDate.timeIntervalSince($1.startDate) }
+
+        return totalSeconds > 0 ? totalSeconds / 3600.0 : nil
+    }
+
+    private func dayInterval(for date: Date) -> DateInterval {
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: date)
+        let end = calendar.date(byAdding: .day, value: 1, to: start)!
+        return DateInterval(start: start, end: end)
+    }
+
+    private func sleepInterval(for date: Date) -> DateInterval {
+        // Look at previous evening (8 PM) through current morning (noon)
+        let calendar = Calendar.current
+        let start = calendar.startOfDay(for: date)
+        let sleepStart = calendar.date(byAdding: .hour, value: -4, to: start)! // 8 PM prior day
+        let sleepEnd = calendar.date(byAdding: .hour, value: 12, to: start)!   // Noon current day
+        return DateInterval(start: sleepStart, end: sleepEnd)
+    }
+}

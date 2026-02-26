@@ -5,6 +5,19 @@
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>location</string>
+		<string>fetch</string>
+		<string>processing</string>
 	</array>
+	<key>BGTaskSchedulerPermittedIdentifiers</key>
+	<array>
+		<string>com.odyssey.snapshot</string>
+		<string>com.odyssey.processing</string>
+	</array>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Odyssey reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Odyssey captures your location once daily to add context to your journal entries and show where your journey takes you.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Odyssey captures your location to add context to your journal entries.</string>
 </dict>
 </plist>

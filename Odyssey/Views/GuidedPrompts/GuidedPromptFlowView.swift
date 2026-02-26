@@ -1,0 +1,116 @@
+import SwiftUI
+import SwiftData
+
+struct GuidedPromptFlowView: View {
+    @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
+    @State private var viewModel: GuidedPromptViewModel?
+
+    var body: some View {
+        Group {
+            if let vm = viewModel {
+                ZStack {
+                    Color.black.ignoresSafeArea()
+
+                    VStack(spacing: 0) {
+                        PromptProgressBar(
+                            currentStep: vm.currentStepIndex,
+                            totalSteps: vm.totalSteps
+                        )
+                        .padding(.horizontal, 16)
+                        .padding(.top, 12)
+
+                        TabView(selection: Binding(
+                            get: { vm.currentStep },
+                            set: { vm.currentStep = $0 }
+                        )) {
+                            ForEach(PromptStep.allCases) { step in
+                                promptCard(for: step, viewModel: vm)
+                                    .tag(step)
+                            }
+                        }
+                        .tabViewStyle(.page(indexDisplayMode: .never))
+
+                        PromptNavigationBar(
+                            isFirstStep: vm.isFirstStep,
+                            isLastStep: vm.isLastStep,
+                            onBack: { vm.goToPrevious() },
+                            onSkip: { vm.skip() },
+                            onNext: { vm.goToNext() },
+                            onSubmit: { vm.submit() }
+                        )
+                        .padding(.horizontal, 16)
+                        .padding(.bottom, 8)
+                    }
+                }
+                .fullScreenCover(isPresented: Binding(
+                    get: { vm.showingCompletion },
+                    set: { vm.showingCompletion = $0 }
+                )) {
+                    CompletionCard {
+                        dismiss()
+                    }
+                }
+            } else {
+                Color.black.ignoresSafeArea()
+            }
+        }
+        .onAppear {
+            if viewModel == nil {
+                viewModel = GuidedPromptViewModel(modelContext: modelContext)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func promptCard(for step: PromptStep, viewModel: GuidedPromptViewModel) -> some View {
+        switch step {
+        case .mood:
+            MoodPromptCard(feeling: Binding(
+                get: { viewModel.responses.feeling },
+                set: { viewModel.responses.feeling = $0 }
+            ))
+        case .feeling:
+            FeelingPromptCard(
+                word: Binding(
+                    get: { viewModel.responses.singleWordFeeling },
+                    set: { viewModel.responses.singleWordFeeling = $0 }
+                ),
+                colorHex: Binding(
+                    get: { viewModel.responses.feelingColorHex },
+                    set: { viewModel.responses.feelingColorHex = $0 }
+                )
+            )
+        case .sleep:
+            SleepPromptCard(sleepQuality: Binding(
+                get: { viewModel.responses.sleepQuality },
+                set: { viewModel.responses.sleepQuality = $0 }
+            ))
+        case .gratitude:
+            GratitudePromptCard(text: Binding(
+                get: { viewModel.responses.gratitude },
+                set: { viewModel.responses.gratitude = $0 }
+            ))
+        case .win:
+            WinPromptCard(text: Binding(
+                get: { viewModel.responses.win },
+                set: { viewModel.responses.win = $0 }
+            ))
+        case .tension:
+            TensionPromptCard(text: Binding(
+                get: { viewModel.responses.tension },
+                set: { viewModel.responses.tension = $0 }
+            ))
+        case .journal:
+            JournalPromptCard(text: Binding(
+                get: { viewModel.responses.journalEntry },
+                set: { viewModel.responses.journalEntry = $0 }
+            ))
+        case .drinks:
+            DrinksPromptCard(drinks: Binding(
+                get: { viewModel.responses.drinks },
+                set: { viewModel.responses.drinks = $0 }
+            ))
+        }
+    }
+}
