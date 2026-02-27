@@ -21,5 +21,7 @@
 	<string>Odyssey captures your location to add context to your journal entries.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Odyssey surfaces photos from your library to enrich your journal entries with visual memories from each day.</string>
+	<key>ITSAppUsesNonExemptEncryption</key>
+	<false/>
 </dict>
 </plist>

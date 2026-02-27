@@ -57,8 +57,6 @@ struct ScreenTimeSelectAppsContentView: View {
     }
 }
 
-struct ScreenTimeSelectAppsContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ScreenTimeSelectAppsContentView(model: ScreenTimeSelectAppsModel())
-    }
+#Preview {
+    ScreenTimeSelectAppsContentView(model: ScreenTimeSelectAppsModel())
 }

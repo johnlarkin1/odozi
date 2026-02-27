@@ -1,5 +1,6 @@
 import Foundation
 
+#if DEBUG
 struct SampleData {
     static var entries: [DailyEntry] {
         let calendar = Calendar.current
@@ -52,3 +53,4 @@ struct SampleData {
         }
     }
 }
+#endif

@@ -1,5 +1,8 @@
 import SwiftUI
 import SwiftData
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DailyEntry")
 
 @Observable
 final class DailyEntryViewModel {
@@ -26,7 +29,7 @@ final class DailyEntryViewModel {
                 submissionMessage = "Already completed entry for today."
             }
         } catch {
-            print("Failed to fetch data for today: \(error)")
+            logger.error("Failed to fetch today's entry: \(error)")
         }
     }
 
@@ -99,7 +102,7 @@ final class DailyEntryViewModel {
             hasSubmittedData = true
             submissionMessage = "Successfully saved today's entry."
         } catch {
-            print("Failed to save or update the entry: \(error)")
+            logger.error("Failed to save entry: \(error)")
         }
     }
 

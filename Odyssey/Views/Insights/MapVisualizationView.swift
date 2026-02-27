@@ -10,17 +10,19 @@ struct MapVisualizationView: View {
         VStack(spacing: 0) {
             Map(position: $position) {
                 ForEach(locatedEntries, id: \.date) { entry in
-                    Annotation(entry.date.shortFormatted, coordinate: CLLocationCoordinate2D(
-                        latitude: entry.latitude!,
-                        longitude: entry.longitude!
-                    )) {
-                        Circle()
-                            .fill(entry.moodGradientColor)
-                            .frame(width: 12, height: 12)
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white.opacity(0.5), lineWidth: 1)
-                            )
+                    if let lat = entry.latitude, let lng = entry.longitude {
+                        Annotation(entry.date.shortFormatted, coordinate: CLLocationCoordinate2D(
+                            latitude: lat,
+                            longitude: lng
+                        )) {
+                            Circle()
+                                .fill(entry.moodGradientColor)
+                                .frame(width: 12, height: 12)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                                )
+                        }
                     }
                 }
             }
