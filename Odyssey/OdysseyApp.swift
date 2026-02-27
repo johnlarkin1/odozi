@@ -50,7 +50,7 @@ struct OdysseyApp: App {
     }
 
     func requestLocationAccess() {
-        locationManager.requestAlwaysAuthorization()
+        locationManager.requestWhenInUseAuthorization()
     }
 
     func requestScreenTimeAccess() {
