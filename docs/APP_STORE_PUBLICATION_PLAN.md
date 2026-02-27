@@ -41,7 +41,7 @@ The app uses `com.apple.developer.family-controls` across all 3 targets (main ap
 ---
 
 ### 2. Create Privacy Manifest (PrivacyInfo.xcprivacy)
-**Status:** ❌ Missing
+**Status:** ✅ Created
 **Risk:** Auto-rejection since May 1, 2024
 **Timeline:** 1 hour
 
@@ -81,7 +81,7 @@ Apple requires a privacy manifest file declaring API usage for apps using requir
 ---
 
 ### 3. Fix Photo Library Permission
-**Status:** ⚠️ Overly permissive
+**Status:** ✅ Fixed
 **Risk:** Medium — may trigger review questions
 **Timeline:** 5 minutes
 
@@ -94,7 +94,7 @@ The app requests `.readWrite` permission for photos but never writes to the libr
 ---
 
 ### 4. Fix Location Authorization Flow
-**Status:** ⚠️ Non-standard
+**Status:** ✅ Fixed
 **Risk:** Medium — may require revision during review
 **Timeline:** 15 minutes
 
@@ -108,7 +108,7 @@ The app requests `requestAlwaysAuthorization()` immediately on launch. Apple exp
 ---
 
 ### 5. Fix Hardcoded Version String
-**Status:** ❌ Mismatch
+**Status:** ✅ Fixed
 **Risk:** Low — cosmetic but looks sloppy
 **Timeline:** 5 minutes
 
@@ -175,19 +175,13 @@ guard let lat = entry.latitude, let lng = entry.longitude else { continue }
 ---
 
 ### 8. Wire Up ScreenTime App Selection Persistence
-**Status:** ❌ Feature is non-functional
+**Status:** ✅ Already implemented
 **Risk:** User selects apps but choices aren't saved
 **Timeline:** 10 minutes
 
-`ScreenTimeSelectAppsModel` has `saveSelection()` method but it's never called.
+`ScreenTimeSelectAppsModel` has `saveSelection()` method and it's already wired in via `.onChange()` on `activitySelection`.
 
-**Action:**
-```swift
-// ScreenTimeSelectAppsContentView.swift
-.onChange(of: model.activitySelection) { oldValue, newValue in
-    model.saveSelection()
-}
-```
+**Note:** This was flagged during codebase audit but the implementation was already in place. No action needed.
 
 ---
 

@@ -1,5 +1,8 @@
 import SwiftData
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundSnapshot")
 
 actor BackgroundSnapshotService {
     private let locationService = LocationCaptureService()
@@ -42,7 +45,7 @@ actor BackgroundSnapshotService {
         do {
             try modelContext.save()
         } catch {
-            print("BackgroundSnapshotService: Failed to save: \(error)")
+            logger.error("Failed to save snapshot: \(error)")
         }
     }
 
@@ -64,7 +67,7 @@ actor BackgroundSnapshotService {
         do {
             return try await locationService.captureCurrentLocation()
         } catch {
-            print("BackgroundSnapshotService: Location capture failed: \(error)")
+            logger.error("Location capture failed: \(error)")
             return nil
         }
     }

@@ -37,8 +37,6 @@ struct LottieView: UIViewRepresentable {
     }
 }
 
-struct LottieView_Previews: PreviewProvider {
-    static var previews: some View {
-        LottieView(lottieFile: "rotating_earth")
-    }
+#Preview {
+    LottieView(lottieFile: "rotating_earth")
 }

@@ -7,7 +7,7 @@ actor PhotoLibraryService {
     private init() {}
 
     func requestAuthorization() async -> PHAuthorizationStatus {
-        await PHPhotoLibrary.requestAuthorization(for: .readOnly)
+        await PHPhotoLibrary.requestAuthorization(for: .readWrite)
     }
 
     func fetchAssets(for date: Date) -> [PHAsset] {

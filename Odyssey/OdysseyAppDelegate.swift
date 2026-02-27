@@ -2,17 +2,22 @@ import Foundation
 import BackgroundTasks
 import UIKit
 import SwiftData
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundTasks")
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Register primary snapshot task (8 PM)
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.snapshot", using: nil) { task in
-            self.handleSnapshot(task: task as! BGAppRefreshTask)
+            guard let refreshTask = task as? BGAppRefreshTask else { return }
+            self.handleSnapshot(task: refreshTask)
         }
 
         // Register fallback processing task (2 AM)
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.processing", using: nil) { task in
-            self.handleProcessing(task: task as! BGProcessingTask)
+            guard let processingTask = task as? BGProcessingTask else { return }
+            self.handleProcessing(task: processingTask)
         }
 
         scheduleSnapshotTask()
@@ -34,7 +39,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 await service.captureSnapshot(modelContext: context)
                 task.setTaskCompleted(success: true)
             } catch {
-                print("Snapshot failed: \(error)")
+                logger.error("Snapshot task failed: \(error)")
                 task.setTaskCompleted(success: false)
             }
         }
@@ -60,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            print("Could not schedule snapshot task: \(error)")
+            logger.error("Could not schedule snapshot task: \(error)")
         }
     }
 
@@ -77,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
                 await service.captureSnapshot(modelContext: context)
                 task.setTaskCompleted(success: true)
             } catch {
-                print("Processing failed: \(error)")
+                logger.error("Processing task failed: \(error)")
                 task.setTaskCompleted(success: false)
             }
         }
@@ -105,7 +110,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         do {
             try BGTaskScheduler.shared.submit(request)
         } catch {
-            print("Could not schedule processing task: \(error)")
+            logger.error("Could not schedule processing task: \(error)")
         }
     }
 }
