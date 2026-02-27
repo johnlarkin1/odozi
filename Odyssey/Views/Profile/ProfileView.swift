@@ -37,7 +37,8 @@ struct ProfileView: View {
                     HStack {
                         Text("Version")
                         Spacer()
-                        Text("2.0")
+                        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+                        Text(appVersion)
                             .foregroundStyle(.secondary)
                     }
                 }
