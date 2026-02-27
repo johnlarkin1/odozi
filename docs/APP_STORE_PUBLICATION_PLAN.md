@@ -200,22 +200,20 @@ Currently: `fatalError("Failed to create ModelContainer")` crashes on launch.
 ---
 
 ### 10. Create Privacy Policy
-**Status:** ❌ Missing
-**Risk:** Submission blocked without URL
-**Timeline:** 1-2 hours
+**Status:** ✅ Created
+**URL:** https://johnlarkin1.github.io/assets/html/odyssey/privacy.html
+**Timeline:** Complete
 
-Required by App Store Connect. Must disclose:
+Privacy policy covers both local-only and optional cloud backup (PR #11) modes:
 - Location collection (daily snapshot via reverse geocoding)
-- HealthKit data (steps, walking distance, sleep)
+- HealthKit data (steps, walking distance, sleep) — includes required language: "Health data is not used for advertising or sold to third parties"
 - Screen Time data (for wellness insights)
-- Photo library access
-- Data stored locally on device only (no cloud, no sharing)
-- **Critical for HealthKit:** "Health data is not used for advertising or sold to third parties"
+- Photo library access (read-only)
+- Data stored locally by default; optional E2E encrypted cloud backup when account is created
+- Account deletion path clearly documented (GDPR compliant)
+- Contact information: john@johnjlarkin.com + GitHub issues link
 
-**Recommendation:** Host on GitHub Pages (free, easy)
-- Create `docs/privacy-policy.html`
-- Reference in App Store Connect
-- Example URL: `https://johnlarkin.github.io/odyssey/privacy`
+Hosted on GitHub Pages at johnlarkin1.github.io. Page is mobile-friendly and self-contained HTML.
 
 ---
 
@@ -316,6 +314,82 @@ ITSAppUsesNonExemptEncryption = NO
 
 ---
 
+## 📝 DRAFTED METADATA
+
+### App Description (4000 chars max — plain text)
+
+```
+Odyssey is your daily companion for mental wellness — a guided journaling app that meets
+you where you are and helps you understand where you've been.
+
+GUIDED DAILY JOURNALING
+Each day, Odyssey walks you through a thoughtful 8-step flow: rate your mood, describe
+how you feel in one word, log sleep quality, note what you're grateful for, celebrate a
+small win, name a tension you're carrying, write freely in your journal, and track your
+drinks. Every step is optional — go as deep or as light as feels right.
+
+PASSIVE CONTEXT, AUTOMATIC
+Odyssey quietly captures context so your entries are richer without extra effort:
+• Location — once per day, it notes where you are (city/state/country)
+• Health — steps walked, distance traveled, and sleep hours from Apple Health
+• Screen Time — daily app usage and pickup count for digital wellness awareness
+• Photos — surfaces your photos from the day to spark memories
+
+BEAUTIFUL INSIGHTS
+Your data becomes a story. Explore:
+• Mood trend charts to see how you feel over time
+• A color-coded map of everywhere your journey has taken you
+• Streak tracking to build consistency
+• A word cloud distilled from your journal entries
+• A Spotify Wrapped-style Year in Review — shareable cards celebrating your year
+
+PRIVACY FIRST
+Your journal is deeply personal. Odyssey is built with that in mind:
+• Everything stays on your device by default — no account required
+• Optional encrypted cloud backup with end-to-end encryption (your key never leaves your device)
+• Health data is never used for advertising or sold to third parties
+• No tracking, no ads, ever
+
+YEAR IN REVIEW
+At the end of each year, Odyssey generates beautiful shareable cards summarizing your
+year: your top mood, most-visited places, health milestones, most-used words, and more.
+Share your journey, keep the memories.
+
+---
+Odyssey requires iOS 17.0 or later.
+Health and Screen Time features require a physical device.
+```
+
+### Keywords (100 chars max)
+
+```
+journal,mood,tracker,wellness,mental health,gratitude,mindful,diary,reflection,self-care,daily,log
+```
+(95 characters — within limit)
+
+### Privacy Nutrition Labels
+
+| Data Type | Category | Usage | Linked to User? |
+|-----------|----------|-------|----------------|
+| Health & Fitness | Steps, sleep, walking distance | App functionality | No (local) / Yes (cloud backup) |
+| Location | City, state, country, coordinates | App functionality | No (local) / Yes (cloud backup) |
+| User Content | Journal entries, mood, feelings | App functionality | No (local) / Yes (cloud backup) |
+| Identifiers | Account ID (cloud backup only) | App functionality | Yes (cloud backup only) |
+
+**All Data:** "Data Not Used for Tracking" ✅
+
+**For v1.0 submission (initial release, local-only):**
+- Declare all as "Data Not Linked to You"
+- Update to "Data Linked to You" (user content + identifiers) if cloud backup feature is included at launch
+
+### Support URL
+
+```
+https://github.com/johnlarkin1/odyssey/issues
+```
+
+---
+
 ## 🧪 TESTING BEFORE SUBMISSION
 
 ### Unit Tests
@@ -405,7 +479,7 @@ Total estimated time: 3-4 hours
 - [ ] FamilyControls entitlement approved
 - [ ] PrivacyInfo.xcprivacy created
 - [ ] All critical code fixes applied
-- [ ] Privacy policy published
+- [x] Privacy policy published — https://johnlarkin1.github.io/assets/html/odyssey/privacy.html
 - [ ] All unit tests passing
 - [ ] Manual testing on physical device complete
 
