@@ -110,6 +110,29 @@ final class DailyEntryViewModel {
         (0..<7).reversed().map { fetchEntry(for: Date().daysAgo($0)) }
     }
 
+    func updateLocation() async throws {
+        let today = Calendar.current.startOfDay(for: Date())
+        let entry: DailyEntry
+        if let existing = fetchTodayEntry() {
+            entry = existing
+        } else {
+            entry = DailyEntry(date: today)
+            modelContext.insert(entry)
+        }
+
+        let service = LocationCaptureService()
+        let snapshot = try await service.captureCurrentLocation()
+
+        entry.latitude = snapshot.latitude
+        entry.longitude = snapshot.longitude
+        entry.city = snapshot.city
+        entry.state = snapshot.state
+        entry.country = snapshot.country
+        entry.updatedAt = Date()
+
+        try modelContext.save()
+    }
+
     var currentStreak: Int {
         let entries = fetchAllEntries().sorted { $0.date > $1.date }
         let calendar = Calendar.current

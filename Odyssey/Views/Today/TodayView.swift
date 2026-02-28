@@ -6,6 +6,7 @@ struct TodayView: View {
     @State private var showingGuidedFlow = false
     @State private var viewModel: DailyEntryViewModel?
     @State private var animateIn = false
+    @State private var isUpdatingLocation = false
 
     var body: some View {
         NavigationStack {
@@ -93,24 +94,10 @@ struct TodayView: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
 
-                if let entry = viewModel?.fetchTodayEntry(),
-                   let city = entry.city {
-                    Text("·")
-                        .foregroundStyle(.secondary)
-                    HStack(spacing: 4) {
-                        Image(systemName: "location.fill")
-                            .font(.caption2)
-                        Text(city)
-                            .font(.subheadline)
-                    }
+                Text("·")
                     .foregroundStyle(.secondary)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule()
-                            .fill(Color.white.opacity(0.08))
-                    )
-                }
+
+                locationCapsule
             }
         }
         .frame(maxWidth: .infinity, alignment: .leading)
@@ -118,6 +105,46 @@ struct TodayView: View {
         .opacity(animateIn ? 1 : 0)
         .offset(y: animateIn ? 0 : -10)
         .animation(.easeOut(duration: 0.5), value: animateIn)
+    }
+
+    // MARK: - Location Capsule
+
+    private var locationCapsule: some View {
+        Button {
+            Task {
+                isUpdatingLocation = true
+                defer { isUpdatingLocation = false }
+                try? await viewModel?.updateLocation()
+            }
+        } label: {
+            HStack(spacing: 4) {
+                if isUpdatingLocation {
+                    ProgressView()
+                        .controlSize(.mini)
+                        .tint(.secondary)
+                } else if let entry = viewModel?.fetchTodayEntry(), let city = entry.city {
+                    Image(systemName: "location.fill")
+                        .font(.caption2)
+                    Text(city)
+                        .font(.subheadline)
+                    Image(systemName: "arrow.clockwise")
+                        .font(.caption2)
+                } else {
+                    Image(systemName: "location.fill")
+                        .font(.caption2)
+                    Text("Add location")
+                        .font(.subheadline)
+                }
+            }
+            .foregroundStyle(.secondary)
+            .padding(.horizontal, 8)
+            .padding(.vertical, 4)
+            .background(
+                Capsule()
+                    .fill(Color.white.opacity(0.08))
+            )
+        }
+        .disabled(isUpdatingLocation)
     }
 
     // MARK: - Background
