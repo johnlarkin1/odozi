@@ -12,6 +12,7 @@ struct JournalPromptCard: View {
         ) {
             TextEditor(text: $text)
                 .font(.body)
+                .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)
                 .padding(16)
                 .frame(maxHeight: .infinity)
