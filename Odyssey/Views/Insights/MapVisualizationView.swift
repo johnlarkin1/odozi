@@ -1,10 +1,14 @@
 import SwiftUI
+import SwiftData
 import MapKit
 
 struct MapVisualizationView: View {
     let entries: [DailyEntry]
 
+    @Environment(\.modelContext) private var modelContext
     @State private var position: MapCameraPosition = .automatic
+    @State private var isUpdatingLocation = false
+    @State private var locationViewModel: DailyEntryViewModel?
 
     var body: some View {
         VStack(spacing: 0) {
@@ -60,6 +64,30 @@ struct MapVisualizationView: View {
         }
         .navigationTitle("My Map")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear {
+            if locationViewModel == nil {
+                locationViewModel = DailyEntryViewModel(modelContext: modelContext)
+            }
+        }
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    Task {
+                        isUpdatingLocation = true
+                        defer { isUpdatingLocation = false }
+                        try? await locationViewModel?.updateLocation()
+                    }
+                } label: {
+                    if isUpdatingLocation {
+                        ProgressView()
+                            .controlSize(.mini)
+                    } else {
+                        Image(systemName: "location.fill")
+                    }
+                }
+                .disabled(isUpdatingLocation)
+            }
+        }
     }
 
     private var locatedEntries: [DailyEntry] {
