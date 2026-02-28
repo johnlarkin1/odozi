@@ -12,6 +12,7 @@ struct GratitudePromptCard: View {
         ) {
             TextEditor(text: $text)
                 .font(.body)
+                .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)
                 .padding(16)
                 .frame(minHeight: 150)
