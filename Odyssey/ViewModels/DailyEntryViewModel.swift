@@ -106,6 +106,10 @@ final class DailyEntryViewModel {
         }
     }
 
+    func fetchWeekEntries() -> [DailyEntry?] {
+        (0..<7).reversed().map { fetchEntry(for: Date().daysAgo($0)) }
+    }
+
     var currentStreak: Int {
         let entries = fetchAllEntries().sorted { $0.date > $1.date }
         let calendar = Calendar.current
