@@ -67,7 +67,10 @@
 		9EA53D310D40CFEBA088822D /* ProfileView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EACD1AF7614D69F2DEDCF73C /* ProfileView.swift */; };
 		A2208286244EE8D17116DCAA /* ReviewBestDayCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = BBC6E83295929A28AAC6929A /* ReviewBestDayCard.swift */; };
 		A94CC4B44A3E708D97B183D5 /* ReviewMoodCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97569FD9C2589433BE90F633 /* ReviewMoodCard.swift */; };
-		AA99254DAC3D8CFE03004404 /* TodayEntryStatusCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5A37458B27DCD39C80655FBD /* TodayEntryStatusCard.swift */; };
+		DD0001F1F1F1F1F1F1F1F1F1 /* MoodOrbView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0005F5F5F5F5F5F5F5F5F5 /* MoodOrbView.swift */; };
+		DD0002F2F2F2F2F2F2F2F2F2 /* WeekPulseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0006F6F6F6F6F6F6F6F6F6 /* WeekPulseView.swift */; };
+		DD0003F3F3F3F3F3F3F3F3F3 /* VitalsGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0007F7F7F7F7F7F7F7F7F7 /* VitalsGridView.swift */; };
+		DD0004F4F4F4F4F4F4F4F4F4 /* ReflectionPeekCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0008F8F8F8F8F8F8F8F8F8 /* ReflectionPeekCard.swift */; };
 		AB8D49FB59B1F5B518D76BBD /* MapVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2827F5D60870DE3D25E38D6B /* MapVisualizationView.swift */; };
 		B41F40A443668C0907C85285 /* PromptCardContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25CC841292320D80C1A2C260 /* PromptCardContainer.swift */; };
 		BB7CE12E77673D9BA711ADA5 /* JournalCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B705FB6F2CC3B61A28E077 /* JournalCalendarView.swift */; };
@@ -204,7 +207,10 @@
 		4D0D7FE6859B631359A8FC77 /* DailyEntry+Computed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "DailyEntry+Computed.swift"; sourceTree = "<group>"; };
 		4E0E78DC1B6B94D9A9D78AB2 /* PromptResponses.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PromptResponses.swift; sourceTree = "<group>"; };
 		5357AA89DC0B9F0A1AE8A7CF /* FeelingPromptCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeelingPromptCard.swift; sourceTree = "<group>"; };
-		5A37458B27DCD39C80655FBD /* TodayEntryStatusCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayEntryStatusCard.swift; sourceTree = "<group>"; };
+		DD0005F5F5F5F5F5F5F5F5F5 /* MoodOrbView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoodOrbView.swift; sourceTree = "<group>"; };
+		DD0006F6F6F6F6F6F6F6F6F6 /* WeekPulseView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeekPulseView.swift; sourceTree = "<group>"; };
+		DD0007F7F7F7F7F7F7F7F7F7 /* VitalsGridView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = VitalsGridView.swift; sourceTree = "<group>"; };
+		DD0008F8F8F8F8F8F8F8F8F8 /* ReflectionPeekCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReflectionPeekCard.swift; sourceTree = "<group>"; };
 		5DAA03677F50ED2C50A8140C /* PromptStep.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PromptStep.swift; sourceTree = "<group>"; };
 		5F457139C6883C57D07C0CBD /* MoodTrendView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoodTrendView.swift; sourceTree = "<group>"; };
 		5F47CA2315DEC2DCC4804FD0 /* JournalViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JournalViewModel.swift; sourceTree = "<group>"; };
@@ -621,7 +627,10 @@
 			isa = PBXGroup;
 			children = (
 				3BC146E7E0CF885A599B5E88 /* TodayView.swift */,
-				5A37458B27DCD39C80655FBD /* TodayEntryStatusCard.swift */,
+				DD0005F5F5F5F5F5F5F5F5F5 /* MoodOrbView.swift */,
+				DD0006F6F6F6F6F6F6F6F6F6 /* WeekPulseView.swift */,
+				DD0007F7F7F7F7F7F7F7F7F7 /* VitalsGridView.swift */,
+				DD0008F8F8F8F8F8F8F8F8F8 /* ReflectionPeekCard.swift */,
 			);
 			name = Today;
 			path = Today;
@@ -933,7 +942,10 @@
 				F6B0C354AD19D6E7FB5A0CDD /* MainTabView.swift in Sources */,
 				5C0011028551AE348DFCB905 /* ScreenTimeDataExtractor.swift in Sources */,
 				86BDF8A797CD83C002B16678 /* TodayView.swift in Sources */,
-				AA99254DAC3D8CFE03004404 /* TodayEntryStatusCard.swift in Sources */,
+				DD0001F1F1F1F1F1F1F1F1F1 /* MoodOrbView.swift in Sources */,
+				DD0002F2F2F2F2F2F2F2F2F2 /* WeekPulseView.swift in Sources */,
+				DD0003F3F3F3F3F3F3F3F3F3 /* VitalsGridView.swift in Sources */,
+				DD0004F4F4F4F4F4F4F4F4F4 /* ReflectionPeekCard.swift in Sources */,
 				DB892BA8245D80483C1616B3 /* JournalView.swift in Sources */,
 				BB7CE12E77673D9BA711ADA5 /* JournalCalendarView.swift in Sources */,
 				5FC58CD194D220AFA863E3D8 /* JournalEntryDetailView.swift in Sources */,
