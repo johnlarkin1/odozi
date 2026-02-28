@@ -110,6 +110,15 @@
 		5E6F7A8B9C0D1E2F3A4B5C6D /* JourneyTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* JourneyTimelineSlider.swift */; };
 		6F7A8B9C0D1E2F3A4B5C6D7E /* JourneyDayDetailCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F6A7B8C9D0E1F2A3B4C5D6E7 /* JourneyDayDetailCard.swift */; };
 		7A8B9C0D1E2F3A4B5C6D7E8F /* JourneyPhotoStrip.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7B8C9D0E1F2A3B4C5D6E7F8 /* JourneyPhotoStrip.swift */; };
+		EFE79CCE002E980F3CC030EF /* OnboardingStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36D032F82728817EC31D1363 /* OnboardingStep.swift */; };
+		068FF2F9C0C9853EEB3CEA71 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEE060056F4C48A4C0DE33C /* OnboardingViewModel.swift */; };
+		257D7F63F732AD440B963F34 /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5FC4D0C6A339D742CC7770 /* OnboardingFlowView.swift */; };
+		3AC5A7652FB2E7CFA8BD4566 /* OnboardingNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A739CE8449DECE5322E83B /* OnboardingNavigationBar.swift */; };
+		A7CB3A113B24BD5EEFA5ED6F /* WelcomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */; };
+		862298246F937A0B128FBFE2 /* LocationPermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = B79284B38FB476FF2DE2080B /* LocationPermissionCard.swift */; };
+		DA89AEE5DF90F58FAB21B7D5 /* HealthPermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = F31F03E7CEDD0CC2D388EB35 /* HealthPermissionCard.swift */; };
+		EBA10F16F72B615E5752B35A /* ScreenTimePermissionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */; };
+		6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -280,6 +289,15 @@
 		E5F6A7B8C9D0E1F2A3B4C5D6 /* JourneyTimelineSlider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyTimelineSlider.swift; sourceTree = "<group>"; };
 		F6A7B8C9D0E1F2A3B4C5D6E7 /* JourneyDayDetailCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyDayDetailCard.swift; sourceTree = "<group>"; };
 		A7B8C9D0E1F2A3B4C5D6E7F8 /* JourneyPhotoStrip.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyPhotoStrip.swift; sourceTree = "<group>"; };
+		36D032F82728817EC31D1363 /* OnboardingStep.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingStep.swift; sourceTree = "<group>"; };
+		AFEE060056F4C48A4C0DE33C /* OnboardingViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingViewModel.swift; sourceTree = "<group>"; };
+		1E5FC4D0C6A339D742CC7770 /* OnboardingFlowView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingFlowView.swift; sourceTree = "<group>"; };
+		C9A739CE8449DECE5322E83B /* OnboardingNavigationBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingNavigationBar.swift; sourceTree = "<group>"; };
+		CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeCard.swift; sourceTree = "<group>"; };
+		B79284B38FB476FF2DE2080B /* LocationPermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocationPermissionCard.swift; sourceTree = "<group>"; };
+		F31F03E7CEDD0CC2D388EB35 /* HealthPermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthPermissionCard.swift; sourceTree = "<group>"; };
+		8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenTimePermissionCard.swift; sourceTree = "<group>"; };
+		2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCompletionCard.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -427,6 +445,7 @@
 				292434A69490374EABCAAC1B /* InsightsViewModel.swift */,
 				81868973E39D9AF68D1C4E7A /* YearInReviewViewModel.swift */,
 				B2C3D4E5F6A7B8C9D0E1F2A3 /* JourneyExplorerViewModel.swift */,
+				AFEE060056F4C48A4C0DE33C /* OnboardingViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -568,6 +587,7 @@
 				24EA8FF0020FE6581C5A266C /* Components */,
 				51AA3D16B5575ECA00E604C0 /* Insights */,
 				73F60BE852C4B53914A73AD0 /* YearInReview */,
+				F467D01D692B3A88E4002CFB /* Onboarding */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -582,6 +602,7 @@
 				404E7870D5E38DE543E0ED2C /* SampleData.swift */,
 				5DAA03677F50ED2C50A8140C /* PromptStep.swift */,
 				4E0E78DC1B6B94D9A9D78AB2 /* PromptResponses.swift */,
+				36D032F82728817EC31D1363 /* OnboardingStep.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -643,6 +664,30 @@
 			);
 			name = Profile;
 			path = Profile;
+			sourceTree = "<group>";
+		};
+		36EBE44FD7895D0D36777D7D /* Cards */ = {
+			isa = PBXGroup;
+			children = (
+				CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */,
+				B79284B38FB476FF2DE2080B /* LocationPermissionCard.swift */,
+				F31F03E7CEDD0CC2D388EB35 /* HealthPermissionCard.swift */,
+				8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */,
+				2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */,
+			);
+			name = Cards;
+			path = Cards;
+			sourceTree = "<group>";
+		};
+		F467D01D692B3A88E4002CFB /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				1E5FC4D0C6A339D742CC7770 /* OnboardingFlowView.swift */,
+				C9A739CE8449DECE5322E83B /* OnboardingNavigationBar.swift */,
+				36EBE44FD7895D0D36777D7D /* Cards */,
+			);
+			name = Onboarding;
+			path = Onboarding;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -938,6 +983,15 @@
 				5E6F7A8B9C0D1E2F3A4B5C6D /* JourneyTimelineSlider.swift in Sources */,
 				6F7A8B9C0D1E2F3A4B5C6D7E /* JourneyDayDetailCard.swift in Sources */,
 				7A8B9C0D1E2F3A4B5C6D7E8F /* JourneyPhotoStrip.swift in Sources */,
+				EFE79CCE002E980F3CC030EF /* OnboardingStep.swift in Sources */,
+				068FF2F9C0C9853EEB3CEA71 /* OnboardingViewModel.swift in Sources */,
+				257D7F63F732AD440B963F34 /* OnboardingFlowView.swift in Sources */,
+				3AC5A7652FB2E7CFA8BD4566 /* OnboardingNavigationBar.swift in Sources */,
+				A7CB3A113B24BD5EEFA5ED6F /* WelcomeCard.swift in Sources */,
+				862298246F937A0B128FBFE2 /* LocationPermissionCard.swift in Sources */,
+				DA89AEE5DF90F58FAB21B7D5 /* HealthPermissionCard.swift in Sources */,
+				EBA10F16F72B615E5752B35A /* ScreenTimePermissionCard.swift in Sources */,
+				6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
