@@ -1,25 +1,35 @@
 import SwiftUI
 import SwiftData
-import CoreLocation
-import FamilyControls
-import DeviceActivity
 import os
 
-private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Permissions")
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "App")
 
 @main
 struct OdysseyApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @Environment(\.scenePhase) private var scenePhase
+    @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
-    private let locationManager = CLLocationManager()
+    @State private var onboardingViewModel = OnboardingViewModel()
+
     let container: ModelContainer?
     let containerError: Error?
 
     init() {
         do {
-            container = try DataContainer.create()
+            let c = try DataContainer.create()
+            container = c
             containerError = nil
+
+            // Skip onboarding for returning users (existing entries = already using the app)
+            if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+                let context = ModelContext(c)
+                var descriptor = FetchDescriptor<DailyEntry>()
+                descriptor.fetchLimit = 1
+                if let count = try? context.fetchCount(descriptor), count > 0 {
+                    UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+                }
+            }
         } catch {
             container = nil
             containerError = error
@@ -30,79 +40,34 @@ struct OdysseyApp: App {
         WindowGroup {
             Group {
                 if let container {
-                    ContentView()
+                    if hasCompletedOnboarding {
+                        ContentView()
+                            .environment(\.colorScheme, .dark)
+                            .overlay {
+                                ScreenTimeDataExtractor()
+                            }
+                            .modelContainer(container)
+                    } else {
+                        OnboardingFlowView(
+                            viewModel: onboardingViewModel,
+                            onComplete: {
+                                hasCompletedOnboarding = true
+                            }
+                        )
                         .environment(\.colorScheme, .dark)
-                        .onAppear {
-                            requestPermissions()
-                        }
-                        .overlay {
-                            // Hidden Screen Time data extractor
-                            ScreenTimeDataExtractor()
-                        }
-                        .modelContainer(container)
+                    }
                 } else {
                     DataStoreErrorView(error: containerError)
                         .environment(\.colorScheme, .dark)
                 }
             }
             .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active, container != nil {
-                    // Foreground catch-up: capture snapshot if today's doesn't exist
+                if newPhase == .active, container != nil, hasCompletedOnboarding {
                     Task {
                         await foregroundCatchUp()
                     }
                 }
             }
-        }
-    }
-
-    func requestPermissions() {
-        requestLocationAccess()
-        requestScreenTimeAccess()
-        requestHealthKitAccess()
-    }
-
-    func requestLocationAccess() {
-        locationManager.requestWhenInUseAuthorization()
-    }
-
-    func requestScreenTimeAccess() {
-        let authorizationCenter = AuthorizationCenter.shared
-
-        Task {
-            do {
-                try await authorizationCenter.requestAuthorization(for: .individual)
-                logger.info("Screen Time API access granted.")
-                setupDeviceActivityMonitoring()
-            } catch {
-                logger.error("Screen Time API access error: \(error)")
-            }
-        }
-    }
-
-    func requestHealthKitAccess() {
-        guard HealthKitService.isAvailable else { return }
-        Task {
-            let service = HealthKitService()
-            try? await service.requestAuthorization()
-        }
-    }
-
-    private func setupDeviceActivityMonitoring() {
-        let schedule = DeviceActivitySchedule(
-            intervalStart: DateComponents(hour: 0, minute: 0, second: 0),
-            intervalEnd: DateComponents(hour: 23, minute: 59, second: 59),
-            repeats: true
-        )
-
-        let center = DeviceActivityCenter()
-        do {
-            try center.startMonitoring(
-                DeviceActivityName("Odyssey"),
-                during: schedule
-            )
-        } catch {
-            logger.error("Device activity monitoring setup failed: \(error)")
         }
     }
 
