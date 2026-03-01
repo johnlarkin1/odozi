@@ -1,5 +1,12 @@
 target/
 .git/
+.gitignore
+.github/
 .env
 .env.*
 !.env.example
+*.md
+LICENSE
+render.yaml
+Dockerfile
+.dockerignore
