@@ -34,6 +34,11 @@
 	<string>Odyssey surfaces photos from your library to enrich your journal entries with visual memories from each day.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>OdysseyAPIBaseURL</key>
 	<string>$(ODYSSEY_API_BASE_URL)</string>
 	<key>ClerkPublishableKey</key>
