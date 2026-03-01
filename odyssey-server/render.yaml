@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: odyssey-server
+    runtime: docker
+    dockerfilePath: ./odyssey-server/Dockerfile
+    dockerContext: ./odyssey-server
+    plan: starter
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: CLERK_JWKS_URL
+        sync: false
+      - key: PORT
+        value: "8080"

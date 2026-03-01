@@ -34,9 +34,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let snapshotTask = Task {
             do {
                 let container = try DataContainer.create()
-                let context = ModelContext(container)
                 let service = BackgroundSnapshotService()
-                await service.captureSnapshot(modelContext: context)
+                let data = await service.captureSnapshot()
+                await MainActor.run {
+                    applySnapshotData(data, to: container.mainContext)
+                }
                 task.setTaskCompleted(success: true)
             } catch {
                 logger.error("Snapshot task failed: \(error)")
@@ -77,9 +79,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         let processingTask = Task {
             do {
                 let container = try DataContainer.create()
-                let context = ModelContext(container)
                 let service = BackgroundSnapshotService()
-                await service.captureSnapshot(modelContext: context)
+                let data = await service.captureSnapshot()
+                await MainActor.run {
+                    applySnapshotData(data, to: container.mainContext)
+                }
                 task.setTaskCompleted(success: true)
             } catch {
                 logger.error("Processing task failed: \(error)")

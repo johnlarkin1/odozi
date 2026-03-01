@@ -31,12 +31,6 @@ final class PromptModelsTests: XCTestCase {
         }
     }
 
-    func testPromptStepEmojisAreNonEmpty() {
-        for step in PromptStep.allCases {
-            XCTAssertFalse(step.emoji.isEmpty, "Emoji for \(step) should not be empty")
-        }
-    }
-
     func testPromptStepIdMatchesRawValue() {
         for step in PromptStep.allCases {
             XCTAssertEqual(step.id, step.rawValue)

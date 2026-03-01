@@ -160,6 +160,7 @@
 		BB13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */; };
 		BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */; };
 		BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */; };
+		CC26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -380,6 +381,7 @@
 		AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
 		AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusBanner.swift; sourceTree = "<group>"; };
 		AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceTests.swift; sourceTree = "<group>"; };
+		DD26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainServiceAuthTokenTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -686,6 +688,7 @@
 				F59B20C772D1CA1B76EC90CE /* InsightsViewModelTests.swift */,
 				0585E2482D4675F4DB04679F /* YearInReviewServiceTests.swift */,
 				AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */,
+				DD26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift */,
 			);
 			path = OdysseyTests;
 			sourceTree = "<group>";
@@ -1236,6 +1239,7 @@
 				3F312C88F2726FCF109E1772 /* InsightsViewModelTests.swift in Sources */,
 				7A13B113ACA242C0132F0223 /* YearInReviewServiceTests.swift in Sources */,
 				BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */,
+				CC26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -10,6 +10,8 @@ struct AccountView: View {
     @State private var recoveryKey = ""
     @State private var showDeleteConfirmation = false
     @State private var showSignOutConfirmation = false
+    @State private var showDeleteError = false
+    @State private var deleteErrorMessage = ""
 
     var body: some View {
         List {
@@ -73,12 +75,22 @@ struct AccountView: View {
             Button("Cancel", role: .cancel) {}
             Button("Delete Everything", role: .destructive) {
                 Task {
-                    try? await authManager.deleteAccount()
-                    dismiss()
+                    do {
+                        try await authManager.deleteAccount()
+                        dismiss()
+                    } catch {
+                        deleteErrorMessage = error.localizedDescription
+                        showDeleteError = true
+                    }
                 }
             }
         } message: {
             Text("This will permanently delete your account and all cloud backups. Local data on this device will be preserved.")
+        }
+        .alert("Deletion Failed", isPresented: $showDeleteError) {
+            Button("OK", role: .cancel) {}
+        } message: {
+            Text(deleteErrorMessage)
         }
         .sheet(isPresented: $showRecoveryKey) {
             NavigationStack {
