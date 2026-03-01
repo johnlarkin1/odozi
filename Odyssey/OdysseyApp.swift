@@ -75,6 +75,7 @@ struct OdysseyApp: App {
                             }
                         )
                         .environment(\.colorScheme, .dark)
+                        .environment(authManager)
                     }
                 } else {
                     DataStoreErrorView(error: containerError)

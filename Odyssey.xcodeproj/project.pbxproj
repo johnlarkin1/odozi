@@ -71,6 +71,7 @@
 		61A069149CC6DEB6E87BDE4A /* ReviewSleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE8ACA4DCC1F853372C093F /* ReviewSleepCard.swift */; };
 		65C3C13A303A0D81A2B26DF4 /* YearInReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA0855F12557962C12FD4FF /* YearInReviewView.swift */; };
 		6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */; };
+		6C2A75E33587A55A135F6729 /* AccountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */; };
 		6C8DC5973DC4574CDAEEAC80 /* BackgroundSnapshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A90B323B0F5900D138A2D16 /* BackgroundSnapshotService.swift */; };
 		6DCF3B5C509F071495918097 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C7606A98FD1FA124B59887 /* DataContainer.swift */; };
 		6E5CB52F710C25300A8AA3E0 /* SparklineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9190F56F1CE3A8E94118F97 /* SparklineCard.swift */; };
@@ -242,6 +243,7 @@
 		2827F5D60870DE3D25E38D6B /* MapVisualizationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapVisualizationView.swift; sourceTree = "<group>"; };
 		292434A69490374EABCAAC1B /* InsightsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
 		2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCompletionCard.swift; sourceTree = "<group>"; };
+		2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountCard.swift; sourceTree = "<group>"; };
 		2C03FB89B768DE6859125995 /* MetricDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetricDetailView.swift; sourceTree = "<group>"; };
 		2C436272BF01B19F60611B86 /* GratitudePromptCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GratitudePromptCard.swift; sourceTree = "<group>"; };
 		2E95936DF27D22BD4FC4B7E4 /* HealthKitService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -513,6 +515,7 @@
 				B79284B38FB476FF2DE2080B /* LocationPermissionCard.swift */,
 				F31F03E7CEDD0CC2D388EB35 /* HealthPermissionCard.swift */,
 				8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */,
+				2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */,
 				2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */,
 			);
 			name = Cards;
@@ -1192,6 +1195,7 @@
 				DA89AEE5DF90F58FAB21B7D5 /* HealthPermissionCard.swift in Sources */,
 				EBA10F16F72B615E5752B35A /* ScreenTimePermissionCard.swift in Sources */,
 				6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */,
+				6C2A75E33587A55A135F6729 /* AccountCard.swift in Sources */,
 				04EB166CB7A7EC94EB5B8122 /* MetricDefinition.swift in Sources */,
 				1A346A475B0A0B8DFC6E7D4B /* TrendCalculator.swift in Sources */,
 				C40EA82B2FC208B343EFE930 /* CorrelationService.swift in Sources */,

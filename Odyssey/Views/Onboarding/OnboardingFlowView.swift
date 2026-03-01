@@ -49,9 +49,18 @@ struct OnboardingFlowView: View {
             HealthPermissionCard()
         case .screenTime:
             ScreenTimePermissionCard()
+        case .account:
+            AccountCard(
+                onCreateAccount: { handleCreateAccount() },
+                onKeepLocal: { viewModel.goToNext() }
+            )
         case .completion:
             OnboardingCompletionCard(onGetStarted: onComplete)
         }
+    }
+
+    private func handleCreateAccount() {
+        viewModel.beginAccountCreation()
     }
 
     private func handleEnable() {
