@@ -60,3 +60,6 @@ clean: ## Clean build artifacts
 
 resolve: ## Resolve Swift package dependencies
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -resolvePackageDependencies
+
+lint: ## Lint Swift source files with SwiftLint
+	swiftlint lint --strict
