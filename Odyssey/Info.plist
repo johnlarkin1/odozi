@@ -34,5 +34,9 @@
 	<string>Odyssey surfaces photos from your library to enrich your journal entries with visual memories from each day.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
+	<key>OdysseyAPIBaseURL</key>
+	<string>$(ODYSSEY_API_BASE_URL)</string>
+	<key>ClerkPublishableKey</key>
+	<string>$(CLERK_PUBLISHABLE_KEY)</string>
 </dict>
 </plist>

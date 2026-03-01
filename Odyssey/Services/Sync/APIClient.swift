@@ -27,13 +27,12 @@ enum APIError: Error, LocalizedError {
 }
 
 actor APIClient {
-    // TODO: Replace with your Cloudflare Worker URL
     private let baseURL: String
     private let session: URLSession
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
 
-    init(baseURL: String = "https://odyssey-server.onrender.com") {
+    init(baseURL: String = ServerConfiguration.baseURL) {
         self.baseURL = baseURL
         self.session = URLSession.shared
         self.encoder = JSONEncoder()
