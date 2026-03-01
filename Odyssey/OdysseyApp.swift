@@ -1,5 +1,6 @@
 import SwiftUI
 import SwiftData
+import ClerkKit
 import os
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "App")
@@ -19,6 +20,11 @@ struct OdysseyApp: App {
     let containerError: Error?
 
     init() {
+        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+            Clerk.configure(publishableKey: ClerkConfiguration.publishableKey)
+            AuthManager.clerkConfigured = true
+        }
+
         do {
             let c = try DataContainer.create()
             container = c

@@ -1,5 +1,6 @@
 import Foundation
 import SwiftUI
+import ClerkKit
 
 enum AuthStrategy {
     case apple
@@ -38,6 +39,8 @@ struct ClerkUser {
 @MainActor
 @Observable
 final class AuthManager {
+    nonisolated(unsafe) static var clerkConfigured = false
+
     var isSignedIn: Bool = false
     var user: ClerkUser?
     var sessionToken: String?
@@ -52,40 +55,50 @@ final class AuthManager {
         isLoading = true
         defer { isLoading = false }
 
-        // Restore token from Keychain
         if let storedToken = try? KeychainService.retrieveAuthToken() {
             sessionToken = storedToken
         }
 
-        // TODO: Add Clerk iOS SDK via SPM, then uncomment:
-        // import ClerkSDK
-        // await Clerk.shared.load()
-        // if let clerkUser = Clerk.shared.user {
-        //     isSignedIn = true
-        //     user = mapClerkUser(clerkUser)
-        //     await refreshTokenIfNeeded()
-        // }
+        guard Self.clerkConfigured else { return }
+
+        if let clerkUser = Clerk.shared.user {
+            isSignedIn = true
+            user = mapClerkUser(clerkUser)
+            await refreshTokenIfNeeded()
+        }
     }
 
     // MARK: - Authentication
 
     func signIn(strategy: AuthStrategy) async throws {
+        guard Self.clerkConfigured else { return }
+
         isLoading = true
         error = nil
         defer { isLoading = false }
 
-        // TODO: Add Clerk iOS SDK via SPM, then implement:
-        // switch strategy {
-        // case .apple:
-        //     let signIn = try await SignIn.create(strategy: .idToken(provider: .apple, idToken: appleIDToken))
-        // case .google:
-        //     try await SignIn.create(strategy: .oauth(.google))
-        // }
-        // isSignedIn = true
-        // user = mapClerkUser(Clerk.shared.user)
-        // if let token = await refreshTokenIfNeeded() {
-        //     try KeychainService.storeAuthToken(token)
-        // }
+        do {
+            switch strategy {
+            case .apple:
+                try await Clerk.shared.auth.signInWithApple()
+            case .google:
+                try await Clerk.shared.auth.signInWithOAuth(provider: .google)
+            }
+
+            guard let clerkUser = Clerk.shared.user else {
+                throw AuthError.serverError("Sign-in succeeded but no user returned")
+            }
+
+            isSignedIn = true
+            user = mapClerkUser(clerkUser)
+
+            if let token = await refreshTokenIfNeeded() {
+                try? KeychainService.storeAuthToken(token)
+            }
+        } catch let clerkError {
+            error = clerkError.localizedDescription
+            throw clerkError
+        }
     }
 
     func signUp(strategy: AuthStrategy) async throws {
@@ -97,8 +110,10 @@ final class AuthManager {
         isLoading = true
         defer { isLoading = false }
 
-        // TODO: Add Clerk iOS SDK via SPM, then uncomment:
-        // try? await Clerk.shared.signOut()
+        if Self.clerkConfigured {
+            try? await Clerk.shared.auth.signOut()
+        }
+
         isSignedIn = false
         user = nil
         sessionToken = nil
@@ -107,13 +122,16 @@ final class AuthManager {
 
     @discardableResult
     func refreshTokenIfNeeded() async -> String? {
-        // TODO: Add Clerk iOS SDK via SPM, then uncomment:
-        // if let session = Clerk.shared.session {
-        //     if let tokenResource = try? await session.getToken() {
-        //         sessionToken = tokenResource.jwt
-        //         try? KeychainService.storeAuthToken(tokenResource.jwt)
-        //     }
-        // }
+        guard Self.clerkConfigured else { return sessionToken }
+
+        do {
+            if let token = try await Clerk.shared.auth.getToken() {
+                sessionToken = token
+                try? KeychainService.storeAuthToken(token)
+            }
+        } catch {
+            // Token refresh failed — return cached token
+        }
         return sessionToken
     }
 
@@ -134,13 +152,26 @@ final class AuthManager {
             throw AuthError.serverError("Failed to delete account: \(error.localizedDescription)")
         }
 
-        // TODO: Add Clerk iOS SDK via SPM, then uncomment:
-        // try? await Clerk.shared.signOut()
+        if Self.clerkConfigured {
+            try? await Clerk.shared.auth.signOut()
+        }
 
         // Clear local auth state
         isSignedIn = false
         user = nil
         sessionToken = nil
         try? KeychainService.deleteAuthToken()
+    }
+
+    // MARK: - Helpers
+
+    private func mapClerkUser(_ clerkUser: ClerkKit.User) -> ClerkUser {
+        ClerkUser(
+            id: clerkUser.id,
+            email: clerkUser.emailAddresses.first?.emailAddress,
+            firstName: clerkUser.firstName,
+            lastName: clerkUser.lastName,
+            imageURL: URL(string: clerkUser.imageUrl)
+        )
     }
 }
