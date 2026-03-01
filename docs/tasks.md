@@ -1,81 +1,84 @@
 # Odyssey — Outstanding Work Breakdown
 
-Date: 2026-03-01
+Date: 2026-03-01 (last updated)
 
-> Generated from a full repo audit on 2026-03-01, post-merge of PR #11 (auth + cloud backup infrastructure).
-> Findings from 5 parallel audits: Auth/Security, Data Flow, Backend API, UI/Onboarding, Test Coverage & Code Quality.
+> Generated from a full repo audit on 2026-03-01, post-merge of PR #11.
+> Updated after completion of P0 critical fixes + Rust backend rewrite (PRs #25–#30).
+
+---
+
+## Completed
+
+### P0-1. Wire up Clerk SDK authentication — PARTIALLY DONE
+- [x] `deleteAccount()` calls server DELETE /account before clearing local state
+- [x] `refreshTokenIfNeeded()` wired with Keychain persistence
+- [x] Removed unused `emailPassword` auth strategy
+- [x] `ClerkConfiguration.swift` reads publishable key from xcconfig/Info.plist
+- [ ] **Remaining:** Add Clerk iOS SDK via SPM in Xcode
+- [ ] **Remaining:** Implement `signIn(strategy:)` for Apple + Google using Clerk SDK
+- [ ] **Remaining:** Implement `signUp(strategy:)` for Apple + Google using Clerk SDK
+- [ ] **Remaining:** Implement `signOut()` with Clerk SDK session revocation
+- [ ] **Remaining:** Test end-to-end auth flow on device
+
+### P0-2. Fix SwiftData concurrency violations — DONE
+- [x] Added `@MainActor` to `AuthManager`, `SyncService`, `DailyEntryViewModel`, `GuidedPromptViewModel`
+- [x] Refactored `BackgroundSnapshotService` to return `SnapshotData` (Sendable) instead of taking `ModelContext`
+- [x] Updated `OdysseyApp.swift` and `OdysseyAppDelegate.swift` callers
+
+### P0-3. Persist auth token in Keychain — DONE
+- [x] Added `storeAuthToken`, `retrieveAuthToken`, `deleteAuthToken` to `KeychainService`
+- [x] Wired into `AuthManager` (initialize, signOut, deleteAccount)
+- [x] Tests passing (`KeychainServiceAuthTokenTests.swift`)
+
+### P0-4. Backend compilation error — RESOLVED (old TS backend replaced)
+- [x] Entire TypeScript/Cloudflare Workers backend replaced with Rust/Axum
+
+### P0-5. Account deletion must purge server-side data — DONE
+- [x] `deleteAccount()` calls `APIClient.deleteAccount(token:)` before clearing local state
+- [x] `AccountView` shows error if server deletion fails
+- [x] User stays signed in on failure so they can retry
+
+### P0-6. Real rate limiting — DONE
+- [x] IP-based rate limiter (60 req/60s) in Rust backend
+- [x] Old in-memory Cloudflare Workers rate limiter eliminated
+
+### Backend Rewrite — DONE
+- [x] Rust/Axum backend (`odyssey-server/`) deployed to Render
+- [x] Clerk JWT verification middleware (RS256, JWKS auto-refresh)
+- [x] Entry CRUD routes (POST/GET/DELETE)
+- [x] Account deletion with cascade
+- [x] Key backup routes (PUT/GET)
+- [x] Rate limiting, CORS, structured logging
+- [x] Multi-stage Dockerfile, deployed on Render
+- [x] Database tables created in Neon Postgres
+
+### Environment Configuration — DONE
+- [x] `Odyssey.xcconfig` (gitignored) for iOS secrets
+- [x] `ServerConfiguration.swift` reads API URL from Info.plist
+- [x] `ClerkConfiguration.swift` reads publishable key from Info.plist
+- [x] `.env.example` for server-side secrets
+- [x] `make update-secret-template` Makefile target
 
 ---
 
 ## P0 — Critical (Must fix before any production/TestFlight use)
 
-### P0-1. Wire up Clerk SDK authentication (auth is entirely non-functional)
+### P0-1. Finish Clerk SDK integration (auth still non-functional)
 
-**Status:** Stubbed — every method in `AuthManager` is a no-op
-**Files:** `Odyssey/Services/Auth/AuthManager.swift`, `ClerkConfiguration.swift`
-**Details:** `signIn()`, `signUp()`, `signOut()`, `refreshTokenIfNeeded()`, `deleteAccount()` all have Clerk logic commented out. The app presents sign-in UI that silently does nothing. `sessionToken` is never set, so sync always fails with "Not authenticated."
+**Status:** Code scaffolded, but Clerk iOS SDK not yet added as dependency
+**Files:** `AuthManager.swift`, `ClerkConfiguration.swift`, `OdysseyApp.swift`
+**Details:** `signIn()`, `signUp()`, `signOut()` still have Clerk logic commented out. The publishable key now reads from xcconfig, but the actual Clerk SDK package hasn't been added via SPM. Until this is done, auth doesn't work and sync will fail.
 **Work:**
 
-- [ ] Integrate Clerk iOS SDK
+- [ ] Add Clerk iOS SDK via SPM in Xcode (`https://github.com/clerk/clerk-ios`)
+- [ ] Call `Clerk.shared.load()` in `OdysseyApp.swift` `.task` modifier
 - [ ] Implement `signIn(strategy:)` for Apple + Google
-- [ ] Implement `signUp(strategy:)` for Apple + Google
-- [ ] Implement `signOut()` with server-side session revocation
-- [ ] Implement `refreshTokenIfNeeded()` with JWT expiry check + refresh
-- [ ] Implement `deleteAccount()` calling `APIClient.deleteAccount(token:)` to purge server data
-- [ ] Replace placeholder `publishableKey` in `ClerkConfiguration.swift`
-
-### P0-2. Fix SwiftData concurrency violations (data race crashes)
-
-**Status:** Active bugs — 4 services mutate `@Model` / `ModelContext` off the main actor
-**Files:** `SyncService.swift`, `BackgroundSnapshotService.swift`, `DailyEntryViewModel.swift`, `AuthManager.swift`
-**Details:**
-
-- `SyncService` modifies `entry.needsSync` / `entry.lastSyncedAt` from async context without `@MainActor`
-- `BackgroundSnapshotService` receives `ModelContext` (non-Sendable) across actor isolation boundary
-- `DailyEntryViewModel.updateLocation()` mutates model properties from background thread
-- `AuthManager` modifies `@Observable` UI properties (`isSignedIn`, `isLoading`) without `@MainActor`
-  **Work:**
-- [ ] Add `@MainActor` to `AuthManager`, `SyncService`, `DailyEntryViewModel`
-- [ ] Restructure `BackgroundSnapshotService` to perform `ModelContext` operations on main actor
-- [ ] Audit all `async` methods that touch SwiftData for proper actor isolation
-
-### P0-3. Persist auth token in Keychain (not in-memory)
-
-**Status:** `sessionToken` is a plain `String?` that vanishes on app restart
-**File:** `Odyssey/Services/Auth/AuthManager.swift:29`
-**Work:**
-
-- [ ] Store session/refresh tokens via `KeychainService`
-- [ ] Restore tokens in `initialize()` on app launch
-- [ ] Clear tokens on `signOut()` and `deleteAccount()`
-
-### P0-4. Fix backend compilation error — `cursor` variable redeclared
-
-**File:** `odyssey-api/src/routes/entries.ts:108,149`
-**Details:** `cursor` is declared twice in the same scope (query param + response cursor). Will fail with `noUnusedLocals: true`.
-**Work:**
-
-- [ ] Rename response cursor to `nextCursor`
-- [ ] Remove unused `pgPolicy` import in `schema.ts`
-
-### P0-5. Account deletion must purge server-side data
-
-**Files:** `AuthManager.swift:99-109`, `AccountView.swift:74-78`
-**Details:** `deleteAccount()` clears local state only. `APIClient.deleteAccount(token:)` exists but is never called. Cloud data persists after user "deletes" account — GDPR/privacy violation.
-**Work:**
-
-- [ ] Call `APIClient.deleteAccount(token:)` from `AuthManager.deleteAccount()`
-- [ ] Confirm server responds with 200 before clearing local state
-- [ ] Show error to user if server deletion fails
-
-### P0-6. Implement real rate limiting for Cloudflare Workers
-
-**File:** `odyssey-api/src/middleware/rate-limit.ts`
-**Details:** In-memory `Map` is per-isolate and evicted on every cold start. Provides zero protection on Workers.
-**Work:**
-
-- [ ] Replace with Cloudflare Rate Limiting Rules (wrangler.toml / dashboard) or Durable Objects
-- [ ] Remove the in-memory rate limiter
+- [ ] Implement `signUp(strategy:)` (delegates to signIn for OAuth)
+- [ ] Implement `signOut()` with `Clerk.shared.signOut()`
+- [ ] Implement `refreshTokenIfNeeded()` via `Clerk.shared.session?.getToken()`
+- [ ] Map `Clerk.shared.user` to local `ClerkUser` struct
+- [ ] Verify `Info.plist` has `CFBundleURLTypes` with `"odyssey"` scheme for Google OAuth
+- [ ] Test full sign-in → sync → sign-out flow on device
 
 ---
 
@@ -103,12 +106,11 @@ Date: 2026-03-01
 
 ### P1-3. Add database-level RLS or compensating controls
 
-**File:** `odyssey-api/src/db/rls.ts`
-**Details:** `withRLS()` is a no-op. Data isolation relies solely on `eq(entries.userId, userId)` in each query. One missing WHERE clause exposes all users.
+**Details:** Data isolation relies solely on WHERE clauses in each query. One missing filter exposes all users.
 **Work:**
 
-- [ ] Explore Neon WebSocket driver for real Postgres RLS
-- [ ] Or: create a `scopedQuery(db, userId)` wrapper that auto-injects userId filter
+- [ ] Explore Neon Postgres RLS policies
+- [ ] Or: create a scoped query wrapper in Rust that auto-injects user_id filter
 - [ ] Add integration tests verifying cross-user data isolation
 
 ### P1-4. Protect recovery key from clipboard sniffing
@@ -123,56 +125,43 @@ Date: 2026-03-01
 
 ### P1-5. Fix silent error swallowing in auth UI
 
-**Files:** `SignInView.swift:23,29`, `BackupPromptModal.swift:96,102`, `AccountView.swift:76`
-**Details:** All auth actions use `try?` — errors are silently discarded. `BackupPromptModal` has no error display at all.
+**Files:** `SignInView.swift:23,29`, `BackupPromptModal.swift:96,102`
+**Details:** Auth actions use `try?` — errors are silently discarded. `BackupPromptModal` has no error display at all.
 **Work:**
 
 - [ ] Replace `try?` with `do/catch` and set `authManager.error`
 - [ ] Add error display to `BackupPromptModal` (match `SignInView` pattern)
-- [ ] Show confirmation/error on `deleteAccount()`
 
 ### P1-6. Validate client timestamps server-side
 
-**File:** `odyssey-api/src/routes/entries.ts:59-60`, `validation.ts:29-30`
+**File:** `odyssey-server/src/routes/entries.rs`
 **Details:** `createdAt` and `updatedAt` are accepted as arbitrary client strings. A client can set `updatedAt` to year 2099 to always "win" sync conflicts.
 **Work:**
 
-- [ ] Validate ISO 8601 format in Zod schema
 - [ ] Reject timestamps more than ±24h from server time
-- [ ] Set `updatedAt` server-side on upsert (authoritative)
+- [ ] Consider setting `updated_at` server-side on upsert (authoritative)
 
 ### P1-7. Add request body size limits and string length constraints
 
-**Files:** `odyssey-api/src/routes/entries.ts:13`, `odyssey-api/src/utils/validation.ts`
-**Details:** No body size limit. String fields (journal, gratitude, etc.) accept unlimited length. 100 entries × unbounded strings = potential Worker OOM.
+**File:** `odyssey-server/src/validation.rs`
+**Details:** String fields (journal, gratitude, etc.) accept unlimited length. 100 entries × unbounded strings = potential memory issue.
 **Work:**
 
-- [ ] Add `.max(10000)` or similar to text fields in Zod schemas
-- [ ] Add `.regex(/^#[0-9a-fA-F]{6}$/)` to `feelingColorHex`
-- [ ] Configure Hono body size middleware
+- [ ] Add max length validation to text fields
+- [ ] Add hex color regex validation to `feelingColorHex`
 
-### P1-8. Fix CORS — restrict or remove for mobile-only API
-
-**File:** `odyssey-api/src/index.ts:14`
-**Details:** `cors()` defaults to `Access-Control-Allow-Origin: *`. Mobile apps don't need CORS.
-**Work:**
-
-- [ ] Remove CORS middleware entirely (mobile-only API)
-- [ ] Or restrict to specific origins if web admin panel is planned
-
-### P1-9. Guard force unwraps on App Group container URLs
+### P1-8. Guard force unwraps on App Group container URLs
 
 **Files:** `DataContainer.swift:31-33,45-46`, `SharedDefaults.swift:7`
-**Details:** Force unwraps on `containerURL(forSecurityApplicationGroupIdentifier:)!` and `UserDefaults(suiteName:)!` — crash on misconfigured entitlements.
+**Details:** Force unwraps on `containerURL(forSecurityApplicationGroupIdentifier:)!` — crash on misconfigured entitlements.
 **Work:**
 
 - [ ] Replace with `guard let` + graceful error / fallback to local-only storage
-- [ ] Surface error in `DataStoreErrorView` if App Group unavailable
 
-### P1-10. DataRetentionService needs user confirmation
+### P1-9. DataRetentionService needs user confirmation
 
 **File:** `Odyssey/Services/Retention/DataRetentionService.swift:8-34`
-**Details:** Silently deletes entries older than 1 year for non-account users. No warning, no undo. If `hasAccount` is incorrectly false (auth bug), backed-up data gets deleted.
+**Details:** Silently deletes entries older than 1 year for non-account users. No warning, no undo.
 **Work:**
 
 - [ ] Add user confirmation before deletion
@@ -183,68 +172,61 @@ Date: 2026-03-01
 
 ## P2 — Medium (Should fix before v1.0 release)
 
-### P2-1. Add `@MainActor` or actor isolation to remaining ViewModels
+### P2-1. Add `@MainActor` to remaining ViewModels
 
 **Files:** `OnboardingViewModel.swift`, `InsightsViewModel.swift`, `JournalViewModel.swift`
 **Details:** ViewModels using `@Observable` should be `@MainActor` for thread safety.
 
 ### P2-2. Add JWT issuer and audience validation
 
-**File:** `odyssey-api/src/auth/clerk.ts:17`
-**Work:** Add `issuer` and `audience` options to `jwtVerify()` call.
+**File:** `odyssey-server/src/auth.rs`
+**Work:** Add `iss` and `aud` claims validation to JWT verification.
 
 ### P2-3. Add `syncID` / server-side unique identifier to DailyEntry
 
 **Files:** `DailyEntry.swift`, `SyncPayload.swift`, `SyncService.swift`
-**Details:** Currently matched by `entryDate` only. No delta/incremental sync capability. `restoreFromCloud` downloads everything every time.
+**Details:** Currently matched by `entryDate` only. No delta/incremental sync capability.
 
 ### P2-4. Add background sync trigger
 
 **Files:** `OdysseyAppDelegate.swift`, `SyncService.swift`
-**Details:** `needsSync = true` is set in background snapshot and journal submit, but sync only runs on foreground. Entries can sit unsynced for days.
+**Details:** `needsSync = true` is set in background snapshot, but sync only runs on foreground. Entries can sit unsynced for days.
 
 ### P2-5. Fix TabView swipe bypass in onboarding
 
 **File:** `OnboardingFlowView.swift:19-24`
-**Details:** `.tabViewStyle(.page)` allows swiping past permission steps. Users can reach account/completion step without granting any permissions.
-**Work:** Disable swipe (use `.tabViewStyle(.page(indexDisplayMode: .never))` with gesture disabled) or validate permissions on each step.
+**Details:** `.tabViewStyle(.page)` allows swiping past permission steps without granting permissions.
 
-### P2-6. Fix N+1 query pattern in batch entry upsert
-
-**File:** `odyssey-api/src/routes/entries.ts:34-89`
-**Details:** 100 sequential DB round-trips for a 100-entry batch. Use Drizzle batch insert or `Promise.all()`.
-
-### P2-7. Disable buttons during loading states
+### P2-6. Disable buttons during loading states
 
 **Files:** `BackupPromptModal.swift:93-103`, `SignInView.swift:20-31`, `AccountView.swift:19-35`
-**Details:** Auth/sync buttons remain tappable during loading. Users can trigger multiple concurrent requests.
+**Details:** Auth/sync buttons remain tappable during loading.
 
-### P2-8. Add location permission callback handling in onboarding
+### P2-7. Add location permission callback handling in onboarding
 
 **File:** `OnboardingViewModel.swift:60-63`
-**Details:** `requestLocationAccess()` calls system dialog then immediately advances. Permission dialog overlaps next step.
+**Details:** Permission dialog overlaps next step.
 
-### P2-9. Add timeout to LocationCaptureService
+### P2-8. Add timeout to LocationCaptureService
 
 **File:** `Odyssey/Services/LocationCaptureService.swift:18-27`
-**Details:** `objc_setAssociatedObject` delegate pattern with no timeout. If CLLocationManager is deallocated before callback, async call hangs forever.
+**Details:** No timeout — if CLLocationManager is deallocated before callback, async call hangs forever.
 
-### P2-10. Fix SwiftData store migration error handling
+### P2-9. Fix SwiftData store migration error handling
 
 **File:** `DataContainer.swift:52-60`
 **Details:** `try?` on file copy can silently lose all data during App Group migration.
 
-### P2-11. Add `updated_at` trigger in database
+### P2-10. Add `updated_at` trigger in database
 
-**File:** `odyssey-api/drizzle/migrations/0000_initial.sql:39`
-**Details:** No auto-update trigger. Direct SQL updates won't update `updated_at`, breaking sync cursor.
+**Details:** No auto-update trigger on Postgres. Direct SQL updates won't update `updated_at`, breaking sync cursor.
 
-### P2-12. Encrypt SwiftData store at rest
+### P2-11. Encrypt SwiftData store at rest
 
 **File:** `DataContainer.swift:17-24`
 **Details:** SQLite store is plaintext. Readable on jailbroken device / forensic extraction.
 
-### P2-13. Add copy confirmation for recovery key
+### P2-12. Add copy confirmation for recovery key
 
 **Files:** `AccountView.swift:101-103`, `BackupPromptModal.swift:157-159`
 **Details:** No visual feedback (toast/haptic) on clipboard copy.
@@ -254,78 +236,51 @@ Date: 2026-03-01
 ## P3 — Low (Polish / tech debt for future iterations)
 
 ### P3-1. Add structured logging to backend
-
-**File:** `odyssey-api/src/middleware/error-handler.ts`
-**Details:** Only `console.error` exists. No request IDs, no structured logging, no observability.
+Already partially done — Rust backend uses `tracing` with `tower_http::trace::TraceLayer`. Could add request IDs.
 
 ### P3-2. Add security headers to API
-
-**File:** `odyssey-api/src/index.ts`
-**Details:** Missing `X-Content-Type-Options: nosniff`, `Strict-Transport-Security`.
+Missing `X-Content-Type-Options: nosniff`, `Strict-Transport-Security`.
 
 ### P3-3. Add index on `sync_log.user_id`
-
-**File:** `odyssey-api/drizzle/migrations/0000_initial.sql`
-**Details:** CASCADE delete on user requires sequential scan of unindexed `sync_log`.
+CASCADE delete requires sequential scan of unindexed `sync_log`.
 
 ### P3-4. Populate `device_id` in sync log
-
-**File:** `odyssey-api/src/routes/entries.ts:92-95`
-**Details:** `sync_log.device_id` column exists but is never written.
+`sync_log.device_id` column exists but is never written.
 
 ### P3-5. Extract shared `signInButton` component
-
-**Files:** `SignInView.swift`, `BackupPromptModal.swift`
-**Details:** Identical Apple/Google sign-in button implementations duplicated across views.
+Identical Apple/Google sign-in button implementations duplicated across views.
 
 ### P3-6. Use constants for UserDefaults keys
-
-**File:** `OdysseyApp.swift:64,67`
-**Details:** `"hasSeenBackupPrompt"` and `"hasCompletedOnboarding"` are raw strings. Extract to constants.
+`"hasSeenBackupPrompt"` and `"hasCompletedOnboarding"` are raw strings.
 
 ### P3-7. Fix visual inconsistencies
-
-- `AccountCard.swift` uses `Color.accentTeal` for "Create Account" vs `BackupPromptModal` uses `Color.accentAmber` for the same action
+- `AccountCard.swift` uses `Color.accentTeal` vs `BackupPromptModal` uses `Color.accentAmber` for same action
 - `ProfileView.swift` Account section missing `.listRowBackground(Color.cardSurface)`
 
 ### P3-8. Fix accessibility issues
-
 - `AccountCard.swift:109-117` — bullet points lack VoiceOver labels
 - `SyncStatusBanner.swift` — no `accessibilityElement(children: .combine)`
 - `OnboardingNavigationBar.swift` — hidden back button still focusable by VoiceOver
-- `DataStoreErrorView` — no accessibility labels or recovery actions
 
 ### P3-9. Clean up test suite
-
 - Delete empty `OdysseyTests.swift` scaffold
 - Fix `PhotoLibraryServiceTests` (assertions test nothing useful)
-- Fix `PromptModelsTests:34` — references non-existent `step.emoji` property (should be `iconName`)
 - Replace `try!` / force unwraps in `EncryptionServiceTests` with `XCTUnwrap`
 
 ### P3-10. Add key rotation mechanism
-
-**Files:** `EncryptionService.swift`, `KeychainService.swift`
-**Details:** No way to rotate encryption key. Compromised key exposes all historical ciphertexts.
+No way to rotate encryption key. Compromised key exposes all historical ciphertexts.
 
 ### P3-11. Add certificate pinning
-
-**File:** `APIClient.swift:38`
-**Details:** `URLSession.shared` with no certificate pinning. Vulnerable to MITM with compromised trust store.
+`APIClient.swift` uses `URLSession.shared` with no certificate pinning.
 
 ### P3-12. Remove unused `email` column or populate it
-
-**File:** `odyssey-api/src/db/schema.ts:15`
-**Details:** `email` column exists but is never written to in any route.
+`email` column in `users` table exists but is never written to.
 
 ### P3-13. Photos not included in cloud backup
-
-**Files:** `DailyEntry.swift:44-45`, `SyncPayload.swift`
-**Details:** `attachedPhotoData` and `autoPhotoIdentifiers` are local-only. Users may expect backup to include photos.
+`attachedPhotoData` and `autoPhotoIdentifiers` are local-only.
 
 ### P3-14. CSV export bypasses encryption
-
-**File:** `ProfileView.swift:95-122`
-**Details:** Export writes all PII (journal text, location, mood, health data, alcohol) to unencrypted temp file shared via `UIActivityViewController`.
+Export writes all PII to unencrypted temp file shared via `UIActivityViewController`.
 
 ---
 
@@ -352,40 +307,39 @@ Date: 2026-03-01
 │                                                             │
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
 │  │ OnboardingVM │    │  TodayView   │    │  ProfileView  │  │
-│  │  (no auth    │    │  (journal    │    │  (account,    │  │
-│  │   wired)     │    │   submit)    │    │   sync,       │  │
+│  │  (Clerk SDK  │    │  (journal    │    │  (account,    │  │
+│  │   pending)   │    │   submit)    │    │   sync,       │  │
 │  │              │    │              │    │   export)     │  │
 │  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘  │
 │         │                   │                    │          │
 │  ┌──────▼───────────────────▼────────────────────▼───────┐  │
-│  │              AuthManager (ALL STUBBED)                 │  │
-│  │  signIn: no-op  │  signOut: local only  │  token: nil │  │
+│  │              AuthManager (@MainActor)                  │  │
+│  │  signIn: pending  │  signOut: local  │  token: keychain│ │
 │  └──────────────────────────┬────────────────────────────┘  │
 │                             │                               │
 │  ┌──────────────────────────▼────────────────────────────┐  │
-│  │                    SyncService                         │  │
+│  │                    SyncService (@MainActor)            │  │
 │  │  ┌────────────┐  ┌────────────┐  ┌─────────────────┐ │  │
 │  │  │ Encryption │  │  APIClient │  │ Merge (LWW,     │ │  │
-│  │  │ (AES-GCM,  │  │ (placeholder│  │ no conflict    │ │  │
+│  │  │ (AES-GCM,  │  │ (xcconfig  │  │ no conflict    │ │  │
 │  │  │  partial)  │  │  URL)      │  │  resolution)   │ │  │
 │  │  └────────────┘  └────────────┘  └─────────────────┘ │  │
 │  └───────────────────────────────────────────────────────┘  │
 │                                                             │
 │  ┌────────────────┐  ┌────────────────┐  ┌──────────────┐  │
 │  │   SwiftData    │  │  SharedDefaults │  │   Keychain   │  │
-│  │  (unencrypted  │  │  (screen time)  │  │  (AES key,   │  │
-│  │   at rest)     │  │                 │  │  no token)   │  │
+│  │  (unencrypted  │  │  (screen time)  │  │  (AES key +  │  │
+│  │   at rest)     │  │                 │  │  auth token) │  │
 │  └────────────────┘  └────────────────┘  └──────────────┘  │
 └─────────────────────────────────────────────────────────────┘
                              │
                       ┌──────▼──────┐
-                      │  odyssey-api │  (Cloudflare Worker)
-                      │  - No RLS    │
-                      │  - No rate   │
-                      │    limiting  │
-                      │  - Wildcard  │
-                      │    CORS      │
-                      │  - N+1 upsert│
+                      │odyssey-server│  (Rust/Axum on Render)
+                      │  - JWT auth  │
+                      │  - Rate limit│
+                      │  - CORS      │
+                      │  - Batch     │
+                      │    upsert    │
                       └──────┬──────┘
                              │
                       ┌──────▼──────┐
