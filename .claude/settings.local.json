@@ -9,7 +9,16 @@
       "Bash(make run:*)",
       "Bash(find:*)",
       "Bash(python3:*)",
-      "Bash(gh pr:*)"
+      "Bash(gh pr:*)",
+      "WebSearch",
+      "WebFetch(domain:clerk.com)",
+      "WebFetch(domain:clerk.github.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:swiftpackageindex.com)",
+      "WebFetch(domain:swiftpackageregistry.com)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "Bash(git ls-tree:*)",
+      "Bash(git diff-tree:*)"
     ]
   }
 }
