@@ -1,5 +1,5 @@
 # ---- Builder ----
-FROM rust:1.85 AS builder
+FROM rust:1.88 AS builder
 WORKDIR /app
 
 # Cache dependencies
