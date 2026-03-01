@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA01A1B1C1D1E1F101010101 /* DailyEntryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02A2B2C2D2E2F202020202 /* DailyEntryRepository.swift */; };
+		AA03A3B3C3D3E3F303030303 /* DailyEntry+Streak.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04A4B4C4D4E4F404040404 /* DailyEntry+Streak.swift */; };
 		04EB166CB7A7EC94EB5B8122 /* MetricDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE292778346244DD63835D87 /* MetricDefinition.swift */; };
 		068FF2F9C0C9853EEB3CEA71 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEE060056F4C48A4C0DE33C /* OnboardingViewModel.swift */; };
 		0814E118C935327B73A83396 /* MoodTrendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F457139C6883C57D07C0CBD /* MoodTrendView.swift */; };
@@ -258,6 +260,8 @@
 		402708781F1405891D5F4C0D /* Color+Extensions.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		404E7870D5E38DE543E0ED2C /* SampleData.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SampleData.swift; sourceTree = "<group>"; };
 		4D0D7FE6859B631359A8FC77 /* DailyEntry+Computed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "DailyEntry+Computed.swift"; sourceTree = "<group>"; };
+		AA02A2B2C2D2E2F202020202 /* DailyEntryRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DailyEntryRepository.swift; sourceTree = "<group>"; };
+		AA04A4B4C4D4E4F404040404 /* DailyEntry+Streak.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "DailyEntry+Streak.swift"; sourceTree = "<group>"; };
 		4E0E78DC1B6B94D9A9D78AB2 /* PromptResponses.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PromptResponses.swift; sourceTree = "<group>"; };
 		5357AA89DC0B9F0A1AE8A7CF /* FeelingPromptCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeelingPromptCard.swift; sourceTree = "<group>"; };
 		5B7A0B21D5A37C00B603DCDA /* InsightsTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsTab.swift; sourceTree = "<group>"; };
@@ -734,6 +738,8 @@
 				5F96AA872B4C30AD00999B84 /* ScreenTimeSelectAppsModel.swift */,
 				7B5A24DCDFF0718CA1E70E5B /* DailyEntry.swift */,
 				4D0D7FE6859B631359A8FC77 /* DailyEntry+Computed.swift */,
+				AA04A4B4C4D4E4F404040404 /* DailyEntry+Streak.swift */,
+				AA02A2B2C2D2E2F202020202 /* DailyEntryRepository.swift */,
 				80C7606A98FD1FA124B59887 /* DataContainer.swift */,
 				404E7870D5E38DE543E0ED2C /* SampleData.swift */,
 				5DAA03677F50ED2C50A8140C /* PromptStep.swift */,
@@ -1134,6 +1140,8 @@
 				BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */,
 				BB16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift in Sources */,
 				F9FFBCC60597E2412FA6220C /* DailyEntry+Computed.swift in Sources */,
+				AA03A3B3C3D3E3F303030303 /* DailyEntry+Streak.swift in Sources */,
+				AA01A1B1C1D1E1F101010101 /* DailyEntryRepository.swift in Sources */,
 				6DCF3B5C509F071495918097 /* DataContainer.swift in Sources */,
 				0F21CBFC1793A2C01C5880D0 /* SampleData.swift in Sources */,
 				592426C5C07D0F9D17078DAC /* PromptStep.swift in Sources */,

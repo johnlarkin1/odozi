@@ -3,6 +3,7 @@ import SwiftData
 import MapKit
 import Photos
 
+@MainActor
 @Observable
 final class JourneyExplorerViewModel {
     var entries: [DailyEntry] = []

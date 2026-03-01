@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 @Observable
 final class InsightsViewModel {
     var entries: [DailyEntry] = []
@@ -30,21 +31,7 @@ final class InsightsViewModel {
     }
 
     var currentStreak: Int {
-        let sorted = entries.sorted { $0.date > $1.date }
-        let calendar = Calendar.current
-        var streak = 0
-        var expectedDate = calendar.startOfDay(for: Date())
-
-        for entry in sorted {
-            let entryDate = calendar.startOfDay(for: entry.date)
-            if entryDate == expectedDate && entry.hasPromptData {
-                streak += 1
-                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
-            } else if entryDate < expectedDate {
-                break
-            }
-        }
-        return streak
+        entries.currentStreak
     }
 
     var longestStreak: Int {

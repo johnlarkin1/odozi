@@ -104,52 +104,50 @@ final class SyncService {
 
     // MARK: - Private: Encryption
 
+    /// Sendable snapshot of the DailyEntry fields needed for encryption,
+    /// so we can safely pass data into concurrent task group children.
+    private struct EntrySnapshot: Sendable {
+        let index: Int
+        let entryDate: String
+        let journalEntry: String
+        let gratitude: String
+        let win: String
+        let tension: String
+        let singleWordFeeling: String
+        let latitude: Double?
+        let longitude: Double?
+        let city: String?
+        let state: String?
+        let country: String?
+        let feeling: Int
+        let sleepQuality: Int
+        let feelingColorHex: String
+        let drinks: Int
+        let stepCount: Int?
+        let walkingDistanceMeters: Double?
+        let sleepHours: Double?
+        let screenTimeSeconds: Double?
+        let pickups: Int?
+        let createdAt: String
+        let updatedAt: String
+    }
+
     private func encryptBatch(_ entries: [DailyEntry]) async throws -> [SyncUploadEntry] {
-        var uploadEntries: [SyncUploadEntry] = []
-
-        for entry in entries {
-            let encryptedLat: String? = if let lat = entry.latitude {
-                try await encryptionService.encryptDouble(lat)
-            } else {
-                nil
-            }
-
-            let encryptedLon: String? = if let lon = entry.longitude {
-                try await encryptionService.encryptDouble(lon)
-            } else {
-                nil
-            }
-
-            let encryptedCity: String? = if let city = entry.city {
-                try await encryptionService.encrypt(city)
-            } else {
-                nil
-            }
-
-            let encryptedState: String? = if let state = entry.state {
-                try await encryptionService.encrypt(state)
-            } else {
-                nil
-            }
-
-            let encryptedCountry: String? = if let country = entry.country {
-                try await encryptionService.encrypt(country)
-            } else {
-                nil
-            }
-
-            let encrypted = SyncUploadEntry(
+        // Snapshot entry data on the main actor before entering the task group
+        let snapshots: [EntrySnapshot] = entries.enumerated().map { index, entry in
+            EntrySnapshot(
+                index: index,
                 entryDate: Self.dateOnly.string(from: entry.date),
-                journalEntry: entry.journalEntry.isEmpty ? nil : try await encryptionService.encrypt(entry.journalEntry),
-                gratitude: entry.gratitude.isEmpty ? nil : try await encryptionService.encrypt(entry.gratitude),
-                win: entry.win.isEmpty ? nil : try await encryptionService.encrypt(entry.win),
-                tension: entry.tension.isEmpty ? nil : try await encryptionService.encrypt(entry.tension),
-                singleWordFeeling: entry.singleWordFeeling.isEmpty ? nil : try await encryptionService.encrypt(entry.singleWordFeeling),
-                latitude: encryptedLat,
-                longitude: encryptedLon,
-                city: encryptedCity,
-                state: encryptedState,
-                country: encryptedCountry,
+                journalEntry: entry.journalEntry,
+                gratitude: entry.gratitude,
+                win: entry.win,
+                tension: entry.tension,
+                singleWordFeeling: entry.singleWordFeeling,
+                latitude: entry.latitude,
+                longitude: entry.longitude,
+                city: entry.city,
+                state: entry.state,
+                country: entry.country,
                 feeling: entry.feeling,
                 sleepQuality: entry.sleepQuality,
                 feelingColorHex: entry.feelingColorHex,
@@ -162,10 +160,81 @@ final class SyncService {
                 createdAt: Self.iso8601.string(from: entry.createdAt),
                 updatedAt: Self.iso8601.string(from: entry.updatedAt)
             )
-            uploadEntries.append(encrypted)
         }
 
-        return uploadEntries
+        let encryptionSvc = encryptionService
+
+        return try await withThrowingTaskGroup(of: (Int, SyncUploadEntry).self) { group in
+            for snapshot in snapshots {
+                group.addTask {
+                    let encryptedLat: String? = if let lat = snapshot.latitude {
+                        try await encryptionSvc.encryptDouble(lat)
+                    } else {
+                        nil
+                    }
+
+                    let encryptedLon: String? = if let lon = snapshot.longitude {
+                        try await encryptionSvc.encryptDouble(lon)
+                    } else {
+                        nil
+                    }
+
+                    let encryptedCity: String? = if let city = snapshot.city {
+                        try await encryptionSvc.encrypt(city)
+                    } else {
+                        nil
+                    }
+
+                    let encryptedState: String? = if let state = snapshot.state {
+                        try await encryptionSvc.encrypt(state)
+                    } else {
+                        nil
+                    }
+
+                    let encryptedCountry: String? = if let country = snapshot.country {
+                        try await encryptionSvc.encrypt(country)
+                    } else {
+                        nil
+                    }
+
+                    let encrypted = SyncUploadEntry(
+                        entryDate: snapshot.entryDate,
+                        journalEntry: snapshot.journalEntry.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.journalEntry),
+                        gratitude: snapshot.gratitude.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.gratitude),
+                        win: snapshot.win.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.win),
+                        tension: snapshot.tension.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.tension),
+                        singleWordFeeling: snapshot.singleWordFeeling.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.singleWordFeeling),
+                        latitude: encryptedLat,
+                        longitude: encryptedLon,
+                        city: encryptedCity,
+                        state: encryptedState,
+                        country: encryptedCountry,
+                        feeling: snapshot.feeling,
+                        sleepQuality: snapshot.sleepQuality,
+                        feelingColorHex: snapshot.feelingColorHex,
+                        drinks: snapshot.drinks,
+                        stepCount: snapshot.stepCount,
+                        walkingDistanceMeters: snapshot.walkingDistanceMeters,
+                        sleepHours: snapshot.sleepHours,
+                        screenTimeSeconds: snapshot.screenTimeSeconds,
+                        pickups: snapshot.pickups,
+                        createdAt: snapshot.createdAt,
+                        updatedAt: snapshot.updatedAt
+                    )
+
+                    return (snapshot.index, encrypted)
+                }
+            }
+
+            var results = [(Int, SyncUploadEntry)]()
+            results.reserveCapacity(snapshots.count)
+
+            for try await result in group {
+                results.append(result)
+            }
+
+            return results.sorted { $0.0 < $1.0 }.map(\.1)
+        }
     }
 
     // MARK: - Private: Merge
@@ -173,23 +242,17 @@ final class SyncService {
     private func mergeEntry(_ download: SyncDownloadEntry, into context: ModelContext) async throws {
         guard let entryDate = Self.dateOnly.date(from: download.entryDate) else { return }
 
-        let predicate = #Predicate<DailyEntry> { $0.date == entryDate }
-        var descriptor = FetchDescriptor(predicate: predicate)
-        descriptor.fetchLimit = 1
-
-        let existing = try? context.fetch(descriptor).first
+        let repository = DailyEntryRepository(context: context)
+        let existingEntry = try? repository.fetchEntry(for: entryDate)
 
         // Last-write-wins: skip if local is newer
-        if let existing,
+        if let existingEntry,
            let downloadUpdated = Self.iso8601.date(from: download.updatedAt),
-           existing.updatedAt >= downloadUpdated {
+           existingEntry.updatedAt >= downloadUpdated {
             return
         }
 
-        let entry = existing ?? DailyEntry(date: entryDate)
-        if existing == nil {
-            context.insert(entry)
-        }
+        let entry = try repository.fetchOrCreate(for: entryDate)
 
         // Decrypt and apply sensitive fields
         if let encrypted = download.journalEntry {
