@@ -1,5 +1,8 @@
 import SwiftData
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DataContainer")
 
 struct DataContainer {
     static let appGroupID = "group.com.johnlarkin.Odyssey"
@@ -52,10 +55,12 @@ struct DataContainer {
         for ext in extensions {
             let source = URL(fileURLWithPath: defaultURL.path + ext)
             let dest = URL(fileURLWithPath: appGroupURL.path.replacingOccurrences(of: ".store", with: ".sqlite") + ext)
-            // Note: SwiftData uses .store extension but underlying may be .sqlite
-            // Try copying if file exists
             if fileManager.fileExists(atPath: source.path) {
-                try? fileManager.copyItem(at: source, to: dest)
+                do {
+                    try fileManager.copyItem(at: source, to: dest)
+                } catch {
+                    logger.error("Failed to migrate store file \(source.lastPathComponent): \(error)")
+                }
             }
         }
     }

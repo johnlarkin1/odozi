@@ -69,11 +69,34 @@ actor HealthKitService {
             HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue
         ]
 
-        let totalSeconds = samples
+        // Merge overlapping intervals to avoid double-counting across sources (Watch + iPhone)
+        let sortedSamples = samples
             .filter { asleepValues.contains($0.value) }
-            .reduce(0.0) { $0 + $1.endDate.timeIntervalSince($1.startDate) }
+            .sorted { $0.startDate < $1.startDate }
 
-        return totalSeconds > 0 ? totalSeconds / 3600.0 : nil
+        var mergedSeconds: TimeInterval = 0
+        var currentStart: Date?
+        var currentEnd: Date?
+
+        for sample in sortedSamples {
+            if let start = currentStart, let end = currentEnd {
+                if sample.startDate <= end {
+                    currentEnd = max(end, sample.endDate)
+                } else {
+                    mergedSeconds += end.timeIntervalSince(start)
+                    currentStart = sample.startDate
+                    currentEnd = sample.endDate
+                }
+            } else {
+                currentStart = sample.startDate
+                currentEnd = sample.endDate
+            }
+        }
+        if let start = currentStart, let end = currentEnd {
+            mergedSeconds += end.timeIntervalSince(start)
+        }
+
+        return mergedSeconds > 0 ? mergedSeconds / 3600.0 : nil
     }
 
     private func dayInterval(for date: Date) -> DateInterval {

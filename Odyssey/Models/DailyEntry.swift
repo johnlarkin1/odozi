@@ -7,6 +7,8 @@ extension Notification.Name {
 
 @Model
 final class DailyEntry {
+    // Note: #Unique requires iOS 18+. Uniqueness on `date` is enforced in application code
+    // via fetch-before-insert in DailyEntryViewModel.submitData and applySnapshotData.
 
     // Identity
     var date: Date

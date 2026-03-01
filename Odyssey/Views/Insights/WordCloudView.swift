@@ -61,7 +61,12 @@ struct WordCloudView: View {
 
     private func colorForWord(_ word: String) -> Color {
         let colors: [Color] = [.accentAmber, .accentTeal, .coralRed, .successGreen, .purple, .cyan, .mint, .orange]
-        let index = abs(word.hashValue) % colors.count
+        // DJB2 hash — stable across launches (unlike hashValue which is randomized per-process)
+        var hash = 5381
+        for byte in word.utf8 {
+            hash = ((hash &<< 5) &+ hash) &+ Int(byte)
+        }
+        let index = abs(hash) % colors.count
         return colors[index]
     }
 }
