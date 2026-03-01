@@ -63,7 +63,7 @@ async fn main() {
     let limiter = RateLimiter::new();
 
     let app = Router::new()
-        .route("/health", get(health))
+        .route("/healthz", get(health))
         .merge(routes::router())
         .with_state(state)
         .layer(middleware::from_fn(rate_limit::rate_limit_middleware))
