@@ -3,11 +3,13 @@ mod config;
 mod db;
 mod error;
 mod models;
+mod rate_limit;
 mod routes;
 mod validation;
 
 use std::sync::Arc;
 
+use axum::middleware;
 use axum::{Json, Router, routing::get};
 use serde_json::json;
 use sqlx::PgPool;
@@ -17,6 +19,7 @@ use tower_http::trace::TraceLayer;
 
 use crate::auth::JwksCache;
 use crate::config::Config;
+use crate::rate_limit::RateLimiter;
 
 #[derive(Clone)]
 pub struct AppState {
@@ -57,10 +60,14 @@ async fn main() {
         config,
     };
 
+    let limiter = RateLimiter::new();
+
     let app = Router::new()
         .route("/health", get(health))
         .merge(routes::router())
         .with_state(state)
+        .layer(middleware::from_fn(rate_limit::rate_limit_middleware))
+        .layer(axum::Extension(limiter))
         .layer(TraceLayer::new_for_http())
         .layer(CorsLayer::very_permissive());
 
