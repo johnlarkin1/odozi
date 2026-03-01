@@ -8,7 +8,8 @@
       "Skill(generate-pr)",
       "Bash(make run:*)",
       "Bash(find:*)",
-      "Bash(python3:*)"
+      "Bash(python3:*)",
+      "Bash(gh pr:*)"
     ]
   }
 }
