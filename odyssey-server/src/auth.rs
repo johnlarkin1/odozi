@@ -1,5 +1,3 @@
-use std::sync::Arc;
-
 use axum::extract::FromRequestParts;
 use axum::http::request::Parts;
 use jsonwebtoken::{Algorithm, DecodingKey, Validation, decode};
