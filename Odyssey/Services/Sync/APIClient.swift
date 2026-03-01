@@ -33,7 +33,7 @@ actor APIClient {
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
 
-    init(baseURL: String = "https://odyssey-api.your-domain.workers.dev") {
+    init(baseURL: String = "https://odyssey-server.onrender.com") {
         self.baseURL = baseURL
         self.session = URLSession.shared
         self.encoder = JSONEncoder()
