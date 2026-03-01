@@ -55,9 +55,9 @@ struct DateRangePicker: View {
                             }
                         } label: {
                             Text(range.rawValue)
-                                .font(.subheadline.weight(.medium))
-                                .padding(.horizontal, 16)
-                                .padding(.vertical, 8)
+                                .font(.footnote.weight(.semibold))
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
                                 .background(
                                     Capsule()
                                         .fill(selection == range ? Color.accentAmber : Color.cardSurface)
