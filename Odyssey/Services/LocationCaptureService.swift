@@ -17,12 +17,14 @@ actor LocationCaptureService {
     private func requestSingleLocation() async throws -> CLLocation {
         try await withCheckedThrowingContinuation { continuation in
             let delegate = SingleLocationDelegate(continuation: continuation)
-            let manager = CLLocationManager()
-            manager.delegate = delegate
-            manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-            // Hold reference to delegate through objc association
-            objc_setAssociatedObject(manager, "delegate", delegate, .OBJC_ASSOCIATION_RETAIN)
-            manager.requestLocation()
+            // CLLocationManager must be created and used on the main thread
+            DispatchQueue.main.async {
+                let manager = CLLocationManager()
+                manager.delegate = delegate
+                manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+                objc_setAssociatedObject(manager, "delegate", delegate, .OBJC_ASSOCIATION_RETAIN)
+                manager.requestLocation()
+            }
         }
     }
 

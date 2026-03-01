@@ -101,7 +101,14 @@ struct OdysseyApp: App {
         var descriptor = FetchDescriptor(predicate: predicate)
         descriptor.fetchLimit = 1
 
-        let hasSnapshot = (try? context.fetch(descriptor).first?.latitude) != nil
+        // Check if any background data exists — not just latitude (which stays nil if location denied)
+        let entry = try? context.fetch(descriptor).first
+        let hasSnapshot = entry != nil && (
+            entry?.latitude != nil ||
+            entry?.stepCount != nil ||
+            entry?.screenTimeSeconds != nil ||
+            entry?.sleepHours != nil
+        )
 
         if !hasSnapshot {
             let service = BackgroundSnapshotService()

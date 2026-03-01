@@ -10,10 +10,13 @@ final class SingleLocationDelegate: NSObject, CLLocationManagerDelegate {
 
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
         manager.stopUpdatingLocation()
-        if let location = locations.last {
-            continuation?.resume(returning: location)
+        guard let location = locations.last else {
+            continuation?.resume(throwing: CLError(.locationUnknown))
             continuation = nil
+            return
         }
+        continuation?.resume(returning: location)
+        continuation = nil
     }
 
     func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
