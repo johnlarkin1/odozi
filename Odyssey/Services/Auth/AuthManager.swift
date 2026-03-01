@@ -22,6 +22,7 @@ struct ClerkUser {
     }
 }
 
+@MainActor
 @Observable
 final class AuthManager {
     var isSignedIn: Bool = false

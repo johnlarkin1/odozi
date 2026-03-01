@@ -105,7 +105,8 @@ struct OdysseyApp: App {
 
         if !hasSnapshot {
             let service = BackgroundSnapshotService()
-            await service.captureSnapshot(modelContext: context)
+            let data = await service.captureSnapshot()
+            applySnapshotData(data, to: context)
         }
 
         // Sync pending entries if signed in

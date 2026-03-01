@@ -4,6 +4,7 @@ import os
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DailyEntry")
 
+@MainActor
 @Observable
 final class DailyEntryViewModel {
     var hasSubmittedData = false
