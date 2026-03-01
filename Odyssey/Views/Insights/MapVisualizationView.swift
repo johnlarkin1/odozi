@@ -56,7 +56,13 @@ struct MapVisualizationView: View {
             }
             .padding(16)
             .frame(maxWidth: .infinity)
-            .background(Color.cardSurface)
+            .background(
+                LinearGradient(
+                    colors: [Color.deepSpaceBlue, Color.cardSurface],
+                    startPoint: .top,
+                    endPoint: .bottom
+                )
+            )
         }
         .navigationTitle("My Map")
         .navigationBarTitleDisplayMode(.inline)

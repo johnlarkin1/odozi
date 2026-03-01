@@ -87,6 +87,71 @@ final class InsightsViewModel {
             .map { $0.feelingColorHex }
     }
 
+    // MARK: - Body Metrics
+
+    var averageSteps: Double {
+        let valid = filteredEntries.compactMap(\.stepCount)
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0, +)) / Double(valid.count)
+    }
+
+    var averageWalkingDistanceMiles: Double {
+        let valid = filteredEntries.compactMap(\.walkingDistanceMeters)
+        guard !valid.isEmpty else { return 0 }
+        let totalMeters = valid.reduce(0, +)
+        return (totalMeters / Double(valid.count)) / 1609.34
+    }
+
+    var averageSleepHours: Double {
+        let valid = filteredEntries.compactMap(\.sleepHours)
+        guard !valid.isEmpty else { return 0 }
+        return valid.reduce(0, +) / Double(valid.count)
+    }
+
+    var totalDrinks: Int {
+        filteredEntries.reduce(0) { $0 + $1.drinks }
+    }
+
+    // MARK: - World Metrics
+
+    var averageScreenTimeHours: Double {
+        let valid = filteredEntries.compactMap(\.screenTimeSeconds)
+        guard !valid.isEmpty else { return 0 }
+        let totalSeconds = valid.reduce(0, +)
+        return (totalSeconds / Double(valid.count)) / 3600.0
+    }
+
+    var averagePickups: Double {
+        let valid = filteredEntries.compactMap(\.pickups)
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0, +)) / Double(valid.count)
+    }
+
+    // MARK: - Sparkline & Trend
+
+    func sparklineData(for metric: MetricDefinition) -> [(Date, Double)] {
+        filteredEntries.compactMap { entry in
+            guard let value = metric.value(from: entry) else { return nil }
+            return (entry.date, value)
+        }.sorted { $0.0 < $1.0 }
+    }
+
+    func trend(for metric: MetricDefinition) -> TrendCalculator.Trend {
+        TrendCalculator.trend(for: metric, entries: filteredEntries)
+    }
+
+    func average(for metric: MetricDefinition) -> Double {
+        let values = filteredEntries.compactMap { metric.value(from: $0) }
+        guard !values.isEmpty else { return 0 }
+        return values.reduce(0, +) / Double(values.count)
+    }
+
+    // MARK: - Correlation
+
+    var strongestCorrelation: CorrelationService.CorrelationResult? {
+        CorrelationService.strongestCorrelation(entries: filteredEntries)
+    }
+
     func loadEntries() {
         let descriptor = FetchDescriptor<DailyEntry>(
             sortBy: [SortDescriptor(\.date, order: .reverse)]
