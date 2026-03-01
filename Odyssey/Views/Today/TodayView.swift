@@ -7,6 +7,7 @@ struct TodayView: View {
     @State private var viewModel: DailyEntryViewModel?
     @State private var animateIn = false
     @State private var isUpdatingLocation = false
+    @State private var todayEntry: DailyEntry?
 
     var body: some View {
         NavigationStack {
@@ -17,7 +18,7 @@ struct TodayView: View {
 
                     // [B] Hero — Mood Orb
                     MoodOrbView(
-                        entry: viewModel?.fetchTodayEntry(),
+                        entry: todayEntry,
                         hasEntry: viewModel?.hasSubmittedData ?? false,
                         onBeginEntry: { showingGuidedFlow = true },
                         animateIn: animateIn
@@ -37,7 +38,7 @@ struct TodayView: View {
                     // [D] Vitals Grid
                     if let vm = viewModel {
                         VitalsGridView(
-                            entry: vm.fetchTodayEntry(),
+                            entry: todayEntry,
                             streak: vm.currentStreak,
                             animateIn: animateIn
                         )
@@ -45,13 +46,11 @@ struct TodayView: View {
                     }
 
                     // [E] Reflection Peek
-                    if let vm = viewModel {
-                        ReflectionPeekCard(
-                            entry: vm.fetchTodayEntry(),
-                            animateIn: animateIn
-                        )
-                        .padding(.horizontal, 16)
-                    }
+                    ReflectionPeekCard(
+                        entry: todayEntry,
+                        animateIn: animateIn
+                    )
+                    .padding(.horizontal, 16)
 
                     Spacer(minLength: 40)
                 }
@@ -67,6 +66,7 @@ struct TodayView: View {
             .onChange(of: showingGuidedFlow) { _, newValue in
                 if !newValue {
                     viewModel?.checkForTodayEntry()
+                    todayEntry = viewModel?.fetchTodayEntry()
                 }
             }
         }
@@ -76,6 +76,7 @@ struct TodayView: View {
             } else {
                 viewModel?.checkForTodayEntry()
             }
+            todayEntry = viewModel?.fetchTodayEntry()
             if !animateIn {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     animateIn = true
@@ -97,7 +98,7 @@ struct TodayView: View {
                     .font(.title3)
                     .foregroundStyle(.secondary)
 
-                Text("·")
+                Text("\u{00B7}")
                     .foregroundStyle(.secondary)
 
                 locationCapsule
@@ -118,6 +119,7 @@ struct TodayView: View {
                 isUpdatingLocation = true
                 defer { isUpdatingLocation = false }
                 try? await viewModel?.updateLocation()
+                todayEntry = viewModel?.fetchTodayEntry()
             }
         } label: {
             HStack(spacing: 4) {
@@ -125,7 +127,7 @@ struct TodayView: View {
                     ProgressView()
                         .controlSize(.mini)
                         .tint(.secondary)
-                } else if let entry = viewModel?.fetchTodayEntry(), let city = entry.city {
+                } else if let city = todayEntry?.city {
                     Image(systemName: "location.fill")
                         .font(.caption2)
                     Text(city)
@@ -148,13 +150,15 @@ struct TodayView: View {
             )
         }
         .disabled(isUpdatingLocation)
+        .accessibilityLabel(isUpdatingLocation ? "Updating location" : (todayEntry?.city ?? "Add location"))
+        .accessibilityHint("Double tap to update your current location")
     }
 
     // MARK: - Background
 
     private var backgroundGradient: some View {
         let moodColor: Color = {
-            if let entry = viewModel?.fetchTodayEntry(), viewModel?.hasSubmittedData == true {
+            if let entry = todayEntry, viewModel?.hasSubmittedData == true {
                 return Color.moodGradient(for: entry.feeling)
             }
             return Color.gray

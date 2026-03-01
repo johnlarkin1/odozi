@@ -29,6 +29,8 @@ struct JournalPromptCard: View {
                             .allowsHitTesting(false)
                     }
                 }
+                .accessibilityLabel("Journal entry")
+                .accessibilityHint("Write your free-form journal entry")
         }
     }
 }

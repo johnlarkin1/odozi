@@ -31,6 +31,8 @@ struct FeelingPromptCard: View {
                         RoundedRectangle(cornerRadius: 16)
                             .fill(Color.cardSurface)
                     )
+                    .accessibilityLabel("Feeling word")
+                    .accessibilityHint("Enter a single word describing how you feel")
 
                 Text("Pick a color that fits")
                     .font(.subheadline)
@@ -54,6 +56,9 @@ struct FeelingPromptCard: View {
                                     colorHex = uiColor.toHexString()
                                 }
                         )
+                        .accessibilityLabel("Color picker gradient")
+                        .accessibilityHint("Drag left or right to choose a feeling color")
+                        .accessibilityValue("Current color: \(colorHex)")
                 }
                 .frame(height: 36)
 
@@ -72,6 +77,9 @@ struct FeelingPromptCard: View {
                                         .stroke(Color.white, lineWidth: colorHex == option.hex ? 2 : 0)
                                 )
                         }
+                        .accessibilityLabel("\(option.name) color")
+                        .accessibilityHint("Double tap to select")
+                        .accessibilityValue(colorHex == option.hex ? "Selected" : "Not selected")
                     }
                 }
             }

@@ -39,5 +39,8 @@ struct InsightsTabBar: View {
             }
             .foregroundStyle(isSelected ? .white : .secondary)
         }
+        .accessibilityLabel("\(tab.rawValue) tab")
+        .accessibilityHint("Double tap to switch to \(tab.rawValue) insights")
+        .accessibilityValue(isSelected ? "Selected" : "Not selected")
     }
 }

@@ -104,6 +104,9 @@ struct MoodTrendView: View {
                 .background(Capsule().fill(isOn.wrappedValue ? color.opacity(0.3) : Color.cardSurface))
                 .foregroundStyle(isOn.wrappedValue ? color : .secondary)
         }
+        .accessibilityLabel("\(label) toggle")
+        .accessibilityHint("Double tap to \(isOn.wrappedValue ? "hide" : "show") \(label) data")
+        .accessibilityValue(isOn.wrappedValue ? "On" : "Off")
     }
 
     private func statBox(_ label: String, value: String, color: Color) -> some View {

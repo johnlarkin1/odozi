@@ -64,6 +64,8 @@ struct MoodOrbView: View {
             .padding(.horizontal, 20)
             .opacity(animateIn ? 1 : 0)
             .animation(.easeInOut(duration: 0.4).delay(0.45), value: animateIn)
+            .accessibilityLabel("Begin today's entry")
+            .accessibilityHint("Double tap to start your daily journal")
         }
         .scaleEffect(animateIn ? 1 : 0.8)
         .opacity(animateIn ? 1 : 0)
@@ -110,6 +112,8 @@ struct MoodOrbView: View {
             .scaleEffect(animateIn ? 1 : 0.5)
             .opacity(animateIn ? 1 : 0)
             .animation(.spring(response: 0.7, dampingFraction: 0.75).delay(0.15), value: animateIn)
+            .accessibilityLabel("Mood score \(entry.feeling) out of 10")
+            .accessibilityValue("\(entry.feeling)")
 
             VStack(spacing: 4) {
                 if !entry.singleWordFeeling.isEmpty {
@@ -135,6 +139,8 @@ struct MoodOrbView: View {
             }
             .opacity(animateIn ? 1 : 0)
             .animation(.easeInOut(duration: 0.4).delay(0.45), value: animateIn)
+            .accessibilityLabel("Edit today's entry")
+            .accessibilityHint("Double tap to modify your journal entry")
         }
     }
 }

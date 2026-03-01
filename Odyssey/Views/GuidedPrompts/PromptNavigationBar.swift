@@ -20,6 +20,8 @@ struct PromptNavigationBar: View {
             }
             .opacity(isFirstStep ? 0 : 1)
             .disabled(isFirstStep)
+            .accessibilityLabel("Go back")
+            .accessibilityHint("Double tap to return to the previous prompt")
 
             Spacer()
 
@@ -30,6 +32,8 @@ struct PromptNavigationBar: View {
                 }
                 .font(.body)
                 .foregroundStyle(.secondary)
+                .accessibilityLabel("Skip this prompt")
+                .accessibilityHint("Double tap to skip to the next prompt")
             }
 
             Spacer()
@@ -45,6 +49,8 @@ struct PromptNavigationBar: View {
                         .background(Color.accentAmber)
                         .clipShape(Capsule())
                 }
+                .accessibilityLabel("Submit entry")
+                .accessibilityHint("Double tap to save your journal entry")
             } else {
                 Button(action: onNext) {
                     HStack(spacing: 4) {
@@ -58,6 +64,8 @@ struct PromptNavigationBar: View {
                     .background(Color.accentAmber)
                     .clipShape(Capsule())
                 }
+                .accessibilityLabel("Next prompt")
+                .accessibilityHint("Double tap to go to the next prompt")
             }
         }
         .padding(.vertical, 12)

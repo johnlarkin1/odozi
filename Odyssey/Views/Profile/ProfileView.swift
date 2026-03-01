@@ -15,6 +15,8 @@ struct ProfileView: View {
         devices: .init([.iPhone, .iPad])
     )
 
+    @State private var csvExportURL: URL?
+
     @Environment(AuthManager.self) private var authManager
 
     var body: some View {
@@ -69,8 +71,14 @@ struct ProfileView: View {
                 .listRowBackground(Color.cardSurface)
 
                 Section("Data") {
-                    Button("Export to CSV") {
-                        exportData()
+                    if let url = csvExportURL {
+                        ShareLink(item: url) {
+                            Label("Export to CSV", systemImage: "square.and.arrow.up")
+                        }
+                    } else {
+                        Button("Export to CSV") {
+                            csvExportURL = generateCSV()
+                        }
                     }
                 }
                 .listRowBackground(Color.cardSurface)
@@ -92,9 +100,9 @@ struct ProfileView: View {
         }
     }
 
-    private func exportData() {
+    private func generateCSV() -> URL? {
         let descriptor = FetchDescriptor<DailyEntry>(sortBy: [SortDescriptor(\.date)])
-        guard let entries = try? modelContext.fetch(descriptor) else { return }
+        guard let entries = try? modelContext.fetch(descriptor) else { return nil }
 
         var csv = "Date,Feeling,Sleep Quality,Single Word Feeling,Journal Entry,Drinks,Win,Tension,Gratitude,Steps,Screen Time,City\n"
 
@@ -113,11 +121,6 @@ struct ProfileView: View {
 
         let path = FileManager.default.temporaryDirectory.appendingPathComponent("odyssey_export.csv")
         try? csv.write(to: path, atomically: true, encoding: .utf8)
-
-        if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-           let rootVC = windowScene.windows.first?.rootViewController {
-            let ac = UIActivityViewController(activityItems: [path], applicationActivities: nil)
-            rootVC.present(ac, animated: true)
-        }
+        return path
     }
 }

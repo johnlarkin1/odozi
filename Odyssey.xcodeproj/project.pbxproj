@@ -26,6 +26,7 @@
 		27241EE143C7E3E2C42F0F97 /* InsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40EA6B9C8DAA6C8610945BB /* InsightCard.swift */; };
 		28116A7F43066FFE82A170CA /* JournalViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F47CA2315DEC2DCC4804FD0 /* JournalViewModel.swift */; };
 		2B26E551FAFBB0BB54C53317 /* OverviewTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 62784F5EB2C1B4B1DBBA14FC /* OverviewTabView.swift */; };
+		A7F3B21C9E4D8A0F12345678 /* MindCardsGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F3B21C9E4D8A0F87654321 /* MindCardsGrid.swift */; };
 		2B3C4D5E6F7A8B9C0D1E2F3A /* JourneyExplorerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = B2C3D4E5F6A7B8C9D0E1F2A3 /* JourneyExplorerViewModel.swift */; };
 		30908A9E46A2784EDCC7F095 /* ScatterCorrelationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BFC96DB01664F4F6CC1A2C /* ScatterCorrelationView.swift */; };
 		375AE71F16D5E51B528B01AF /* GuidedPromptViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EA20AD58A99630EB0B72B7F0 /* GuidedPromptViewModelTests.swift */; };
@@ -300,6 +301,7 @@
 		5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		5FAFBC472B49F70B0018504E /* LottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieView.swift; sourceTree = "<group>"; };
 		62784F5EB2C1B4B1DBBA14FC /* OverviewTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverviewTabView.swift; sourceTree = "<group>"; };
+		A7F3B21C9E4D8A0F87654321 /* MindCardsGrid.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MindCardsGrid.swift; sourceTree = "<group>"; };
 		638F8D021F793E5A525CF7AB /* SharedDefaults.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedDefaults.swift; sourceTree = "<group>"; };
 		63C0E95C6B6F0BA8DBC36F9A /* ColorExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorExtensionsTests.swift; sourceTree = "<group>"; };
 		64634DFCBB169FF6865D54E1 /* InsightsTabContainerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsTabContainerView.swift; sourceTree = "<group>"; };
@@ -538,6 +540,7 @@
 				5B7A0B21D5A37C00B603DCDA /* InsightsTab.swift */,
 				62784F5EB2C1B4B1DBBA14FC /* OverviewTabView.swift */,
 				F6D2AFCA93E4D4730304B2C9 /* MindTabView.swift */,
+				A7F3B21C9E4D8A0F87654321 /* MindCardsGrid.swift */,
 				A18E25059433BC94C79C24C8 /* BodyTabView.swift */,
 				15B45EE50A54AB86B561FC94 /* WorldTabView.swift */,
 			);
@@ -1236,6 +1239,7 @@
 				9BCC8824A4333813013042BA /* InsightsTab.swift in Sources */,
 				2B26E551FAFBB0BB54C53317 /* OverviewTabView.swift in Sources */,
 				E9583FC48DCD514766515953 /* MindTabView.swift in Sources */,
+				A7F3B21C9E4D8A0F12345678 /* MindCardsGrid.swift in Sources */,
 				92C5FACA4E8A93E0A1C88DD2 /* BodyTabView.swift in Sources */,
 				865FBE893185D32167DE94AF /* WorldTabView.swift in Sources */,
 				C3505203439398B95598EE24 /* ChartModePicker.swift in Sources */,

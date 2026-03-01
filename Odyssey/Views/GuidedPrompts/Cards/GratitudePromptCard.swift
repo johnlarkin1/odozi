@@ -33,6 +33,8 @@ struct GratitudePromptCard: View {
                             .allowsHitTesting(false)
                     }
                 }
+                .accessibilityLabel("Gratitude entry")
+                .accessibilityHint("Write what you are grateful for today")
         }
     }
 }
