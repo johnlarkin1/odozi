@@ -1,0 +1,5 @@
+// Local configuration — copy to Odyssey.xcconfig and fill in values
+// Odyssey.xcconfig is gitignored and will not be committed
+
+ODYSSEY_API_BASE_URL = https:/$()/your-server.onrender.com
+CLERK_PUBLISHABLE_KEY = pk_test_REPLACE_ME

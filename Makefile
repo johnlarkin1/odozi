@@ -6,7 +6,7 @@ CONFIG_RELEASE = Release
 # Default destination — override with: make build DESTINATION='platform=iOS,name=MyiPhone'
 DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 
-.PHONY: help setup-simulator run build build-release test test-unit test-ui clean resolve lint
+.PHONY: help setup-simulator run build build-release test test-unit test-ui clean resolve lint update-secret-template
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -48,6 +48,11 @@ build-monitor: ## Build DeviceActivityMonitor extension
 
 build-report: ## Build DeviceActivityReport extension
 	xcodebuild -project $(PROJECT) -scheme OdysseyDeviceActivityReport -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' build
+
+update-secret-template: ## Generate .env.example from .env with dummy values
+	@sed 's/=.*/=CHANGE_ME/' .env > .env.example
+	@echo "Updated .env.example:"
+	@cat .env.example
 
 clean: ## Clean build artifacts
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) clean
