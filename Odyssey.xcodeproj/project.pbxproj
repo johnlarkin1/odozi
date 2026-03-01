@@ -71,6 +71,7 @@
 		61A069149CC6DEB6E87BDE4A /* ReviewSleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE8ACA4DCC1F853372C093F /* ReviewSleepCard.swift */; };
 		65C3C13A303A0D81A2B26DF4 /* YearInReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA0855F12557962C12FD4FF /* YearInReviewView.swift */; };
 		6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */; };
+		6C2A75E33587A55A135F6729 /* AccountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */; };
 		6C8DC5973DC4574CDAEEAC80 /* BackgroundSnapshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A90B323B0F5900D138A2D16 /* BackgroundSnapshotService.swift */; };
 		6DCF3B5C509F071495918097 /* DataContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80C7606A98FD1FA124B59887 /* DataContainer.swift */; };
 		6E5CB52F710C25300A8AA3E0 /* SparklineCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = D9190F56F1CE3A8E94118F97 /* SparklineCard.swift */; };
@@ -144,6 +145,21 @@
 		F9FFBCC60597E2412FA6220C /* DailyEntry+Computed.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4D0D7FE6859B631359A8FC77 /* DailyEntry+Computed.swift */; };
 		FA6C21484F83845F417763B0 /* CalendarHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5E80FEF87628B3A56F7DDB /* CalendarHeatmapView.swift */; };
 		FB9339CF5117A006B134CC83 /* CompletionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6477F0BFB8A770D8D6821B /* CompletionCard.swift */; };
+		BB01B2C3D4E5F6A7B8C9D0E1 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01B2C3D4E5F6A7B8C9D0E1 /* KeychainService.swift */; };
+		BB02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift */; };
+		BB03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift */; };
+		BB04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift */; };
+		BB05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */; };
+		BB06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift */; };
+		BB07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift */; };
+		BB08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */; };
+		BB09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift */; };
+		BB10D1E2F3A4B5C6D7E8F9A0 /* DataRetentionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA10D1E2F3A4B5C6D7E8F9A0 /* DataRetentionService.swift */; };
+		BB11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */; };
+		BB12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */; };
+		BB13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */; };
+		BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */; };
+		BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -227,6 +243,7 @@
 		2827F5D60870DE3D25E38D6B /* MapVisualizationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MapVisualizationView.swift; sourceTree = "<group>"; };
 		292434A69490374EABCAAC1B /* InsightsViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsViewModel.swift; sourceTree = "<group>"; };
 		2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingCompletionCard.swift; sourceTree = "<group>"; };
+		2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountCard.swift; sourceTree = "<group>"; };
 		2C03FB89B768DE6859125995 /* MetricDetailView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MetricDetailView.swift; sourceTree = "<group>"; };
 		2C436272BF01B19F60611B86 /* GratitudePromptCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GratitudePromptCard.swift; sourceTree = "<group>"; };
 		2E95936DF27D22BD4FC4B7E4 /* HealthKitService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
@@ -348,6 +365,21 @@
 		F6A7B8C9D0E1F2A3B4C5D6E7 /* JourneyDayDetailCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyDayDetailCard.swift; sourceTree = "<group>"; };
 		F6D2AFCA93E4D4730304B2C9 /* MindTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MindTabView.swift; sourceTree = "<group>"; };
 		FB80AF02CA56C0E95B58A7C9 /* DailyEntryComputedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEntryComputedTests.swift; sourceTree = "<group>"; };
+		AA01B2C3D4E5F6A7B8C9D0E1 /* KeychainService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeychainService.swift; sourceTree = "<group>"; };
+		AA02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionService.swift; sourceTree = "<group>"; };
+		AA03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyGenerator.swift; sourceTree = "<group>"; };
+		AA04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
+		AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClerkConfiguration.swift; sourceTree = "<group>"; };
+		AA06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
+		AA07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncPayload.swift; sourceTree = "<group>"; };
+		AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
+		AA09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatus.swift; sourceTree = "<group>"; };
+		AA10D1E2F3A4B5C6D7E8F9A0 /* DataRetentionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRetentionService.swift; sourceTree = "<group>"; };
+		AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPromptModal.swift; sourceTree = "<group>"; };
+		AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
+		AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusBanner.swift; sourceTree = "<group>"; };
+		AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -445,6 +477,10 @@
 				2E95936DF27D22BD4FC4B7E4 /* HealthKitService.swift */,
 				8A90B323B0F5900D138A2D16 /* BackgroundSnapshotService.swift */,
 				1F2DA7F5A277B3D36139F196 /* YearInReviewService.swift */,
+				CC01B2C3D4E5F6A7B8C9D0E1 /* Encryption */,
+				CC02B3C4D5E6F7A8B9C0D1E2 /* Auth */,
+				CC03B4C5D6E7F8A9B0C1D2E3 /* Sync */,
+				CC04B5C6D7E8F9A0B1C2D3E4 /* Retention */,
 				A1B2C3D4E5F6A7B8C9D0E1F2 /* PhotoLibraryService.swift */,
 				6ECC6BD469E6111D22872AA2 /* TrendCalculator.swift */,
 				2115FFC1E00BEDC8F9BAA18B /* CorrelationService.swift */,
@@ -479,6 +515,7 @@
 				B79284B38FB476FF2DE2080B /* LocationPermissionCard.swift */,
 				F31F03E7CEDD0CC2D388EB35 /* HealthPermissionCard.swift */,
 				8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */,
+				2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */,
 				2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */,
 			);
 			name = Cards;
@@ -648,6 +685,7 @@
 				DAFF82602435F264B2815D69 /* DailyEntryViewModelTests.swift */,
 				F59B20C772D1CA1B76EC90CE /* InsightsViewModelTests.swift */,
 				0585E2482D4675F4DB04679F /* YearInReviewServiceTests.swift */,
+				AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */,
 			);
 			path = OdysseyTests;
 			sourceTree = "<group>";
@@ -677,6 +715,7 @@
 				51AA3D16B5575ECA00E604C0 /* Insights */,
 				73F60BE852C4B53914A73AD0 /* YearInReview */,
 				F467D01D692B3A88E4002CFB /* Onboarding */,
+				CC05B6C7D8E9F0A1B2C3D4E5 /* Auth */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -767,6 +806,7 @@
 			isa = PBXGroup;
 			children = (
 				EACD1AF7614D69F2DEDCF73C /* ProfileView.swift */,
+				AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */,
 			);
 			name = Profile;
 			path = Profile;
@@ -781,6 +821,59 @@
 			);
 			name = Onboarding;
 			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		CC01B2C3D4E5F6A7B8C9D0E1 /* Encryption */ = {
+			isa = PBXGroup;
+			children = (
+				AA01B2C3D4E5F6A7B8C9D0E1 /* KeychainService.swift */,
+				AA02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift */,
+				AA03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift */,
+			);
+			name = Encryption;
+			path = Encryption;
+			sourceTree = "<group>";
+		};
+		CC02B3C4D5E6F7A8B9C0D1E2 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				AA04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift */,
+				AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */,
+			);
+			name = Auth;
+			path = Auth;
+			sourceTree = "<group>";
+		};
+		CC03B4C5D6E7F8A9B0C1D2E3 /* Sync */ = {
+			isa = PBXGroup;
+			children = (
+				AA06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift */,
+				AA07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift */,
+				AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */,
+				AA09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift */,
+			);
+			name = Sync;
+			path = Sync;
+			sourceTree = "<group>";
+		};
+		CC04B5C6D7E8F9A0B1C2D3E4 /* Retention */ = {
+			isa = PBXGroup;
+			children = (
+				AA10D1E2F3A4B5C6D7E8F9A0 /* DataRetentionService.swift */,
+			);
+			name = Retention;
+			path = Retention;
+			sourceTree = "<group>";
+		};
+		CC05B6C7D8E9F0A1B2C3D4E5 /* Auth */ = {
+			isa = PBXGroup;
+			children = (
+				AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */,
+				AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */,
+				AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */,
+			);
+			name = Auth;
+			path = Auth;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1008,6 +1101,20 @@
 				5FAFBC0C2B49E1A60018504E /* ContentView.swift in Sources */,
 				5FAFBC0A2B49E1A60018504E /* OdysseyApp.swift in Sources */,
 				CC4960D1CF90D6B6193843DC /* DailyEntry.swift in Sources */,
+				BB01B2C3D4E5F6A7B8C9D0E1 /* KeychainService.swift in Sources */,
+				BB02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift in Sources */,
+				BB03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift in Sources */,
+				BB04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift in Sources */,
+				BB05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift in Sources */,
+				BB06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift in Sources */,
+				BB07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift in Sources */,
+				BB08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift in Sources */,
+				BB09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift in Sources */,
+				BB10D1E2F3A4B5C6D7E8F9A0 /* DataRetentionService.swift in Sources */,
+				BB11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift in Sources */,
+				BB12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift in Sources */,
+				BB13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift in Sources */,
+				BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */,
 				F9FFBCC60597E2412FA6220C /* DailyEntry+Computed.swift in Sources */,
 				6DCF3B5C509F071495918097 /* DataContainer.swift in Sources */,
 				0F21CBFC1793A2C01C5880D0 /* SampleData.swift in Sources */,
@@ -1088,6 +1195,7 @@
 				DA89AEE5DF90F58FAB21B7D5 /* HealthPermissionCard.swift in Sources */,
 				EBA10F16F72B615E5752B35A /* ScreenTimePermissionCard.swift in Sources */,
 				6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */,
+				6C2A75E33587A55A135F6729 /* AccountCard.swift in Sources */,
 				04EB166CB7A7EC94EB5B8122 /* MetricDefinition.swift in Sources */,
 				1A346A475B0A0B8DFC6E7D4B /* TrendCalculator.swift in Sources */,
 				C40EA82B2FC208B343EFE930 /* CorrelationService.swift in Sources */,
@@ -1127,6 +1235,7 @@
 				EBBC4C84CF5B9415EE9BD4C7 /* DailyEntryViewModelTests.swift in Sources */,
 				3F312C88F2726FCF109E1772 /* InsightsViewModelTests.swift in Sources */,
 				7A13B113ACA242C0132F0223 /* YearInReviewServiceTests.swift in Sources */,
+				BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

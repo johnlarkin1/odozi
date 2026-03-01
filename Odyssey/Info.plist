@@ -13,6 +13,17 @@
 		<string>com.odyssey.snapshot</string>
 		<string>com.odyssey.processing</string>
 	</array>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>odyssey</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>com.johnlarkin.Odyssey.clerk-callback</string>
+		</dict>
+	</array>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Odyssey reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>

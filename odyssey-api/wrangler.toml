@@ -1,0 +1,11 @@
+name = "odyssey-api"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[vars]
+CLERK_JWKS_URL = "https://YOUR_CLERK_DOMAIN/.well-known/jwks.json"
+CLERK_PUBLISHABLE_KEY = "pk_test_REPLACE_ME"
+
+# Secrets (set via `wrangler secret put`):
+# - DATABASE_URL

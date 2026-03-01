@@ -48,7 +48,7 @@ struct OnboardingNavigationBar: View {
                     .background(step.iconColor)
                     .clipShape(Capsule())
                 }
-            } else if step != .completion {
+            } else if !step.hasEmbeddedButtons {
                 Button(action: onNext) {
                     HStack(spacing: 4) {
                         Text("Next")

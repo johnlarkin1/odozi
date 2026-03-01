@@ -41,6 +41,7 @@ actor BackgroundSnapshotService {
         }
 
         entry.updatedAt = Date()
+        entry.needsSync = true
 
         do {
             try modelContext.save()

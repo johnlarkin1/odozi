@@ -5,6 +5,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case location
     case health
     case screenTime
+    case account
     case completion
 
     var id: Int { rawValue }
@@ -15,6 +16,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .location: "Your Daily Map"
         case .health: "Health Insights"
         case .screenTime: "Screen Time"
+        case .account: "Your Data, Your Choice"
         case .completion: "You're All Set"
         }
     }
@@ -29,6 +31,8 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
             "Connect Apple Health to automatically track your steps, walking distance, and sleep alongside your journal entries."
         case .screenTime:
             "See how your screen time relates to your mood and wellness patterns."
+        case .account:
+            "Your journal lives on this device. Nothing leaves your phone unless you choose otherwise."
         case .completion:
             "Your odyssey begins now"
         }
@@ -40,6 +44,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .location: "location.fill"
         case .health: "heart.fill"
         case .screenTime: "hourglass"
+        case .account: "iphone.gen3"
         case .completion: "checkmark.circle.fill"
         }
     }
@@ -50,6 +55,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .location: .accentTeal
         case .health: .coralRed
         case .screenTime: .accentAmber
+        case .account: .accentTeal
         case .completion: .successGreen
         }
     }
@@ -57,6 +63,13 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     var isPermissionStep: Bool {
         switch self {
         case .location, .health, .screenTime: true
+        default: false
+        }
+    }
+
+    var hasEmbeddedButtons: Bool {
+        switch self {
+        case .account, .completion: true
         default: false
         }
     }
