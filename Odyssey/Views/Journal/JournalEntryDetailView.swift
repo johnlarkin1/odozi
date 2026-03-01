@@ -92,7 +92,7 @@ struct JournalEntryDetailView: View {
             }
             .padding(.top, 16)
         }
-        .background(Color.black)
+        .cosmicBackground()
         .navigationBarTitleDisplayMode(.inline)
     }
 

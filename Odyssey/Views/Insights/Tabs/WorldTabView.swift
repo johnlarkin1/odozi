@@ -15,7 +15,7 @@ struct WorldTabView: View {
                 NavigationLink(destination: MapVisualizationView(entries: viewModel.filteredEntries)) {
                     let cities = Set(viewModel.filteredEntries.compactMap(\.city))
                     InsightCard(title: "My Map", icon: "map.fill", color: .accentTeal) {
-                        HStack(spacing: 12) {
+                        HStack(spacing: 24) {
                             VStack(alignment: .leading, spacing: 2) {
                                 Text("\(cities.count)")
                                     .font(.title2.bold())

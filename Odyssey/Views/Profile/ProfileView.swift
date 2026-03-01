@@ -26,12 +26,14 @@ struct ProfileView: View {
                         ScreenTimeSelectAppsContentView(model: selectAppsModel)
                     }
                 }
+                .listRowBackground(Color.cardSurface)
 
                 Section("Data") {
                     Button("Export to CSV") {
                         exportData()
                     }
                 }
+                .listRowBackground(Color.cardSurface)
 
                 Section("About") {
                     HStack {
@@ -42,8 +44,11 @@ struct ProfileView: View {
                             .foregroundStyle(.secondary)
                     }
                 }
+                .listRowBackground(Color.cardSurface)
             }
+            .scrollContentBackground(.hidden)
             .navigationTitle("Profile")
+            .cosmicBackground()
         }
     }
 

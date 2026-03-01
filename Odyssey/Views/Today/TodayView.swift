@@ -57,7 +57,10 @@ struct TodayView: View {
                 }
                 .padding(.top, 16)
             }
-            .background(backgroundGradient)
+            .background {
+                backgroundGradient
+            }
+            .cosmicBackground()
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                 GuidedPromptFlowView()
             }
@@ -160,8 +163,7 @@ struct TodayView: View {
         return LinearGradient(
             colors: [
                 moodColor.opacity(0.15),
-                Color.black.opacity(0.95),
-                Color.black
+                Color.clear
             ],
             startPoint: .top,
             endPoint: .bottom
