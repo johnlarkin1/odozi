@@ -33,6 +33,8 @@ struct TensionPromptCard: View {
                             .allowsHitTesting(false)
                     }
                 }
+                .accessibilityLabel("Tension entry")
+                .accessibilityHint("Write about what is weighing on you")
         }
     }
 }

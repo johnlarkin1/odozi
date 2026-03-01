@@ -33,6 +33,9 @@ struct SleepPromptCard: View {
                                     .fill(value <= sleepQuality ? sleepColor(for: value) : Color.white.opacity(0.15))
                                     .frame(height: 40)
                             }
+                            .accessibilityLabel("Sleep quality \(value) out of 10")
+                            .accessibilityHint("Double tap to select")
+                            .accessibilityValue(value == sleepQuality ? "Selected" : "Not selected")
                         }
                     }
 

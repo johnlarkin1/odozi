@@ -26,6 +26,7 @@ struct MapVisualizationView: View {
                                     Circle()
                                         .stroke(Color.white.opacity(0.5), lineWidth: 1)
                                 )
+                                .accessibilityLabel("Entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")")
                         }
                     }
                 }

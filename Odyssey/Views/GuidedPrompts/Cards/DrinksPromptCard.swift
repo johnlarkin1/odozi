@@ -28,6 +28,9 @@ struct DrinksPromptCard: View {
                             .foregroundStyle(drinks > 0 ? Color.white : Color.white.opacity(0.3))
                     }
                     .disabled(drinks == 0)
+                    .accessibilityLabel("Decrease drinks")
+                    .accessibilityHint("Double tap to subtract one drink")
+                    .accessibilityValue("\(drinks) drinks")
 
                     // Plus button
                     Button {
@@ -40,6 +43,9 @@ struct DrinksPromptCard: View {
                             .foregroundStyle(Color.white)
                     }
                     .disabled(drinks >= 20)
+                    .accessibilityLabel("Increase drinks")
+                    .accessibilityHint("Double tap to add one drink")
+                    .accessibilityValue("\(drinks) drinks")
                 }
 
                 if drinks == 0 {

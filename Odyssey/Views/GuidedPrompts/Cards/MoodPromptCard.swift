@@ -27,6 +27,9 @@ struct MoodPromptCard: View {
                                     .fill(value <= feeling ? Color.moodGradient(for: value) : Color.white.opacity(0.15))
                                     .frame(height: 40)
                             }
+                            .accessibilityLabel("Mood score \(value) out of 10")
+                            .accessibilityHint("Double tap to select")
+                            .accessibilityValue(value == feeling ? "Selected" : "Not selected")
                         }
                     }
 

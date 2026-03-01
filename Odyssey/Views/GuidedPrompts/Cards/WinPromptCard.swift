@@ -33,6 +33,8 @@ struct WinPromptCard: View {
                             .allowsHitTesting(false)
                     }
                 }
+                .accessibilityLabel("Win entry")
+                .accessibilityHint("Write about something that went well today")
         }
     }
 }

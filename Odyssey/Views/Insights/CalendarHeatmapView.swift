@@ -28,6 +28,7 @@ struct CalendarHeatmapView: View {
                         RoundedRectangle(cornerRadius: 3)
                             .fill(day.color)
                             .frame(height: 16)
+                            .accessibilityLabel(day.accessibilityDescription)
                     }
                 }
                 .padding(.horizontal, 16)
@@ -57,6 +58,18 @@ struct CalendarHeatmapView: View {
     private struct HeatmapDay {
         let date: Date
         let color: Color
+        let hasEntry: Bool
+        let moodScore: Int?
+
+        var accessibilityDescription: String {
+            let formatter = DateFormatter()
+            formatter.dateStyle = .medium
+            let dateStr = formatter.string(from: date)
+            if hasEntry, let score = moodScore {
+                return "\(dateStr), mood \(score) out of 10"
+            }
+            return "\(dateStr), no entry"
+        }
     }
 
     private func heatmapDays() -> [HeatmapDay] {
@@ -77,9 +90,9 @@ struct CalendarHeatmapView: View {
         while current <= today {
             if let entry = entryMap[current], entry.hasPromptData {
                 let intensity = Double(entry.feeling) / 10.0
-                days.append(HeatmapDay(date: current, color: Color.accentAmber.opacity(max(0.15, intensity))))
+                days.append(HeatmapDay(date: current, color: Color.accentAmber.opacity(max(0.15, intensity)), hasEntry: true, moodScore: entry.feeling))
             } else {
-                days.append(HeatmapDay(date: current, color: Color.white.opacity(0.05)))
+                days.append(HeatmapDay(date: current, color: Color.white.opacity(0.05), hasEntry: false, moodScore: nil))
             }
             current = calendar.date(byAdding: .day, value: 1, to: current)!
         }
