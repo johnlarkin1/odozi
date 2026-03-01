@@ -1,6 +1,10 @@
 import Foundation
 import SwiftData
 
+extension Notification.Name {
+    static let didSaveFirstEntry = Notification.Name("didSaveFirstEntry")
+}
+
 @Model
 final class DailyEntry {
 
@@ -44,6 +48,10 @@ final class DailyEntry {
     var createdAt: Date
     var updatedAt: Date
 
+    // Sync metadata (lightweight migration-safe: optional + default)
+    var lastSyncedAt: Date?
+    var needsSync: Bool = false
+
     init(
         date: Date = Calendar.current.startOfDay(for: Date()),
         feeling: Int = 5,
@@ -64,7 +72,9 @@ final class DailyEntry {
         walkingDistanceMeters: Double? = nil,
         sleepHours: Double? = nil,
         screenTimeSeconds: Double? = nil,
-        pickups: Int? = nil
+        pickups: Int? = nil,
+        lastSyncedAt: Date? = nil,
+        needsSync: Bool = false
     ) {
         self.date = date
         self.feeling = feeling
@@ -88,5 +98,7 @@ final class DailyEntry {
         self.pickups = pickups
         self.createdAt = Date()
         self.updatedAt = Date()
+        self.lastSyncedAt = lastSyncedAt
+        self.needsSync = needsSync
     }
 }

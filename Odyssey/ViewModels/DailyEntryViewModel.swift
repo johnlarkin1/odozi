@@ -96,11 +96,13 @@ final class DailyEntryViewModel {
         entry.journalEntry = journalEntry
         entry.drinks = drinks
         entry.updatedAt = Date()
+        entry.needsSync = true
 
         do {
             try modelContext.save()
             hasSubmittedData = true
             submissionMessage = "Successfully saved today's entry."
+            NotificationCenter.default.post(name: .didSaveFirstEntry, object: nil)
         } catch {
             logger.error("Failed to save entry: \(error)")
         }

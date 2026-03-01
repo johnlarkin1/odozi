@@ -11,6 +11,9 @@ struct OdysseyApp: App {
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     @State private var onboardingViewModel = OnboardingViewModel()
+    @State private var authManager = AuthManager()
+    @State private var syncService = SyncService()
+    @State private var showBackupPrompt = false
 
     let container: ModelContainer?
     let containerError: Error?
@@ -43,10 +46,27 @@ struct OdysseyApp: App {
                     if hasCompletedOnboarding {
                         ContentView()
                             .environment(\.colorScheme, .dark)
+                            .environment(authManager)
+                            .environment(syncService)
                             .overlay {
                                 ScreenTimeDataExtractor()
                             }
                             .modelContainer(container)
+                            .task {
+                                await authManager.initialize()
+                            }
+                            .fullScreenCover(isPresented: $showBackupPrompt) {
+                                BackupPromptModal()
+                                    .environment(authManager)
+                                    .environment(\.colorScheme, .dark)
+                            }
+                            .onReceive(NotificationCenter.default.publisher(for: .didSaveFirstEntry)) { _ in
+                                let hasSeenPrompt = UserDefaults.standard.bool(forKey: "hasSeenBackupPrompt")
+                                if !hasSeenPrompt && !authManager.hasAccount {
+                                    showBackupPrompt = true
+                                    UserDefaults.standard.set(true, forKey: "hasSeenBackupPrompt")
+                                }
+                            }
                     } else {
                         OnboardingFlowView(
                             viewModel: onboardingViewModel,
@@ -86,6 +106,17 @@ struct OdysseyApp: App {
             let service = BackgroundSnapshotService()
             await service.captureSnapshot(modelContext: context)
         }
+
+        // Sync pending entries if signed in
+        if authManager.hasAccount {
+            await syncService.syncPendingEntries(modelContext: context, authManager: authManager)
+        }
+
+        // Data retention cleanup for non-account users
+        DataRetentionService.performCleanupIfNeeded(
+            modelContext: context,
+            hasAccount: authManager.hasAccount
+        )
     }
 }
 

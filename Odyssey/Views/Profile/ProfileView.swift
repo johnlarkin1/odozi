@@ -15,9 +15,49 @@ struct ProfileView: View {
         devices: .init([.iPhone, .iPad])
     )
 
+    @Environment(AuthManager.self) private var authManager
+
     var body: some View {
         NavigationStack {
             List {
+                Section("Account") {
+                    if authManager.hasAccount {
+                        HStack(spacing: 12) {
+                            Image(systemName: "person.crop.circle.fill")
+                                .font(.title2)
+                                .foregroundStyle(Color.accentTeal)
+                            VStack(alignment: .leading) {
+                                Text(authManager.user?.displayName ?? "Account")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                if let email = authManager.user?.email {
+                                    Text(email)
+                                        .font(.caption)
+                                        .foregroundStyle(.secondary)
+                                }
+                            }
+                        }
+
+                        SyncStatusBanner()
+
+                        NavigationLink("Manage Account") {
+                            AccountView()
+                        }
+                    } else {
+                        HStack(spacing: 12) {
+                            Image(systemName: "icloud.slash")
+                                .foregroundStyle(.secondary)
+                            Text("No backup configured")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary)
+                        }
+
+                        NavigationLink("Back Up Your Journal") {
+                            SignInView()
+                        }
+                    }
+                }
+
                 Section("Screen Time") {
                     DeviceActivityReport(context, filter: filter)
                         .frame(height: 60)
