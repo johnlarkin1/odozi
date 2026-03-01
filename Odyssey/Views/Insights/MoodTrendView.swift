@@ -76,7 +76,7 @@ struct MoodTrendView: View {
             .padding(.top, 16)
         }
         .navigationTitle("Mood Trends")
-        .background(Color.black)
+        .cosmicBackground()
     }
 
     private var averageMood: Double {

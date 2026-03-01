@@ -28,5 +28,7 @@ struct MainTabView: View {
                 }
         }
         .tint(Color.accentAmber)
+        .toolbarBackground(Color.deepSpaceBlue.opacity(0.85), for: .tabBar)
+        .toolbarBackground(.visible, for: .tabBar)
     }
 }

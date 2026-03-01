@@ -37,14 +37,16 @@ struct JournalView: View {
                                 }
                             }
                         }
+                        .listRowBackground(Color.cardSurface)
                     }
+                    .scrollContentBackground(.hidden)
                     .searchable(text: $searchText, prompt: "Search entries")
                 } else {
                     ProgressView()
                 }
             }
             .navigationTitle("Journal")
-            .background(Color.black)
+            .cosmicBackground()
         }
         .onAppear {
             if viewModel == nil {
