@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 
+@MainActor
 @Observable
 final class YearInReviewViewModel {
     var data: YearInReviewData?

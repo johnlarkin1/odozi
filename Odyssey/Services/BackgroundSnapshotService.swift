@@ -74,39 +74,30 @@ actor BackgroundSnapshotService {
 
 @MainActor
 func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
-    let today = Calendar.current.startOfDay(for: Date())
-    let predicate = #Predicate<DailyEntry> { $0.date == today }
-    var descriptor = FetchDescriptor(predicate: predicate)
-    descriptor.fetchLimit = 1
-
-    let entry: DailyEntry
-    if let existing = try? context.fetch(descriptor).first {
-        entry = existing
-    } else {
-        entry = DailyEntry(date: today)
-        context.insert(entry)
-    }
-
-    // Apply location data
-    if let lat = data.latitude { entry.latitude = lat }
-    if let lon = data.longitude { entry.longitude = lon }
-    if let city = data.city { entry.city = city }
-    if let state = data.state { entry.state = state }
-    if let country = data.country { entry.country = country }
-
-    // Apply HealthKit data
-    if let steps = data.stepCount { entry.stepCount = steps }
-    if let distance = data.walkingDistanceMeters { entry.walkingDistanceMeters = distance }
-    if let sleep = data.sleepHours { entry.sleepHours = sleep }
-
-    // Apply Screen Time data
-    if let seconds = data.screenTimeSeconds { entry.screenTimeSeconds = seconds }
-    if let pickups = data.pickups { entry.pickups = pickups }
-
-    entry.updatedAt = Date()
-    entry.needsSync = true
+    let repository = DailyEntryRepository(context: context)
 
     do {
+        let entry = try repository.fetchOrCreateToday()
+
+        // Apply location data
+        if let lat = data.latitude { entry.latitude = lat }
+        if let lon = data.longitude { entry.longitude = lon }
+        if let city = data.city { entry.city = city }
+        if let state = data.state { entry.state = state }
+        if let country = data.country { entry.country = country }
+
+        // Apply HealthKit data
+        if let steps = data.stepCount { entry.stepCount = steps }
+        if let distance = data.walkingDistanceMeters { entry.walkingDistanceMeters = distance }
+        if let sleep = data.sleepHours { entry.sleepHours = sleep }
+
+        // Apply Screen Time data
+        if let seconds = data.screenTimeSeconds { entry.screenTimeSeconds = seconds }
+        if let pickups = data.pickups { entry.pickups = pickups }
+
+        entry.updatedAt = Date()
+        entry.needsSync = true
+
         try context.save()
     } catch {
         logger.error("Failed to save snapshot: \(error)")

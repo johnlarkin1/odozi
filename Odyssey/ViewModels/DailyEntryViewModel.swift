@@ -77,29 +77,23 @@ final class DailyEntryViewModel {
         journalEntry: String,
         drinks: Int
     ) {
-        let today = Calendar.current.startOfDay(for: Date())
-        let entry: DailyEntry
-
-        if let existing = fetchTodayEntry() {
-            entry = existing
-        } else {
-            entry = DailyEntry(date: today)
-            modelContext.insert(entry)
-        }
-
-        entry.feeling = feeling
-        entry.singleWordFeeling = singleWordFeeling
-        entry.feelingColorHex = feelingColorHex
-        entry.sleepQuality = sleepQuality
-        entry.gratitude = gratitude
-        entry.win = win
-        entry.tension = tension
-        entry.journalEntry = journalEntry
-        entry.drinks = drinks
-        entry.updatedAt = Date()
-        entry.needsSync = true
+        let repository = DailyEntryRepository(context: modelContext)
 
         do {
+            let entry = try repository.fetchOrCreateToday()
+
+            entry.feeling = feeling
+            entry.singleWordFeeling = singleWordFeeling
+            entry.feelingColorHex = feelingColorHex
+            entry.sleepQuality = sleepQuality
+            entry.gratitude = gratitude
+            entry.win = win
+            entry.tension = tension
+            entry.journalEntry = journalEntry
+            entry.drinks = drinks
+            entry.updatedAt = Date()
+            entry.needsSync = true
+
             try modelContext.save()
             hasSubmittedData = true
             submissionMessage = "Successfully saved today's entry."
@@ -114,14 +108,8 @@ final class DailyEntryViewModel {
     }
 
     func updateLocation() async throws {
-        let today = Calendar.current.startOfDay(for: Date())
-        let entry: DailyEntry
-        if let existing = fetchTodayEntry() {
-            entry = existing
-        } else {
-            entry = DailyEntry(date: today)
-            modelContext.insert(entry)
-        }
+        let repository = DailyEntryRepository(context: modelContext)
+        let entry = try repository.fetchOrCreateToday()
 
         let service = LocationCaptureService()
         let snapshot = try await service.captureCurrentLocation()
@@ -137,20 +125,6 @@ final class DailyEntryViewModel {
     }
 
     var currentStreak: Int {
-        let entries = fetchAllEntries().sorted { $0.date > $1.date }
-        let calendar = Calendar.current
-        var streak = 0
-        var expectedDate = calendar.startOfDay(for: Date())
-
-        for entry in entries {
-            let entryDate = calendar.startOfDay(for: entry.date)
-            if entryDate == expectedDate && entry.hasPromptData {
-                streak += 1
-                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
-            } else if entryDate < expectedDate {
-                break
-            }
-        }
-        return streak
+        fetchAllEntries().currentStreak
     }
 }
