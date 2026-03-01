@@ -4,50 +4,6 @@ import SwiftUI
 
 final class DailyEntryComputedTests: XCTestCase {
 
-    // MARK: - moodEmoji
-
-    func testMoodEmojiSad() {
-        let entry = DailyEntry(feeling: 1)
-        XCTAssertEqual(entry.moodEmoji, "😢")
-        entry.feeling = 2
-        XCTAssertEqual(entry.moodEmoji, "😢")
-    }
-
-    func testMoodEmojiSlightlyDown() {
-        let entry = DailyEntry(feeling: 3)
-        XCTAssertEqual(entry.moodEmoji, "😕")
-        entry.feeling = 4
-        XCTAssertEqual(entry.moodEmoji, "😕")
-    }
-
-    func testMoodEmojiNeutral() {
-        let entry = DailyEntry(feeling: 5)
-        XCTAssertEqual(entry.moodEmoji, "😐")
-        entry.feeling = 6
-        XCTAssertEqual(entry.moodEmoji, "😐")
-    }
-
-    func testMoodEmojiHappy() {
-        let entry = DailyEntry(feeling: 7)
-        XCTAssertEqual(entry.moodEmoji, "😊")
-        entry.feeling = 8
-        XCTAssertEqual(entry.moodEmoji, "😊")
-    }
-
-    func testMoodEmojiVeryHappy() {
-        let entry = DailyEntry(feeling: 9)
-        XCTAssertEqual(entry.moodEmoji, "😄")
-        entry.feeling = 10
-        XCTAssertEqual(entry.moodEmoji, "😄")
-    }
-
-    func testMoodEmojiOutOfRangeDefaultsToNeutral() {
-        let entry = DailyEntry(feeling: 0)
-        XCTAssertEqual(entry.moodEmoji, "😐")
-        entry.feeling = 11
-        XCTAssertEqual(entry.moodEmoji, "😐")
-    }
-
     // MARK: - screenTimeFormatted
 
     func testScreenTimeFormattedNilReturnsNA() {

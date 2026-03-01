@@ -39,6 +39,11 @@ final class AuthManager {
         isLoading = true
         defer { isLoading = false }
 
+        // Restore token from Keychain
+        if let storedToken = try? KeychainService.retrieveAuthToken() {
+            sessionToken = storedToken
+        }
+
         // TODO: Check cached Clerk session on launch
         // await Clerk.shared.configure(publishableKey: ClerkConfiguration.publishableKey)
         // if let session = Clerk.shared.session {
@@ -87,6 +92,7 @@ final class AuthManager {
         isSignedIn = false
         user = nil
         sessionToken = nil
+        try? KeychainService.deleteAuthToken()
     }
 
     func refreshTokenIfNeeded() async -> String? {
@@ -107,5 +113,6 @@ final class AuthManager {
         isSignedIn = false
         user = nil
         sessionToken = nil
+        try? KeychainService.deleteAuthToken()
     }
 }
