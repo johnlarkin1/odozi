@@ -22,8 +22,9 @@ struct OdysseyApp: App {
     let containerError: Error?
 
     init() {
-        if ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
-            Clerk.configure(publishableKey: ClerkConfiguration.publishableKey)
+        if let key = ClerkConfiguration.publishableKey,
+           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+            Clerk.configure(publishableKey: key)
             AuthManager.clerkConfigured = true
         }
 

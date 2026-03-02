@@ -96,8 +96,7 @@ struct ScatterCorrelationView: View {
         let slope = (n * sumXY - sumX * sumY) / denom
         let intercept = (sumY - slope * sumX) / n
 
-        let minX = xs.min()!
-        let maxX = xs.max()!
+        guard let minX = xs.min(), let maxX = xs.max() else { return nil }
 
         return (minX, slope * minX + intercept, maxX, slope * maxX + intercept)
     }

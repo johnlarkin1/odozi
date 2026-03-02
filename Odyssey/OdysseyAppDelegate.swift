@@ -56,10 +56,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let calendar = Calendar.current
         let now = Date()
-        var target = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: now)!
+        guard var target = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: now) else {
+            logger.warning("Failed to compute snapshot target date")
+            return
+        }
 
         if target <= now {
-            target = calendar.date(byAdding: .day, value: 1, to: target)!
+            guard let next = calendar.date(byAdding: .day, value: 1, to: target) else { return }
+            target = next
         }
 
         request.earliestBeginDate = target
@@ -103,10 +107,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
 
         let calendar = Calendar.current
         let now = Date()
-        var target = calendar.date(bySettingHour: 2, minute: 0, second: 0, of: now)!
+        guard var target = calendar.date(bySettingHour: 2, minute: 0, second: 0, of: now) else {
+            logger.warning("Failed to compute processing target date")
+            return
+        }
 
         if target <= now {
-            target = calendar.date(byAdding: .day, value: 1, to: target)!
+            guard let next = calendar.date(byAdding: .day, value: 1, to: target) else { return }
+            target = next
         }
 
         request.earliestBeginDate = target

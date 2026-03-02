@@ -93,3 +93,13 @@ iOSInjectionProject/
 
 .env
 Odyssey.xcconfig
+
+# Fastlane
+fastlane/README.md
+*.xcarchive
+vendor/bundle
+.bundle
+
+# Test artifacts
+TestResults.xcresult
+coverage.json

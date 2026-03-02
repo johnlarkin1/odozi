@@ -9,21 +9,23 @@ struct JourneyGlobeView: View {
     var body: some View {
         Map(position: $cameraPosition) {
             ForEach(locatedEntries, id: \.date) { entry in
-                Annotation(entry.date.shortFormatted, coordinate: CLLocationCoordinate2D(
-                    latitude: entry.latitude!,
-                    longitude: entry.longitude!
-                )) {
-                    Button {
-                        onEntryTapped?(entry)
-                    } label: {
-                        Circle()
-                            .fill(entry.moodGradientColor)
-                            .frame(width: 14, height: 14)
-                            .overlay(
-                                Circle()
-                                    .stroke(Color.white.opacity(0.6), lineWidth: 1.5)
-                            )
-                            .shadow(color: entry.moodGradientColor.opacity(0.5), radius: 4)
+                if let lat = entry.latitude, let lon = entry.longitude {
+                    Annotation(entry.date.shortFormatted, coordinate: CLLocationCoordinate2D(
+                        latitude: lat,
+                        longitude: lon
+                    )) {
+                        Button {
+                            onEntryTapped?(entry)
+                        } label: {
+                            Circle()
+                                .fill(entry.moodGradientColor)
+                                .frame(width: 14, height: 14)
+                                .overlay(
+                                    Circle()
+                                        .stroke(Color.white.opacity(0.6), lineWidth: 1.5)
+                                )
+                                .shadow(color: entry.moodGradientColor.opacity(0.5), radius: 4)
+                        }
                     }
                 }
             }

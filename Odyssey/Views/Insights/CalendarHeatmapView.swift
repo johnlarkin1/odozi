@@ -75,11 +75,11 @@ struct CalendarHeatmapView: View {
     private func heatmapDays() -> [HeatmapDay] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        let start = calendar.date(byAdding: .day, value: -364, to: today)!
+        guard let start = calendar.date(byAdding: .day, value: -364, to: today) else { return [] }
 
         // Align to Sunday
         let weekday = calendar.component(.weekday, from: start)
-        let alignedStart = calendar.date(byAdding: .day, value: -(weekday - 1), to: start)!
+        guard let alignedStart = calendar.date(byAdding: .day, value: -(weekday - 1), to: start) else { return [] }
 
         let entryMap = Dictionary(uniqueKeysWithValues: entries.map {
             (calendar.startOfDay(for: $0.date), $0)
@@ -94,7 +94,8 @@ struct CalendarHeatmapView: View {
             } else {
                 days.append(HeatmapDay(date: current, color: Color.white.opacity(0.05), hasEntry: false, moodScore: nil))
             }
-            current = calendar.date(byAdding: .day, value: 1, to: current)!
+            guard let next = calendar.date(byAdding: .day, value: 1, to: current) else { break }
+            current = next
         }
         return days
     }
