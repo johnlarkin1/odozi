@@ -32,7 +32,7 @@ actor APIClient {
     private let encoder: JSONEncoder
     private let decoder: JSONDecoder
 
-    init(baseURL: String = ServerConfiguration.baseURL) {
+    init(baseURL: String = ServerConfiguration.baseURL ?? "") {
         self.baseURL = baseURL
         self.session = URLSession.shared
         self.encoder = JSONEncoder()
