@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template beta release match-appstore match-development
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -102,3 +102,15 @@ resolve: ## Resolve Swift package dependencies
 
 lint: ## Lint Swift source files with SwiftLint
 	swiftlint lint --strict
+
+beta: ## Build and upload to TestFlight via Fastlane
+	bundle exec fastlane beta
+
+release: ## Build and submit to App Store via Fastlane
+	bundle exec fastlane release
+
+match-appstore: ## Sync App Store signing certificates
+	bundle exec fastlane match appstore
+
+match-development: ## Sync development signing certificates
+	bundle exec fastlane match development
