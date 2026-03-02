@@ -108,3 +108,5 @@ coverage.json
 website/node_modules/
 website/.next/
 website/out/
+
+.claude/worktrees
