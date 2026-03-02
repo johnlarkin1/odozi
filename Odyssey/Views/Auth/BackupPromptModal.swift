@@ -7,6 +7,7 @@ struct BackupPromptModal: View {
     @State private var showSignUp = false
     @State private var showRecoveryKey = false
     @State private var recoveryKey = ""
+    @State private var copied = false
 
     var body: some View {
         NavigationStack {
@@ -93,13 +94,33 @@ struct BackupPromptModal: View {
                 signInButton(
                     icon: "apple.logo",
                     title: "Continue with Apple",
-                    action: { Task { try? await authManager.signUp(strategy: .apple) } }
+                    action: {
+                        Task {
+                            do {
+                                try await authManager.signUp(strategy: .apple)
+                            } catch is CancellationError {
+                                // User cancelled OAuth sheet
+                            } catch {
+                                authManager.error = error.localizedDescription
+                            }
+                        }
+                    }
                 )
 
                 signInButton(
                     icon: "globe",
                     title: "Continue with Google",
-                    action: { Task { try? await authManager.signUp(strategy: .google) } }
+                    action: {
+                        Task {
+                            do {
+                                try await authManager.signUp(strategy: .google)
+                            } catch is CancellationError {
+                                // User cancelled OAuth sheet
+                            } catch {
+                                authManager.error = error.localizedDescription
+                            }
+                        }
+                    }
                 )
             }
             .padding(.horizontal, 24)
@@ -108,6 +129,13 @@ struct BackupPromptModal: View {
 
             if authManager.isLoading {
                 ProgressView()
+            }
+
+            if let error = authManager.error {
+                Text(error)
+                    .font(.caption)
+                    .foregroundStyle(Color.coralRed)
+                    .padding(.horizontal)
             }
 
             Button("Back") {
@@ -155,9 +183,17 @@ struct BackupPromptModal: View {
                 .padding(.horizontal, 24)
 
             Button {
-                UIPasteboard.general.string = recoveryKey
+                UIPasteboard.general.setItems(
+                    [[UIPasteboard.typeAutomatic: recoveryKey]],
+                    options: [.expirationDate: Date().addingTimeInterval(60)]
+                )
+                copied = true
+                Task {
+                    try? await Task.sleep(for: .seconds(3))
+                    copied = false
+                }
             } label: {
-                Label("Copy to Clipboard", systemImage: "doc.on.doc")
+                Label(copied ? "Copied! (expires in 60s)" : "Copy to Clipboard", systemImage: "doc.on.doc")
                     .font(.subheadline)
             }
 

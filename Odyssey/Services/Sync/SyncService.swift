@@ -1,5 +1,8 @@
 import Foundation
+import os
 import SwiftData
+
+private let conflictLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "SyncConflict")
 
 @MainActor
 @Observable
@@ -239,72 +242,449 @@ final class SyncService {
 
     // MARK: - Private: Merge
 
+    /// Holds decrypted values from a remote download entry for field-level comparison.
+    private struct DecryptedRemoteEntry {
+        let journalEntry: String
+        let gratitude: String
+        let win: String
+        let tension: String
+        let singleWordFeeling: String
+        let latitude: Double?
+        let longitude: Double?
+        let city: String?
+        let state: String?
+        let country: String?
+        let feeling: Int
+        let sleepQuality: Int
+        let feelingColorHex: String
+        let drinks: Int
+        let stepCount: Int?
+        let walkingDistanceMeters: Double?
+        let sleepHours: Double?
+        let screenTimeSeconds: Double?
+        let pickups: Int?
+        let createdAt: Date?
+        let updatedAt: Date?
+    }
+
+    /// Decrypts all encrypted fields of a download entry and returns a struct ready for comparison.
+    private func decryptDownloadEntry(_ download: SyncDownloadEntry) async throws -> DecryptedRemoteEntry {
+        let journalEntry: String
+        if let encrypted = download.journalEntry {
+            journalEntry = try await encryptionService.decrypt(encrypted)
+        } else {
+            journalEntry = ""
+        }
+
+        let gratitude: String
+        if let encrypted = download.gratitude {
+            gratitude = try await encryptionService.decrypt(encrypted)
+        } else {
+            gratitude = ""
+        }
+
+        let win: String
+        if let encrypted = download.win {
+            win = try await encryptionService.decrypt(encrypted)
+        } else {
+            win = ""
+        }
+
+        let tension: String
+        if let encrypted = download.tension {
+            tension = try await encryptionService.decrypt(encrypted)
+        } else {
+            tension = ""
+        }
+
+        let singleWordFeeling: String
+        if let encrypted = download.singleWordFeeling {
+            singleWordFeeling = try await encryptionService.decrypt(encrypted)
+        } else {
+            singleWordFeeling = ""
+        }
+
+        let latitude: Double?
+        if let encrypted = download.latitude {
+            latitude = try await encryptionService.decryptDouble(encrypted)
+        } else {
+            latitude = nil
+        }
+
+        let longitude: Double?
+        if let encrypted = download.longitude {
+            longitude = try await encryptionService.decryptDouble(encrypted)
+        } else {
+            longitude = nil
+        }
+
+        let city: String?
+        if let encrypted = download.city {
+            city = try await encryptionService.decrypt(encrypted)
+        } else {
+            city = nil
+        }
+
+        let state: String?
+        if let encrypted = download.state {
+            state = try await encryptionService.decrypt(encrypted)
+        } else {
+            state = nil
+        }
+
+        let country: String?
+        if let encrypted = download.country {
+            country = try await encryptionService.decrypt(encrypted)
+        } else {
+            country = nil
+        }
+
+        return DecryptedRemoteEntry(
+            journalEntry: journalEntry,
+            gratitude: gratitude,
+            win: win,
+            tension: tension,
+            singleWordFeeling: singleWordFeeling,
+            latitude: latitude,
+            longitude: longitude,
+            city: city,
+            state: state,
+            country: country,
+            feeling: download.feeling,
+            sleepQuality: download.sleepQuality,
+            feelingColorHex: download.feelingColorHex,
+            drinks: download.drinks,
+            stepCount: download.stepCount,
+            walkingDistanceMeters: download.walkingDistanceMeters,
+            sleepHours: download.sleepHours,
+            screenTimeSeconds: download.screenTimeSeconds,
+            pickups: download.pickups,
+            createdAt: Self.iso8601.date(from: download.createdAt),
+            updatedAt: Self.iso8601.date(from: download.updatedAt)
+        )
+    }
+
+    /// Applies all remote fields to a local entry unconditionally (used for fresh creates).
+    private func applyAllRemoteFields(_ remote: DecryptedRemoteEntry, to entry: DailyEntry) {
+        entry.journalEntry = remote.journalEntry
+        entry.gratitude = remote.gratitude
+        entry.win = remote.win
+        entry.tension = remote.tension
+        entry.singleWordFeeling = remote.singleWordFeeling
+        entry.latitude = remote.latitude
+        entry.longitude = remote.longitude
+        entry.city = remote.city
+        entry.state = remote.state
+        entry.country = remote.country
+        entry.feeling = remote.feeling
+        entry.sleepQuality = remote.sleepQuality
+        entry.feelingColorHex = remote.feelingColorHex
+        entry.drinks = remote.drinks
+        entry.stepCount = remote.stepCount
+        entry.walkingDistanceMeters = remote.walkingDistanceMeters
+        entry.sleepHours = remote.sleepHours
+        entry.screenTimeSeconds = remote.screenTimeSeconds
+        entry.pickups = remote.pickups
+
+        if let createdAt = remote.createdAt {
+            entry.createdAt = createdAt
+        }
+        if let updatedAt = remote.updatedAt {
+            entry.updatedAt = updatedAt
+        }
+    }
+
     private func mergeEntry(_ download: SyncDownloadEntry, into context: ModelContext) async throws {
         guard let entryDate = Self.dateOnly.date(from: download.entryDate) else { return }
 
         let repository = DailyEntryRepository(context: context)
         let existingEntry = try? repository.fetchEntry(for: entryDate)
 
-        // Last-write-wins: skip if local is newer
-        if let existingEntry,
-           let downloadUpdated = Self.iso8601.date(from: download.updatedAt),
-           existingEntry.updatedAt >= downloadUpdated {
+        let remoteTimestamp = Self.iso8601.date(from: download.updatedAt) ?? Date.distantPast
+
+        if let existingEntry {
+            // Both local and remote exist — field-level merge
+            let localTimestamp = existingEntry.updatedAt
+
+            // Fast path: if local is >5s newer and clearly dominant, skip merge
+            if localTimestamp.timeIntervalSince(remoteTimestamp) > 5.0 {
+                conflictLogger.debug("Fast path: local is >5s newer for \(download.entryDate), skipping merge")
+                return
+            }
+
+            let remote = try await decryptDownloadEntry(download)
+            mergeFields(local: existingEntry, remote: remote, localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp)
+
+            existingEntry.updatedAt = max(localTimestamp, remoteTimestamp)
+            existingEntry.needsSync = false
+            existingEntry.lastSyncedAt = Date()
+        } else {
+            // No local entry — create and apply all remote fields
+            let entry = try repository.fetchOrCreate(for: entryDate)
+            let remote = try await decryptDownloadEntry(download)
+            applyAllRemoteFields(remote, to: entry)
+            entry.needsSync = false
+            entry.lastSyncedAt = Date()
+        }
+    }
+
+    // MARK: - Field-Level Merge
+
+    /// Performs field-level merge of a decrypted remote entry into an existing local entry.
+    private func mergeFields(
+        local: DailyEntry,
+        remote: DecryptedRemoteEntry,
+        localTimestamp: Date,
+        remoteTimestamp: Date
+    ) {
+        let entryDate = Self.dateOnly.string(from: local.date)
+
+        // Text fields — prefer non-empty, then longer, then newer timestamp
+        local.journalEntry = mergeTextField(
+            local: local.journalEntry, remote: remote.journalEntry,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "journalEntry", entryDate: entryDate
+        )
+        local.gratitude = mergeTextField(
+            local: local.gratitude, remote: remote.gratitude,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "gratitude", entryDate: entryDate
+        )
+        local.win = mergeTextField(
+            local: local.win, remote: remote.win,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "win", entryDate: entryDate
+        )
+        local.tension = mergeTextField(
+            local: local.tension, remote: remote.tension,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "tension", entryDate: entryDate
+        )
+        local.singleWordFeeling = mergeTextField(
+            local: local.singleWordFeeling, remote: remote.singleWordFeeling,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "singleWordFeeling", entryDate: entryDate
+        )
+        local.feelingColorHex = mergeTextField(
+            local: local.feelingColorHex, remote: remote.feelingColorHex,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "feelingColorHex", entryDate: entryDate
+        )
+
+        // Numeric fields — prefer non-zero, then newer timestamp
+        local.feeling = mergeNumericField(
+            local: local.feeling, remote: remote.feeling,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "feeling", entryDate: entryDate, defaultValue: 0
+        )
+        local.sleepQuality = mergeNumericField(
+            local: local.sleepQuality, remote: remote.sleepQuality,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepQuality", entryDate: entryDate, defaultValue: 0
+        )
+        local.drinks = mergeNumericField(
+            local: local.drinks, remote: remote.drinks,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "drinks", entryDate: entryDate, defaultValue: 0
+        )
+
+        // Location fields — merge as a group
+        mergeLocationFields(
+            localEntry: local, remote: remote,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            entryDate: entryDate
+        )
+
+        // Optional fields — prefer non-nil, then newer timestamp
+        local.stepCount = mergeOptionalField(
+            local: local.stepCount, remote: remote.stepCount,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "stepCount", entryDate: entryDate
+        )
+        local.walkingDistanceMeters = mergeOptionalField(
+            local: local.walkingDistanceMeters, remote: remote.walkingDistanceMeters,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "walkingDistanceMeters", entryDate: entryDate
+        )
+        local.sleepHours = mergeOptionalField(
+            local: local.sleepHours, remote: remote.sleepHours,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepHours", entryDate: entryDate
+        )
+        local.screenTimeSeconds = mergeOptionalField(
+            local: local.screenTimeSeconds, remote: remote.screenTimeSeconds,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "screenTimeSeconds", entryDate: entryDate
+        )
+        local.pickups = mergeOptionalField(
+            local: local.pickups, remote: remote.pickups,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "pickups", entryDate: entryDate
+        )
+    }
+
+    // MARK: - Merge Helpers
+
+    /// Merges a text field: prefer non-empty over empty, then longer text, then newer timestamp.
+    private func mergeTextField(
+        local: String,
+        remote: String,
+        localTimestamp: Date,
+        remoteTimestamp: Date,
+        fieldName: String,
+        entryDate: String
+    ) -> String {
+        // Both empty or identical — no conflict
+        if local == remote { return local }
+
+        let localEmpty = local.isEmpty
+        let remoteEmpty = remote.isEmpty
+
+        // Prefer non-empty over empty
+        if localEmpty && !remoteEmpty {
+            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local empty)")
+            return remote
+        }
+        if !localEmpty && remoteEmpty {
+            conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote empty)")
+            return local
+        }
+
+        // Both non-empty: prefer longer text (less data loss)
+        if local.count != remote.count {
+            if remote.count > local.count {
+                conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (longer text: \(remote.count) vs \(local.count))")
+                return remote
+            } else {
+                conflictLogger.info("[\(entryDate)] \(fieldName): local wins (longer text: \(local.count) vs \(remote.count))")
+                return local
+            }
+        }
+
+        // Equal length non-empty: timestamp breaks tie
+        if remoteTimestamp > localTimestamp {
+            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (newer timestamp, equal length)")
+            return remote
+        }
+        conflictLogger.info("[\(entryDate)] \(fieldName): local wins (newer or equal timestamp, equal length)")
+        return local
+    }
+
+    /// Merges a numeric field: prefer non-default over default, then newer timestamp.
+    private func mergeNumericField(
+        local: Int,
+        remote: Int,
+        localTimestamp: Date,
+        remoteTimestamp: Date,
+        fieldName: String,
+        entryDate: String,
+        defaultValue: Int
+    ) -> Int {
+        // Identical — no conflict
+        if local == remote { return local }
+
+        let localIsDefault = local == defaultValue
+        let remoteIsDefault = remote == defaultValue
+
+        // Prefer non-default over default
+        if localIsDefault && !remoteIsDefault {
+            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local is default \(defaultValue))")
+            return remote
+        }
+        if !localIsDefault && remoteIsDefault {
+            conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote is default \(defaultValue))")
+            return local
+        }
+
+        // Both non-default: timestamp breaks tie
+        if remoteTimestamp > localTimestamp {
+            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (newer timestamp, \(remote) vs \(local))")
+            return remote
+        }
+        conflictLogger.info("[\(entryDate)] \(fieldName): local wins (newer or equal timestamp, \(local) vs \(remote))")
+        return local
+    }
+
+    /// Merges an optional field: prefer non-nil over nil, then newer timestamp.
+    private func mergeOptionalField<T: Equatable>(
+        local: T?,
+        remote: T?,
+        localTimestamp: Date,
+        remoteTimestamp: Date,
+        fieldName: String,
+        entryDate: String
+    ) -> T? {
+        // Both nil or identical — no conflict
+        if local == remote { return local }
+
+        // Prefer non-nil over nil
+        if local == nil && remote != nil {
+            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local nil)")
+            return remote
+        }
+        if local != nil && remote == nil {
+            conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote nil)")
+            return local
+        }
+
+        // Both non-nil but different: timestamp breaks tie
+        if remoteTimestamp > localTimestamp {
+            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (newer timestamp)")
+            return remote
+        }
+        conflictLogger.info("[\(entryDate)] \(fieldName): local wins (newer or equal timestamp)")
+        return local
+    }
+
+    /// Merges all 5 location fields as a group. If either side has a non-nil latitude
+    /// (indicating location data exists), prefer that side's complete location set.
+    /// Timestamp breaks ties when both have location data.
+    private func mergeLocationFields(
+        localEntry: DailyEntry,
+        remote: DecryptedRemoteEntry,
+        localTimestamp: Date,
+        remoteTimestamp: Date,
+        entryDate: String
+    ) {
+        let localHasLocation = localEntry.latitude != nil
+        let remoteHasLocation = remote.latitude != nil
+
+        // Both have no location or identical coordinates — no conflict
+        if !localHasLocation && !remoteHasLocation { return }
+        if localEntry.latitude == remote.latitude &&
+            localEntry.longitude == remote.longitude &&
+            localEntry.city == remote.city &&
+            localEntry.state == remote.state &&
+            localEntry.country == remote.country {
             return
         }
 
-        let entry = try repository.fetchOrCreate(for: entryDate)
-
-        // Decrypt and apply sensitive fields
-        if let encrypted = download.journalEntry {
-            entry.journalEntry = try await encryptionService.decrypt(encrypted)
+        // Prefer the side with location data
+        if !localHasLocation && remoteHasLocation {
+            conflictLogger.info("[\(entryDate)] location: remote wins (local has no location)")
+            applyRemoteLocation(remote, to: localEntry)
+            return
         }
-        if let encrypted = download.gratitude {
-            entry.gratitude = try await encryptionService.decrypt(encrypted)
-        }
-        if let encrypted = download.win {
-            entry.win = try await encryptionService.decrypt(encrypted)
-        }
-        if let encrypted = download.tension {
-            entry.tension = try await encryptionService.decrypt(encrypted)
-        }
-        if let encrypted = download.singleWordFeeling {
-            entry.singleWordFeeling = try await encryptionService.decrypt(encrypted)
-        }
-        if let encrypted = download.latitude {
-            entry.latitude = try await encryptionService.decryptDouble(encrypted)
-        }
-        if let encrypted = download.longitude {
-            entry.longitude = try await encryptionService.decryptDouble(encrypted)
-        }
-        if let encrypted = download.city {
-            entry.city = try await encryptionService.decrypt(encrypted)
-        }
-        if let encrypted = download.state {
-            entry.state = try await encryptionService.decrypt(encrypted)
-        }
-        if let encrypted = download.country {
-            entry.country = try await encryptionService.decrypt(encrypted)
+        if localHasLocation && !remoteHasLocation {
+            conflictLogger.info("[\(entryDate)] location: local wins (remote has no location)")
+            return
         }
 
-        // Apply plaintext fields
-        entry.feeling = download.feeling
-        entry.sleepQuality = download.sleepQuality
-        entry.feelingColorHex = download.feelingColorHex
-        entry.drinks = download.drinks
-        entry.stepCount = download.stepCount
-        entry.walkingDistanceMeters = download.walkingDistanceMeters
-        entry.sleepHours = download.sleepHours
-        entry.screenTimeSeconds = download.screenTimeSeconds
-        entry.pickups = download.pickups
-
-        if let createdAt = Self.iso8601.date(from: download.createdAt) {
-            entry.createdAt = createdAt
+        // Both have location data: timestamp breaks tie
+        if remoteTimestamp > localTimestamp {
+            conflictLogger.info("[\(entryDate)] location: remote wins (newer timestamp)")
+            applyRemoteLocation(remote, to: localEntry)
+        } else {
+            conflictLogger.info("[\(entryDate)] location: local wins (newer or equal timestamp)")
         }
-        if let updatedAt = Self.iso8601.date(from: download.updatedAt) {
-            entry.updatedAt = updatedAt
-        }
+    }
 
-        entry.needsSync = false
-        entry.lastSyncedAt = Date()
+    /// Applies all 5 location fields from a decrypted remote entry to a local entry.
+    private func applyRemoteLocation(_ remote: DecryptedRemoteEntry, to entry: DailyEntry) {
+        entry.latitude = remote.latitude
+        entry.longitude = remote.longitude
+        entry.city = remote.city
+        entry.state = remote.state
+        entry.country = remote.country
     }
 }

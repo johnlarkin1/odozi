@@ -1,10 +1,17 @@
 import Foundation
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "SharedDefaults")
 
 enum SharedDefaults {
     static let suiteName = "group.com.johnlarkin.Odyssey"
 
     static var suite: UserDefaults {
-        UserDefaults(suiteName: suiteName)!
+        guard let defaults = UserDefaults(suiteName: suiteName) else {
+            logger.warning("App Group UserDefaults unavailable, falling back to .standard")
+            return .standard
+        }
+        return defaults
     }
 
     // Screen Time keys

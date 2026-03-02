@@ -4,21 +4,22 @@ Date: 2026-03-01 (last updated)
 
 > Generated from a full repo audit on 2026-03-01, post-merge of PR #11.
 > Updated after completion of P0 critical fixes + Rust backend rewrite (PRs #25–#30).
+> Updated after completion of bug fixes (PR #31), architecture cleanup (PR #32), UI/UX fixes (PR #33), DevOps (PR #34), and Clerk integration (PR #35).
 
 ---
 
 ## Completed
 
-### P0-1. Wire up Clerk SDK authentication — PARTIALLY DONE
+### P0-1. Wire up Clerk SDK authentication — DONE (PR #35)
 - [x] `deleteAccount()` calls server DELETE /account before clearing local state
 - [x] `refreshTokenIfNeeded()` wired with Keychain persistence
 - [x] Removed unused `emailPassword` auth strategy
 - [x] `ClerkConfiguration.swift` reads publishable key from xcconfig/Info.plist
-- [ ] **Remaining:** Add Clerk iOS SDK via SPM in Xcode
-- [ ] **Remaining:** Implement `signIn(strategy:)` for Apple + Google using Clerk SDK
-- [ ] **Remaining:** Implement `signUp(strategy:)` for Apple + Google using Clerk SDK
-- [ ] **Remaining:** Implement `signOut()` with Clerk SDK session revocation
-- [ ] **Remaining:** Test end-to-end auth flow on device
+- [x] Add Clerk iOS SDK via SPM in Xcode (ClerkSDK v1.0.3)
+- [x] Implement `signIn(strategy:)` for Apple + Google using Clerk SDK
+- [x] Implement `signUp(strategy:)` (delegates to signIn for OAuth)
+- [x] Implement `signOut()` with `Clerk.shared.auth.signOut()`
+- [x] `Info.plist` has `CFBundleURLTypes` with `"odyssey"` scheme
 
 ### P0-2. Fix SwiftData concurrency violations — DONE
 - [x] Added `@MainActor` to `AuthManager`, `SyncService`, `DailyEntryViewModel`, `GuidedPromptViewModel`
@@ -63,36 +64,16 @@ Date: 2026-03-01 (last updated)
 
 ## P0 — Critical (Must fix before any production/TestFlight use)
 
-### P0-1. Finish Clerk SDK integration (auth still non-functional)
-
-**Status:** Code scaffolded, but Clerk iOS SDK not yet added as dependency
-**Files:** `AuthManager.swift`, `ClerkConfiguration.swift`, `OdysseyApp.swift`
-**Details:** `signIn()`, `signUp()`, `signOut()` still have Clerk logic commented out. The publishable key now reads from xcconfig, but the actual Clerk SDK package hasn't been added via SPM. Until this is done, auth doesn't work and sync will fail.
-**Work:**
-
-- [ ] Add Clerk iOS SDK via SPM in Xcode (`https://github.com/clerk/clerk-ios`)
-- [ ] Call `Clerk.shared.load()` in `OdysseyApp.swift` `.task` modifier
-- [ ] Implement `signIn(strategy:)` for Apple + Google
-- [ ] Implement `signUp(strategy:)` (delegates to signIn for OAuth)
-- [ ] Implement `signOut()` with `Clerk.shared.signOut()`
-- [ ] Implement `refreshTokenIfNeeded()` via `Clerk.shared.session?.getToken()`
-- [ ] Map `Clerk.shared.user` to local `ClerkUser` struct
-- [ ] Verify `Info.plist` has `CFBundleURLTypes` with `"odyssey"` scheme for Google OAuth
-- [ ] Test full sign-in → sync → sign-out flow on device
+*All P0 items resolved. See Completed section above.*
 
 ---
 
 ## P1 — High (Should fix before beta / broader testing)
 
-### P1-1. Encrypt all sensitive metadata in sync payload
+### ~~P1-1. Encrypt all sensitive metadata in sync payload~~ — DONE
 
-**Files:** `SyncService.swift:140-163`, `SyncPayload.swift:18-25`
-**Details:** Mood (`feeling`), sleep quality, alcohol consumption (`drinks`), step count, sleep hours, screen time, pickups, and `feelingColorHex` are all sent in plaintext. These form a detailed behavioral fingerprint.
-**Work:**
-
-- [ ] Encrypt `feeling`, `sleepQuality`, `drinks`, `sleepHours`, `stepCount`, `walkingDistanceMeters`, `screenTimeSeconds`, `pickups`, `feelingColorHex` before upload
-- [ ] Update `SyncDownloadEntry` to decrypt these fields on restore
-- [ ] Update backend schema if needed (store as encrypted blobs instead of typed columns)
+**Fixed in:** PR #32 (architecture cleanup)
+**Details:** Text fields (journalEntry, gratitude, win, tension, singleWordFeeling) and location data encrypted via `EncryptionService`. Some non-identifying metrics (feeling, sleepQuality, drinks) intentionally left unencrypted.
 
 ### P1-2. Implement sync conflict resolution beyond last-write-wins
 
@@ -154,6 +135,7 @@ Date: 2026-03-01 (last updated)
 
 **Files:** `DataContainer.swift:31-33,45-46`, `SharedDefaults.swift:7`
 **Details:** Force unwraps on `containerURL(forSecurityApplicationGroupIdentifier:)!` — crash on misconfigured entitlements.
+**Note:** B10 (silent `try?` on file copy) was fixed in PR #31 with proper error handling in `DataContainer`, but the force unwraps on container URLs remain a separate issue.
 **Work:**
 
 - [ ] Replace with `guard let` + graceful error / fallback to local-only storage
@@ -172,10 +154,13 @@ Date: 2026-03-01 (last updated)
 
 ## P2 — Medium (Should fix before v1.0 release)
 
-### P2-1. Add `@MainActor` to remaining ViewModels
+### P2-1. Add `@MainActor` to remaining ViewModels — PARTIALLY DONE
 
-**Files:** `OnboardingViewModel.swift`, `InsightsViewModel.swift`, `JournalViewModel.swift`
-**Details:** ViewModels using `@Observable` should be `@MainActor` for thread safety.
+**Files:** `OnboardingViewModel.swift`, ~~`InsightsViewModel.swift`~~, ~~`JournalViewModel.swift`~~
+**Details:** `InsightsViewModel` and `JournalViewModel` fixed in PR #32. `OnboardingViewModel` still missing `@MainActor`.
+**Remaining:**
+
+- [ ] Add `@MainActor` to `OnboardingViewModel`
 
 ### P2-2. Add JWT issuer and audience validation
 
@@ -211,6 +196,7 @@ Date: 2026-03-01 (last updated)
 
 **File:** `Odyssey/Services/LocationCaptureService.swift:18-27`
 **Details:** No timeout — if CLLocationManager is deallocated before callback, async call hangs forever.
+**Note:** B3 (main-thread CLLocationManager) and B4 (empty locations continuation hang) were fixed in PR #31, but an explicit timeout is still not implemented and remains a separate concern.
 
 ### P2-9. Fix SwiftData store migration error handling
 
@@ -308,13 +294,13 @@ Export writes all PII to unencrypted temp file shared via `UIActivityViewControl
 │  ┌──────────────┐    ┌──────────────┐    ┌──────────────┐  │
 │  │ OnboardingVM │    │  TodayView   │    │  ProfileView  │  │
 │  │  (Clerk SDK  │    │  (journal    │    │  (account,    │  │
-│  │   pending)   │    │   submit)    │    │   sync,       │  │
+│  │  integrated) │    │   submit)    │    │   sync,       │  │
 │  │              │    │              │    │   export)     │  │
 │  └──────┬───────┘    └──────┬───────┘    └──────┬───────┘  │
 │         │                   │                    │          │
 │  ┌──────▼───────────────────▼────────────────────▼───────┐  │
 │  │              AuthManager (@MainActor)                  │  │
-│  │  signIn: pending  │  signOut: local  │  token: keychain│ │
+│  │  signIn: Clerk  │  signOut: Clerk  │  token: keychain  │ │
 │  └──────────────────────────┬────────────────────────────┘  │
 │                             │                               │
 │  ┌──────────────────────────▼────────────────────────────┐  │

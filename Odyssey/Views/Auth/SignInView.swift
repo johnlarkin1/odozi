@@ -20,13 +20,33 @@ struct SignInView: View {
                 signInButton(
                     icon: "apple.logo",
                     title: "Continue with Apple",
-                    action: { Task { try? await authManager.signIn(strategy: .apple) } }
+                    action: {
+                        Task {
+                            do {
+                                try await authManager.signIn(strategy: .apple)
+                            } catch is CancellationError {
+                                // User cancelled OAuth sheet
+                            } catch {
+                                authManager.error = error.localizedDescription
+                            }
+                        }
+                    }
                 )
 
                 signInButton(
                     icon: "globe",
                     title: "Continue with Google",
-                    action: { Task { try? await authManager.signIn(strategy: .google) } }
+                    action: {
+                        Task {
+                            do {
+                                try await authManager.signIn(strategy: .google)
+                            } catch is CancellationError {
+                                // User cancelled OAuth sheet
+                            } catch {
+                                authManager.error = error.localizedDescription
+                            }
+                        }
+                    }
                 )
             }
             .padding(.horizontal, 24)

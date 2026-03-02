@@ -31,10 +31,14 @@ struct DataContainer {
     }
 
     static var appGroupStoreURL: URL {
-        let container = FileManager.default.containerURL(
+        if let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
-        )!
-        return container.appendingPathComponent("Odyssey.store")
+        ) {
+            return container.appendingPathComponent("Odyssey.store")
+        }
+        logger.warning("App Group container unavailable, falling back to Application Support")
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        return appSupport.appendingPathComponent("Odyssey.store")
     }
 
     static func migrateStoreToAppGroupIfNeeded() {
@@ -44,10 +48,10 @@ struct DataContainer {
         guard !fileManager.fileExists(atPath: appGroupURL.path) else { return }
 
         // Default Core Data store location
-        let defaultURL = fileManager
+        guard let appSupportURL = fileManager
             .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first!
-            .appendingPathComponent("Odyssey.sqlite")
+            .first else { return }
+        let defaultURL = appSupportURL.appendingPathComponent("Odyssey.sqlite")
 
         guard fileManager.fileExists(atPath: defaultURL.path) else { return }
 

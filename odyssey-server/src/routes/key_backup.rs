@@ -4,8 +4,10 @@ use axum::{Json, Router};
 use serde::{Deserialize, Serialize};
 
 use crate::AppState;
+use crate::UserScope;
 use crate::auth::AuthUser;
 use crate::error::AppError;
+use crate::validation;
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -37,19 +39,33 @@ async fn store_key_backup(
     user: AuthUser,
     Json(body): Json<KeyBackupInput>,
 ) -> Result<Json<StoredResponse>, AppError> {
+    let scope = UserScope::new(&user, &state);
+
     if body.encrypted_key_data.is_empty() {
         return Err(AppError::Validation(
             "encryptedKeyData must not be empty".to_string(),
         ));
     }
 
+    // Length constraints
+    validation::validate_required_field_length(
+        &body.encrypted_key_data,
+        "encryptedKeyData",
+        10 * 1024, // 10 KB
+    )?;
+    validation::validate_encrypted_field_length(
+        &body.key_derivation_salt,
+        "keyDerivationSalt",
+        500,
+    )?;
+
     // Upsert user (ON CONFLICT DO NOTHING — don't update last_sync_at)
     sqlx::query(
         "INSERT INTO users (clerk_user_id) VALUES ($1)
          ON CONFLICT (clerk_user_id) DO NOTHING",
     )
-    .bind(&user.user_id)
-    .execute(&state.db)
+    .bind(&scope.user_id)
+    .execute(&scope.pool)
     .await?;
 
     // Upsert key backup
@@ -61,10 +77,10 @@ async fn store_key_backup(
             key_derivation_salt = EXCLUDED.key_derivation_salt,
             updated_at = NOW()",
     )
-    .bind(&user.user_id)
+    .bind(&scope.user_id)
     .bind(&body.encrypted_key_data)
     .bind(&body.key_derivation_salt)
-    .execute(&state.db)
+    .execute(&scope.pool)
     .await?;
 
     Ok(Json(StoredResponse { stored: true }))
@@ -74,12 +90,13 @@ async fn get_key_backup(
     State(state): State<AppState>,
     user: AuthUser,
 ) -> Result<Json<KeyBackupResponse>, AppError> {
+    let scope = UserScope::new(&user, &state);
     let row = sqlx::query_as::<_, (String, Option<String>)>(
         "SELECT encrypted_key_data, key_derivation_salt
          FROM encrypted_key_backups WHERE user_id = $1 LIMIT 1",
     )
-    .bind(&user.user_id)
-    .fetch_optional(&state.db)
+    .bind(&scope.user_id)
+    .fetch_optional(&scope.pool)
     .await?;
 
     match row {

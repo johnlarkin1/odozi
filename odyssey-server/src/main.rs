@@ -5,10 +5,14 @@ mod error;
 mod models;
 mod rate_limit;
 mod routes;
+mod scoped_query;
 mod validation;
+
+pub use scoped_query::UserScope;
 
 use std::sync::Arc;
 
+use axum::extract::DefaultBodyLimit;
 use axum::middleware;
 use axum::{Json, Router, routing::get};
 use serde_json::json;
@@ -66,6 +70,7 @@ async fn main() {
         .route("/healthz", get(health))
         .merge(routes::router())
         .with_state(state)
+        .layer(DefaultBodyLimit::max(5 * 1024 * 1024)) // 5 MB
         .layer(middleware::from_fn(rate_limit::rate_limit_middleware))
         .layer(axum::Extension(limiter))
         .layer(TraceLayer::new_for_http())

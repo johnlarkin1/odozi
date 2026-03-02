@@ -1,51 +1,51 @@
 # Odyssey Codebase Review — 2026-03-01
 
-## Bugs (fix now)
+## Bugs (fix now) — ALL RESOLVED (PR #31, commit `3e53109`)
 
-| # | Area | Issue |
-|---|------|-------|
-| B1 | Screen Time | `pickups` is never written by the extension — always reads 0 |
-| B2 | Screen Time | Darwin notification + `lastIntervalEnd` key are dead code |
-| B3 | Location | `CLLocationManager` created off main thread — may silently fail |
-| B4 | Location | Empty `locations` array → continuation never resumes (hangs forever) |
-| B5 | HealthKit | Sleep hours double-counted when multiple sources (Watch + iPhone) exist |
-| B6 | Calendar | `ForEach(["S","M","T","W","T","F","S"], id: \.self)` — duplicate IDs cause mis-rendering |
-| B7 | Word Cloud | `hashValue` is randomized per launch — word colors change every time |
-| B8 | Data | No `#Unique` on `DailyEntry.date` — race conditions can create duplicate entries |
-| B9 | Foreground | Snapshot check uses `latitude != nil` — re-runs capture endlessly if location denied |
-| B10 | Migration | `try?` on file copy silently swallows errors — data loss risk |
+| # | Area | Issue | Status |
+|---|------|-------|--------|
+| B1 | Screen Time | `pickups` is never written by the extension — always reads 0 | Fixed in PR #31 |
+| B2 | Screen Time | Darwin notification + `lastIntervalEnd` key are dead code | Fixed in PR #31 |
+| B3 | Location | `CLLocationManager` created off main thread — may silently fail | Fixed in PR #31 |
+| B4 | Location | Empty `locations` array → continuation never resumes (hangs forever) | Fixed in PR #31 |
+| B5 | HealthKit | Sleep hours double-counted when multiple sources (Watch + iPhone) exist | Fixed in PR #31 |
+| B6 | Calendar | `ForEach(["S","M","T","W","T","F","S"], id: \.self)` — duplicate IDs cause mis-rendering | Fixed in PR #31 |
+| B7 | Word Cloud | `hashValue` is randomized per launch — word colors change every time | Fixed in PR #31 |
+| B8 | Data | No `#Unique` on `DailyEntry.date` — race conditions can create duplicate entries | Mitigated — `#Unique` requires iOS 18+; app-level fetch-before-insert enforced via `DailyEntryRepository` |
+| B9 | Foreground | Snapshot check uses `latitude != nil` — re-runs capture endlessly if location denied | Fixed in PR #31 |
+| B10 | Migration | `try?` on file copy silently swallows errors — data loss risk | Fixed in PR #31 |
 
-## Architecture Improvements (high value)
+## Architecture Improvements (high value) — ALL RESOLVED (PRs #32, #35)
 
-| # | Area | Issue |
-|---|------|-------|
-| A1 | Data access | Fetch-or-create pattern duplicated in 4 places — needs a `DailyEntryRepository` |
-| A2 | ViewModels | `@MainActor` missing on 4 of 6 ViewModels that hold `ModelContext` |
-| A3 | ViewModels | `currentStreak` computed identically in 2 VMs — DRY violation |
-| A4 | Submit flow | 3 redundant DB fetches during guided prompt submission |
-| A5 | Auth | `AuthManager` is a non-functional shell — Clerk SDK never integrated |
-| A6 | Sync | `encryptBatch` does 500 sequential async calls — should use `TaskGroup` |
+| # | Area | Issue | Status |
+|---|------|-------|--------|
+| A1 | Data access | Fetch-or-create pattern duplicated in 4 places — needs a `DailyEntryRepository` | Fixed in PR #32 |
+| A2 | ViewModels | `@MainActor` missing on 4 of 6 ViewModels that hold `ModelContext` | Fixed in PR #32 |
+| A3 | ViewModels | `currentStreak` computed identically in 2 VMs — DRY violation | Fixed in PR #32 |
+| A4 | Submit flow | 3 redundant DB fetches during guided prompt submission | Fixed in PR #32 |
+| A5 | Auth | `AuthManager` is a non-functional shell — Clerk SDK never integrated | Fixed in PR #35 |
+| A6 | Sync | `encryptBatch` does 500 sequential async calls — should use `TaskGroup` | Fixed in PR #32 |
 
-## UI/UX Improvements
+## UI/UX Improvements — ALL RESOLVED (PR #33)
 
-| # | Area | Issue |
-|---|------|-------|
-| U1 | Accessibility | Zero `accessibilityLabel` anywhere — VoiceOver completely unusable |
-| U2 | Performance | `CosmicBackground` runs at full display refresh (60-120fps) on every tab |
-| U3 | Performance | `TodayView` calls `fetchTodayEntry()` 6 times per render |
-| U4 | Duplication | `OverviewTabView` / `MindTabView` have ~60 lines of duplicated card grids |
-| U5 | Sharing | `ShareableCardRenderer` uses deprecated `UIScreen.main.scale`, hardcoded iPhone size |
-| U6 | Export | `ProfileView` uses UIKit scene bridge instead of `ShareLink` |
+| # | Area | Issue | Status |
+|---|------|-------|--------|
+| U1 | Accessibility | Zero `accessibilityLabel` anywhere — VoiceOver completely unusable | Fixed in PR #33 |
+| U2 | Performance | `CosmicBackground` runs at full display refresh (60-120fps) on every tab | Fixed in PR #33 |
+| U3 | Performance | `TodayView` calls `fetchTodayEntry()` 6 times per render | Fixed in PR #33 |
+| U4 | Duplication | `OverviewTabView` / `MindTabView` have ~60 lines of duplicated card grids | Fixed in PR #33 |
+| U5 | Sharing | `ShareableCardRenderer` uses deprecated `UIScreen.main.scale`, hardcoded iPhone size | Fixed in PR #33 |
+| U6 | Export | `ProfileView` uses UIKit scene bridge instead of `ShareLink` | Fixed in PR #33 |
 
-## DevOps Gaps
+## DevOps Gaps — MOSTLY RESOLVED (PR #34); D2, D3 still open
 
-| # | Area | Issue |
-|---|------|-------|
-| D1 | CI/CD | No GitHub Actions workflows at all — zero automated testing on PRs |
-| D2 | Testing | UI tests are unmodified Xcode templates — zero coverage |
-| D3 | Testing | All background services have zero test coverage |
-| D4 | Linting | No SwiftLint/swift-format configured; Makefile `lint` target is a no-op |
-| D5 | Docker | Runs as root, no healthcheck, unpinned minor version |
+| # | Area | Issue | Status |
+|---|------|-------|--------|
+| D1 | CI/CD | No GitHub Actions workflows at all — zero automated testing on PRs | Fixed in PR #34 |
+| D2 | Testing | UI tests are unmodified Xcode templates — zero coverage | **Open** |
+| D3 | Testing | All background services have zero test coverage | **Open** |
+| D4 | Linting | No SwiftLint/swift-format configured; Makefile `lint` target is a no-op | Fixed in PR #34 |
+| D5 | Docker | Runs as root, no healthcheck, unpinned minor version | Fixed in PR #34 |
 
 ## Detailed Agent Reports
 
