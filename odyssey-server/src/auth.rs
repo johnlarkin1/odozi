@@ -85,12 +85,17 @@ fn find_key_by_kid<'a>(keys: &'a [JwkKey], kid: Option<&str>) -> Option<&'a JwkK
     }
 }
 
-fn decode_token(key: &JwkKey, token: &str) -> Result<Claims, AppError> {
+fn decode_token(key: &JwkKey, token: &str, expected_audience: Option<&str>) -> Result<Claims, AppError> {
     let decoding_key = DecodingKey::from_rsa_components(&key.n, &key.e)
         .map_err(|e| AppError::Unauthorized(format!("Invalid RSA key: {e}")))?;
 
     let mut validation = Validation::new(Algorithm::RS256);
-    validation.validate_aud = false;
+    if let Some(aud) = expected_audience {
+        validation.validate_aud = true;
+        validation.set_audience(&[aud]);
+    } else {
+        validation.validate_aud = false;
+    }
 
     let data = decode::<Claims>(token, &decoding_key, &validation)
         .map_err(|e| AppError::Unauthorized(format!("Invalid or expired token: {e}")))?;
@@ -124,20 +129,21 @@ impl FromRequestParts<AppState> for AuthUser {
             .map_err(|e| AppError::Unauthorized(format!("Invalid token header: {e}")))?;
 
         let jwks = &state.jwks;
+        let expected_aud = state.config.clerk_expected_audience.as_deref();
 
         // Try cached keys first
         let keys = jwks.get_keys().await?;
         let key = find_key_by_kid(&keys, header.kid.as_deref());
 
         let claims = match key {
-            Some(k) => decode_token(k, token)?,
+            Some(k) => decode_token(k, token, expected_aud)?,
             None => {
                 // Kid not found in cache — refresh and retry
                 let refreshed = jwks.refresh_keys().await?;
                 let k = find_key_by_kid(&refreshed, header.kid.as_deref()).ok_or_else(|| {
                     AppError::Unauthorized("No matching key found in JWKS".to_string())
                 })?;
-                decode_token(k, token)?
+                decode_token(k, token, expected_aud)?
             }
         };
 

@@ -13,12 +13,14 @@ pub use scoped_query::UserScope;
 use std::sync::Arc;
 
 use axum::extract::DefaultBodyLimit;
+use axum::http::{HeaderValue, Method, header};
 use axum::middleware;
 use axum::{Json, Router, routing::get};
 use serde_json::json;
 use sqlx::PgPool;
 use tokio::net::TcpListener;
-use tower_http::cors::CorsLayer;
+use tower_http::cors::{AllowOrigin, CorsLayer};
+use tower_http::set_header::SetResponseHeaderLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::auth::JwksCache;
@@ -66,6 +68,14 @@ async fn main() {
 
     let limiter = RateLimiter::new();
 
+    let cors = CorsLayer::new()
+        .allow_origin(AllowOrigin::predicate(|origin: &HeaderValue, _| {
+            // Allow the iOS app (no Origin header) and localhost for dev
+            origin.as_bytes().starts_with(b"http://localhost")
+        }))
+        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE])
+        .allow_headers([header::AUTHORIZATION, header::CONTENT_TYPE]);
+
     let app = Router::new()
         .route("/healthz", get(health))
         .merge(routes::router())
@@ -73,8 +83,20 @@ async fn main() {
         .layer(DefaultBodyLimit::max(5 * 1024 * 1024)) // 5 MB
         .layer(middleware::from_fn(rate_limit::rate_limit_middleware))
         .layer(axum::Extension(limiter))
+        .layer(SetResponseHeaderLayer::overriding(
+            header::HeaderName::from_static("x-content-type-options"),
+            HeaderValue::from_static("nosniff"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            header::HeaderName::from_static("x-frame-options"),
+            HeaderValue::from_static("DENY"),
+        ))
+        .layer(SetResponseHeaderLayer::overriding(
+            header::STRICT_TRANSPORT_SECURITY,
+            HeaderValue::from_static("max-age=31536000; includeSubDomains"),
+        ))
         .layer(TraceLayer::new_for_http())
-        .layer(CorsLayer::very_permissive());
+        .layer(cors);
 
     let addr = format!("0.0.0.0:{port}");
     tracing::info!("Listening on {addr}");
