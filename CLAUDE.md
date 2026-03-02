@@ -84,6 +84,8 @@ make help
 | Year-in-Review | `Odyssey/Views/YearInReview/ReviewCards/` |
 | Design tokens | `Odyssey/Extensions/Color+Extensions.swift` |
 | Shared defaults | `Odyssey/Services/SharedDefaults.swift` |
+| Marketing website | `website/` (Next.js 15, static export, deployed to odozi.app) |
+| Fastlane config | `fastlane/` |
 
 ## Key Conventions
 

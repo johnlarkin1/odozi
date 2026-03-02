@@ -1,0 +1,37 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme inline {
+  --color-accent-amber: #F5A623;
+  --color-accent-teal: #2EC4B6;
+  --color-success-green: #4CAF50;
+  --color-coral-red: #E57373;
+  --color-card-surface: #1C1C1E;
+  --color-deep-space: #0D0D1F;
+  --color-cosmic-purple: #8C5CF5;
+  --color-nebula-pink: #E86BAD;
+  --color-star-white: #EDF0FA;
+
+  --font-sans: var(--font-geist-sans), system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, monospace;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--color-deep-space);
+  color: var(--color-star-white);
+}
+
+/* Prose overrides for legal pages */
+.prose {
+  --tw-prose-body: var(--color-star-white);
+  --tw-prose-headings: var(--color-star-white);
+  --tw-prose-links: var(--color-accent-teal);
+  --tw-prose-bold: var(--color-star-white);
+  --tw-prose-bullets: var(--color-accent-teal);
+  --tw-prose-counters: var(--color-accent-teal);
+  --tw-prose-hr: #2a2a3e;
+}
