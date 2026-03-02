@@ -1,0 +1,11 @@
+git_url(ENV["MATCH_GIT_URL"])
+storage_mode("git")
+type("appstore")
+app_identifier([
+  "com.johnlarkin.Odyssey",
+  "com.johnlarkin.Odyssey.OdysseyDeviceActivityMonitor",
+  "com.johnlarkin.Odyssey.OdysseyDeviceActivityReport"
+])
+team_id("P3Q6VLD666")
+keychain_name(ENV["MATCH_KEYCHAIN_NAME"] || "fastlane_keychain")
+keychain_password(ENV["MATCH_KEYCHAIN_PASSWORD"] || "")
