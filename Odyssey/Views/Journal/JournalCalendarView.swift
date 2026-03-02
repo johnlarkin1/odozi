@@ -14,7 +14,9 @@ struct JournalCalendarView: View {
             // Month navigation
             HStack {
                 Button {
-                    displayedMonth = Calendar.current.date(byAdding: .month, value: -1, to: displayedMonth)!
+                    if let prev = Calendar.current.date(byAdding: .month, value: -1, to: displayedMonth) {
+                        displayedMonth = prev
+                    }
                 } label: {
                     Image(systemName: "chevron.left")
                 }
@@ -27,7 +29,9 @@ struct JournalCalendarView: View {
                 Spacer()
 
                 Button {
-                    displayedMonth = Calendar.current.date(byAdding: .month, value: 1, to: displayedMonth)!
+                    if let next = Calendar.current.date(byAdding: .month, value: 1, to: displayedMonth) {
+                        displayedMonth = next
+                    }
                 } label: {
                     Image(systemName: "chevron.right")
                 }
@@ -56,7 +60,7 @@ struct JournalCalendarView: View {
                                     .foregroundStyle(Calendar.current.isDateInToday(date) ? Color.accentAmber : .white)
 
                                 Circle()
-                                    .fill(entry != nil ? Color.moodGradient(for: entry!.feeling) : Color.clear)
+                                    .fill(entry.map { Color.moodGradient(for: $0.feeling) } ?? Color.clear)
                                     .frame(width: 6, height: 6)
                             }
                             .frame(width: 36, height: 36)
@@ -77,15 +81,18 @@ struct JournalCalendarView: View {
 
     private func daysInMonth() -> [Date?] {
         let calendar = Calendar.current
-        let range = calendar.range(of: .day, in: .month, for: displayedMonth)!
-        let firstDay = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth))!
+        guard let range = calendar.range(of: .day, in: .month, for: displayedMonth),
+              let firstDay = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth)) else {
+            return []
+        }
         let firstWeekday = calendar.component(.weekday, from: firstDay) - 1
 
         var days: [Date?] = Array(repeating: nil, count: firstWeekday)
 
         for day in range {
-            let date = calendar.date(byAdding: .day, value: day - 1, to: firstDay)!
-            days.append(date)
+            if let date = calendar.date(byAdding: .day, value: day - 1, to: firstDay) {
+                days.append(date)
+            }
         }
 
         return days
