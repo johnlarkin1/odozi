@@ -7,7 +7,10 @@ import os
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundTasks")
 
 class AppDelegate: UIResponder, UIApplicationDelegate {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func application(
+        _ application: UIApplication,
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
+    ) -> Bool {
         // Register primary snapshot task (8 PM)
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.snapshot", using: nil) { task in
             guard let refreshTask = task as? BGAppRefreshTask else { return }

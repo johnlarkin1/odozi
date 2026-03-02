@@ -95,8 +95,10 @@ final class EncryptionServiceTests: XCTestCase {
         XCTAssertNotNil(importedKey)
 
         // Verify the keys are identical by encrypting/decrypting
-        let testData = "test".data(using: .utf8)!
+        let testData = Data("test".utf8)
+        // swiftlint:disable:next force_try
         let sealedBox = try! AES.GCM.seal(testData, using: originalKey)
+        // swiftlint:disable:next force_try
         let decrypted = try! AES.GCM.open(sealedBox, using: importedKey!)
         XCTAssertEqual(String(data: decrypted, encoding: .utf8), "test")
     }
