@@ -49,8 +49,8 @@ struct DataContainer {
 
         // Default Core Data store location
         guard let appSupportURL = fileManager
-            .urls(for: .applicationSupportDirectory, in: .userDomainMask)
-            .first else { return }
+                .urls(for: .applicationSupportDirectory, in: .userDomainMask)
+                .first else { return }
         let defaultURL = appSupportURL.appendingPathComponent("Odyssey.sqlite")
 
         guard fileManager.fileExists(atPath: defaultURL.path) else { return }

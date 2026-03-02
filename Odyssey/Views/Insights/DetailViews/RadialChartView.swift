@@ -11,7 +11,7 @@ struct RadialChartView: View {
             let center = CGPoint(x: geo.size.width / 2, y: geo.size.height / 2)
             let radius = min(geo.size.width, geo.size.height) / 2 - 30
 
-            Canvas { context, size in
+            Canvas { context, _ in
                 // Reference rings
                 for i in 1...ringCount {
                     let r = radius * Double(i) / Double(ringCount)

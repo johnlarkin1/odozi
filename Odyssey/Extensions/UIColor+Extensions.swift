@@ -18,9 +18,9 @@ extension UIColor {
         self.getRed(&r, green: &g, blue: &b, alpha: &a)
 
         let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
-        return String(format:"#%06x", rgb)
+        return String(format: "#%06x", rgb)
     }
-    
+
     // Convert Hex String to UIColor
     static func fromHexString(_ hex: String) -> UIColor {
         var cString: String = hex.trimmingCharacters(in: .whitespacesAndNewlines).uppercased()

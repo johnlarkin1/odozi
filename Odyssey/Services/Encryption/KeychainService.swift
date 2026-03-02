@@ -23,7 +23,7 @@ struct KeychainService {
         let deleteQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
-            kSecAttrAccount as String: account,
+            kSecAttrAccount as String: account
         ]
         SecItemDelete(deleteQuery as CFDictionary)
 
@@ -33,7 +33,7 @@ struct KeychainService {
             kSecAttrAccount as String: account,
             kSecValueData as String: keyData,
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
-            kSecAttrSynchronizable as String: false,
+            kSecAttrSynchronizable as String: false
         ]
 
         let status = SecItemAdd(addQuery as CFDictionary, nil)
@@ -49,7 +49,7 @@ struct KeychainService {
             kSecAttrAccount as String: account,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
-            kSecAttrSynchronizable as String: false,
+            kSecAttrSynchronizable as String: false
         ]
 
         var result: AnyObject?
@@ -73,7 +73,7 @@ struct KeychainService {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: service,
             kSecAttrAccount as String: account,
-            kSecAttrSynchronizable as String: false,
+            kSecAttrSynchronizable as String: false
         ]
 
         let status = SecItemDelete(query as CFDictionary)
@@ -92,7 +92,7 @@ struct KeychainService {
         let deleteQuery: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: authService,
-            kSecAttrAccount as String: authAccount,
+            kSecAttrAccount as String: authAccount
         ]
         SecItemDelete(deleteQuery as CFDictionary)
 
@@ -102,7 +102,7 @@ struct KeychainService {
             kSecAttrAccount as String: authAccount,
             kSecValueData as String: tokenData,
             kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
-            kSecAttrSynchronizable as String: false,
+            kSecAttrSynchronizable as String: false
         ]
 
         let status = SecItemAdd(addQuery as CFDictionary, nil)
@@ -118,7 +118,7 @@ struct KeychainService {
             kSecAttrAccount as String: authAccount,
             kSecReturnData as String: true,
             kSecMatchLimit as String: kSecMatchLimitOne,
-            kSecAttrSynchronizable as String: false,
+            kSecAttrSynchronizable as String: false
         ]
 
         var result: AnyObject?
@@ -143,7 +143,7 @@ struct KeychainService {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: authService,
             kSecAttrAccount as String: authAccount,
-            kSecAttrSynchronizable as String: false,
+            kSecAttrSynchronizable as String: false
         ]
 
         let status = SecItemDelete(query as CFDictionary)
