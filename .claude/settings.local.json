@@ -18,7 +18,8 @@
       "WebFetch(domain:swiftpackageregistry.com)",
       "WebFetch(domain:developers.cloudflare.com)",
       "Bash(git ls-tree:*)",
-      "Bash(git diff-tree:*)"
+      "Bash(git diff-tree:*)",
+      "Skill(code-review:code-review)"
     ]
   }
 }
