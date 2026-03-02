@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Odyssey — App Icon Gallery</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep-space: #0D0D1F;
+    --amber: #F5A623;
+    --teal: #2EC4B6;
+    --cosmic-purple: #8C5CF5;
+    --nebula-pink: #E86BAD;
+    --star-white: #EDF0FA;
+    --card-bg: #16162a;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--deep-space);
+    color: var(--star-white);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 20%, rgba(140,92,245,0.08) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 80%, rgba(46,196,182,0.06) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+  }
+  header {
+    text-align: center;
+    padding: 60px 20px 20px;
+    position: relative;
+    z-index: 1;
+  }
+  header h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: 3rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, var(--amber), var(--nebula-pink), var(--cosmic-purple));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    letter-spacing: -0.02em;
+  }
+  header p {
+    margin-top: 12px;
+    font-size: 1.05rem;
+    color: rgba(237,240,250,0.5);
+    font-weight: 400;
+  }
+  .gallery {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 40px;
+    max-width: 1200px;
+    margin: 40px auto 80px;
+    padding: 0 40px;
+    position: relative;
+    z-index: 1;
+  }
+  .icon-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .icon-wrap {
+    position: relative;
+    width: 340px;
+    height: 340px;
+    cursor: pointer;
+    border-radius: 76px;
+    overflow: hidden;
+    transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+  }
+  .icon-wrap:hover {
+    transform: scale(1.04) translateY(-4px);
+    box-shadow: 0 16px 60px rgba(140,92,245,0.25), 0 8px 40px rgba(0,0,0,0.5);
+  }
+  .icon-wrap:active {
+    transform: scale(0.98);
+  }
+  .icon-wrap canvas {
+    width: 340px;
+    height: 340px;
+    display: block;
+  }
+  .icon-label {
+    text-align: center;
+  }
+  .icon-label h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--star-white);
+  }
+  .icon-label span {
+    font-size: 0.85rem;
+    color: rgba(237,240,250,0.4);
+    display: block;
+    margin-top: 4px;
+  }
+  .download-hint {
+    text-align: center;
+    padding: 0 20px 60px;
+    font-size: 0.9rem;
+    color: rgba(237,240,250,0.35);
+    position: relative;
+    z-index: 1;
+  }
+  .toast {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: rgba(22,22,42,0.95);
+    border: 1px solid rgba(140,92,245,0.3);
+    backdrop-filter: blur(12px);
+    color: var(--star-white);
+    padding: 14px 28px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    opacity: 0;
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    z-index: 100;
+    pointer-events: none;
+  }
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+  @media (max-width: 1100px) {
+    .gallery { grid-template-columns: repeat(2, 1fr); gap: 30px; padding: 0 24px; }
+  }
+  @media (max-width: 740px) {
+    .gallery { grid-template-columns: 1fr; gap: 24px; }
+    header h1 { font-size: 2rem; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Odyssey App Icons</h1>
+  <p>Click any icon to download as 1024 &times; 1024 PNG</p>
+</header>
+
+<div class="gallery" id="gallery"></div>
+
+<p class="download-hint">All icons export at 1024&times;1024px &mdash; perfect for App Store submission.</p>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const S = 1024;
+const icons = [
+  { id: 'classic',   title: 'Classic Voyage',    desc: 'Faithful to the original' },
+  { id: 'cosmic',    title: 'Cosmic Navigator',  desc: 'Starfield & nebula glow' },
+  { id: 'sunrise',   title: 'Golden Horizon',    desc: 'Warm dawn atmosphere' },
+  { id: 'ocean',     title: 'Ocean Depths',      desc: 'Calm teal waters' },
+  { id: 'minimal',   title: 'Geometric Minimal', desc: 'Clean & modern' },
+  { id: 'aurora',    title: 'Aurora Night',       desc: 'Northern lights magic' },
+];
+
+// --- Colors from the app ---
+const AMBER   = '#F5A623';
+const TEAL    = '#2EC4B6';
+const PURPLE  = '#8C5CF5';
+const PINK    = '#E86BAD';
+const DEEP    = '#0D0D1F';
+const WHITE   = '#EDF0FA';
+
+// --- Utility ---
+function hexToRgb(hex) {
+  const r = parseInt(hex.slice(1,3),16);
+  const g = parseInt(hex.slice(3,5),16);
+  const b = parseInt(hex.slice(5,7),16);
+  return {r,g,b};
+}
+function rgba(hex, a) {
+  const {r,g,b} = hexToRgb(hex);
+  return `rgba(${r},${g},${b},${a})`;
+}
+
+// --- Sailboat drawing helpers ---
+function drawMainSail(ctx, mx, top, bot, width, curve) {
+  ctx.beginPath();
+  ctx.moveTo(mx + 6, top);
+  ctx.quadraticCurveTo(mx + width * 0.7, top + (bot - top) * 0.35, mx + width, bot - 10);
+  ctx.lineTo(mx + 6, bot - 10);
+  ctx.closePath();
+}
+
+function drawJibSail(ctx, mx, top, bot, width, curve) {
+  ctx.beginPath();
+  ctx.moveTo(mx - 6, top + 20);
+  ctx.quadraticCurveTo(mx - width * 0.65, top + (bot - top) * 0.45, mx - width, bot - 20);
+  ctx.lineTo(mx - 6, bot - 20);
+  ctx.closePath();
+}
+
+function drawHull(ctx, cx, y, w, h) {
+  ctx.beginPath();
+  ctx.moveTo(cx - w/2, y);
+  ctx.quadraticCurveTo(cx - w/2.5, y + h, cx, y + h * 0.85);
+  ctx.quadraticCurveTo(cx + w/2.5, y + h * 0.7, cx + w/2, y);
+  ctx.closePath();
+}
+
+function drawWave(ctx, startX, startY, width, amplitude, phase, segments) {
+  ctx.beginPath();
+  ctx.moveTo(startX, startY);
+  const segW = width / segments;
+  for (let i = 0; i <= segments; i++) {
+    const x = startX + i * segW;
+    const y = startY + Math.sin((i / segments) * Math.PI * 2 + phase) * amplitude;
+    if (i === 0) ctx.moveTo(x, y);
+    else ctx.lineTo(x, y);
+  }
+}
+
+function drawStylizedWaves(ctx, y, count, color, alphaBase) {
+  for (let w = 0; w < count; w++) {
+    const wy = y + w * 28;
+    const amp = 14 + w * 4;
+    const phase = w * 1.2;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      const py = wy + Math.sin((x / S) * Math.PI * 3 + phase) * amp;
+      ctx.lineTo(x, py);
+    }
+    ctx.lineTo(S, S);
+    ctx.lineTo(0, S);
+    ctx.closePath();
+    const alpha = alphaBase - w * 0.08;
+    ctx.fillStyle = rgba(color, Math.max(0.05, alpha));
+    ctx.fill();
+  }
+}
+
+// ============================================================
+// ICON 1: Classic Voyage
+// ============================================================
+function drawClassic(ctx) {
+  // Background gradient
+  const bg = ctx.createRadialGradient(S/2, S*0.45, 0, S/2, S*0.45, S*0.75);
+  bg.addColorStop(0, '#2a1a50');
+  bg.addColorStop(0.5, '#151035');
+  bg.addColorStop(1, DEEP);
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, S, S);
+
+  // Purple moon glow
+  const moon = ctx.createRadialGradient(S/2, S*0.43, 0, S/2, S*0.43, S*0.42);
+  moon.addColorStop(0, 'rgba(120,70,200,0.45)');
+  moon.addColorStop(0.5, 'rgba(90,50,170,0.2)');
+  moon.addColorStop(0.8, 'rgba(60,30,130,0.05)');
+  moon.addColorStop(1, 'transparent');
+  ctx.fillStyle = moon;
+  ctx.beginPath();
+  ctx.arc(S/2, S*0.43, S*0.42, 0, Math.PI*2);
+  ctx.fill();
+
+  // Brighter inner glow
+  const inner = ctx.createRadialGradient(S/2, S*0.41, 0, S/2, S*0.41, S*0.26);
+  inner.addColorStop(0, 'rgba(160,110,240,0.2)');
+  inner.addColorStop(1, 'transparent');
+  ctx.fillStyle = inner;
+  ctx.beginPath();
+  ctx.arc(S/2, S*0.41, S*0.26, 0, Math.PI*2);
+  ctx.fill();
+
+  // Sails
+  const mx = S*0.47;
+  const sailTop = S*0.13;
+  const sailBot = S*0.65;
+
+  // Main sail
+  const sailGrad = ctx.createLinearGradient(mx, sailTop, mx+320, sailBot);
+  sailGrad.addColorStop(0, '#FFC94D');
+  sailGrad.addColorStop(0.5, AMBER);
+  sailGrad.addColorStop(1, '#D4891A');
+  drawMainSail(ctx, mx, sailTop, sailBot, 320, 0.5);
+  ctx.fillStyle = sailGrad;
+  ctx.fill();
+
+  // Jib sail
+  const jibGrad = ctx.createLinearGradient(mx, sailTop+30, mx-240, sailBot);
+  jibGrad.addColorStop(0, '#FFD76E');
+  jibGrad.addColorStop(0.5, '#F5B030');
+  jibGrad.addColorStop(1, '#CC7A10');
+  drawJibSail(ctx, mx, sailTop, sailBot, 240, 0.4);
+  ctx.fillStyle = jibGrad;
+  ctx.fill();
+
+  // Mast
+  const mastGrad = ctx.createLinearGradient(mx, sailTop, mx, sailBot+10);
+  mastGrad.addColorStop(0, '#FFD76E');
+  mastGrad.addColorStop(1, '#B87A1A');
+  ctx.strokeStyle = mastGrad;
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(mx, sailTop - 10);
+  ctx.lineTo(mx, sailBot + 12);
+  ctx.stroke();
+
+  // Hull
+  const hullGrad = ctx.createLinearGradient(S*0.18, sailBot, S*0.80, sailBot+85);
+  hullGrad.addColorStop(0, '#D4891A');
+  hullGrad.addColorStop(1, '#B06E10');
+  drawHull(ctx, S*0.49, sailBot + 2, S*0.60, 85);
+  ctx.fillStyle = hullGrad;
+  ctx.fill();
+
+  // Waves
+  drawStylizedWaves(ctx, S*0.71, 4, TEAL, 0.55);
+
+  // Subtle bottom fade
+  const botFade = ctx.createLinearGradient(0, S*0.85, 0, S);
+  botFade.addColorStop(0, 'transparent');
+  botFade.addColorStop(1, 'rgba(13,13,31,0.5)');
+  ctx.fillStyle = botFade;
+  ctx.fillRect(0, S*0.85, S, S*0.15);
+}
+
+// ============================================================
+// ICON 2: Cosmic Navigator
+// ============================================================
+function drawCosmic(ctx) {
+  // Deep background
+  const bg = ctx.createRadialGradient(S/2, S/2, 0, S/2, S/2, S*0.72);
+  bg.addColorStop(0, '#1a1040');
+  bg.addColorStop(0.6, '#0e0a22');
+  bg.addColorStop(1, '#060410');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, S, S);
+
+  // Stars
+  const rng = (seed) => {
+    let s = seed;
+    return () => { s = (s * 16807 + 0) % 2147483647; return s / 2147483647; };
+  };
+  const rand = rng(42);
+  for (let i = 0; i < 200; i++) {
+    const x = rand() * S;
+    const y = rand() * S;
+    const r = rand() * 2.2 + 0.3;
+    const a = rand() * 0.6 + 0.2;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fillStyle = rgba(WHITE, a);
+    ctx.fill();
+  }
+
+  // Nebula glow - pink + purple
+  const neb1 = ctx.createRadialGradient(S*0.4, S*0.38, 0, S*0.4, S*0.38, S*0.35);
+  neb1.addColorStop(0, 'rgba(232,107,173,0.18)');
+  neb1.addColorStop(0.5, 'rgba(140,92,245,0.12)');
+  neb1.addColorStop(1, 'transparent');
+  ctx.fillStyle = neb1;
+  ctx.fillRect(0, 0, S, S);
+
+  const neb2 = ctx.createRadialGradient(S*0.6, S*0.45, 0, S*0.6, S*0.45, S*0.3);
+  neb2.addColorStop(0, 'rgba(140,92,245,0.22)');
+  neb2.addColorStop(0.6, 'rgba(90,40,200,0.08)');
+  neb2.addColorStop(1, 'transparent');
+  ctx.fillStyle = neb2;
+  ctx.fillRect(0, 0, S, S);
+
+  // Boat glow
+  const boatGlow = ctx.createRadialGradient(S/2, S*0.49, 0, S/2, S*0.49, S*0.28);
+  boatGlow.addColorStop(0, 'rgba(245,166,35,0.12)');
+  boatGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = boatGlow;
+  ctx.fillRect(0, 0, S, S);
+
+  // Sails with cosmic gradient
+  const mx = S*0.47;
+  const sailTop = S*0.13;
+  const sailBot = S*0.65;
+
+  const sailGrad = ctx.createLinearGradient(mx, sailTop, mx+315, sailBot);
+  sailGrad.addColorStop(0, '#FFD76E');
+  sailGrad.addColorStop(0.4, AMBER);
+  sailGrad.addColorStop(0.8, '#E86B5A');
+  sailGrad.addColorStop(1, PINK);
+  drawMainSail(ctx, mx, sailTop, sailBot, 315, 0.5);
+  ctx.fillStyle = sailGrad;
+  ctx.fill();
+
+  const jibGrad = ctx.createLinearGradient(mx, sailTop, mx-235, sailBot);
+  jibGrad.addColorStop(0, '#FFD76E');
+  jibGrad.addColorStop(0.5, '#E8A040');
+  jibGrad.addColorStop(1, '#D06080');
+  drawJibSail(ctx, mx, sailTop, sailBot, 235, 0.4);
+  ctx.fillStyle = jibGrad;
+  ctx.fill();
+
+  // Mast
+  ctx.strokeStyle = '#E8B860';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(mx, sailTop - 10);
+  ctx.lineTo(mx, sailBot + 12);
+  ctx.stroke();
+
+  // Hull
+  drawHull(ctx, S*0.49, sailBot + 2, S*0.58, 80);
+  const hGrad = ctx.createLinearGradient(S*0.20, sailBot, S*0.78, sailBot+80);
+  hGrad.addColorStop(0, '#C07830');
+  hGrad.addColorStop(1, '#8C5CF5');
+  ctx.fillStyle = hGrad;
+  ctx.fill();
+
+  // Cosmic waves - purple/teal blend
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.71 + w * 28;
+    const amp = 16 + w * 5;
+    const phase = w * 0.9;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*3 + phase)*amp);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    const c = w % 2 === 0 ? PURPLE : TEAL;
+    ctx.fillStyle = rgba(c, 0.25 - w*0.04);
+    ctx.fill();
+  }
+}
+
+// ============================================================
+// ICON 3: Golden Horizon
+// ============================================================
+function drawSunrise(ctx) {
+  // Sky gradient - warm sunset
+  const sky = ctx.createLinearGradient(0, 0, 0, S);
+  sky.addColorStop(0, '#1a0e30');
+  sky.addColorStop(0.3, '#3a1a55');
+  sky.addColorStop(0.48, '#8a3a55');
+  sky.addColorStop(0.55, '#D47030');
+  sky.addColorStop(0.6, '#F5A623');
+  sky.addColorStop(0.65, '#E88840');
+  sky.addColorStop(0.75, '#1a5560');
+  sky.addColorStop(1, '#0a2a35');
+  ctx.fillStyle = sky;
+  ctx.fillRect(0, 0, S, S);
+
+  // Sun glow at horizon
+  const sun = ctx.createRadialGradient(S/2, S*0.57, 0, S/2, S*0.57, S*0.3);
+  sun.addColorStop(0, 'rgba(255,220,100,0.5)');
+  sun.addColorStop(0.3, 'rgba(245,166,35,0.25)');
+  sun.addColorStop(0.7, 'rgba(200,100,50,0.08)');
+  sun.addColorStop(1, 'transparent');
+  ctx.fillStyle = sun;
+  ctx.fillRect(0, 0, S, S);
+
+  // Boat silhouette (darker, against the light)
+  const mx = S*0.47;
+  const sailTop = S*0.13;
+  const sailBot = S*0.63;
+
+  // Shadow behind boat
+  ctx.save();
+  ctx.shadowColor = 'rgba(245,166,35,0.3)';
+  ctx.shadowBlur = 50;
+
+  const silColor = '#1a0e20';
+  drawMainSail(ctx, mx, sailTop, sailBot, 310, 0.5);
+  ctx.fillStyle = silColor;
+  ctx.fill();
+
+  drawJibSail(ctx, mx, sailTop, sailBot, 230, 0.4);
+  ctx.fillStyle = '#200e25';
+  ctx.fill();
+
+  ctx.strokeStyle = '#1a0e20';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(mx, sailTop - 10);
+  ctx.lineTo(mx, sailBot + 12);
+  ctx.stroke();
+
+  drawHull(ctx, S*0.49, sailBot + 2, S*0.58, 78);
+  ctx.fillStyle = '#150a1a';
+  ctx.fill();
+  ctx.restore();
+
+  // Horizon line light reflection on water
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.69 + w * 22;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*3.5 + w*1.1)*10);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    ctx.fillStyle = rgba(TEAL, 0.12 - w*0.015);
+    ctx.fill();
+  }
+
+  // Water reflection of sun
+  const ref = ctx.createRadialGradient(S/2, S*0.73, 0, S/2, S*0.78, S*0.18);
+  ref.addColorStop(0, 'rgba(245,200,80,0.12)');
+  ref.addColorStop(1, 'transparent');
+  ctx.fillStyle = ref;
+  ctx.fillRect(0, S*0.65, S, S*0.35);
+}
+
+// ============================================================
+// ICON 4: Ocean Depths
+// ============================================================
+function drawOcean(ctx) {
+  // Teal deep gradient
+  const bg = ctx.createRadialGradient(S/2, S*0.4, 0, S/2, S*0.5, S*0.72);
+  bg.addColorStop(0, '#1a4a50');
+  bg.addColorStop(0.4, '#0e3538');
+  bg.addColorStop(0.8, '#082028');
+  bg.addColorStop(1, '#040e14');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, S, S);
+
+  // Calm circular glow
+  const glow = ctx.createRadialGradient(S/2, S*0.47, 0, S/2, S*0.47, S*0.32);
+  glow.addColorStop(0, rgba(TEAL, 0.22));
+  glow.addColorStop(0.6, rgba(TEAL, 0.06));
+  glow.addColorStop(1, 'transparent');
+  ctx.fillStyle = glow;
+  ctx.beginPath();
+  ctx.arc(S/2, S*0.47, S*0.34, 0, Math.PI*2);
+  ctx.fill();
+
+  // Concentric ripple rings
+  ctx.strokeStyle = rgba(TEAL, 0.1);
+  ctx.lineWidth = 1.5;
+  for (let r = 0; r < 5; r++) {
+    ctx.beginPath();
+    ctx.ellipse(S/2, S*0.72, 100 + r*60, 18 + r*10, 0, 0, Math.PI*2);
+    ctx.strokeStyle = rgba(TEAL, 0.12 - r*0.02);
+    ctx.stroke();
+  }
+
+  // Sails - amber warmth
+  const mx = S*0.47;
+  const sailTop = S*0.13;
+  const sailBot = S*0.65;
+
+  const sailGrad = ctx.createLinearGradient(mx, sailTop, mx+315, sailBot);
+  sailGrad.addColorStop(0, '#FFD76E');
+  sailGrad.addColorStop(0.5, AMBER);
+  sailGrad.addColorStop(1, '#C07820');
+  drawMainSail(ctx, mx, sailTop, sailBot, 315, 0.5);
+  ctx.fillStyle = sailGrad;
+  ctx.fill();
+
+  const jibGrad = ctx.createLinearGradient(mx-235, sailTop+30, mx, sailBot);
+  jibGrad.addColorStop(0, '#FFD060');
+  jibGrad.addColorStop(1, '#B07018');
+  drawJibSail(ctx, mx, sailTop, sailBot, 235, 0.4);
+  ctx.fillStyle = jibGrad;
+  ctx.fill();
+
+  // Mast
+  ctx.strokeStyle = '#D4A040';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(mx, sailTop - 10);
+  ctx.lineTo(mx, sailBot + 12);
+  ctx.stroke();
+
+  // Hull
+  drawHull(ctx, S*0.49, sailBot + 2, S*0.58, 80);
+  const hGrad = ctx.createLinearGradient(S*0.20, sailBot, S*0.78, sailBot+80);
+  hGrad.addColorStop(0, '#C08020');
+  hGrad.addColorStop(1, '#1a6060');
+  ctx.fillStyle = hGrad;
+  ctx.fill();
+
+  // Layered teal waves
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.71 + w * 24;
+    const amp = 12 + w * 3;
+    const phase = w * 0.7 + 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*2.5 + phase)*amp);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    const tealShade = w < 3 ? '#2EC4B6' : '#1a8a80';
+    ctx.fillStyle = rgba(tealShade, 0.3 - w*0.035);
+    ctx.fill();
+  }
+
+  // Bottom deep fade
+  const botF = ctx.createLinearGradient(0, S*0.82, 0, S);
+  botF.addColorStop(0, 'transparent');
+  botF.addColorStop(1, 'rgba(4,14,20,0.6)');
+  ctx.fillStyle = botF;
+  ctx.fillRect(0, S*0.82, S, S*0.18);
+}
+
+// ============================================================
+// ICON 5: Geometric Minimal
+// ============================================================
+function drawMinimal(ctx) {
+  // Smooth dark gradient
+  const bg = ctx.createLinearGradient(0, 0, S, S);
+  bg.addColorStop(0, '#14122a');
+  bg.addColorStop(0.5, '#0f0e20');
+  bg.addColorStop(1, '#0a0916');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, S, S);
+
+  // Very subtle grid pattern
+  ctx.strokeStyle = 'rgba(140,92,245,0.03)';
+  ctx.lineWidth = 1;
+  for (let i = 0; i < S; i += 64) {
+    ctx.beginPath();
+    ctx.moveTo(i, 0); ctx.lineTo(i, S); ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(0, i); ctx.lineTo(S, i); ctx.stroke();
+  }
+
+  // Geometric sailboat — precise triangles, centered
+  const cx = S/2;
+  const boatCenterY = S * 0.51;
+
+  // Main sail — sharp triangle
+  const mainGrad = ctx.createLinearGradient(cx, boatCenterY - 340, cx + 245, boatCenterY + 140);
+  mainGrad.addColorStop(0, '#FFC94D');
+  mainGrad.addColorStop(1, '#D48A1A');
+  ctx.beginPath();
+  ctx.moveTo(cx + 14, boatCenterY - 340);
+  ctx.lineTo(cx + 295, boatCenterY + 140);
+  ctx.lineTo(cx + 14, boatCenterY + 140);
+  ctx.closePath();
+  ctx.fillStyle = mainGrad;
+  ctx.fill();
+
+  // Jib sail — smaller triangle
+  const jibGrad = ctx.createLinearGradient(cx - 235, boatCenterY - 50, cx, boatCenterY - 260);
+  jibGrad.addColorStop(0, '#CC8818');
+  jibGrad.addColorStop(1, '#FFD76E');
+  ctx.beginPath();
+  ctx.moveTo(cx - 14, boatCenterY - 280);
+  ctx.lineTo(cx - 238, boatCenterY + 100);
+  ctx.lineTo(cx - 14, boatCenterY + 100);
+  ctx.closePath();
+  ctx.fillStyle = jibGrad;
+  ctx.fill();
+
+  // Mast line
+  ctx.strokeStyle = AMBER;
+  ctx.lineWidth = 5;
+  ctx.beginPath();
+  ctx.moveTo(cx, boatCenterY - 350);
+  ctx.lineTo(cx, boatCenterY + 160);
+  ctx.stroke();
+
+  // Hull — simple geometric bar
+  ctx.beginPath();
+  ctx.moveTo(cx - 270, boatCenterY + 155);
+  ctx.lineTo(cx + 300, boatCenterY + 155);
+  ctx.lineTo(cx + 245, boatCenterY + 200);
+  ctx.lineTo(cx - 220, boatCenterY + 200);
+  ctx.closePath();
+  const hullG = ctx.createLinearGradient(cx-270, boatCenterY+155, cx+300, boatCenterY+200);
+  hullG.addColorStop(0, TEAL);
+  hullG.addColorStop(1, '#1a8a7a');
+  ctx.fillStyle = hullG;
+  ctx.fill();
+
+  // Single horizontal line — water
+  ctx.strokeStyle = rgba(TEAL, 0.3);
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(S*0.1, boatCenterY + 212);
+  ctx.lineTo(S*0.9, boatCenterY + 212);
+  ctx.stroke();
+
+  // Two shorter accent lines
+  ctx.strokeStyle = rgba(TEAL, 0.15);
+  ctx.beginPath();
+  ctx.moveTo(S*0.18, boatCenterY + 238);
+  ctx.lineTo(S*0.82, boatCenterY + 238);
+  ctx.stroke();
+  ctx.strokeStyle = rgba(TEAL, 0.08);
+  ctx.beginPath();
+  ctx.moveTo(S*0.26, boatCenterY + 264);
+  ctx.lineTo(S*0.74, boatCenterY + 264);
+  ctx.stroke();
+
+  // Subtle amber glow behind sails
+  const sailGlow = ctx.createRadialGradient(cx+30, boatCenterY - 80, 0, cx+30, boatCenterY - 80, 320);
+  sailGlow.addColorStop(0, 'rgba(245,166,35,0.06)');
+  sailGlow.addColorStop(1, 'transparent');
+  ctx.fillStyle = sailGlow;
+  ctx.fillRect(0, 0, S, S);
+}
+
+// ============================================================
+// ICON 6: Aurora Night
+// ============================================================
+function drawAurora(ctx) {
+  // Deep night sky
+  const bg = ctx.createLinearGradient(0, 0, 0, S);
+  bg.addColorStop(0, '#060818');
+  bg.addColorStop(0.4, '#0a1025');
+  bg.addColorStop(0.7, '#0e1830');
+  bg.addColorStop(1, '#081420');
+  ctx.fillStyle = bg;
+  ctx.fillRect(0, 0, S, S);
+
+  // Stars
+  const rng = (seed) => {
+    let s = seed;
+    return () => { s = (s * 16807 + 0) % 2147483647; return s / 2147483647; };
+  };
+  const rand = rng(77);
+  for (let i = 0; i < 120; i++) {
+    const x = rand() * S;
+    const y = rand() * S * 0.5;
+    const r = rand() * 1.8 + 0.3;
+    ctx.beginPath();
+    ctx.arc(x, y, r, 0, Math.PI*2);
+    ctx.fillStyle = rgba(WHITE, rand()*0.5 + 0.15);
+    ctx.fill();
+  }
+
+  // Aurora bands
+  const colors = [
+    { color: TEAL, y: S*0.12, amp: 40, width: 80, alpha: 0.12 },
+    { color: '#40E8B8', y: S*0.18, amp: 50, width: 100, alpha: 0.1 },
+    { color: PURPLE, y: S*0.26, amp: 35, width: 70, alpha: 0.12 },
+    { color: PINK, y: S*0.22, amp: 30, width: 50, alpha: 0.06 },
+    { color: TEAL, y: S*0.30, amp: 45, width: 90, alpha: 0.08 },
+  ];
+
+  for (const band of colors) {
+    ctx.beginPath();
+    ctx.moveTo(0, band.y);
+    for (let x = 0; x <= S; x += 4) {
+      const y = band.y + Math.sin((x/S)*Math.PI*2 + 0.5) * band.amp
+                       + Math.sin((x/S)*Math.PI*4 + 1.2) * band.amp * 0.3;
+      ctx.lineTo(x, y);
+    }
+    // Closing band with width
+    for (let x = S; x >= 0; x -= 4) {
+      const y = band.y + band.width
+                + Math.sin((x/S)*Math.PI*2 + 0.5) * band.amp * 0.8
+                + Math.sin((x/S)*Math.PI*4 + 1.2) * band.amp * 0.25;
+      ctx.lineTo(x, y);
+    }
+    ctx.closePath();
+    ctx.fillStyle = rgba(band.color, band.alpha);
+    ctx.fill();
+  }
+
+  // Vertical aurora light shafts
+  for (let i = 0; i < 8; i++) {
+    const x = S*0.15 + (rand() * S*0.7);
+    const aGrad = ctx.createLinearGradient(x, 0, x, S*0.55);
+    aGrad.addColorStop(0, rgba(TEAL, 0.04));
+    aGrad.addColorStop(0.3, rgba(TEAL, 0.06));
+    aGrad.addColorStop(1, 'transparent');
+    ctx.fillStyle = aGrad;
+    ctx.fillRect(x - 15, 0, 30, S*0.55);
+  }
+
+  // Boat
+  const mx = S*0.47;
+  const sailTop = S*0.20;
+  const sailBot = S*0.67;
+
+  // Sail glow
+  ctx.save();
+  ctx.shadowColor = rgba(AMBER, 0.25);
+  ctx.shadowBlur = 40;
+
+  const sailGrad = ctx.createLinearGradient(mx, sailTop, mx+300, sailBot);
+  sailGrad.addColorStop(0, '#FFD76E');
+  sailGrad.addColorStop(0.5, AMBER);
+  sailGrad.addColorStop(1, '#D07818');
+  drawMainSail(ctx, mx, sailTop, sailBot, 300, 0.5);
+  ctx.fillStyle = sailGrad;
+  ctx.fill();
+
+  const jibGrad = ctx.createLinearGradient(mx-225, sailTop+20, mx, sailBot);
+  jibGrad.addColorStop(0, '#FFD060');
+  jibGrad.addColorStop(1, '#B87018');
+  drawJibSail(ctx, mx, sailTop, sailBot, 225, 0.4);
+  ctx.fillStyle = jibGrad;
+  ctx.fill();
+  ctx.restore();
+
+  // Mast
+  ctx.strokeStyle = '#D4A040';
+  ctx.lineWidth = 6;
+  ctx.beginPath();
+  ctx.moveTo(mx, sailTop - 10);
+  ctx.lineTo(mx, sailBot + 12);
+  ctx.stroke();
+
+  // Hull
+  drawHull(ctx, S*0.49, sailBot + 2, S*0.56, 76);
+  ctx.fillStyle = '#9A6820';
+  ctx.fill();
+
+  // Dark water with aurora reflection
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.73 + w * 26;
+    const amp = 10 + w*3;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*3 + w*0.8)*amp);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    const wColor = w % 2 === 0 ? TEAL : PURPLE;
+    ctx.fillStyle = rgba(wColor, 0.14 - w*0.02);
+    ctx.fill();
+  }
+
+  // Bottom darkness
+  const botF = ctx.createLinearGradient(0, S*0.85, 0, S);
+  botF.addColorStop(0, 'transparent');
+  botF.addColorStop(1, 'rgba(6,8,24,0.7)');
+  ctx.fillStyle = botF;
+  ctx.fillRect(0, S*0.85, S, S*0.15);
+}
+
+// ============================================================
+// RENDER ALL
+// ============================================================
+const drawFns = {
+  classic: drawClassic,
+  cosmic:  drawCosmic,
+  sunrise: drawSunrise,
+  ocean:   drawOcean,
+  minimal: drawMinimal,
+  aurora:  drawAurora,
+};
+
+const gallery = document.getElementById('gallery');
+const toast = document.getElementById('toast');
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+icons.forEach(icon => {
+  const card = document.createElement('div');
+  card.className = 'icon-card';
+
+  const wrap = document.createElement('div');
+  wrap.className = 'icon-wrap';
+
+  const canvas = document.createElement('canvas');
+  canvas.width = S;
+  canvas.height = S;
+  canvas.id = `icon-${icon.id}`;
+
+  wrap.appendChild(canvas);
+
+  const label = document.createElement('div');
+  label.className = 'icon-label';
+  label.innerHTML = `<h3>${icon.title}</h3><span>${icon.desc}</span>`;
+
+  card.appendChild(wrap);
+  card.appendChild(label);
+  gallery.appendChild(card);
+
+  // Draw
+  const ctx = canvas.getContext('2d');
+  drawFns[icon.id](ctx);
+
+  // Click to download
+  wrap.addEventListener('click', () => {
+    const link = document.createElement('a');
+    link.download = `odyssey-icon-${icon.id}-1024.png`;
+    link.href = canvas.toDataURL('image/png');
+    link.click();
+    showToast(`Downloaded "${icon.title}"`);
+  });
+});
+</script>
+
+</body>
+</html>
