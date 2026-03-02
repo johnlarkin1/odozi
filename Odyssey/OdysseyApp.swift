@@ -127,9 +127,9 @@ struct OdysseyApp: App {
         let entry = try? context.fetch(descriptor).first
         let hasSnapshot = entry != nil && (
             entry?.latitude != nil ||
-            entry?.stepCount != nil ||
-            entry?.screenTimeSeconds != nil ||
-            entry?.sleepHours != nil
+                entry?.stepCount != nil ||
+                entry?.screenTimeSeconds != nil ||
+                entry?.sleepHours != nil
         )
 
         if !hasSnapshot {

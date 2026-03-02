@@ -88,7 +88,7 @@ final class SyncService {
         }
 
         do {
-            var cursor: String? = nil
+            var cursor: String?
             repeat {
                 let response = try await apiClient.fetchEntries(since: nil, cursor: cursor, token: token)
                 for downloadEntry in response.entries {
@@ -206,7 +206,8 @@ final class SyncService {
                         gratitude: snapshot.gratitude.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.gratitude),
                         win: snapshot.win.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.win),
                         tension: snapshot.tension.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.tension),
-                        singleWordFeeling: snapshot.singleWordFeeling.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.singleWordFeeling),
+                        singleWordFeeling: snapshot.singleWordFeeling.isEmpty
+                            ? nil : try await encryptionSvc.encrypt(snapshot.singleWordFeeling),
                         latitude: encryptedLat,
                         longitude: encryptedLon,
                         city: encryptedCity,

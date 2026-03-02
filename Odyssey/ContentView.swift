@@ -8,9 +8,12 @@ struct ContentView: View {
 }
 
 #Preview {
+    // swiftlint:disable:next force_try
+    let container = (try? DataContainer.previewContainer()) ?? (try! ModelContainer(
+        for: DailyEntry.self,
+        configurations: ModelConfiguration(isStoredInMemoryOnly: true)
+    ))
     ContentView()
-        .modelContainer((try? DataContainer.previewContainer()) ?? {
-            try! ModelContainer(for: DailyEntry.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
-        }())
+        .modelContainer(container)
         .environment(\.colorScheme, .dark)
 }

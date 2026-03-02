@@ -12,9 +12,9 @@ struct ShareableCardRenderer {
     @MainActor
     static func render<Content: View>(_ content: Content, size: CGSize = standardShareCardSize) -> UIImage? {
         let renderer = ImageRenderer(content:
-            content
-                .frame(width: size.width, height: size.height)
-                .environment(\.colorScheme, .dark)
+                                        content
+                                        .frame(width: size.width, height: size.height)
+                                        .environment(\.colorScheme, .dark)
         )
         renderer.scale = shareRenderScale
         return renderer.uiImage

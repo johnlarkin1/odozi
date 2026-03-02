@@ -60,9 +60,9 @@ struct JournalView: View {
         guard !searchText.isEmpty else { return entries }
         return entries.filter { entry in
             entry.journalEntry.localizedCaseInsensitiveContains(searchText) ||
-            entry.singleWordFeeling.localizedCaseInsensitiveContains(searchText) ||
-            entry.gratitude.localizedCaseInsensitiveContains(searchText) ||
-            entry.win.localizedCaseInsensitiveContains(searchText)
+                entry.singleWordFeeling.localizedCaseInsensitiveContains(searchText) ||
+                entry.gratitude.localizedCaseInsensitiveContains(searchText) ||
+                entry.win.localizedCaseInsensitiveContains(searchText)
         }
     }
 

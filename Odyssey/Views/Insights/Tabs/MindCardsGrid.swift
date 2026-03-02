@@ -69,7 +69,11 @@ struct MindCardsGrid: View {
     }
 
     private var streaksCard: some View {
-        NavigationLink(destination: StreakView(currentStreak: viewModel.currentStreak, longestStreak: viewModel.longestStreak, entries: viewModel.filteredEntries)) {
+        NavigationLink(destination: StreakView(
+            currentStreak: viewModel.currentStreak,
+            longestStreak: viewModel.longestStreak,
+            entries: viewModel.filteredEntries
+        )) {
             InsightCard(title: "Streaks", icon: "flame.fill", color: .accentAmber) {
                 HStack(spacing: 4) {
                     Text("\(viewModel.currentStreak)")

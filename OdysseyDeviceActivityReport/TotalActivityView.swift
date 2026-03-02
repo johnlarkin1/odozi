@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TotalActivityView: View {
     let totalActivity: String
-    
+
     var body: some View {
         Text(totalActivity)
     }

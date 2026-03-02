@@ -81,7 +81,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testTotalEntriesCountsOnlyWithPromptData() throws {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, journalEntry: "Has data"),
-            makeEntry(year: 2025, month: 1, day: 2, singleWordFeeling: "", journalEntry: ""),
+            makeEntry(year: 2025, month: 1, day: 2, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 
@@ -94,7 +94,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2025, month: 3, day: 1, feeling: 8, journalEntry: "Great"),
             makeEntry(year: 2025, month: 3, day: 2, feeling: 6, journalEntry: "Good"),
-            makeEntry(year: 2025, month: 3, day: 3, feeling: 4, journalEntry: "Meh"),
+            makeEntry(year: 2025, month: 3, day: 3, feeling: 4, journalEntry: "Meh")
         ]
         try insertEntries(entries)
 
@@ -106,7 +106,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testAverageSleepCalculation() throws {
         let entries = [
             makeEntry(year: 2025, month: 3, day: 1, sleepQuality: 9, journalEntry: "a"),
-            makeEntry(year: 2025, month: 3, day: 2, sleepQuality: 7, journalEntry: "b"),
+            makeEntry(year: 2025, month: 3, day: 2, sleepQuality: 7, journalEntry: "b")
         ]
         try insertEntries(entries)
 
@@ -121,7 +121,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, stepCount: 5000),
             makeEntry(year: 2025, month: 1, day: 2, stepCount: 8000),
-            makeEntry(year: 2025, month: 1, day: 3), // nil steps
+            makeEntry(year: 2025, month: 1, day: 3) // nil steps
         ]
         try insertEntries(entries)
 
@@ -134,7 +134,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, drinks: 2),
             makeEntry(year: 2025, month: 1, day: 2, drinks: 1),
-            makeEntry(year: 2025, month: 1, day: 3, drinks: 0),
+            makeEntry(year: 2025, month: 1, day: 3, drinks: 0)
         ]
         try insertEntries(entries)
 
@@ -150,7 +150,7 @@ final class YearInReviewServiceTests: XCTestCase {
             makeEntry(year: 2025, month: 1, day: 1, city: "Chicago"),
             makeEntry(year: 2025, month: 1, day: 2, city: "Chicago"),
             makeEntry(year: 2025, month: 1, day: 3, city: "New York"),
-            makeEntry(year: 2025, month: 1, day: 4), // nil city
+            makeEntry(year: 2025, month: 1, day: 4) // nil city
         ]
         try insertEntries(entries)
 
@@ -167,7 +167,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, singleWordFeeling: "Happy", journalEntry: "a"),
             makeEntry(year: 2025, month: 1, day: 2, singleWordFeeling: "happy", journalEntry: "b"),
-            makeEntry(year: 2025, month: 1, day: 3, singleWordFeeling: "Calm", journalEntry: "c"),
+            makeEntry(year: 2025, month: 1, day: 3, singleWordFeeling: "Calm", journalEntry: "c")
         ]
         try insertEntries(entries)
 
@@ -188,7 +188,7 @@ final class YearInReviewServiceTests: XCTestCase {
             makeEntry(year: 2025, month: 6, day: 3, journalEntry: "c"),
             // gap
             makeEntry(year: 2025, month: 6, day: 5, journalEntry: "d"),
-            makeEntry(year: 2025, month: 6, day: 6, journalEntry: "e"),
+            makeEntry(year: 2025, month: 6, day: 6, journalEntry: "e")
         ]
         try insertEntries(entries)
 
@@ -203,7 +203,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2025, month: 2, day: 1, feeling: 5, journalEntry: "ok"),
             makeEntry(year: 2025, month: 2, day: 2, feeling: 10, journalEntry: "amazing"),
-            makeEntry(year: 2025, month: 2, day: 3, feeling: 7, journalEntry: "good"),
+            makeEntry(year: 2025, month: 2, day: 3, feeling: 7, journalEntry: "good")
         ]
         try insertEntries(entries)
 
@@ -227,7 +227,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testMoodByMonthCalculatesAverageForMonth() throws {
         let entries = [
             makeEntry(year: 2025, month: 3, day: 1, feeling: 8, journalEntry: "a"),
-            makeEntry(year: 2025, month: 3, day: 15, feeling: 6, journalEntry: "b"),
+            makeEntry(year: 2025, month: 3, day: 15, feeling: 6, journalEntry: "b")
         ]
         try insertEntries(entries)
 
@@ -253,7 +253,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testAllColorsExcludesWhite() throws {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, feelingColorHex: "#FF0000"),
-            makeEntry(year: 2025, month: 1, day: 2, feelingColorHex: "#FFFFFF"),
+            makeEntry(year: 2025, month: 1, day: 2, feelingColorHex: "#FFFFFF")
         ]
         try insertEntries(entries)
 
@@ -266,7 +266,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, journalEntry: "a", gratitude: "Family"),
             makeEntry(year: 2025, month: 1, day: 2, journalEntry: "b", gratitude: "Health"),
-            makeEntry(year: 2025, month: 1, day: 3, journalEntry: "c", gratitude: ""), // empty, excluded
+            makeEntry(year: 2025, month: 1, day: 3, journalEntry: "c", gratitude: "") // empty, excluded
         ]
         try insertEntries(entries)
 
@@ -299,7 +299,7 @@ final class YearInReviewServiceTests: XCTestCase {
         let entries = [
             makeEntry(year: 2024, month: 12, day: 31, feeling: 3, journalEntry: "Last year"),
             makeEntry(year: 2025, month: 1, day: 1, feeling: 9, journalEntry: "This year"),
-            makeEntry(year: 2026, month: 1, day: 1, feeling: 2, journalEntry: "Next year"),
+            makeEntry(year: 2026, month: 1, day: 1, feeling: 2, journalEntry: "Next year")
         ]
         try insertEntries(entries)
 
