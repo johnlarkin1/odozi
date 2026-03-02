@@ -8,6 +8,8 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .modelContainer(try! DataContainer.previewContainer())
+        .modelContainer((try? DataContainer.previewContainer()) ?? {
+            try! ModelContainer(for: DailyEntry.self, configurations: ModelConfiguration(isStoredInMemoryOnly: true))
+        }())
         .environment(\.colorScheme, .dark)
 }

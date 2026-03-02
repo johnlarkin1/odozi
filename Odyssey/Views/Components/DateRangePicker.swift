@@ -13,11 +13,11 @@ enum DateRange: String, CaseIterable, Identifiable {
         let calendar = Calendar.current
         let now = Date()
         switch self {
-        case .week: return calendar.date(byAdding: .day, value: -7, to: now)!
-        case .month: return calendar.date(byAdding: .month, value: -1, to: now)!
-        case .threeMonths: return calendar.date(byAdding: .month, value: -3, to: now)!
-        case .year: return calendar.date(byAdding: .year, value: -1, to: now)!
-        case .allTime: return calendar.date(byAdding: .year, value: -10, to: now)!
+        case .week: return calendar.date(byAdding: .day, value: -7, to: now) ?? now
+        case .month: return calendar.date(byAdding: .month, value: -1, to: now) ?? now
+        case .threeMonths: return calendar.date(byAdding: .month, value: -3, to: now) ?? now
+        case .year: return calendar.date(byAdding: .year, value: -1, to: now) ?? now
+        case .allTime: return calendar.date(byAdding: .year, value: -10, to: now) ?? now
         }
     }
 

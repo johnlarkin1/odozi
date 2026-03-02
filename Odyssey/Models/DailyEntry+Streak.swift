@@ -13,7 +13,8 @@ extension Array where Element == DailyEntry {
             let entryDate = calendar.startOfDay(for: entry.date)
             if entryDate == expectedDate && entry.hasPromptData {
                 streak += 1
-                expectedDate = calendar.date(byAdding: .day, value: -1, to: expectedDate)!
+                guard let prev = calendar.date(byAdding: .day, value: -1, to: expectedDate) else { break }
+                expectedDate = prev
             } else if entryDate < expectedDate {
                 break
             }
