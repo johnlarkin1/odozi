@@ -20,6 +20,15 @@ struct YearInReviewData {
     var completionPercentage: Double {
         Double(totalEntries) / Double(totalDaysInYear) * 100
     }
+
+    static func empty(year: Int) -> YearInReviewData {
+        YearInReviewData(
+            year: year, totalEntries: 0, totalDaysInYear: 365,
+            averageMood: 0, averageSleep: 0, totalSteps: 0, totalDrinks: 0,
+            moodByMonth: [], topCities: [], feelingWordCloud: [],
+            longestStreak: 0, bestDay: nil, allColors: [], topGratitudes: []
+        )
+    }
 }
 
 final class YearInReviewService {
@@ -31,15 +40,17 @@ final class YearInReviewService {
 
     func generate(for year: Int) -> YearInReviewData {
         let calendar = Calendar.current
-        let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1))!
-        let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31))!
+        guard let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
+              let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31)) else {
+            return YearInReviewData.empty(year: year)
+        }
 
         let predicate = #Predicate<DailyEntry> { $0.date >= startOfYear && $0.date <= endOfYear }
         let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\.date)])
         let entries = (try? modelContext.fetch(descriptor)) ?? []
         let withData = entries.filter { $0.hasPromptData }
 
-        let totalDays = calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day! + 1
+        let totalDays = (calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day ?? 364) + 1
 
         let avgMood = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.feeling }) / Double(withData.count)
         let avgSleep = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.sleepQuality }) / Double(withData.count)
@@ -54,8 +65,8 @@ final class YearInReviewService {
             let month = calendar.component(.month, from: entry.date)
             monthMoods[month, default: []].append(entry.feeling)
         }
-        let moodByMonth = (1...12).map { month -> (String, Double) in
-            let date = calendar.date(from: DateComponents(year: year, month: month))!
+        let moodByMonth = (1...12).compactMap { month -> (String, Double)? in
+            guard let date = calendar.date(from: DateComponents(year: year, month: month)) else { return nil }
             let label = monthFormatter.string(from: date)
             let moods = monthMoods[month] ?? []
             let avg = moods.isEmpty ? 0 : Double(moods.reduce(0, +)) / Double(moods.count)

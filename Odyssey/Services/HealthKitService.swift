@@ -20,7 +20,7 @@ actor HealthKitService {
     }
 
     func fetchSteps(for date: Date) async throws -> Int? {
-        let interval = dayInterval(for: date)
+        guard let interval = dayInterval(for: date) else { return nil }
         let type = HKQuantityType(.stepCount)
         let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
 
@@ -35,7 +35,7 @@ actor HealthKitService {
     }
 
     func fetchWalkingDistance(for date: Date) async throws -> Double? {
-        let interval = dayInterval(for: date)
+        guard let interval = dayInterval(for: date) else { return nil }
         let type = HKQuantityType(.distanceWalkingRunning)
         let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
 
@@ -50,7 +50,7 @@ actor HealthKitService {
     }
 
     func fetchSleepHours(for date: Date) async throws -> Double? {
-        let interval = sleepInterval(for: date)
+        guard let interval = sleepInterval(for: date) else { return nil }
         let type = HKCategoryType(.sleepAnalysis)
         let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
 
@@ -99,19 +99,19 @@ actor HealthKitService {
         return mergedSeconds > 0 ? mergedSeconds / 3600.0 : nil
     }
 
-    private func dayInterval(for date: Date) -> DateInterval {
+    private func dayInterval(for date: Date) -> DateInterval? {
         let calendar = Calendar.current
         let start = calendar.startOfDay(for: date)
-        let end = calendar.date(byAdding: .day, value: 1, to: start)!
+        guard let end = calendar.date(byAdding: .day, value: 1, to: start) else { return nil }
         return DateInterval(start: start, end: end)
     }
 
-    private func sleepInterval(for date: Date) -> DateInterval {
+    private func sleepInterval(for date: Date) -> DateInterval? {
         // Look at previous evening (8 PM) through current morning (noon)
         let calendar = Calendar.current
         let start = calendar.startOfDay(for: date)
-        let sleepStart = calendar.date(byAdding: .hour, value: -4, to: start)! // 8 PM prior day
-        let sleepEnd = calendar.date(byAdding: .hour, value: 12, to: start)!   // Noon current day
+        guard let sleepStart = calendar.date(byAdding: .hour, value: -4, to: start),
+              let sleepEnd = calendar.date(byAdding: .hour, value: 12, to: start) else { return nil }
         return DateInterval(start: sleepStart, end: sleepEnd)
     }
 }
