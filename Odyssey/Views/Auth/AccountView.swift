@@ -8,6 +8,7 @@ struct AccountView: View {
 
     @State private var showRecoveryKey = false
     @State private var recoveryKey = ""
+    @State private var copied = false
     @State private var showDeleteConfirmation = false
     @State private var showSignOutConfirmation = false
     @State private var showDeleteError = false
@@ -111,9 +112,17 @@ struct AccountView: View {
                         .padding(.horizontal, 24)
 
                     Button {
-                        UIPasteboard.general.string = recoveryKey
+                        UIPasteboard.general.setItems(
+                            [[UIPasteboard.typeAutomatic: recoveryKey]],
+                            options: [.expirationDate: Date().addingTimeInterval(60)]
+                        )
+                        copied = true
+                        Task {
+                            try? await Task.sleep(for: .seconds(3))
+                            copied = false
+                        }
                     } label: {
-                        Label("Copy to Clipboard", systemImage: "doc.on.doc")
+                        Label(copied ? "Copied! (expires in 60s)" : "Copy to Clipboard", systemImage: "doc.on.doc")
                     }
 
                     Spacer()

@@ -15,6 +15,8 @@ struct OdysseyApp: App {
     @State private var authManager = AuthManager()
     @State private var syncService = SyncService()
     @State private var showBackupPrompt = false
+    @State private var showRetentionAlert = false
+    @State private var oldEntryCount = 0
 
     let container: ModelContainer?
     let containerError: Error?
@@ -73,6 +75,19 @@ struct OdysseyApp: App {
                                     UserDefaults.standard.set(true, forKey: "hasSeenBackupPrompt")
                                 }
                             }
+                            .alert("Clean Up Old Entries", isPresented: $showRetentionAlert) {
+                                Button("Delete \(oldEntryCount) Entries", role: .destructive) {
+                                    DataRetentionService.performCleanup(context: container.mainContext)
+                                }
+                                Button("Remind Me Later", role: .cancel) {
+                                    DataRetentionService.recordDismissal()
+                                }
+                                Button("Create Account") {
+                                    showBackupPrompt = true
+                                }
+                            } message: {
+                                Text("You have \(oldEntryCount) entries older than 1 year. Would you like to delete them?")
+                            }
                     } else {
                         OnboardingFlowView(
                             viewModel: onboardingViewModel,
@@ -127,11 +142,15 @@ struct OdysseyApp: App {
             await syncService.syncPendingEntries(modelContext: context, authManager: authManager)
         }
 
-        // Data retention cleanup for non-account users
-        DataRetentionService.performCleanupIfNeeded(
-            modelContext: context,
+        // Data retention: count old entries and prompt user for confirmation
+        let count = DataRetentionService.countOldEntries(
+            context: context,
             hasAccount: authManager.hasAccount
         )
+        if count > 0 {
+            oldEntryCount = count
+            showRetentionAlert = true
+        }
     }
 }
 

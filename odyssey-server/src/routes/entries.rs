@@ -5,10 +5,18 @@ use chrono::{DateTime, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 
 use crate::AppState;
+use crate::UserScope;
 use crate::auth::AuthUser;
 use crate::error::AppError;
 use crate::models::EntryResponse;
 use crate::validation;
+
+/// Pre-validated entry fields produced by the validation loop.
+struct ValidatedEntry {
+    entry_date: NaiveDate,
+    created_at: DateTime<Utc>,
+    updated_at: DateTime<Utc>,
+}
 
 pub fn router() -> Router<AppState> {
     Router::new()
@@ -64,6 +72,7 @@ async fn create_entries(
     user: AuthUser,
     Json(body): Json<SyncUploadRequest>,
 ) -> Result<Json<SyncResponse>, AppError> {
+    let scope = UserScope::new(&user, &state);
     let entries = &body.entries;
 
     if entries.is_empty() || entries.len() > 100 {
@@ -72,12 +81,47 @@ async fn create_entries(
         ));
     }
 
-    // Validate each entry
+    // Validate each entry and collect parsed date/time fields
+    let mut validated: Vec<ValidatedEntry> = Vec::with_capacity(entries.len());
     for entry in entries {
         validation::validate_entry_date(&entry.entry_date)?;
+        let entry_date = validation::validate_entry_date_range(&entry.entry_date)?;
+        let created_at = validation::validate_timestamp(&entry.created_at, "createdAt")?;
+        let updated_at = validation::validate_timestamp(&entry.updated_at, "updatedAt")?;
         validation::validate_feeling(entry.feeling)?;
         validation::validate_sleep_quality(entry.sleep_quality)?;
         validation::validate_drinks(entry.drinks)?;
+
+        // String length constraints — text fields: 20 KB max
+        validation::validate_encrypted_field_length(
+            &entry.journal_entry, "journalEntry", 20 * 1024,
+        )?;
+        validation::validate_encrypted_field_length(
+            &entry.gratitude, "gratitude", 20 * 1024,
+        )?;
+        validation::validate_encrypted_field_length(
+            &entry.win, "win", 20 * 1024,
+        )?;
+        validation::validate_encrypted_field_length(
+            &entry.tension, "tension", 20 * 1024,
+        )?;
+        // singleWordFeeling: 1 KB max
+        validation::validate_encrypted_field_length(
+            &entry.single_word_feeling, "singleWordFeeling", 1024,
+        )?;
+        // Location fields: 1 KB max
+        validation::validate_encrypted_field_length(&entry.city, "city", 1024)?;
+        validation::validate_encrypted_field_length(&entry.state, "state", 1024)?;
+        validation::validate_encrypted_field_length(&entry.country, "country", 1024)?;
+
+        // Hex color format
+        validation::validate_hex_color(&entry.feeling_color_hex)?;
+
+        validated.push(ValidatedEntry {
+            entry_date,
+            created_at,
+            updated_at,
+        });
     }
 
     // Upsert user
@@ -85,25 +129,12 @@ async fn create_entries(
         "INSERT INTO users (clerk_user_id, last_sync_at) VALUES ($1, NOW())
          ON CONFLICT (clerk_user_id) DO UPDATE SET last_sync_at = NOW()",
     )
-    .bind(&user.user_id)
-    .execute(&state.db)
+    .bind(&scope.user_id)
+    .execute(&scope.pool)
     .await?;
 
-    // Upsert entries
-    for entry in entries {
-        let entry_date = entry
-            .entry_date
-            .parse::<NaiveDate>()
-            .map_err(|e| AppError::Validation(format!("Invalid date: {e}")))?;
-        let created_at = entry
-            .created_at
-            .parse::<DateTime<Utc>>()
-            .map_err(|e| AppError::Validation(format!("Invalid createdAt: {e}")))?;
-        let updated_at = entry
-            .updated_at
-            .parse::<DateTime<Utc>>()
-            .map_err(|e| AppError::Validation(format!("Invalid updatedAt: {e}")))?;
-
+    // Upsert entries using pre-validated date/time fields
+    for (entry, v) in entries.iter().zip(validated.iter()) {
         sqlx::query(
             "INSERT INTO entries (
                 user_id, entry_date, journal_entry, gratitude, win, tension,
@@ -137,8 +168,8 @@ async fn create_entries(
                 pickups = EXCLUDED.pickups,
                 updated_at = EXCLUDED.updated_at",
         )
-        .bind(&user.user_id)
-        .bind(entry_date)
+        .bind(&scope.user_id)
+        .bind(v.entry_date)
         .bind(&entry.journal_entry)
         .bind(&entry.gratitude)
         .bind(&entry.win)
@@ -158,9 +189,9 @@ async fn create_entries(
         .bind(entry.sleep_hours)
         .bind(entry.screen_time_seconds)
         .bind(entry.pickups)
-        .bind(created_at)
-        .bind(updated_at)
-        .execute(&state.db)
+        .bind(v.created_at)
+        .bind(v.updated_at)
+        .execute(&scope.pool)
         .await?;
     }
 
@@ -168,9 +199,9 @@ async fn create_entries(
     sqlx::query(
         "INSERT INTO sync_log (user_id, entries_pushed, entries_pulled) VALUES ($1, $2, 0)",
     )
-    .bind(&user.user_id)
+    .bind(&scope.user_id)
     .bind(entries.len() as i32)
-    .execute(&state.db)
+    .execute(&scope.pool)
     .await?;
 
     let synced_at = Utc::now()
@@ -202,6 +233,7 @@ async fn list_entries(
     user: AuthUser,
     Query(params): Query<ListEntriesParams>,
 ) -> Result<Json<ListEntriesResponse>, AppError> {
+    let scope = UserScope::new(&user, &state);
     let limit: i64 = params
         .limit
         .as_deref()
@@ -221,19 +253,19 @@ async fn list_entries(
             "SELECT * FROM entries WHERE user_id = $1 AND updated_at > $2
              ORDER BY updated_at ASC LIMIT $3",
         )
-        .bind(&user.user_id)
+        .bind(&scope.user_id)
         .bind(since_dt)
         .bind(limit)
-        .fetch_all(&state.db)
+        .fetch_all(&scope.pool)
         .await?
     } else {
         sqlx::query_as::<_, crate::models::Entry>(
             "SELECT * FROM entries WHERE user_id = $1
              ORDER BY updated_at ASC LIMIT $2",
         )
-        .bind(&user.user_id)
+        .bind(&scope.user_id)
         .bind(limit)
-        .fetch_all(&state.db)
+        .fetch_all(&scope.pool)
         .await?
     };
 
@@ -266,10 +298,11 @@ async fn delete_entry(
     user: AuthUser,
     Path(date): Path<String>,
 ) -> Result<Json<DeleteResponse>, AppError> {
+    let scope = UserScope::new(&user, &state);
     sqlx::query("DELETE FROM entries WHERE user_id = $1 AND entry_date = $2")
-        .bind(&user.user_id)
+        .bind(&scope.user_id)
         .bind(&date)
-        .execute(&state.db)
+        .execute(&scope.pool)
         .await?;
 
     Ok(Json(DeleteResponse { deleted: true }))
