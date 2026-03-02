@@ -87,9 +87,23 @@ struct ProfileView: View {
                     HStack {
                         Text("Version")
                         Spacer()
-                        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "Unknown"
+                        let appVersion = Bundle.main.infoDictionary?[
+                            "CFBundleShortVersionString"
+                        ] as? String ?? "Unknown"
                         Text(appVersion)
                             .foregroundStyle(.secondary)
+                    }
+
+                    Link(destination: URL(
+                        string: "https://johnlarkin1.github.io/assets/html/odyssey/privacy.html"
+                    )!) {
+                        Label("Privacy Policy", systemImage: "hand.raised")
+                    }
+
+                    Link(destination: URL(
+                        string: "https://johnlarkin1.github.io/assets/html/odyssey/terms.html"
+                    )!) {
+                        Label("Terms of Service", systemImage: "doc.text")
                     }
                 }
                 .listRowBackground(Color.cardSurface)
