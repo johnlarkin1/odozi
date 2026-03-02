@@ -91,6 +91,18 @@ struct ProfileView: View {
                         Text(appVersion)
                             .foregroundStyle(.secondary)
                     }
+
+                    if let privacyURL = URL(string: "https://odozi.app/privacy") {
+                        Link(destination: privacyURL) {
+                            Label("Privacy Policy", systemImage: "hand.raised")
+                        }
+                    }
+
+                    if let termsURL = URL(string: "https://odozi.app/terms") {
+                        Link(destination: termsURL) {
+                            Label("Terms of Service", systemImage: "doc.text")
+                        }
+                    }
                 }
                 .listRowBackground(Color.cardSurface)
             }

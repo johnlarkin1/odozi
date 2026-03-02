@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template beta release match-appstore match-development
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template beta release match-appstore match-development website-dev website-build website-install
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -114,3 +114,12 @@ match-appstore: ## Sync App Store signing certificates
 
 match-development: ## Sync development signing certificates
 	bundle exec fastlane match development
+
+website-install: ## Install website dependencies
+	cd website && npm install
+
+website-dev: ## Start website dev server
+	cd website && npm run dev
+
+website-build: ## Build website for production (static export)
+	cd website && npm run build

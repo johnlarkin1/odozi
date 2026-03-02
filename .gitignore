@@ -103,3 +103,8 @@ vendor/bundle
 # Test artifacts
 TestResults.xcresult
 coverage.json
+
+# Website (Next.js)
+website/node_modules/
+website/.next/
+website/out/
