@@ -12,6 +12,9 @@ final class GuidedPromptViewModel {
     var skippedSteps: Set<PromptStep> = []
     var isComplete = false
     var showingCompletion = false
+    var isUpdatingLocation = false
+    var currentLocationDisplay: String = "No location captured"
+    var locationCapturedAt: Date?
 
     private let modelContext: ModelContext
 
@@ -89,5 +92,45 @@ final class GuidedPromptViewModel {
 
         isComplete = true
         showingCompletion = true
+    }
+
+    func loadCurrentLocation() {
+        let repository = DailyEntryRepository(context: modelContext)
+        guard let entry = try? repository.fetchOrCreateToday() else { return }
+
+        if let city = entry.city, let state = entry.state {
+            currentLocationDisplay = "\(city), \(state)"
+        } else if let city = entry.city {
+            currentLocationDisplay = city
+        } else {
+            currentLocationDisplay = "No location captured"
+        }
+        locationCapturedAt = entry.locationCapturedAt
+    }
+
+    func updateLocationFromGPS() async {
+        isUpdatingLocation = true
+        defer { isUpdatingLocation = false }
+
+        do {
+            let repository = DailyEntryRepository(context: modelContext)
+            let entry = try repository.fetchOrCreateToday()
+
+            let service = LocationCaptureService()
+            let snapshot = try await service.captureCurrentLocation()
+
+            entry.latitude = snapshot.latitude
+            entry.longitude = snapshot.longitude
+            entry.city = snapshot.city
+            entry.state = snapshot.state
+            entry.country = snapshot.country
+            entry.locationCapturedAt = Date()
+            entry.updatedAt = Date()
+
+            try modelContext.save()
+            loadCurrentLocation()
+        } catch {
+            guidedPromptLogger.error("Failed to update location from GPS: \(error)")
+        }
     }
 }

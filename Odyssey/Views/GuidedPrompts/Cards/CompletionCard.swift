@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CompletionCard: View {
+    var locationDisplay: String? = nil
     let onDismiss: () -> Void
 
     @State private var showCheckmark = false
@@ -30,6 +31,12 @@ struct CompletionCard: View {
                         Text("Keep sailing on your odyssey")
                             .font(.title3)
                             .foregroundStyle(.secondary)
+
+                        if let location = locationDisplay {
+                            Text("Entry saved from \(location)")
+                                .font(.subheadline)
+                                .foregroundStyle(.secondary.opacity(0.8))
+                        }
                     }
                     .transition(.opacity)
                 }

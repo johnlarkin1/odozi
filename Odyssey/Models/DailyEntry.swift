@@ -31,6 +31,7 @@ final class DailyEntry {
     var city: String?
     var state: String?
     var country: String?
+    var locationCapturedAt: Date?
 
     // Background: HealthKit (optional)
     var stepCount: Int?
