@@ -69,6 +69,7 @@ struct JournalCalendarView: View {
                                     .fill(Calendar.current.isDate(date, inSameDayAs: selectedDate) ? Color.white.opacity(0.1) : Color.clear)
                             )
                         }
+                        .buttonStyle(.plain)
                     } else {
                         Color.clear
                             .frame(width: 36, height: 36)
@@ -77,6 +78,15 @@ struct JournalCalendarView: View {
             }
         }
         .padding(4)
+        .onAppear {
+            displayedMonth = selectedDate
+        }
+        .onChange(of: selectedDate) { _, newValue in
+            let calendar = Calendar.current
+            if !calendar.isDate(displayedMonth, equalTo: newValue, toGranularity: .month) {
+                displayedMonth = newValue
+            }
+        }
     }
 
     private func daysInMonth() -> [Date?] {
