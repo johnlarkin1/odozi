@@ -37,10 +37,17 @@ struct BackupPromptModal: View {
                     .font(.title)
                     .fontWeight(.bold)
 
+                Text("Phones break, get lost, or get replaced. A free backup keeps your reflections safe no matter what.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
+
                 VStack(alignment: .leading, spacing: 8) {
-                    featureBullet(icon: "lock.fill", text: "Encrypted on-device — only you can read your entries")
-                    featureBullet(icon: "arrow.triangle.2.circlepath", text: "Auto-sync keeps your data safe")
-                    featureBullet(icon: "iphone.and.arrow.forward", text: "Restore to any device")
+                    featureBullet(icon: "lock.fill", text: "End-to-end encrypted — only you can read your entries")
+                    featureBullet(icon: "arrow.triangle.2.circlepath", text: "Auto-sync after every entry")
+                    featureBullet(icon: "iphone.and.arrow.forward", text: "Restore seamlessly to a new device")
+                    featureBullet(icon: "dollarsign.circle", text: "Free forever, no subscriptions")
                 }
                 .padding(.horizontal)
             }
