@@ -70,6 +70,7 @@ struct OdysseyApp: App {
                                     .environment(\.colorScheme, .dark)
                             }
                             .onReceive(NotificationCenter.default.publisher(for: .didSaveFirstEntry)) { _ in
+                                NotificationService.cancelTodaysPendingReminder()
                                 let hasSeenPrompt = UserDefaults.standard.bool(forKey: "hasSeenBackupPrompt")
                                 if !hasSeenPrompt && !authManager.hasAccount {
                                     showBackupPrompt = true
@@ -138,6 +139,8 @@ struct OdysseyApp: App {
                 }
             }
         }
+
+        NotificationService.rescheduleIfNeeded()
 
         // Sync pending entries if signed in
         if authManager.hasAccount {

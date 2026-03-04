@@ -19,6 +19,9 @@ struct ProfileView: View {
         devices: .init([.iPhone, .iPad])
     )
 
+    @AppStorage("reminderEnabled") private var reminderEnabled = true
+    @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
+
     @State private var csvExportURL: URL?
 
     @Environment(AuthManager.self) private var authManager
@@ -108,6 +111,20 @@ struct ProfileView: View {
                 }
                 .listRowBackground(Color.cardSurface)
 
+                Section("Reminders") {
+                    NavigationLink {
+                        ReminderSettingsView()
+                    } label: {
+                        HStack {
+                            Label("Daily Reminder", systemImage: "bell.fill")
+                            Spacer()
+                            Text(reminderStatusText)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
+
                 Section("Data") {
                     if let url = csvExportURL {
                         ShareLink(item: url) {
@@ -148,6 +165,14 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .cosmicBackground()
         }
+    }
+
+    private var reminderStatusText: String {
+        if reminderEnabled {
+            let timeOfDay = ReminderTimeOfDay(rawValue: reminderTimeOfDayRaw) ?? .evening
+            return timeOfDay.label
+        }
+        return "Off"
     }
 
     private func generateCSV() -> URL? {

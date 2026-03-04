@@ -49,6 +49,8 @@ struct OnboardingFlowView: View {
             HealthPermissionCard()
         case .screenTime:
             ScreenTimePermissionCard()
+        case .notifications:
+            NotificationPermissionCard()
         case .account:
             AccountCard(
                 onCreateAccount: { handleCreateAccount() },
@@ -71,6 +73,8 @@ struct OnboardingFlowView: View {
             viewModel.requestHealthKitAccess()
         case .screenTime:
             viewModel.requestScreenTimeAccess()
+        case .notifications:
+            viewModel.requestNotificationAccess()
         default:
             viewModel.goToNext()
         }

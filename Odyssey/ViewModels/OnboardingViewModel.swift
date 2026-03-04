@@ -48,6 +48,18 @@ final class OnboardingViewModel {
         goToNext()
     }
 
+    // MARK: - Notifications
+
+    func requestNotificationAccess() {
+        Task {
+            let granted = await NotificationService.requestAuthorization()
+            if granted {
+                NotificationService.scheduleReminder(timeOfDay: .evening)
+            }
+            await MainActor.run { goToNext() }
+        }
+    }
+
     // MARK: - Account
 
     func beginAccountCreation() {
