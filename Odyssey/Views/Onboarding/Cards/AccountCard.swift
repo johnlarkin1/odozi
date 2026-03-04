@@ -61,9 +61,10 @@ struct AccountCard: View {
                     }
 
                     VStack(alignment: .leading, spacing: 8) {
-                        bulletPoint("End-to-end encrypted")
-                        bulletPoint("Restore across devices")
-                        bulletPoint("Free account")
+                        bulletPoint("Never lose entries if you lose or switch phones")
+                        bulletPoint("End-to-end encrypted — only you can read them")
+                        bulletPoint("Restore seamlessly to any device")
+                        bulletPoint("Free forever")
                     }
                 }
                 .padding(16)

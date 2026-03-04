@@ -5,6 +5,9 @@ import DeviceActivity
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var selectAppsModel = ScreenTimeSelectAppsModel()
+    @Query private var allEntries: [DailyEntry]
+
+    private var localEntryCount: Int { allEntries.count }
 
     @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
     @State private var filter = DeviceActivityFilter(
@@ -46,16 +49,39 @@ struct ProfileView: View {
                             AccountView()
                         }
                     } else {
-                        HStack(spacing: 12) {
-                            Image(systemName: "icloud.slash")
-                                .foregroundStyle(.secondary)
-                            Text("No backup configured")
-                                .font(.subheadline)
-                                .foregroundStyle(.secondary)
+                        VStack(alignment: .leading, spacing: 6) {
+                            HStack(spacing: 8) {
+                                Image(systemName: "exclamationmark.icloud")
+                                    .foregroundStyle(Color.accentAmber)
+                                Text("No backup")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                            }
+
+                            if localEntryCount > 0 {
+                                Text("\(localEntryCount) \(localEntryCount == 1 ? "entry" : "entries") on this device only — not backed up")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            } else {
+                                Text("Your journal entries aren't backed up yet")
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
                         }
 
-                        NavigationLink("Back Up Your Journal") {
+                        NavigationLink {
                             SignInView()
+                        } label: {
+                            HStack {
+                                Text("Back Up Your Journal")
+                                Text("Free")
+                                    .font(.caption2)
+                                    .fontWeight(.medium)
+                                    .foregroundStyle(Color.accentAmber)
+                                    .padding(.horizontal, 6)
+                                    .padding(.vertical, 2)
+                                    .background(Color.accentAmber.opacity(0.15), in: Capsule())
+                            }
                         }
                     }
                 }
