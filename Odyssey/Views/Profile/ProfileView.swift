@@ -4,6 +4,7 @@ import DeviceActivity
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @State private var selectAppsModel = ScreenTimeSelectAppsModel()
     @Query private var allEntries: [DailyEntry]
 
@@ -89,6 +90,17 @@ struct ProfileView: View {
                 Section("Screen Time") {
                     DeviceActivityReport(context, filter: filter)
                         .frame(height: 60)
+                        .onChange(of: scenePhase) { _, newPhase in
+                            if newPhase == .active {
+                                filter = DeviceActivityFilter(
+                                    segment: .daily(
+                                        during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
+                                    ),
+                                    users: .all,
+                                    devices: .init([.iPhone, .iPad])
+                                )
+                            }
+                        }
 
                     NavigationLink("Select Apps to Monitor") {
                         ScreenTimeSelectAppsContentView(model: selectAppsModel)
