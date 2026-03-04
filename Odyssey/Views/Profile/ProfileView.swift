@@ -21,6 +21,9 @@ struct ProfileView: View {
 
     @AppStorage("reminderEnabled") private var reminderEnabled = true
     @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
+    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.fixedTime.rawValue
+    @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
+    @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
 
     @State private var csvExportURL: URL?
 
@@ -125,6 +128,20 @@ struct ProfileView: View {
                 }
                 .listRowBackground(Color.cardSurface)
 
+                Section("Location") {
+                    NavigationLink {
+                        LocationTimingSettingsView()
+                    } label: {
+                        HStack {
+                            Label("Capture Timing", systemImage: "location.fill")
+                            Spacer()
+                            Text(locationTimingStatusText)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
+
                 Section("Data") {
                     if let url = csvExportURL {
                         ShareLink(item: url) {
@@ -165,6 +182,20 @@ struct ProfileView: View {
             .navigationTitle("Profile")
             .cosmicBackground()
         }
+    }
+
+    private var locationTimingStatusText: String {
+        let mode = LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .fixedTime
+        if mode == .randomized {
+            return "Randomized"
+        }
+        var components = DateComponents()
+        components.hour = locationCaptureHour
+        components.minute = locationCaptureMinute
+        if let date = Calendar.current.date(from: components) {
+            return date.formatted(date: .omitted, time: .shortened)
+        }
+        return "8:00 PM"
     }
 
     private var reminderStatusText: String {

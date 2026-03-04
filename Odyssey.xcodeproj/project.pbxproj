@@ -7,6 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		AA0000000000000000000005 /* LocationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* LocationCard.swift */; };
+		AA0000000000000000000006 /* LocationCaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* LocationCaptureMode.swift */; };
+		AA0000000000000000000007 /* LocationTimingSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000003 /* LocationTimingSettingsView.swift */; };
+		AA0000000000000000000008 /* SnapshotScheduler.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000004 /* SnapshotScheduler.swift */; };
 		04EB166CB7A7EC94EB5B8122 /* MetricDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE292778346244DD63835D87 /* MetricDefinition.swift */; };
 		060652D48244172B87B51067 /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162413D44EB26D7A58E55ED3 /* ReminderSettingsView.swift */; };
 		068FF2F9C0C9853EEB3CEA71 /* OnboardingViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = AFEE060056F4C48A4C0DE33C /* OnboardingViewModel.swift */; };
@@ -230,6 +234,10 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		AA0000000000000000000001 /* LocationCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocationCard.swift; sourceTree = "<group>"; };
+		AA0000000000000000000002 /* LocationCaptureMode.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocationCaptureMode.swift; sourceTree = "<group>"; };
+		AA0000000000000000000003 /* LocationTimingSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocationTimingSettingsView.swift; sourceTree = "<group>"; };
+		AA0000000000000000000004 /* SnapshotScheduler.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SnapshotScheduler.swift; sourceTree = "<group>"; };
 		046380EAD84D6A25DCE661D6 /* DateRangePicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
 		04DD2513DE2308EC6DCBAA4C /* StreakView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakView.swift; sourceTree = "<group>"; };
 		0585E2482D4675F4DB04679F /* YearInReviewServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearInReviewServiceTests.swift; sourceTree = "<group>"; };
@@ -506,6 +514,7 @@
 				6ECC6BD469E6111D22872AA2 /* TrendCalculator.swift */,
 				2115FFC1E00BEDC8F9BAA18B /* CorrelationService.swift */,
 				460317790BD3FBC96C4F2FB9 /* NotificationService.swift */,
+				AA0000000000000000000004 /* SnapshotScheduler.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -757,6 +766,7 @@
 				EE292778346244DD63835D87 /* MetricDefinition.swift */,
 				E80FD024C95558B01BEA392E /* ReminderTimeOfDay.swift */,
 				A646E4D89D7224EB162B2857 /* UserPreferences.swift */,
+				AA0000000000000000000002 /* LocationCaptureMode.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -873,6 +883,7 @@
 				85AA8AAEB7A435084C23ECD6 /* TensionPromptCard.swift */,
 				9D5F4E571066024E60EE64E5 /* JournalPromptCard.swift */,
 				812204442C574F4378F19004 /* DrinksPromptCard.swift */,
+				AA0000000000000000000001 /* LocationCard.swift */,
 				EF6477F0BFB8A770D8D6821B /* CompletionCard.swift */,
 			);
 			path = Cards;
@@ -884,6 +895,7 @@
 				EACD1AF7614D69F2DEDCF73C /* ProfileView.swift */,
 				AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */,
 				162413D44EB26D7A58E55ED3 /* ReminderSettingsView.swift */,
+				AA0000000000000000000003 /* LocationTimingSettingsView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -1180,6 +1192,10 @@
 				4ECCE2DC9ADB7BDAB7B2E6FB /* TensionPromptCard.swift in Sources */,
 				BED82C002853A9359A931665 /* JournalPromptCard.swift in Sources */,
 				7A7B26F8DE880B36FF4F898B /* DrinksPromptCard.swift in Sources */,
+				AA0000000000000000000005 /* LocationCard.swift in Sources */,
+				AA0000000000000000000006 /* LocationCaptureMode.swift in Sources */,
+				AA0000000000000000000007 /* LocationTimingSettingsView.swift in Sources */,
+				AA0000000000000000000008 /* SnapshotScheduler.swift in Sources */,
 				FB9339CF5117A006B134CC83 /* CompletionCard.swift in Sources */,
 				13CDB25508C558905357DB09 /* DateRangePicker.swift in Sources */,
 				27241EE143C7E3E2C42F0F97 /* InsightCard.swift in Sources */,

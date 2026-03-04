@@ -47,7 +47,9 @@ struct GuidedPromptFlowView: View {
                     get: { vm.showingCompletion },
                     set: { vm.showingCompletion = $0 }
                 )) {
-                    CompletionCard {
+                    CompletionCard(
+                        locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay
+                    ) {
                         dismiss()
                     }
                 }
@@ -111,6 +113,16 @@ struct GuidedPromptFlowView: View {
                 get: { viewModel.responses.drinks },
                 set: { viewModel.responses.drinks = $0 }
             ))
+        case .location:
+            LocationCard(
+                currentLocationDisplay: viewModel.currentLocationDisplay,
+                locationCapturedAt: viewModel.locationCapturedAt,
+                isUpdating: viewModel.isUpdatingLocation,
+                onUpdateLocation: {
+                    Task { await viewModel.updateLocationFromGPS() }
+                }
+            )
+            .onAppear { viewModel.loadCurrentLocation() }
         }
     }
 }

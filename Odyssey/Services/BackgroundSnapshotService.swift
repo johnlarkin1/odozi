@@ -85,6 +85,7 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
         if entry.city == nil, let city = data.city { entry.city = city }
         if entry.state == nil, let state = data.state { entry.state = state }
         if entry.country == nil, let country = data.country { entry.country = country }
+        if entry.locationCapturedAt == nil, data.latitude != nil { entry.locationCapturedAt = Date() }
 
         // Apply HealthKit data
         if let steps = data.stepCount { entry.stepCount = steps }

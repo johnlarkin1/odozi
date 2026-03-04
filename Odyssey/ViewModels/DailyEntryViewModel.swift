@@ -119,6 +119,7 @@ final class DailyEntryViewModel {
         entry.city = snapshot.city
         entry.state = snapshot.state
         entry.country = snapshot.country
+        entry.locationCapturedAt = Date()
         entry.updatedAt = Date()
 
         try modelContext.save()

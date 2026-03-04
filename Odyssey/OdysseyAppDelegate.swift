@@ -55,27 +55,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     }
 
     private func scheduleSnapshotTask() {
-        let request = BGAppRefreshTaskRequest(identifier: "com.odyssey.snapshot")
-
-        let calendar = Calendar.current
-        let now = Date()
-        guard var target = calendar.date(bySettingHour: 20, minute: 0, second: 0, of: now) else {
-            logger.warning("Failed to compute snapshot target date")
-            return
-        }
-
-        if target <= now {
-            guard let next = calendar.date(byAdding: .day, value: 1, to: target) else { return }
-            target = next
-        }
-
-        request.earliestBeginDate = target
-
-        do {
-            try BGTaskScheduler.shared.submit(request)
-        } catch {
-            logger.error("Could not schedule snapshot task: \(error)")
-        }
+        SnapshotScheduler.scheduleSnapshotTask()
     }
 
     // MARK: - Fallback: BGProcessingTask at 2 AM
