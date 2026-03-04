@@ -11,7 +11,19 @@ struct TotalActivityView: View {
     let totalActivity: String
 
     var body: some View {
-        Text(totalActivity)
+        HStack {
+            VStack(alignment: .leading, spacing: 4) {
+                Text("Today's Usage")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+                Text(totalActivity)
+                    .font(.title2.bold())
+                    .fontDesign(.rounded)
+                    .foregroundStyle(.white)
+            }
+            Spacer()
+        }
+        .padding(.vertical, 4)
     }
 }
 
@@ -21,5 +33,6 @@ struct TotalActivityView: View {
 struct TotalActivityView_Previews: PreviewProvider {
     static var previews: some View {
         TotalActivityView(totalActivity: "1h 23m")
+            .background(Color.black)
     }
 }

@@ -79,12 +79,12 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
     do {
         let entry = try repository.fetchOrCreateToday()
 
-        // Apply location data
-        if let lat = data.latitude { entry.latitude = lat }
-        if let lon = data.longitude { entry.longitude = lon }
-        if let city = data.city { entry.city = city }
-        if let state = data.state { entry.state = state }
-        if let country = data.country { entry.country = country }
+        // Apply location data (only if not already set, to preserve manual refreshes)
+        if entry.latitude == nil, let lat = data.latitude { entry.latitude = lat }
+        if entry.longitude == nil, let lon = data.longitude { entry.longitude = lon }
+        if entry.city == nil, let city = data.city { entry.city = city }
+        if entry.state == nil, let state = data.state { entry.state = state }
+        if entry.country == nil, let country = data.country { entry.country = country }
 
         // Apply HealthKit data
         if let steps = data.stepCount { entry.stepCount = steps }

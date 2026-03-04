@@ -118,24 +118,25 @@ struct OdysseyApp: App {
     private func foregroundCatchUp() async {
         guard let container else { return }
         let context = container.mainContext
-        let today = Calendar.current.startOfDay(for: Date())
-        let predicate = #Predicate<DailyEntry> { $0.date == today }
-        var descriptor = FetchDescriptor(predicate: predicate)
-        descriptor.fetchLimit = 1
 
-        // Check if any background data exists — not just latitude (which stays nil if location denied)
-        let entry = try? context.fetch(descriptor).first
-        let hasSnapshot = entry != nil && (
-            entry?.latitude != nil ||
-                entry?.stepCount != nil ||
-                entry?.screenTimeSeconds != nil ||
-                entry?.sleepHours != nil
-        )
+        // Always capture and apply snapshot — applySnapshotData only writes non-nil values
+        // and uses fetchOrCreateToday(), so repeated calls are safe
+        let service = BackgroundSnapshotService()
+        let data = await service.captureSnapshot()
+        applySnapshotData(data, to: context)
 
-        if !hasSnapshot {
-            let service = BackgroundSnapshotService()
-            let data = await service.captureSnapshot()
-            applySnapshotData(data, to: context)
+        // Screen Time extension writes async to SharedDefaults — re-read after a delay
+        // to catch data that wasn't available on the initial read
+        Task {
+            try? await Task.sleep(for: .seconds(3))
+            if let screenTime = SharedDefaults.getScreenTime() {
+                let repository = DailyEntryRepository(context: context)
+                if let entry = try? repository.fetchOrCreateToday() {
+                    entry.screenTimeSeconds = screenTime.seconds
+                    entry.pickups = screenTime.pickups
+                    try? context.save()
+                }
+            }
         }
 
         // Sync pending entries if signed in
