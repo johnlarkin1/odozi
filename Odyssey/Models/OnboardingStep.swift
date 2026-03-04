@@ -5,6 +5,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     case location
     case health
     case screenTime
+    case notifications
     case account
     case completion
 
@@ -16,6 +17,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .location: "Your Daily Map"
         case .health: "Health Insights"
         case .screenTime: "Screen Time"
+        case .notifications: "Daily Reminders"
         case .account: "Your Data, Your Choice"
         case .completion: "You're All Set"
         }
@@ -31,6 +33,8 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
             "Connect Apple Health to automatically track your steps, walking distance, and sleep alongside your journal entries."
         case .screenTime:
             "See how your screen time relates to your mood and wellness patterns."
+        case .notifications:
+            "A gentle nudge to reflect on your day. Choose when works best for you."
         case .account:
             "Your journal lives on this device. Nothing leaves your phone unless you choose otherwise."
         case .completion:
@@ -44,6 +48,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .location: "location.fill"
         case .health: "heart.fill"
         case .screenTime: "hourglass"
+        case .notifications: "bell.fill"
         case .account: "iphone.gen3"
         case .completion: "checkmark.circle.fill"
         }
@@ -55,6 +60,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .location: .accentTeal
         case .health: .coralRed
         case .screenTime: .accentAmber
+        case .notifications: .cosmicPurple
         case .account: .accentTeal
         case .completion: .successGreen
         }
@@ -62,7 +68,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
 
     var isPermissionStep: Bool {
         switch self {
-        case .location, .health, .screenTime: true
+        case .location, .health, .screenTime, .notifications: true
         default: false
         }
     }
