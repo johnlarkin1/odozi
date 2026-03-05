@@ -129,6 +129,37 @@ struct BackupPromptModal: View {
                         }
                     }
                 )
+
+                signInButton(
+                    icon: "cat.fill",
+                    title: "Continue with GitHub",
+                    action: {
+                        Task {
+                            do {
+                                try await authManager.signUp(strategy: .github)
+                            } catch is CancellationError {
+                                // User cancelled OAuth sheet
+                            } catch {
+                                authManager.error = error.localizedDescription
+                            }
+                        }
+                    }
+                )
+
+                NavigationLink {
+                    EmailSignUpView()
+                        .environment(authManager)
+                } label: {
+                    HStack(spacing: 12) {
+                        Image(systemName: "envelope.fill")
+                            .frame(width: 20)
+                        Text("Sign up with Email")
+                            .fontWeight(.medium)
+                    }
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 12))
+                }
             }
             .padding(.horizontal, 24)
 

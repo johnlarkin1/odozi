@@ -5,6 +5,7 @@ import ClerkKit
 enum AuthStrategy {
     case apple
     case google
+    case github
 }
 
 enum AuthError: Error, LocalizedError {
@@ -83,6 +84,8 @@ final class AuthManager {
                 try await Clerk.shared.auth.signInWithApple()
             case .google:
                 try await Clerk.shared.auth.signInWithOAuth(provider: .google)
+            case .github:
+                try await Clerk.shared.auth.signInWithOAuth(provider: .github)
             }
 
             guard let clerkUser = Clerk.shared.user else {
