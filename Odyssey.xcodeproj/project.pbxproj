@@ -131,6 +131,7 @@
 		BB11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */; };
 		BB12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */; };
 		BB13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */; };
+		BB16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */; };
 		BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */; };
 		BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */; };
 		BB16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift */; };
@@ -362,6 +363,7 @@
 		AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPromptModal.swift; sourceTree = "<group>"; };
 		AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
+		AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignUpView.swift; sourceTree = "<group>"; };
 		AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusBanner.swift; sourceTree = "<group>"; };
 		AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceTests.swift; sourceTree = "<group>"; };
 		AA16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerConfiguration.swift; sourceTree = "<group>"; };
@@ -848,6 +850,7 @@
 				AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */,
 				AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */,
 				AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */,
+				AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -1150,6 +1153,7 @@
 				BB11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift in Sources */,
 				BB12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift in Sources */,
 				BB13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift in Sources */,
+				BB16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift in Sources */,
 				BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */,
 				BB16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift in Sources */,
 				F9FFBCC60597E2412FA6220C /* DailyEntry+Computed.swift in Sources */,
