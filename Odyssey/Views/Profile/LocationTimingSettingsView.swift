@@ -2,38 +2,18 @@ import SwiftUI
 import SwiftData
 
 struct LocationTimingSettingsView: View {
-    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.fixedTime.rawValue
-    @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
-    @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
+    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
 
     @Environment(\.modelContext) private var modelContext
 
     private var selectedMode: LocationCaptureMode {
-        LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .fixedTime
-    }
-
-    private var timeBinding: Binding<Date> {
-        Binding(
-            get: {
-                var components = DateComponents()
-                components.hour = locationCaptureHour
-                components.minute = locationCaptureMinute
-                return Calendar.current.date(from: components) ?? Date()
-            },
-            set: { newDate in
-                let components = Calendar.current.dateComponents([.hour, .minute], from: newDate)
-                locationCaptureHour = components.hour ?? 20
-                locationCaptureMinute = components.minute ?? 0
-                updateSwiftData()
-                SnapshotScheduler.scheduleSnapshotTask()
-            }
-        )
+        LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .evening
     }
 
     var body: some View {
         List {
             Section("Capture Mode") {
-                ForEach(LocationCaptureMode.allCases) { mode in
+                ForEach(LocationCaptureMode.displayCases) { mode in
                     Button {
                         locationCaptureModeRaw = mode.rawValue
                         updateSwiftData()
@@ -60,14 +40,7 @@ struct LocationTimingSettingsView: View {
             }
             .listRowBackground(Color.cardSurface)
 
-            if selectedMode == .fixedTime {
-                Section("Capture Time") {
-                    DatePicker("Time", selection: timeBinding, displayedComponents: .hourAndMinute)
-                        .datePickerStyle(.wheel)
-                        .labelsHidden()
-                }
-                .listRowBackground(Color.cardSurface)
-            } else {
+            if selectedMode == .randomized {
                 Section {
                     HStack(spacing: 12) {
                         Image(systemName: "shuffle")
@@ -93,8 +66,6 @@ struct LocationTimingSettingsView: View {
             modelContext.insert(prefs)
         }
         prefs.locationCaptureMode = locationCaptureModeRaw
-        prefs.locationCaptureHour = locationCaptureHour
-        prefs.locationCaptureMinute = locationCaptureMinute
         prefs.updatedAt = Date()
         try? modelContext.save()
     }
