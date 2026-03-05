@@ -13,14 +13,19 @@ enum SnapshotScheduler {
         let calendar = Calendar.current
         let now = Date()
 
-        let modeRaw = UserDefaults.standard.string(forKey: "locationCaptureMode") ?? LocationCaptureMode.fixedTime.rawValue
-        let mode = LocationCaptureMode(rawValue: modeRaw) ?? .fixedTime
+        let modeRaw = UserDefaults.standard.string(forKey: "locationCaptureMode") ?? LocationCaptureMode.evening.rawValue
+        let mode = LocationCaptureMode(rawValue: modeRaw) ?? .evening
 
         var targetHour: Int
         var targetMinute: Int
 
         switch mode {
-        case .fixedTime:
+        case .morning, .afternoon, .evening:
+            targetHour = mode.hour
+            targetMinute = 0
+
+        case .custom:
+            // Read stored hour/minute from UserDefaults
             targetHour = UserDefaults.standard.object(forKey: "locationCaptureHour") as? Int ?? 20
             targetMinute = UserDefaults.standard.object(forKey: "locationCaptureMinute") as? Int ?? 0
 

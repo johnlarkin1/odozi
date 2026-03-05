@@ -21,7 +21,9 @@ struct ProfileView: View {
 
     @AppStorage("reminderEnabled") private var reminderEnabled = true
     @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
-    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.fixedTime.rawValue
+    @AppStorage("reminderCustomHour") private var reminderCustomHour = 20
+    @AppStorage("reminderCustomMinute") private var reminderCustomMinute = 0
+    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
     @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
     @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
 
@@ -185,25 +187,30 @@ struct ProfileView: View {
     }
 
     private var locationTimingStatusText: String {
-        let mode = LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .fixedTime
-        if mode == .randomized {
-            return "Randomized"
+        let mode = LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .evening
+        if mode == .custom {
+            return formatTime(hour: locationCaptureHour, minute: locationCaptureMinute)
         }
-        var components = DateComponents()
-        components.hour = locationCaptureHour
-        components.minute = locationCaptureMinute
-        if let date = Calendar.current.date(from: components) {
-            return date.formatted(date: .omitted, time: .shortened)
-        }
-        return "8:00 PM"
+        return mode.label
     }
 
     private var reminderStatusText: String {
         if reminderEnabled {
             let timeOfDay = ReminderTimeOfDay(rawValue: reminderTimeOfDayRaw) ?? .evening
+            if timeOfDay == .custom {
+                return formatTime(hour: reminderCustomHour, minute: reminderCustomMinute)
+            }
             return timeOfDay.label
         }
         return "Off"
+    }
+
+    private func formatTime(hour: Int, minute: Int) -> String {
+        let comps = DateComponents(hour: hour, minute: minute)
+        guard let date = Calendar.current.date(from: comps) else { return "Custom" }
+        let formatter = DateFormatter()
+        formatter.dateFormat = "h:mm a"
+        return formatter.string(from: date)
     }
 
     private func generateCSV() -> URL? {

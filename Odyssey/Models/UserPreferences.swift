@@ -5,7 +5,9 @@ import SwiftData
 final class UserPreferences {
     var reminderEnabled: Bool = true
     var reminderTimeOfDay: String = ReminderTimeOfDay.evening.rawValue
-    var locationCaptureMode: String = LocationCaptureMode.fixedTime.rawValue
+    var reminderCustomHour: Int = 20
+    var reminderCustomMinute: Int = 0
+    var locationCaptureMode: String = LocationCaptureMode.evening.rawValue
     var locationCaptureHour: Int = 20
     var locationCaptureMinute: Int = 0
     var createdAt: Date = Date()
@@ -14,12 +16,16 @@ final class UserPreferences {
     init(
         reminderEnabled: Bool = true,
         reminderTimeOfDay: ReminderTimeOfDay = .evening,
-        locationCaptureMode: LocationCaptureMode = .fixedTime,
+        reminderCustomHour: Int = 20,
+        reminderCustomMinute: Int = 0,
+        locationCaptureMode: LocationCaptureMode = .evening,
         locationCaptureHour: Int = 20,
         locationCaptureMinute: Int = 0
     ) {
         self.reminderEnabled = reminderEnabled
         self.reminderTimeOfDay = reminderTimeOfDay.rawValue
+        self.reminderCustomHour = reminderCustomHour
+        self.reminderCustomMinute = reminderCustomMinute
         self.locationCaptureMode = locationCaptureMode.rawValue
         self.locationCaptureHour = locationCaptureHour
         self.locationCaptureMinute = locationCaptureMinute

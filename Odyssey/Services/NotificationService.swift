@@ -18,7 +18,7 @@ enum NotificationService {
         }
     }
 
-    static func scheduleReminder(timeOfDay: ReminderTimeOfDay) {
+    static func scheduleReminder(timeOfDay: ReminderTimeOfDay, customHour: Int = 20, customMinute: Int = 0) {
         let center = UNUserNotificationCenter.current()
         center.removePendingNotificationRequests(withIdentifiers: [reminderID])
 
@@ -27,9 +27,19 @@ enum NotificationService {
         content.body = timeOfDay.notificationBody
         content.sound = .default
 
+        let hour: Int
+        let minute: Int
+        if timeOfDay == .custom {
+            hour = customHour
+            minute = customMinute
+        } else {
+            hour = timeOfDay.hour
+            minute = 0
+        }
+
         var dateComponents = DateComponents()
-        dateComponents.hour = timeOfDay.hour
-        dateComponents.minute = 0
+        dateComponents.hour = hour
+        dateComponents.minute = minute
 
         let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
         let request = UNNotificationRequest(identifier: reminderID, content: content, trigger: trigger)
@@ -38,13 +48,15 @@ enum NotificationService {
             if let error {
                 logger.error("Failed to schedule reminder: \(error)")
             } else {
-                logger.info("Scheduled daily reminder at \(timeOfDay.hour):00")
+                logger.info("Scheduled daily reminder at \(hour):\(minute)")
             }
         }
 
         // Persist preference
         UserDefaults.standard.set(true, forKey: "reminderEnabled")
         UserDefaults.standard.set(timeOfDay.rawValue, forKey: "reminderTimeOfDay")
+        UserDefaults.standard.set(customHour, forKey: "reminderCustomHour")
+        UserDefaults.standard.set(customMinute, forKey: "reminderCustomMinute")
     }
 
     static func cancelReminder() {
@@ -58,7 +70,9 @@ enum NotificationService {
         guard UserDefaults.standard.bool(forKey: "reminderEnabled") else { return }
         let rawValue = UserDefaults.standard.string(forKey: "reminderTimeOfDay") ?? ReminderTimeOfDay.evening.rawValue
         let timeOfDay = ReminderTimeOfDay(rawValue: rawValue) ?? .evening
-        scheduleReminder(timeOfDay: timeOfDay)
+        let customHour = UserDefaults.standard.object(forKey: "reminderCustomHour") as? Int ?? 20
+        let customMinute = UserDefaults.standard.object(forKey: "reminderCustomMinute") as? Int ?? 0
+        scheduleReminder(timeOfDay: timeOfDay, customHour: customHour, customMinute: customMinute)
     }
 
     static func cancelTodaysPendingReminder() {

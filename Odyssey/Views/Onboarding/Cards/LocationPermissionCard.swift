@@ -1,26 +1,23 @@
 import SwiftUI
 
 struct LocationPermissionCard: View {
-    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.fixedTime.rawValue
+    @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
     @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
     @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
 
     private var selectedMode: LocationCaptureMode {
-        LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .fixedTime
+        LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .evening
     }
 
-    private var timeBinding: Binding<Date> {
+    private var customTimeDate: Binding<Date> {
         Binding(
             get: {
-                var components = DateComponents()
-                components.hour = locationCaptureHour
-                components.minute = locationCaptureMinute
-                return Calendar.current.date(from: components) ?? Date()
+                Calendar.current.date(from: DateComponents(hour: locationCaptureHour, minute: locationCaptureMinute)) ?? Date()
             },
             set: { newDate in
-                let components = Calendar.current.dateComponents([.hour, .minute], from: newDate)
-                locationCaptureHour = components.hour ?? 20
-                locationCaptureMinute = components.minute ?? 0
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                locationCaptureHour = comps.hour ?? 20
+                locationCaptureMinute = comps.minute ?? 0
             }
         )
     }
@@ -45,20 +42,30 @@ struct LocationPermissionCard: View {
                         .font(.subheadline.weight(.medium))
                         .foregroundStyle(.white)
 
-                    Picker("Capture Mode", selection: $locationCaptureModeRaw) {
-                        Text("Fixed Time").tag(LocationCaptureMode.fixedTime.rawValue)
-                        Text("Randomized").tag(LocationCaptureMode.randomized.rawValue)
+                    ForEach(LocationCaptureMode.displayCases) { mode in
+                        Button {
+                            locationCaptureModeRaw = mode.rawValue
+                        } label: {
+                            HStack {
+                                Image(systemName: selectedMode == mode ? "checkmark.circle.fill" : "circle")
+                                    .foregroundStyle(selectedMode == mode ? Color.accentTeal : .white.opacity(0.4))
+                                VStack(alignment: .leading, spacing: 1) {
+                                    Text(mode.label)
+                                        .font(.subheadline)
+                                        .foregroundStyle(.white)
+                                    Text(mode.description)
+                                        .font(.caption2)
+                                        .foregroundStyle(.secondary)
+                                }
+                                Spacer()
+                            }
+                        }
                     }
-                    .pickerStyle(.segmented)
 
-                    if selectedMode == .fixedTime {
-                        DatePicker("Time", selection: timeBinding, displayedComponents: .hourAndMinute)
+                    if selectedMode == .custom {
+                        DatePicker("Time", selection: customTimeDate, displayedComponents: .hourAndMinute)
                             .datePickerStyle(.compact)
-                            .labelsHidden()
-                    } else {
-                        Text("Random time between 8 AM - 10 PM each day")
-                            .font(.caption)
-                            .foregroundStyle(.secondary)
+                            .tint(Color.accentTeal)
                     }
                 }
             }
