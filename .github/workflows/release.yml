@@ -1,9 +1,6 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - 'v*'
   workflow_dispatch:
     inputs:
       lane:
@@ -14,22 +11,39 @@ on:
         options:
           - beta
           - release
-      version:
-        description: 'Marketing version (release only, e.g. 1.2.0)'
+      tag:
+        description: 'Git tag to build from (defaults to latest v* tag)'
         required: false
         type: string
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release
   cancel-in-progress: false
 
 jobs:
   deploy:
     runs-on: macos-15
     steps:
+      - name: Determine tag
+        id: tag
+        run: |
+          if [ -n "${{ inputs.tag }}" ]; then
+            echo "ref=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
+          else
+            # Fetch tags to find the latest
+            git ls-remote --tags --sort=-v:refname origin 'refs/tags/v*' | head -n 1 | awk '{print $2}' | sed 's|refs/tags/||' > /tmp/latest_tag
+            TAG=$(cat /tmp/latest_tag)
+            if [ -z "$TAG" ]; then
+              echo "::error::No v* tags found. Create a tag first."
+              exit 1
+            fi
+            echo "ref=$TAG" >> "$GITHUB_OUTPUT"
+          fi
+
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 0  # Full history for build number
+          ref: ${{ steps.tag.outputs.ref }}
+          fetch-depth: 0
 
       - name: Select Xcode
         run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
@@ -51,15 +65,6 @@ jobs:
       - name: Resolve packages
         run: make resolve
 
-      - name: Determine lane
-        id: lane
-        run: |
-          if [ "${{ github.event_name }}" = "push" ]; then
-            echo "lane=beta" >> "$GITHUB_OUTPUT"
-          else
-            echo "lane=${{ inputs.lane }}" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Run Fastlane
         env:
           FASTLANE_APPLE_ID: ${{ secrets.FASTLANE_APPLE_ID }}
@@ -74,9 +79,11 @@ jobs:
           CLERK_PUBLISHABLE_KEY: ${{ secrets.CLERK_PUBLISHABLE_KEY }}
           ODYSSEY_API_BASE_URL: ${{ secrets.ODYSSEY_API_BASE_URL }}
         run: |
-          LANE="${{ steps.lane.outputs.lane }}"
-          if [ "$LANE" = "release" ] && [ -n "${{ inputs.version }}" ]; then
-            bundle exec fastlane "$LANE" version:"${{ inputs.version }}"
+          LANE="${{ inputs.lane }}"
+          TAG="${{ steps.tag.outputs.ref }}"
+          if [ "$LANE" = "release" ]; then
+            VERSION="${TAG#v}"
+            bundle exec fastlane "$LANE" version:"$VERSION"
           else
             bundle exec fastlane "$LANE"
           fi
