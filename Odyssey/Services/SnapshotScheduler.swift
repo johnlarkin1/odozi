@@ -24,8 +24,8 @@ enum SnapshotScheduler {
             targetHour = mode.hour
             targetMinute = 0
 
-        case .fixedTime:
-            // Legacy: read stored hour/minute for backward compatibility
+        case .custom:
+            // Read stored hour/minute from UserDefaults
             targetHour = UserDefaults.standard.object(forKey: "locationCaptureHour") as? Int ?? 20
             targetMinute = UserDefaults.standard.object(forKey: "locationCaptureMinute") as? Int ?? 0
 

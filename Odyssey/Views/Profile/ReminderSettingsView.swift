@@ -4,11 +4,28 @@ import SwiftData
 struct ReminderSettingsView: View {
     @AppStorage("reminderEnabled") private var reminderEnabled = true
     @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
+    @AppStorage("reminderCustomHour") private var reminderCustomHour = 20
+    @AppStorage("reminderCustomMinute") private var reminderCustomMinute = 0
 
     @Environment(\.modelContext) private var modelContext
 
     private var selectedTimeOfDay: ReminderTimeOfDay {
         ReminderTimeOfDay(rawValue: reminderTimeOfDayRaw) ?? .evening
+    }
+
+    private var customTimeDate: Binding<Date> {
+        Binding(
+            get: {
+                Calendar.current.date(from: DateComponents(hour: reminderCustomHour, minute: reminderCustomMinute)) ?? Date()
+            },
+            set: { newDate in
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                reminderCustomHour = comps.hour ?? 20
+                reminderCustomMinute = comps.minute ?? 0
+                NotificationService.scheduleReminder(timeOfDay: .custom, customHour: reminderCustomHour, customMinute: reminderCustomMinute)
+                updateSwiftData()
+            }
+        )
     }
 
     var body: some View {
@@ -17,7 +34,7 @@ struct ReminderSettingsView: View {
                 Toggle("Daily Reminder", isOn: $reminderEnabled)
                     .onChange(of: reminderEnabled) { _, enabled in
                         if enabled {
-                            NotificationService.scheduleReminder(timeOfDay: selectedTimeOfDay)
+                            NotificationService.scheduleReminder(timeOfDay: selectedTimeOfDay, customHour: reminderCustomHour, customMinute: reminderCustomMinute)
                         } else {
                             NotificationService.cancelReminder()
                         }
@@ -31,7 +48,7 @@ struct ReminderSettingsView: View {
                     ForEach(ReminderTimeOfDay.allCases) { time in
                         Button {
                             reminderTimeOfDayRaw = time.rawValue
-                            NotificationService.scheduleReminder(timeOfDay: time)
+                            NotificationService.scheduleReminder(timeOfDay: time, customHour: reminderCustomHour, customMinute: reminderCustomMinute)
                             updateSwiftData()
                         } label: {
                             HStack {
@@ -52,6 +69,12 @@ struct ReminderSettingsView: View {
                             }
                         }
                     }
+
+                    if selectedTimeOfDay == .custom {
+                        DatePicker("Time", selection: customTimeDate, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .tint(Color.cosmicPurple)
+                    }
                 }
                 .listRowBackground(Color.cardSurface)
             }
@@ -70,6 +93,8 @@ struct ReminderSettingsView: View {
         }
         prefs.reminderEnabled = reminderEnabled
         prefs.reminderTimeOfDay = reminderTimeOfDayRaw
+        prefs.reminderCustomHour = reminderCustomHour
+        prefs.reminderCustomMinute = reminderCustomMinute
         prefs.updatedAt = Date()
         try? modelContext.save()
     }

@@ -5,21 +5,20 @@ enum LocationCaptureMode: String, CaseIterable, Identifiable {
     case afternoon
     case evening
     case randomized
-    case fixedTime // Legacy: kept for backward compatibility with existing UserDefaults
+    case custom
 
     var id: String { rawValue }
 
-    /// Cases to show in the UI (excludes legacy fixedTime)
     static var displayCases: [LocationCaptureMode] {
-        [.morning, .afternoon, .evening, .randomized]
+        allCases
     }
 
     var hour: Int {
         switch self {
         case .morning: 9
         case .afternoon: 14
-        case .evening, .fixedTime: 20
-        case .randomized: 0 // Not used directly
+        case .evening: 20
+        case .randomized, .custom: 0 // Not used directly
         }
     }
 
@@ -29,7 +28,7 @@ enum LocationCaptureMode: String, CaseIterable, Identifiable {
         case .afternoon: return "Afternoon (2:00 PM)"
         case .evening: return "Evening (8:00 PM)"
         case .randomized: return "Randomized"
-        case .fixedTime: return "Evening (8:00 PM)"
+        case .custom: return "Custom"
         }
     }
 
@@ -39,7 +38,7 @@ enum LocationCaptureMode: String, CaseIterable, Identifiable {
         case .afternoon: return "Capture your location in the afternoon"
         case .evening: return "Capture your location in the evening"
         case .randomized: return "Random time between 8 AM and 10 PM"
-        case .fixedTime: return "Capture your location in the evening"
+        case .custom: return "Choose a specific time"
         }
     }
 }

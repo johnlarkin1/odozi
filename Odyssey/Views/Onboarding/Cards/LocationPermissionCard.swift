@@ -2,9 +2,24 @@ import SwiftUI
 
 struct LocationPermissionCard: View {
     @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
+    @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
+    @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
 
     private var selectedMode: LocationCaptureMode {
         LocationCaptureMode(rawValue: locationCaptureModeRaw) ?? .evening
+    }
+
+    private var customTimeDate: Binding<Date> {
+        Binding(
+            get: {
+                Calendar.current.date(from: DateComponents(hour: locationCaptureHour, minute: locationCaptureMinute)) ?? Date()
+            },
+            set: { newDate in
+                let comps = Calendar.current.dateComponents([.hour, .minute], from: newDate)
+                locationCaptureHour = comps.hour ?? 20
+                locationCaptureMinute = comps.minute ?? 0
+            }
+        )
     }
 
     var body: some View {
@@ -45,6 +60,12 @@ struct LocationPermissionCard: View {
                                 Spacer()
                             }
                         }
+                    }
+
+                    if selectedMode == .custom {
+                        DatePicker("Time", selection: customTimeDate, displayedComponents: .hourAndMinute)
+                            .datePickerStyle(.compact)
+                            .tint(Color.accentTeal)
                     }
                 }
             }
