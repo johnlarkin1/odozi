@@ -227,174 +227,24 @@ function drawWave(ctx, startX, startY, width, amplitude, phase, segments) {
   }
 }
 
-// --- Ocean body v3: realistic layered water with hull interaction ---
-// Compound wave function for organic shapes
-function compoundWave(x, baseY, params) {
-  let y = baseY;
-  for (const w of params) {
-    y += Math.sin((x/S) * Math.PI * w.freq + w.phase) * w.amp;
-  }
-  return y;
-}
-
-// Hull bow-wave interaction: waves curve around hull edges
-function bowWaveOffset(x, hullCx, hullHalf, waveIdx) {
-  const dx = x - hullCx;
-  const dist = Math.abs(dx) / hullHalf;
-  // Within hull width: suppress wave (water is behind hull)
-  if (dist < 0.85) return 0;
-  // At hull edges (0.85–1.2): bow wave rises up
-  if (dist < 1.2) {
-    const t = 1 - Math.abs(dist - 1.0) / 0.2;
-    const rise = (12 - waveIdx * 1.5) * Math.max(0, t * t);
-    return -rise;
-  }
-  // Just outside hull: gentle wake ripples
-  if (dist < 1.8) {
-    const t = (dist - 1.2) / 0.6;
-    return Math.sin(t * Math.PI * 3) * (4 - waveIdx * 0.5) * (1 - t);
-  }
-  return 0;
-}
-
-function drawOceanBody(ctx, waterY, hullCx, hullW, palette) {
-  const hullHalf = hullW / 2;
-
-  // Wave layer definitions: each has compound frequencies for organic look
-  const waveLayers = [
-    { y: 0,   params: [{freq:2.8, phase:0.0, amp:10}, {freq:5.2, phase:1.2, amp:5}, {freq:8.0, phase:2.5, amp:2.5}] },
-    { y: 18,  params: [{freq:3.2, phase:0.8, amp:12}, {freq:6.0, phase:2.0, amp:4}, {freq:9.5, phase:0.3, amp:2}] },
-    { y: 34,  params: [{freq:2.5, phase:1.5, amp:9},  {freq:5.8, phase:3.1, amp:5}, {freq:7.2, phase:1.8, amp:3}] },
-    { y: 50,  params: [{freq:3.5, phase:2.2, amp:11}, {freq:6.5, phase:0.5, amp:4}, {freq:10,  phase:3.0, amp:2}] },
-    { y: 66,  params: [{freq:2.2, phase:0.3, amp:8},  {freq:5.0, phase:2.8, amp:5}, {freq:8.5, phase:1.0, amp:3}] },
-    { y: 82,  params: [{freq:3.0, phase:1.8, amp:10}, {freq:7.0, phase:0.8, amp:3}, {freq:11,  phase:2.2, amp:2}] },
-    { y: 98,  params: [{freq:2.6, phase:2.5, amp:7},  {freq:4.5, phase:1.5, amp:4}, {freq:9.0, phase:3.5, amp:2}] },
-    { y: 114, params: [{freq:3.3, phase:0.6, amp:9},  {freq:6.2, phase:2.5, amp:3}, {freq:8.8, phase:0.7, amp:2}] },
-  ];
-
-  // Helper: compute wave y for a layer at position x
-  function getWaveY(x, layerIdx) {
-    const layer = waveLayers[layerIdx];
-    let y = compoundWave(x, waterY + layer.y, layer.params);
-    y += bowWaveOffset(x, hullCx, hullHalf, layerIdx);
-    return y;
-  }
-
-  // 1) Solid water body fill
-  ctx.beginPath();
-  ctx.moveTo(0, waterY - 5);
-  for (let x = 0; x <= S; x += 3) {
-    ctx.lineTo(x, getWaveY(x, 0));
-  }
-  ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
-  const bodyGrad = ctx.createLinearGradient(0, waterY, 0, S);
-  bodyGrad.addColorStop(0, palette.body);
-  bodyGrad.addColorStop(0.4, palette.mid || palette.body);
-  bodyGrad.addColorStop(1, palette.deep);
-  ctx.fillStyle = bodyGrad;
-  ctx.fill();
-
-  // 2) Hull reflection — elongated amber glow in water
-  if (palette.reflectColor) {
-    const refGrad = ctx.createLinearGradient(0, waterY, 0, waterY + S*0.18);
-    refGrad.addColorStop(0, rgba(palette.reflectColor, 0.10));
-    refGrad.addColorStop(0.4, rgba(palette.reflectColor, 0.04));
-    refGrad.addColorStop(1, 'transparent');
-    ctx.save();
+function drawStylizedWaves(ctx, y, count, color, alphaBase) {
+  for (let w = 0; w < count; w++) {
+    const wy = y + w * 28;
+    const amp = 14 + w * 4;
+    const phase = w * 1.2;
     ctx.beginPath();
-    ctx.moveTo(hullCx - hullHalf * 0.7, waterY);
-    ctx.lineTo(hullCx + hullHalf * 0.7, waterY);
-    ctx.lineTo(hullCx + hullHalf * 0.3, waterY + S*0.18);
-    ctx.lineTo(hullCx - hullHalf * 0.3, waterY + S*0.18);
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      const py = wy + Math.sin((x / S) * Math.PI * 3 + phase) * amp;
+      ctx.lineTo(x, py);
+    }
+    ctx.lineTo(S, S);
+    ctx.lineTo(0, S);
     ctx.closePath();
-    ctx.fillStyle = refGrad;
-    ctx.fill();
-    ctx.restore();
-  }
-
-  // 3) Layered wave fills with varying color
-  const crests = palette.crests || ['#2a5a80'];
-  for (let i = 1; i < waveLayers.length; i++) {
-    const color = crests[i % crests.length];
-    const alpha = 0.14 - i * 0.01;
-
-    ctx.beginPath();
-    ctx.moveTo(0, getWaveY(0, i));
-    for (let x = 3; x <= S; x += 3) {
-      ctx.lineTo(x, getWaveY(x, i));
-    }
-    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
-    ctx.fillStyle = rgba(color, Math.max(0.03, alpha));
+    const alpha = alphaBase - w * 0.08;
+    ctx.fillStyle = rgba(color, Math.max(0.05, alpha));
     ctx.fill();
   }
-
-  // 4) Bright crest highlight lines — the key visual detail
-  const foamColor = palette.foam || '#6abcd0';
-  for (let i = 0; i < waveLayers.length; i++) {
-    // Main crest line
-    ctx.beginPath();
-    for (let x = 0; x <= S; x += 2) {
-      const y = getWaveY(x, i);
-      if (x === 0) ctx.moveTo(x, y);
-      else ctx.lineTo(x, y);
-    }
-    const brightness = i < 3 ? 0.35 - i * 0.06 : 0.18 - (i-3) * 0.02;
-    ctx.strokeStyle = rgba(foamColor, Math.max(0.04, brightness));
-    ctx.lineWidth = i < 2 ? 2.8 : (i < 4 ? 2.0 : 1.2);
-    ctx.stroke();
-
-    // Secondary highlight (offset slightly above for a foam/shimmer effect)
-    if (i < 4) {
-      ctx.beginPath();
-      for (let x = 0; x <= S; x += 3) {
-        const y = getWaveY(x, i) - 2;
-        if (x === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.strokeStyle = rgba(palette.foamHighlight || '#ffffff', 0.08 - i * 0.015);
-      ctx.lineWidth = 1.5;
-      ctx.stroke();
-    }
-  }
-
-  // 5) Waterline foam around hull — bright line where water meets hull
-  ctx.beginPath();
-  const foamBaseY = waterY + 3;
-  const leftEdge = hullCx - hullHalf * 0.98;
-  const rightEdge = hullCx + hullHalf * 0.98;
-  for (let x = leftEdge; x <= rightEdge; x += 2) {
-    const t = (x - leftEdge) / (rightEdge - leftEdge);
-    // Hull curve: follows the hull shape (deeper in center)
-    const hullCurve = Math.sin(t * Math.PI) * 6;
-    const micro = Math.sin(x * 0.12) * 1.5 + Math.sin(x * 0.28) * 0.8;
-    const y = foamBaseY + hullCurve + micro;
-    if (x <= leftEdge) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.strokeStyle = rgba(foamColor, 0.45);
-  ctx.lineWidth = 2.5;
-  ctx.stroke();
-
-  // Thinner bright inner foam
-  ctx.beginPath();
-  for (let x = leftEdge + 10; x <= rightEdge - 10; x += 2) {
-    const t = (x - leftEdge) / (rightEdge - leftEdge);
-    const hullCurve = Math.sin(t * Math.PI) * 4;
-    const micro = Math.sin(x * 0.15 + 1) * 1.2;
-    const y = foamBaseY - 1 + hullCurve + micro;
-    if (x <= leftEdge + 10) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-  ctx.strokeStyle = rgba('#ffffff', 0.12);
-  ctx.lineWidth = 1.5;
-  ctx.stroke();
-
-  // 6) Depth vignette at bottom
-  const botF = ctx.createLinearGradient(0, S*0.82, 0, S);
-  botF.addColorStop(0, 'transparent');
-  botF.addColorStop(1, rgba(palette.deep, 0.7));
-  ctx.fillStyle = botF;
-  ctx.fillRect(0, S*0.82, S, S*0.18);
 }
 
 // ============================================================
@@ -471,16 +321,15 @@ function drawClassic(ctx) {
   ctx.fillStyle = hullGrad;
   ctx.fill();
 
-  // Ocean — rich layered water
-  drawOceanBody(ctx, S*0.68, S*0.49, S*0.60, {
-    body: '#0e2a3a',
-    mid: '#0a2030',
-    deep: '#060e18',
-    crests: [TEAL, '#1a8a80', '#2aa0a0', '#1a7070', '#2abab0', '#1a6a6a', '#20a098', '#1a8a7a'],
-    foam: '#4adad0',
-    foamHighlight: '#a0fff0',
-    reflectColor: AMBER,
-  });
+  // Waves
+  drawStylizedWaves(ctx, S*0.71, 4, TEAL, 0.55);
+
+  // Subtle bottom fade
+  const botFade = ctx.createLinearGradient(0, S*0.85, 0, S);
+  botFade.addColorStop(0, 'transparent');
+  botFade.addColorStop(1, 'rgba(13,13,31,0.5)');
+  ctx.fillStyle = botFade;
+  ctx.fillRect(0, S*0.85, S, S*0.15);
 }
 
 // ============================================================
@@ -504,23 +353,12 @@ function drawCosmic(ctx) {
   for (let i = 0; i < 200; i++) {
     const x = rand() * S;
     const y = rand() * S;
-    const isBright = rand() > 0.85; // ~15% are bright feature stars
-    const r = isBright ? rand() * 3.5 + 2.0 : rand() * 2.2 + 0.3;
-    const a = isBright ? rand() * 0.3 + 0.7 : rand() * 0.6 + 0.2;
+    const r = rand() * 2.2 + 0.3;
+    const a = rand() * 0.6 + 0.2;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI*2);
     ctx.fillStyle = rgba(WHITE, a);
     ctx.fill();
-    // Add a soft glow around bright stars
-    if (isBright) {
-      const glow = ctx.createRadialGradient(x, y, r*0.5, x, y, r*4);
-      glow.addColorStop(0, rgba(WHITE, 0.15));
-      glow.addColorStop(1, 'transparent');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(x, y, r*4, 0, Math.PI*2);
-      ctx.fill();
-    }
   }
 
   // Nebula glow - pink + purple
@@ -583,16 +421,21 @@ function drawCosmic(ctx) {
   ctx.fillStyle = hGrad;
   ctx.fill();
 
-  // Ocean — rich layered water
-  drawOceanBody(ctx, S*0.68, S*0.49, S*0.58, {
-    body: '#121a40',
-    mid: '#0e1435',
-    deep: '#060818',
-    crests: ['#2840a0', '#1a3080', PURPLE, '#3050b0', TEAL, '#2a4590', '#1a3570', '#3a5aaa'],
-    foam: '#5a80e0',
-    foamHighlight: '#a0c0ff',
-    reflectColor: AMBER,
-  });
+  // Cosmic waves - purple/teal blend
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.71 + w * 28;
+    const amp = 16 + w * 5;
+    const phase = w * 0.9;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*3 + phase)*amp);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    const c = w % 2 === 0 ? PURPLE : TEAL;
+    ctx.fillStyle = rgba(c, 0.25 - w*0.04);
+    ctx.fill();
+  }
 }
 
 // ============================================================
@@ -652,16 +495,18 @@ function drawSunrise(ctx) {
   ctx.fill();
   ctx.restore();
 
-  // Ocean body
-  drawOceanBody(ctx, S*0.66, S*0.49, S*0.58, {
-    body: '#0a2a38',
-    mid: '#082028',
-    deep: '#04101a',
-    crests: ['#1a5a60', TEAL, '#1a7070', '#1a6868', '#2a8a80', '#1a5050', '#2aa090', '#1a6a60'],
-    foam: '#3abab0',
-    foamHighlight: '#90e8d8',
-    reflectColor: '#F5C050',
-  });
+  // Horizon line light reflection on water
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.69 + w * 22;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*3.5 + w*1.1)*10);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    ctx.fillStyle = rgba(TEAL, 0.12 - w*0.015);
+    ctx.fill();
+  }
 
   // Water reflection of sun
   const ref = ctx.createRadialGradient(S/2, S*0.73, 0, S/2, S*0.78, S*0.18);
@@ -740,16 +585,28 @@ function drawOcean(ctx) {
   ctx.fillStyle = hGrad;
   ctx.fill();
 
-  // Ocean body
-  drawOceanBody(ctx, S*0.68, S*0.49, S*0.58, {
-    body: '#0a2a30',
-    mid: '#082428',
-    deep: '#041418',
-    crests: [TEAL, '#1a9a8a', '#2abab0', '#1a8a80', '#28b0a0', '#1a7a70', '#2ac0b0', '#1a9080'],
-    foam: '#50dcd0',
-    foamHighlight: '#a0fff0',
-    reflectColor: AMBER,
-  });
+  // Layered teal waves
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.71 + w * 24;
+    const amp = 12 + w * 3;
+    const phase = w * 0.7 + 0.5;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*2.5 + phase)*amp);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    const tealShade = w < 3 ? '#2EC4B6' : '#1a8a80';
+    ctx.fillStyle = rgba(tealShade, 0.3 - w*0.035);
+    ctx.fill();
+  }
+
+  // Bottom deep fade
+  const botF = ctx.createLinearGradient(0, S*0.82, 0, S);
+  botF.addColorStop(0, 'transparent');
+  botF.addColorStop(1, 'rgba(4,14,20,0.6)');
+  ctx.fillStyle = botF;
+  ctx.fillRect(0, S*0.82, S, S*0.18);
 }
 
 // ============================================================
@@ -873,22 +730,11 @@ function drawAurora(ctx) {
   for (let i = 0; i < 120; i++) {
     const x = rand() * S;
     const y = rand() * S * 0.5;
-    const isBright = rand() > 0.82;
-    const r = isBright ? rand() * 3.0 + 1.8 : rand() * 1.8 + 0.3;
-    const a = isBright ? rand() * 0.3 + 0.65 : rand() * 0.5 + 0.15;
+    const r = rand() * 1.8 + 0.3;
     ctx.beginPath();
     ctx.arc(x, y, r, 0, Math.PI*2);
-    ctx.fillStyle = rgba(WHITE, a);
+    ctx.fillStyle = rgba(WHITE, rand()*0.5 + 0.15);
     ctx.fill();
-    if (isBright) {
-      const glow = ctx.createRadialGradient(x, y, r*0.5, x, y, r*3.5);
-      glow.addColorStop(0, rgba(WHITE, 0.12));
-      glow.addColorStop(1, 'transparent');
-      ctx.fillStyle = glow;
-      ctx.beginPath();
-      ctx.arc(x, y, r*3.5, 0, Math.PI*2);
-      ctx.fill();
-    }
   }
 
   // Aurora bands
@@ -970,16 +816,27 @@ function drawAurora(ctx) {
   ctx.fillStyle = '#9A6820';
   ctx.fill();
 
-  // Ocean body with aurora reflection
-  drawOceanBody(ctx, S*0.70, S*0.49, S*0.56, {
-    body: '#0a1428',
-    mid: '#081020',
-    deep: '#040810',
-    crests: [TEAL, PURPLE, '#2a6080', '#4a3090', '#2a8070', '#3a4090', '#1a5868', '#5040a0'],
-    foam: '#50b0d0',
-    foamHighlight: '#90d0e8',
-    reflectColor: AMBER,
-  });
+  // Dark water with aurora reflection
+  for (let w = 0; w < 4; w++) {
+    const wy = S*0.73 + w * 26;
+    const amp = 10 + w*3;
+    ctx.beginPath();
+    ctx.moveTo(0, wy);
+    for (let x = 0; x <= S; x += 4) {
+      ctx.lineTo(x, wy + Math.sin((x/S)*Math.PI*3 + w*0.8)*amp);
+    }
+    ctx.lineTo(S, S); ctx.lineTo(0, S); ctx.closePath();
+    const wColor = w % 2 === 0 ? TEAL : PURPLE;
+    ctx.fillStyle = rgba(wColor, 0.14 - w*0.02);
+    ctx.fill();
+  }
+
+  // Bottom darkness
+  const botF = ctx.createLinearGradient(0, S*0.85, 0, S);
+  botF.addColorStop(0, 'transparent');
+  botF.addColorStop(1, 'rgba(6,8,24,0.7)');
+  ctx.fillStyle = botF;
+  ctx.fillRect(0, S*0.85, S, S*0.15);
 }
 
 // ============================================================
