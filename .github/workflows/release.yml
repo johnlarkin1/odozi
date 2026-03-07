@@ -30,8 +30,8 @@ jobs:
           if [ -n "${{ inputs.tag }}" ]; then
             echo "ref=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           else
-            # Fetch tags to find the latest
-            git ls-remote --tags --sort=-v:refname origin 'refs/tags/v*' | head -n 1 | awk '{print $2}' | sed 's|refs/tags/||' > /tmp/latest_tag
+            # Fetch tags to find the latest (no local repo yet, so use HTTPS URL)
+            git ls-remote --tags --sort=-v:refname "https://github.com/${{ github.repository }}.git" 'refs/tags/v*' | head -n 1 | awk '{print $2}' | sed 's|refs/tags/||' > /tmp/latest_tag
             TAG=$(cat /tmp/latest_tag)
             if [ -z "$TAG" ]; then
               echo "::error::No v* tags found. Create a tag first."
