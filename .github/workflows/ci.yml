@@ -43,8 +43,26 @@ jobs:
       - name: Resolve packages
         run: make resolve
 
+      - name: List available simulators
+        run: |
+          xcrun simctl list runtimes
+          xcrun simctl list devices available | head -30
+
       - name: Build
-        run: make build
+        run: make build DESTINATION='generic/platform=iOS Simulator'
+
+      - name: Set up iOS Simulator
+        run: |
+          # Create a simulator device if one doesn't already exist
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "import sys,json; rts=[r for r in json.loads(sys.stdin.read())['runtimes'] if 'iOS' in r['name'] and r['isAvailable']]; print(rts[-1]['identifier'])" 2>/dev/null) || true
+          if [ -n "$RUNTIME" ]; then
+            xcrun simctl create "iPhone 16" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "$RUNTIME" 2>/dev/null || echo "iPhone 16 simulator already exists"
+          else
+            echo "No iOS runtime found, downloading..."
+            xcodebuild -downloadPlatform iOS
+            RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "import sys,json; rts=[r for r in json.loads(sys.stdin.read())['runtimes'] if 'iOS' in r['name'] and r['isAvailable']]; print(rts[-1]['identifier'])")
+            xcrun simctl create "iPhone 16" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "$RUNTIME" 2>/dev/null || echo "iPhone 16 simulator already exists"
+          fi
 
       - name: Run tests
         run: |
