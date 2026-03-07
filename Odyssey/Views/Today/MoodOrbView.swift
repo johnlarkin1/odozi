@@ -29,7 +29,7 @@ struct MoodOrbView: View {
                     .scaleEffect(pulse ? 1.02 : 1.0)
 
                 // Pulsing icon
-                Image(systemName: "sun.max.fill")
+                Image(systemName: "sailboat")
                     .font(.system(size: 40))
                     .foregroundStyle(Color.accentAmber)
                     .opacity(pulse ? 0.8 : 0.4)
@@ -41,11 +41,11 @@ struct MoodOrbView: View {
             }
 
             VStack(spacing: 6) {
-                Text("How are you today?")
+                Text("Your odyssey awaits")
                     .font(.title2.bold())
                     .foregroundStyle(.white)
 
-                Text("Take a moment to reflect")
+                Text("Chart today's course")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
             }
@@ -53,7 +53,7 @@ struct MoodOrbView: View {
             .animation(.easeInOut(duration: 0.4).delay(0.45), value: animateIn)
 
             Button(action: onBeginEntry) {
-                Text("Begin Today's Entry")
+                Text("Set Sail")
                     .font(.headline)
                     .foregroundStyle(.white)
                     .frame(maxWidth: .infinity)
@@ -64,7 +64,7 @@ struct MoodOrbView: View {
             .padding(.horizontal, 20)
             .opacity(animateIn ? 1 : 0)
             .animation(.easeInOut(duration: 0.4).delay(0.45), value: animateIn)
-            .accessibilityLabel("Begin today's entry")
+            .accessibilityLabel("Set sail on today's entry")
             .accessibilityHint("Double tap to start your daily journal")
         }
         .scaleEffect(animateIn ? 1 : 0.8)

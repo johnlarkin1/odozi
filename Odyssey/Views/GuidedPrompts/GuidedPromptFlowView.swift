@@ -43,6 +43,17 @@ struct GuidedPromptFlowView: View {
                         .padding(.bottom, 8)
                     }
                 }
+                .overlay(alignment: .topTrailing) {
+                    Button { dismiss() } label: {
+                        Image(systemName: "xmark")
+                            .font(.body.weight(.semibold))
+                            .foregroundStyle(.secondary)
+                            .padding(12)
+                            .background(Circle().fill(Color.white.opacity(0.1)))
+                    }
+                    .padding(.trailing, 16)
+                    .padding(.top, 12)
+                }
                 .fullScreenCover(isPresented: Binding(
                     get: { vm.showingCompletion },
                     set: { vm.showingCompletion = $0 }

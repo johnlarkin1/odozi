@@ -20,6 +20,23 @@ final class GuidedPromptViewModel {
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
+        loadExistingEntry()
+    }
+
+    private func loadExistingEntry() {
+        let repository = DailyEntryRepository(context: modelContext)
+        guard let entry = try? repository.fetchOrCreateToday(),
+              entry.hasUserSubmitted else { return }
+
+        responses.feeling = entry.feeling
+        responses.singleWordFeeling = entry.singleWordFeeling
+        responses.feelingColorHex = entry.feelingColorHex
+        responses.sleepQuality = entry.sleepQuality
+        responses.gratitude = entry.gratitude
+        responses.win = entry.win
+        responses.tension = entry.tension
+        responses.journalEntry = entry.journalEntry
+        responses.drinks = entry.drinks
     }
 
     var currentStepIndex: Int {
@@ -81,6 +98,7 @@ final class GuidedPromptViewModel {
             entry.tension = responses.tension
             entry.journalEntry = responses.journalEntry
             entry.drinks = responses.drinks
+            entry.hasUserSubmitted = true
             entry.updatedAt = Date()
             entry.needsSync = true
 

@@ -25,7 +25,7 @@ final class DailyEntryViewModel {
 
         do {
             let results = try modelContext.fetch(descriptor)
-            hasSubmittedData = !results.isEmpty
+            hasSubmittedData = results.first?.hasUserSubmitted ?? false
             if hasSubmittedData {
                 submissionMessage = "Already completed entry for today."
             }
@@ -91,6 +91,7 @@ final class DailyEntryViewModel {
             entry.tension = tension
             entry.journalEntry = journalEntry
             entry.drinks = drinks
+            entry.hasUserSubmitted = true
             entry.updatedAt = Date()
             entry.needsSync = true
 
