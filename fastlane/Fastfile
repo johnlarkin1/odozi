@@ -35,6 +35,16 @@ platform :ios do
     setup_xcconfig
     setup_signing
 
+    # Derive marketing version from current git tag (e.g., v0.3.0 → 0.3.0)
+    tag = sh("git describe --tags --abbrev=0 --match 'v*' 2>/dev/null || echo ''").strip
+    unless tag.empty?
+      version = tag.delete_prefix("v")
+      increment_version_number(
+        version_number: version,
+        xcodeproj: "Odyssey.xcodeproj"
+      )
+    end
+
     bump_build
 
     build_app(

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CompletionCard: View {
-    var locationDisplay: String? = nil
+    var locationDisplay: String?
     let onDismiss: () -> Void
 
     @State private var showCheckmark = false

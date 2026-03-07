@@ -1,0 +1,73 @@
+name: Auto Version Tag
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  tag:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Determine bump type from merged branch
+        id: bump
+        run: |
+          # Extract branch name from merge commit message
+          # GitHub formats it as: "Merge pull request #N from owner/branch-name"
+          MERGE_MSG=$(git log -1 --format=%s)
+          BRANCH=$(echo "$MERGE_MSG" | sed -n 's|.*from [^/]*/\(.*\)|\1|p')
+
+          if [ -z "$BRANCH" ]; then
+            echo "No merge commit detected, defaulting to patch bump"
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
+          elif echo "$BRANCH" | grep -qE '^(feature|feat)/'; then
+            echo "Branch '$BRANCH' matches feature prefix — minor bump"
+            echo "bump=minor" >> "$GITHUB_OUTPUT"
+          elif echo "$BRANCH" | grep -qE '^fix/'; then
+            echo "Branch '$BRANCH' matches fix prefix — patch bump"
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
+          else
+            echo "Branch '$BRANCH' has no recognized prefix — patch bump"
+            echo "bump=patch" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Compute next version tag
+        id: version
+        run: |
+          BUMP="${{ steps.bump.outputs.bump }}"
+
+          # Get latest v* tag
+          LATEST_TAG=$(git tag -l 'v*' --sort=-v:refname | head -n 1)
+
+          if [ -z "$LATEST_TAG" ]; then
+            echo "No existing tags found, starting from v0.1.0"
+            echo "tag=v0.1.0" >> "$GITHUB_OUTPUT"
+          else
+            # Parse major.minor.patch
+            VERSION="${LATEST_TAG#v}"
+            MAJOR=$(echo "$VERSION" | cut -d. -f1)
+            MINOR=$(echo "$VERSION" | cut -d. -f2)
+            PATCH=$(echo "$VERSION" | cut -d. -f3)
+
+            if [ "$BUMP" = "minor" ]; then
+              MINOR=$((MINOR + 1))
+              PATCH=0
+            else
+              PATCH=$((PATCH + 1))
+            fi
+
+            NEW_TAG="v${MAJOR}.${MINOR}.${PATCH}"
+            echo "Bumping $LATEST_TAG → $NEW_TAG ($BUMP)"
+            echo "tag=$NEW_TAG" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Create and push tag
+        run: |
+          git tag "${{ steps.version.outputs.tag }}"
+          git push origin "${{ steps.version.outputs.tag }}"

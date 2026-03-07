@@ -6,17 +6,18 @@ final class PromptModelsTests: XCTestCase {
     // MARK: - PromptStep
 
     func testPromptStepAllCasesCount() {
-        XCTAssertEqual(PromptStep.allCases.count, 8)
+        XCTAssertEqual(PromptStep.allCases.count, 9)
     }
 
     func testPromptStepOrderMatchesRawValues() {
-        let expectedOrder: [PromptStep] = [.mood, .feeling, .sleep, .gratitude, .win, .tension, .journal, .drinks]
+        let expectedOrder: [PromptStep] = [.mood, .feeling, .sleep, .gratitude, .win, .tension, .journal, .drinks, .location]
         XCTAssertEqual(PromptStep.allCases, expectedOrder)
     }
 
     func testPromptStepRawValues() {
         XCTAssertEqual(PromptStep.mood.rawValue, 0)
         XCTAssertEqual(PromptStep.drinks.rawValue, 7)
+        XCTAssertEqual(PromptStep.location.rawValue, 8)
     }
 
     func testPromptStepTitlesAreNonEmpty() {
