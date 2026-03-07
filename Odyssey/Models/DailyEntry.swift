@@ -47,6 +47,9 @@ final class DailyEntry {
     @Attribute(.externalStorage) var attachedPhotoData: [Data]?
     var autoPhotoIdentifiers: [String]?
 
+    // User submission flag
+    var hasUserSubmitted: Bool = false
+
     // Metadata
     var createdAt: Date
     var updatedAt: Date

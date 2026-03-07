@@ -3,6 +3,7 @@ import SwiftData
 
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @State private var showingGuidedFlow = false
     @State private var viewModel: DailyEntryViewModel?
     @State private var animateIn = false
@@ -62,6 +63,15 @@ struct TodayView: View {
             .cosmicBackground()
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                 GuidedPromptFlowView()
+            }
+            .onChange(of: scenePhase) { _, newPhase in
+                if newPhase == .active {
+                    Task {
+                        try? await Task.sleep(for: .seconds(4))
+                        viewModel?.checkForTodayEntry()
+                        todayEntry = viewModel?.fetchTodayEntry()
+                    }
+                }
             }
             .onChange(of: showingGuidedFlow) { _, newValue in
                 if !newValue {
