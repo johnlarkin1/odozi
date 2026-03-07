@@ -70,10 +70,10 @@ final class GuidedPromptViewModelTests: XCTestCase {
     func testGoToNextFromLastStepSubmits() {
         let vm = GuidedPromptViewModel(modelContext: context)
         // Navigate to last step
-        for _ in 0..<7 {
+        for _ in 0..<8 {
             vm.goToNext()
         }
-        XCTAssertEqual(vm.currentStep, .drinks)
+        XCTAssertEqual(vm.currentStep, .location)
         vm.goToNext() // Should trigger submit
         XCTAssertTrue(vm.isComplete)
         XCTAssertTrue(vm.showingCompletion)
@@ -113,14 +113,14 @@ final class GuidedPromptViewModelTests: XCTestCase {
 
     func testTotalSteps() {
         let vm = GuidedPromptViewModel(modelContext: context)
-        XCTAssertEqual(vm.totalSteps, 8)
+        XCTAssertEqual(vm.totalSteps, 9)
     }
 
     func testProgress() {
         let vm = GuidedPromptViewModel(modelContext: context)
-        XCTAssertEqual(vm.progress, 0.0, accuracy: 0.001) // 0/8
+        XCTAssertEqual(vm.progress, 0.0, accuracy: 0.001) // 0/9
         vm.goToNext()
-        XCTAssertEqual(vm.progress, 1.0 / 8.0, accuracy: 0.001) // 1/8
+        XCTAssertEqual(vm.progress, 1.0 / 9.0, accuracy: 0.001) // 1/9
     }
 
     func testIsFirstStep() {
@@ -133,7 +133,7 @@ final class GuidedPromptViewModelTests: XCTestCase {
     func testIsLastStep() {
         let vm = GuidedPromptViewModel(modelContext: context)
         XCTAssertFalse(vm.isLastStep)
-        for _ in 0..<7 {
+        for _ in 0..<8 {
             vm.goToNext()
         }
         XCTAssertTrue(vm.isLastStep)

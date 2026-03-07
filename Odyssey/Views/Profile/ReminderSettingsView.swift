@@ -34,7 +34,11 @@ struct ReminderSettingsView: View {
                 Toggle("Daily Reminder", isOn: $reminderEnabled)
                     .onChange(of: reminderEnabled) { _, enabled in
                         if enabled {
-                            NotificationService.scheduleReminder(timeOfDay: selectedTimeOfDay, customHour: reminderCustomHour, customMinute: reminderCustomMinute)
+                            NotificationService.scheduleReminder(
+                                timeOfDay: selectedTimeOfDay,
+                                customHour: reminderCustomHour,
+                                customMinute: reminderCustomMinute
+                            )
                         } else {
                             NotificationService.cancelReminder()
                         }
@@ -48,7 +52,11 @@ struct ReminderSettingsView: View {
                     ForEach(ReminderTimeOfDay.allCases) { time in
                         Button {
                             reminderTimeOfDayRaw = time.rawValue
-                            NotificationService.scheduleReminder(timeOfDay: time, customHour: reminderCustomHour, customMinute: reminderCustomMinute)
+                            NotificationService.scheduleReminder(
+                                timeOfDay: time,
+                                customHour: reminderCustomHour,
+                                customMinute: reminderCustomMinute
+                            )
                             updateSwiftData()
                         } label: {
                             HStack {
