@@ -156,7 +156,7 @@ struct EmailSignUpView: View {
                         authManager.error = nil
                         do {
                             guard let signUp = currentSignUp else { return }
-                            let _ = try await signUp.verifyEmailCode(emailCode)
+                            _ = try await signUp.verifyEmailCode(emailCode)
                             try await authManager.completeSignIn()
                             step = .addPhone
                         } catch {

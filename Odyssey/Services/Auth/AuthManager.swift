@@ -166,6 +166,65 @@ final class AuthManager {
         try? KeychainService.deleteAuthToken()
     }
 
+    // MARK: - Email Sign-Up
+
+    func signUpWithEmail(email: String, password: String) async throws -> ClerkKit.SignUp {
+        guard Self.clerkConfigured else {
+            throw AuthError.serverError("Clerk not configured")
+        }
+        isLoading = true
+        defer { isLoading = false }
+
+        let signUp = try await Clerk.shared.auth.signUp(
+            emailAddress: email,
+            password: password
+        )
+        _ = try await signUp.sendEmailCode()
+        return signUp
+    }
+
+    func completeSignIn() async throws {
+        guard Self.clerkConfigured else { return }
+
+        guard let clerkUser = Clerk.shared.user else {
+            throw AuthError.serverError("Sign-up succeeded but no user returned")
+        }
+
+        isSignedIn = true
+        user = mapClerkUser(clerkUser)
+
+        if let token = await refreshTokenIfNeeded() {
+            try? KeychainService.storeAuthToken(token)
+        }
+    }
+
+    // MARK: - Phone 2FA
+
+    func setupPhone2FA(phoneNumber: String) async throws -> ClerkKit.PhoneNumber {
+        guard Self.clerkConfigured else {
+            throw AuthError.serverError("Clerk not configured")
+        }
+        guard let clerkUser = Clerk.shared.user else {
+            throw AuthError.notAuthenticated
+        }
+        isLoading = true
+        defer { isLoading = false }
+
+        let phone = try await clerkUser.createPhoneNumber(phoneNumber)
+        _ = try await phone.sendCode()
+        return phone
+    }
+
+    func verifyPhone2FA(phone: ClerkKit.PhoneNumber, code: String) async throws {
+        guard Self.clerkConfigured else {
+            throw AuthError.serverError("Clerk not configured")
+        }
+        isLoading = true
+        defer { isLoading = false }
+
+        _ = try await phone.verifyCode(code)
+    }
+
     // MARK: - Helpers
 
     private func mapClerkUser(_ clerkUser: ClerkKit.User) -> ClerkUser {
