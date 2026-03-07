@@ -45,9 +45,6 @@ jobs:
           ref: ${{ steps.tag.outputs.ref }}
           fetch-depth: 0
 
-      - name: Select Xcode
-        run: sudo xcode-select -s /Applications/Xcode_16.app/Contents/Developer
-
       - name: Set up Ruby
         uses: ruby/setup-ruby@v1
         with:
