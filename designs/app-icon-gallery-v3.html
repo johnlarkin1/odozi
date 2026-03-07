@@ -1,0 +1,610 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Cosmic Navigator — Clean Water</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=DM+Sans:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --deep-space: #0d0d1f;
+        --card: #16162a;
+        --text: #edf0fa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        background: var(--deep-space);
+        color: var(--text);
+        font-family:
+          "DM Sans",
+          system-ui,
+          -apple-system,
+          Segoe UI,
+          Roboto,
+          sans-serif;
+      }
+      .wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        padding: 28px;
+      }
+      .icon {
+        width: min(92vmin, 520px);
+        aspect-ratio: 1/1;
+        border-radius: 76px;
+        overflow: hidden;
+        box-shadow: 0 14px 60px rgba(0, 0, 0, 0.55);
+        background: transparent;
+        cursor: pointer;
+        transition:
+          transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1),
+          box-shadow 0.25s ease;
+      }
+      .icon:hover {
+        transform: scale(1.02) translateY(-2px);
+        box-shadow:
+          0 18px 70px rgba(140, 92, 245, 0.22),
+          0 14px 60px rgba(0, 0, 0, 0.6);
+      }
+      .label {
+        text-align: center;
+        line-height: 1.15;
+      }
+      .label h1 {
+        margin: 0;
+        font-family: "Playfair Display", serif;
+        font-size: 1.25rem;
+        font-weight: 700;
+      }
+      .label p {
+        margin: 6px 0 0;
+        opacity: 0.55;
+        font-size: 0.9rem;
+      }
+      .toast {
+        position: fixed;
+        bottom: 26px;
+        left: 50%;
+        transform: translateX(-50%) translateY(120px);
+        background: rgba(22, 22, 42, 0.95);
+        border: 1px solid rgba(140, 92, 245, 0.28);
+        backdrop-filter: blur(12px);
+        padding: 12px 18px;
+        border-radius: 14px;
+        opacity: 0;
+        transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        pointer-events: none;
+        font-weight: 500;
+      }
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="wrap">
+      <canvas
+        class="icon"
+        id="icon"
+        width="1024"
+        height="1024"
+        aria-label="Cosmic Navigator icon"
+      ></canvas>
+      <div class="label">
+        <h1>Cosmic Navigator</h1>
+        <p>Click to download 1024×1024 PNG</p>
+      </div>
+    </div>
+    <div class="toast" id="toast"></div>
+
+    <script>
+      const S = 1024;
+
+      // --- Colors (matching your palette) ---
+      const AMBER = "#F5A623";
+      const TEAL = "#2EC4B6";
+      const PURPLE = "#8C5CF5";
+      const PINK = "#E86BAD";
+      const WHITE = "#EDF0FA";
+
+      // --- Utils ---
+      function hexToRgb(hex) {
+        const r = parseInt(hex.slice(1, 3), 16);
+        const g = parseInt(hex.slice(3, 5), 16);
+        const b = parseInt(hex.slice(5, 7), 16);
+        return { r, g, b };
+      }
+      function rgba(hex, a) {
+        const { r, g, b } = hexToRgb(hex);
+        return `rgba(${r},${g},${b},${a})`;
+      }
+      function lerp(a, b, t) {
+        return a + (b - a) * t;
+      }
+
+      // Deterministic RNG (stable stars/sparkles)
+      function rng(seed) {
+        let s = seed >>> 0;
+        return () => {
+          s = (1664525 * s + 1013904223) >>> 0;
+          return s / 4294967296;
+        };
+      }
+
+      // --- Shapes ---
+      function pathMainSail(ctx, mx, top, bot, width) {
+        ctx.beginPath();
+        ctx.moveTo(mx + 6, top);
+        ctx.quadraticCurveTo(
+          mx + width * 0.78,
+          top + (bot - top) * 0.33,
+          mx + width,
+          bot - 10,
+        );
+        ctx.lineTo(mx + 6, bot - 10);
+        ctx.closePath();
+      }
+      function pathJibSail(ctx, mx, top, bot, width) {
+        ctx.beginPath();
+        ctx.moveTo(mx - 6, top + 22);
+        ctx.quadraticCurveTo(
+          mx - width * 0.72,
+          top + (bot - top) * 0.44,
+          mx - width,
+          bot - 24,
+        );
+        ctx.lineTo(mx - 6, bot - 24);
+        ctx.closePath();
+      }
+      function pathHull(ctx, cx, y, w, h) {
+        ctx.beginPath();
+        ctx.moveTo(cx - w / 2, y);
+        ctx.quadraticCurveTo(cx - w * 0.36, y + h * 1.02, cx, y + h * 0.84);
+        ctx.quadraticCurveTo(cx + w * 0.36, y + h * 0.72, cx + w / 2, y);
+        ctx.closePath();
+      }
+
+      // --- Water model (layered sheets + specular ribbons) ---
+      function waveY(x, base, a1, a2, a3, p1, p2, p3) {
+        const t = x / S;
+        return (
+          base +
+          Math.sin(t * Math.PI * 2.2 + p1) * a1 +
+          Math.sin(t * Math.PI * 3.7 + p2) * a2 +
+          Math.sin(t * Math.PI * 7.9 + p3) * a3
+        );
+      }
+
+      function fillWaveSheet(
+        ctx,
+        yBase,
+        ampMul,
+        phase,
+        color,
+        alpha,
+        extraDown = 0,
+      ) {
+        ctx.beginPath();
+        for (let x = 0; x <= S; x += 6) {
+          const y = waveY(
+            x,
+            yBase,
+            16 * ampMul,
+            8 * ampMul,
+            4 * ampMul,
+            phase,
+            phase * 1.6,
+            phase * 0.9,
+          );
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.lineTo(S, S + extraDown);
+        ctx.lineTo(0, S + extraDown);
+        ctx.closePath();
+        ctx.fillStyle = rgba(color, alpha);
+        ctx.fill();
+      }
+
+      function strokeWave(ctx, yBase, ampMul, phase, color, alpha, lw) {
+        const { r, g, b } = hexToRgb(color);
+        ctx.beginPath();
+        for (let x = 0; x <= S; x += 6) {
+          const y = waveY(
+            x,
+            yBase,
+            14 * ampMul,
+            7 * ampMul,
+            3.5 * ampMul,
+            phase,
+            phase * 1.6,
+            phase * 0.9,
+          );
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.strokeStyle = `rgba(${r},${g},${b},${alpha})`;
+        ctx.lineWidth = lw;
+        ctx.lineCap = "round";
+        ctx.lineJoin = "round";
+        ctx.stroke();
+      }
+
+      function clipWaterSurface(ctx, waterlineY, phase) {
+        ctx.beginPath();
+        for (let x = 0; x <= S; x += 6) {
+          const y = waveY(
+            x,
+            waterlineY,
+            16,
+            8,
+            4,
+            phase,
+            phase * 1.6,
+            phase * 0.9,
+          );
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.lineTo(S, S);
+        ctx.lineTo(0, S);
+        ctx.closePath();
+        ctx.clip();
+      }
+
+      function strokeWaterline(ctx, waterlineY, phase) {
+        ctx.strokeStyle = "rgba(0,0,0,0.26)";
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        for (let x = 0; x <= S; x += 6) {
+          const y = waveY(
+            x,
+            waterlineY,
+            16,
+            8,
+            4,
+            phase,
+            phase * 1.6,
+            phase * 0.9,
+          );
+          if (x === 0) ctx.moveTo(x, y);
+          else ctx.lineTo(x, y);
+        }
+        ctx.stroke();
+      }
+
+      // --- Icon draw ---
+      function drawCosmicNavigator(ctx) {
+        ctx.clearRect(0, 0, S, S);
+
+        // Background radial sky
+        const sky = ctx.createRadialGradient(
+          S * 0.5,
+          S * 0.38,
+          0,
+          S * 0.5,
+          S * 0.44,
+          S * 0.82,
+        );
+        sky.addColorStop(0, "#1a1040");
+        sky.addColorStop(0.55, "#0e0a22");
+        sky.addColorStop(1, "#060410");
+        ctx.fillStyle = sky;
+        ctx.fillRect(0, 0, S, S);
+
+        // Nebula glows
+        const neb1 = ctx.createRadialGradient(
+          S * 0.38,
+          S * 0.34,
+          0,
+          S * 0.38,
+          S * 0.34,
+          S * 0.42,
+        );
+        neb1.addColorStop(0, rgba(PINK, 0.18));
+        neb1.addColorStop(0.55, rgba(PURPLE, 0.1));
+        neb1.addColorStop(1, "transparent");
+        ctx.fillStyle = neb1;
+        ctx.fillRect(0, 0, S, S);
+
+        const neb2 = ctx.createRadialGradient(
+          S * 0.64,
+          S * 0.42,
+          0,
+          S * 0.64,
+          S * 0.42,
+          S * 0.38,
+        );
+        neb2.addColorStop(0, rgba(PURPLE, 0.2));
+        neb2.addColorStop(0.6, "rgba(90,40,200,0.07)");
+        neb2.addColorStop(1, "transparent");
+        ctx.fillStyle = neb2;
+        ctx.fillRect(0, 0, S, S);
+
+        // Stars (upper-heavy, with bright feature stars)
+        const starRand = rng(42);
+        for (let i = 0; i < 200; i++) {
+          const x = starRand() * S;
+          const y = starRand() * S * 0.78;
+          const bright = starRand() > 0.86;
+          const r = bright ? starRand() * 3.2 + 1.8 : starRand() * 2.0 + 0.35;
+          const a = bright ? starRand() * 0.3 + 0.65 : starRand() * 0.55 + 0.2;
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fillStyle = rgba(WHITE, a);
+          ctx.fill();
+          if (bright) {
+            const sg = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 3.5);
+            sg.addColorStop(0, rgba(WHITE, 0.14));
+            sg.addColorStop(1, "transparent");
+            ctx.fillStyle = sg;
+            ctx.beginPath();
+            ctx.arc(x, y, r * 3.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        // Boat geometry — raised so more water is visible
+        const mx = S * 0.5;
+        const sailTop = S * 0.08;
+        const sailBot = S * 0.56;
+
+        // Subtle boat glow
+        const boatGlow = ctx.createRadialGradient(
+          S * 0.5,
+          S * 0.44,
+          0,
+          S * 0.5,
+          S * 0.44,
+          S * 0.32,
+        );
+        boatGlow.addColorStop(0, rgba(AMBER, 0.12));
+        boatGlow.addColorStop(1, "transparent");
+        ctx.fillStyle = boatGlow;
+        ctx.fillRect(0, 0, S, S);
+
+        // Main sail
+        const mainGrad = ctx.createLinearGradient(
+          mx,
+          sailTop,
+          mx + 320,
+          sailBot,
+        );
+        mainGrad.addColorStop(0, "#FFD76E");
+        mainGrad.addColorStop(0.4, AMBER);
+        mainGrad.addColorStop(0.78, "#E86B5A");
+        mainGrad.addColorStop(1, PINK);
+        pathMainSail(ctx, mx, sailTop, sailBot, 320);
+        ctx.fillStyle = mainGrad;
+        ctx.fill();
+
+        // Jib sail
+        const jibGrad = ctx.createLinearGradient(
+          mx,
+          sailTop + 10,
+          mx - 250,
+          sailBot,
+        );
+        jibGrad.addColorStop(0, "#FFD76E");
+        jibGrad.addColorStop(0.52, "#E8A040");
+        jibGrad.addColorStop(1, "#D06080");
+        pathJibSail(ctx, mx, sailTop, sailBot, 250);
+        ctx.fillStyle = jibGrad;
+        ctx.fill();
+
+        // Mast + highlight
+        ctx.lineCap = "round";
+        ctx.lineWidth = 7;
+        ctx.strokeStyle = "#C8912E";
+        ctx.beginPath();
+        ctx.moveTo(mx, sailTop - 12);
+        ctx.lineTo(mx, sailBot + 30);
+        ctx.stroke();
+
+        ctx.lineWidth = 2.5;
+        ctx.strokeStyle = rgba("#FFD76E", 0.65);
+        ctx.beginPath();
+        ctx.moveTo(mx - 1.2, sailTop - 10);
+        ctx.lineTo(mx - 1.2, sailBot + 28);
+        ctx.stroke();
+
+        // Hull (draw BEFORE water so water occludes it)
+        const hullTopY = sailBot + 6;
+        const hullW = S * 0.62;
+        const hullH = 92;
+
+        const hullGrad = ctx.createLinearGradient(
+          S * 0.2,
+          hullTopY,
+          S * 0.8,
+          hullTopY + hullH,
+        );
+        hullGrad.addColorStop(0, "#C07830");
+        hullGrad.addColorStop(1, PURPLE);
+        pathHull(ctx, S * 0.5, hullTopY, hullW, hullH);
+        ctx.fillStyle = hullGrad;
+        ctx.fill();
+
+        // ---------- Water ----------
+        const waterlineY = S * 0.59;
+        const waterPhase = 0.7;
+
+        ctx.save();
+        clipWaterSurface(ctx, waterlineY, waterPhase);
+
+        // Base water — opaque, rich, deep indigo-blue
+        const wg = ctx.createLinearGradient(0, waterlineY - 20, 0, S);
+        wg.addColorStop(0.0, "#1a2458");
+        wg.addColorStop(0.15, "#1e2e6a");
+        wg.addColorStop(0.4, "#1a3870");
+        wg.addColorStop(0.7, "#122858");
+        wg.addColorStop(1.0, "#0a1a3a");
+        ctx.fillStyle = wg;
+        ctx.fillRect(0, waterlineY - 60, S, S);
+
+        // Subtle warm under-glow where hull reflects
+        const hullRefl = ctx.createRadialGradient(
+          S * 0.5, waterlineY + 20, 0,
+          S * 0.5, waterlineY + 50, hullW * 0.45,
+        );
+        hullRefl.addColorStop(0, "rgba(180,120,50,0.10)");
+        hullRefl.addColorStop(0.6, "rgba(100,60,30,0.04)");
+        hullRefl.addColorStop(1, "transparent");
+        ctx.fillStyle = hullRefl;
+        ctx.fillRect(0, waterlineY - 10, S, S * 0.25);
+
+        // Dense layered wave sheets — more layers, tighter spacing, varied hues
+        fillWaveSheet(ctx, waterlineY + 5,   1.05, 0.7,  "#2a3890", 0.32);
+        fillWaveSheet(ctx, waterlineY + 22,  1.0,  0.95, PURPLE,    0.22);
+        fillWaveSheet(ctx, waterlineY + 40,  0.95, 1.35, "#253a8a", 0.26);
+        fillWaveSheet(ctx, waterlineY + 58,  0.92, 1.7,  "#1e4a88", 0.20);
+        fillWaveSheet(ctx, waterlineY + 78,  0.88, 2.0,  TEAL,      0.14);
+        fillWaveSheet(ctx, waterlineY + 100, 0.84, 2.3,  "#2b3c8f", 0.18);
+        fillWaveSheet(ctx, waterlineY + 125, 0.78, 2.65, PURPLE,    0.14);
+        fillWaveSheet(ctx, waterlineY + 155, 0.72, 3.0,  "#1a3570", 0.12);
+        fillWaveSheet(ctx, waterlineY + 190, 0.65, 3.4,  "#1a2f6d", 0.10);
+        fillWaveSheet(ctx, waterlineY + 230, 0.58, 3.8,  "#152a58", 0.08);
+
+        // Contact AO shadow under hull — sells the "sitting in water"
+        const ao = ctx.createRadialGradient(
+          S * 0.5, waterlineY + 2, 0,
+          S * 0.5, waterlineY + 2, S * 0.28,
+        );
+        ao.addColorStop(0.0, "rgba(0,0,0,0.42)");
+        ao.addColorStop(0.3, "rgba(0,0,0,0.18)");
+        ao.addColorStop(0.6, "rgba(0,0,0,0.06)");
+        ao.addColorStop(1.0, "transparent");
+        ctx.fillStyle = ao;
+        ctx.fillRect(0, waterlineY - 80, S, 200);
+
+        // Foam crest highlights — bright lines on wave peaks
+        ctx.globalCompositeOperation = "screen";
+
+        // Primary crests — visible, bright teal-blue
+        strokeWave(ctx, waterlineY + 8,   1.02, 0.75, "#50a0d8", 0.18, 3.5);
+        strokeWave(ctx, waterlineY + 25,  0.98, 0.95, "#6ab0e0", 0.14, 3.0);
+        strokeWave(ctx, waterlineY + 44,  0.94, 1.35, "#4890c8", 0.12, 2.8);
+        strokeWave(ctx, waterlineY + 62,  0.90, 1.7,  "#5aa0d0", 0.10, 2.5);
+        strokeWave(ctx, waterlineY + 82,  0.86, 2.0,  TEAL,      0.09, 2.2);
+        strokeWave(ctx, waterlineY + 105, 0.82, 2.3,  "#4888c0", 0.07, 2.0);
+        strokeWave(ctx, waterlineY + 130, 0.76, 2.65, "#5090c8", 0.06, 1.8);
+        strokeWave(ctx, waterlineY + 160, 0.70, 3.0,  "#4080b0", 0.05, 1.5);
+
+        // Specular white highlights on top 4 waves — the "shimmer"
+        strokeWave(ctx, waterlineY + 6,   1.02, 0.75, WHITE, 0.10, 2.0);
+        strokeWave(ctx, waterlineY + 23,  0.98, 0.95, WHITE, 0.07, 1.6);
+        strokeWave(ctx, waterlineY + 42,  0.94, 1.35, WHITE, 0.05, 1.3);
+        strokeWave(ctx, waterlineY + 60,  0.90, 1.7,  WHITE, 0.04, 1.1);
+
+        // Warm amber specular on first two crests (hull light bounce)
+        strokeWave(ctx, waterlineY + 10,  1.0,  0.8,  "#FFD76E", 0.08, 2.5);
+        strokeWave(ctx, waterlineY + 30,  0.96, 1.1,  "#FFD76E", 0.05, 2.0);
+
+        ctx.globalCompositeOperation = "source-over";
+
+        // Wake ribbon — bright arc under hull
+        ctx.globalCompositeOperation = "screen";
+        const left = S * 0.5 - hullW * 0.5;
+        const right = S * 0.5 + hullW * 0.5;
+        const midY = waterlineY + 8;
+
+        // Outer wake
+        ctx.strokeStyle = rgba("#FFD76E", 0.18);
+        ctx.lineWidth = 5;
+        ctx.lineCap = "round";
+        ctx.beginPath();
+        ctx.moveTo(left + 40, midY + 6);
+        ctx.quadraticCurveTo(S * 0.5, midY - 20, right - 42, midY + 8);
+        ctx.stroke();
+
+        // Inner wake
+        ctx.strokeStyle = rgba("#80b8e8", 0.14);
+        ctx.lineWidth = 3;
+        ctx.beginPath();
+        ctx.moveTo(left + 60, midY + 18);
+        ctx.quadraticCurveTo(S * 0.5, midY - 4, right - 64, midY + 18);
+        ctx.stroke();
+
+        // Thin bright wake
+        ctx.strokeStyle = rgba(WHITE, 0.09);
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.moveTo(left + 80, midY + 28);
+        ctx.quadraticCurveTo(S * 0.5, midY + 8, right - 82, midY + 28);
+        ctx.stroke();
+        ctx.globalCompositeOperation = "source-over";
+
+        // Reflection streaks under boat
+        ctx.globalCompositeOperation = "screen";
+        for (let i = 0; i < 8; i++) {
+          const rx = S * 0.32 + i * 50;
+          const ry = waterlineY + 34 + (i % 3) * 8;
+          const rg = ctx.createLinearGradient(rx, ry, rx + 80, ry + 4);
+          rg.addColorStop(0, "transparent");
+          rg.addColorStop(0.5, "rgba(255,215,110,0.07)");
+          rg.addColorStop(1, "transparent");
+          ctx.fillStyle = rg;
+          ctx.fillRect(rx - 35, ry - 8, 150, 24);
+        }
+        ctx.globalCompositeOperation = "source-over";
+
+        // Water sparkles
+        const sp = rng(1337);
+        for (let i = 0; i < 35; i++) {
+          const x = sp() * S;
+          const y = lerp(waterlineY + 30, S, sp());
+          const rad = sp() * 2.2 + 0.5;
+          const a = sp() * 0.12 + 0.04;
+          ctx.beginPath();
+          ctx.arc(x, y, rad, 0, Math.PI * 2);
+          ctx.fillStyle = rgba(WHITE, a);
+          ctx.fill();
+        }
+
+        ctx.restore(); // end water clip
+
+        // Waterline "front lip" — subtle dark edge
+        strokeWaterline(ctx, waterlineY, waterPhase);
+
+        // Bottom depth fade
+        const bot = ctx.createLinearGradient(0, S * 0.84, 0, S);
+        bot.addColorStop(0, "transparent");
+        bot.addColorStop(1, "rgba(5,10,25,0.45)");
+        ctx.fillStyle = bot;
+        ctx.fillRect(0, S * 0.84, S, S * 0.16);
+      }
+
+      // --- Render + download ---
+      const canvas = document.getElementById("icon");
+      const ctx = canvas.getContext("2d");
+      drawCosmicNavigator(ctx);
+
+      const toast = document.getElementById("toast");
+      function showToast(msg) {
+        toast.textContent = msg;
+        toast.classList.add("show");
+        setTimeout(() => toast.classList.remove("show"), 2200);
+      }
+
+      canvas.addEventListener("click", () => {
+        const a = document.createElement("a");
+        a.download = "cosmic-navigator-1024.png";
+        a.href = canvas.toDataURL("image/png");
+        a.click();
+        showToast('Downloaded "Cosmic Navigator"');
+      });
+    </script>
+  </body>
+</html>
