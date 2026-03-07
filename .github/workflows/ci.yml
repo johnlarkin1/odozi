@@ -52,36 +52,39 @@ jobs:
         run: make build DESTINATION='generic/platform=iOS Simulator'
 
       - name: Set up iOS Simulator
+        id: simulator
         run: |
-          # Ensure exactly one iPhone 16 simulator exists (macOS runners may ship with one already)
-          EXISTING=$(xcrun simctl list devices available -j | python3 -c "
+          # Find the latest iOS runtime
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "
+          import sys, json
+          rts = [r for r in json.loads(sys.stdin.read())['runtimes'] if 'iOS' in r['name'] and r['isAvailable']]
+          print(rts[-1]['identifier'])
+          ")
+          echo "Using runtime: $RUNTIME"
+
+          # Find an existing iPhone 16 simulator on that runtime, or create one
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
           import sys, json
           data = json.loads(sys.stdin.read())
-          uuids = [d['udid'] for devs in data['devices'].values() for d in devs if d['name'] == 'iPhone 16' and d['isAvailable']]
-          print('\n'.join(uuids))
+          runtime = '$RUNTIME'
+          devs = data['devices'].get(runtime, [])
+          matches = [d['udid'] for d in devs if d['name'] == 'iPhone 16' and d['isAvailable']]
+          if matches:
+              print(matches[0])
           " 2>/dev/null)
 
-          COUNT=$(echo "$EXISTING" | grep -c . 2>/dev/null || echo 0)
-
-          if [ "$COUNT" -gt 1 ]; then
-            echo "Found $COUNT iPhone 16 simulators — removing duplicates"
-            KEEP=$(echo "$EXISTING" | head -1)
-            echo "$EXISTING" | tail -n +2 | while read -r UDID; do
-              xcrun simctl delete "$UDID"
-            done
-            echo "Kept simulator $KEEP"
-          elif [ "$COUNT" -eq 0 ]; then
-            echo "No iPhone 16 simulator found — creating one"
-            RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "import sys,json; rts=[r for r in json.loads(sys.stdin.read())['runtimes'] if 'iOS' in r['name'] and r['isAvailable']]; print(rts[-1]['identifier'])")
-            xcrun simctl create "iPhone 16" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "$RUNTIME"
-          else
-            echo "iPhone 16 simulator already exists"
+          if [ -z "$UDID" ]; then
+            echo "No iPhone 16 on $RUNTIME — creating one"
+            UDID=$(xcrun simctl create "iPhone 16" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "$RUNTIME")
           fi
+
+          echo "Simulator UDID: $UDID"
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
 
       - name: Run tests
         run: |
           xcodebuild -project Odyssey.xcodeproj -scheme Odyssey \
-            -destination 'platform=iOS Simulator,name=iPhone 16' \
+            -destination 'platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}' \
             -enableCodeCoverage YES \
             -resultBundlePath TestResults.xcresult \
             test
