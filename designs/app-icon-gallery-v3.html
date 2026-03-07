@@ -333,41 +333,31 @@
         ctx.fillStyle = neb2;
         ctx.fillRect(0, 0, S, S);
 
-        // Stars (upper-heavy, with bright feature stars)
+        // Stars (upper-heavy distribution)
         const starRand = rng(42);
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 190; i++) {
           const x = starRand() * S;
           const y = starRand() * S * 0.78;
-          const bright = starRand() > 0.86;
-          const r = bright ? starRand() * 3.2 + 1.8 : starRand() * 2.0 + 0.35;
-          const a = bright ? starRand() * 0.3 + 0.65 : starRand() * 0.55 + 0.2;
+          const r = starRand() * 2.0 + 0.35;
+          const a = starRand() * 0.55 + 0.2;
           ctx.beginPath();
           ctx.arc(x, y, r, 0, Math.PI * 2);
           ctx.fillStyle = rgba(WHITE, a);
           ctx.fill();
-          if (bright) {
-            const sg = ctx.createRadialGradient(x, y, r * 0.5, x, y, r * 3.5);
-            sg.addColorStop(0, rgba(WHITE, 0.14));
-            sg.addColorStop(1, "transparent");
-            ctx.fillStyle = sg;
-            ctx.beginPath();
-            ctx.arc(x, y, r * 3.5, 0, Math.PI * 2);
-            ctx.fill();
-          }
         }
 
-        // Boat geometry — raised so more water is visible
+        // Boat geometry
         const mx = S * 0.5;
-        const sailTop = S * 0.08;
-        const sailBot = S * 0.56;
+        const sailTop = S * 0.13;
+        const sailBot = S * 0.64;
 
         // Subtle boat glow
         const boatGlow = ctx.createRadialGradient(
           S * 0.5,
-          S * 0.44,
+          S * 0.52,
           0,
           S * 0.5,
-          S * 0.44,
+          S * 0.52,
           S * 0.32,
         );
         boatGlow.addColorStop(0, rgba(AMBER, 0.12));
@@ -437,136 +427,92 @@
         ctx.fillStyle = hullGrad;
         ctx.fill();
 
-        // ---------- Water ----------
-        const waterlineY = S * 0.59;
+        // ---------- Water (improved, closer to the original render) ----------
+        const waterlineY = S * 0.685;
         const waterPhase = 0.7;
 
         ctx.save();
         clipWaterSurface(ctx, waterlineY, waterPhase);
 
-        // Base water — opaque, rich, deep indigo-blue
-        const wg = ctx.createLinearGradient(0, waterlineY - 20, 0, S);
-        wg.addColorStop(0.0, "#1a2458");
-        wg.addColorStop(0.15, "#1e2e6a");
-        wg.addColorStop(0.4, "#1a3870");
-        wg.addColorStop(0.7, "#122858");
-        wg.addColorStop(1.0, "#0a1a3a");
+        // Base water gradient
+        const wg = ctx.createLinearGradient(0, waterlineY - 40, 0, S);
+        wg.addColorStop(0.0, "rgba(35,35,95,0.78)");
+        wg.addColorStop(0.45, "rgba(55,95,160,0.62)");
+        wg.addColorStop(1.0, "rgba(20,40,85,0.84)");
         ctx.fillStyle = wg;
         ctx.fillRect(0, waterlineY - 60, S, S);
 
-        // Subtle warm under-glow where hull reflects
-        const hullRefl = ctx.createRadialGradient(
-          S * 0.5, waterlineY + 20, 0,
-          S * 0.5, waterlineY + 50, hullW * 0.45,
-        );
-        hullRefl.addColorStop(0, "rgba(180,120,50,0.10)");
-        hullRefl.addColorStop(0.6, "rgba(100,60,30,0.04)");
-        hullRefl.addColorStop(1, "transparent");
-        ctx.fillStyle = hullRefl;
-        ctx.fillRect(0, waterlineY - 10, S, S * 0.25);
+        // Layered wave sheets
+        fillWaveSheet(ctx, waterlineY + 10, 1.0, 0.75, PURPLE, 0.26);
+        fillWaveSheet(ctx, waterlineY + 45, 0.92, 1.55, "#2b3c8f", 0.2);
+        fillWaveSheet(ctx, waterlineY + 85, 0.85, 2.05, TEAL, 0.16);
+        fillWaveSheet(ctx, waterlineY + 135, 0.75, 2.65, PURPLE, 0.12);
+        fillWaveSheet(ctx, waterlineY + 195, 0.65, 3.15, "#1a2f6d", 0.1);
 
-        // Dense layered wave sheets — more layers, tighter spacing, varied hues
-        fillWaveSheet(ctx, waterlineY + 5,   1.05, 0.7,  "#2a3890", 0.32);
-        fillWaveSheet(ctx, waterlineY + 22,  1.0,  0.95, PURPLE,    0.22);
-        fillWaveSheet(ctx, waterlineY + 40,  0.95, 1.35, "#253a8a", 0.26);
-        fillWaveSheet(ctx, waterlineY + 58,  0.92, 1.7,  "#1e4a88", 0.20);
-        fillWaveSheet(ctx, waterlineY + 78,  0.88, 2.0,  TEAL,      0.14);
-        fillWaveSheet(ctx, waterlineY + 100, 0.84, 2.3,  "#2b3c8f", 0.18);
-        fillWaveSheet(ctx, waterlineY + 125, 0.78, 2.65, PURPLE,    0.14);
-        fillWaveSheet(ctx, waterlineY + 155, 0.72, 3.0,  "#1a3570", 0.12);
-        fillWaveSheet(ctx, waterlineY + 190, 0.65, 3.4,  "#1a2f6d", 0.10);
-        fillWaveSheet(ctx, waterlineY + 230, 0.58, 3.8,  "#152a58", 0.08);
-
-        // Contact AO shadow under hull — sells the "sitting in water"
-        const ao = ctx.createRadialGradient(
-          S * 0.5, waterlineY + 2, 0,
-          S * 0.5, waterlineY + 2, S * 0.28,
-        );
-        ao.addColorStop(0.0, "rgba(0,0,0,0.42)");
-        ao.addColorStop(0.3, "rgba(0,0,0,0.18)");
-        ao.addColorStop(0.6, "rgba(0,0,0,0.06)");
-        ao.addColorStop(1.0, "transparent");
-        ctx.fillStyle = ao;
-        ctx.fillRect(0, waterlineY - 80, S, 200);
-
-        // Foam crest highlights — bright lines on wave peaks
+        // Specular ribbons
         ctx.globalCompositeOperation = "screen";
-
-        // Primary crests — visible, bright teal-blue
-        strokeWave(ctx, waterlineY + 8,   1.02, 0.75, "#50a0d8", 0.18, 3.5);
-        strokeWave(ctx, waterlineY + 25,  0.98, 0.95, "#6ab0e0", 0.14, 3.0);
-        strokeWave(ctx, waterlineY + 44,  0.94, 1.35, "#4890c8", 0.12, 2.8);
-        strokeWave(ctx, waterlineY + 62,  0.90, 1.7,  "#5aa0d0", 0.10, 2.5);
-        strokeWave(ctx, waterlineY + 82,  0.86, 2.0,  TEAL,      0.09, 2.2);
-        strokeWave(ctx, waterlineY + 105, 0.82, 2.3,  "#4888c0", 0.07, 2.0);
-        strokeWave(ctx, waterlineY + 130, 0.76, 2.65, "#5090c8", 0.06, 1.8);
-        strokeWave(ctx, waterlineY + 160, 0.70, 3.0,  "#4080b0", 0.05, 1.5);
-
-        // Specular white highlights on top 4 waves — the "shimmer"
-        strokeWave(ctx, waterlineY + 6,   1.02, 0.75, WHITE, 0.10, 2.0);
-        strokeWave(ctx, waterlineY + 23,  0.98, 0.95, WHITE, 0.07, 1.6);
-        strokeWave(ctx, waterlineY + 42,  0.94, 1.35, WHITE, 0.05, 1.3);
-        strokeWave(ctx, waterlineY + 60,  0.90, 1.7,  WHITE, 0.04, 1.1);
-
-        // Warm amber specular on first two crests (hull light bounce)
-        strokeWave(ctx, waterlineY + 10,  1.0,  0.8,  "#FFD76E", 0.08, 2.5);
-        strokeWave(ctx, waterlineY + 30,  0.96, 1.1,  "#FFD76E", 0.05, 2.0);
-
+        strokeWave(ctx, waterlineY + 22, 0.95, 0.9, WHITE, 0.08, 3.0);
+        strokeWave(ctx, waterlineY + 58, 0.88, 1.55, "#FFD76E", 0.06, 2.6);
+        strokeWave(ctx, waterlineY + 96, 0.82, 2.1, WHITE, 0.05, 2.2);
+        strokeWave(ctx, waterlineY + 142, 0.74, 2.7, WHITE, 0.04, 2.0);
         ctx.globalCompositeOperation = "source-over";
 
-        // Wake ribbon — bright arc under hull
+        // Contact AO under hull
+        const ao = ctx.createRadialGradient(
+          S * 0.5,
+          waterlineY - 6,
+          0,
+          S * 0.5,
+          waterlineY - 6,
+          S * 0.32,
+        );
+        ao.addColorStop(0.0, "rgba(0,0,0,0.38)");
+        ao.addColorStop(0.45, "rgba(0,0,0,0.12)");
+        ao.addColorStop(1.0, "transparent");
+        ctx.fillStyle = ao;
+        ctx.fillRect(0, waterlineY - 130, S, 260);
+
+        // Wake ribbon
         ctx.globalCompositeOperation = "screen";
+        ctx.strokeStyle = rgba("#FFD76E", 0.16);
+        ctx.lineWidth = 6;
+        ctx.beginPath();
         const left = S * 0.5 - hullW * 0.5;
         const right = S * 0.5 + hullW * 0.5;
-        const midY = waterlineY + 8;
-
-        // Outer wake
-        ctx.strokeStyle = rgba("#FFD76E", 0.18);
-        ctx.lineWidth = 5;
-        ctx.lineCap = "round";
-        ctx.beginPath();
-        ctx.moveTo(left + 40, midY + 6);
-        ctx.quadraticCurveTo(S * 0.5, midY - 20, right - 42, midY + 8);
+        const midY = waterlineY + 10;
+        ctx.moveTo(left + 55, midY + 8);
+        ctx.quadraticCurveTo(S * 0.5, midY - 18, right - 58, midY + 10);
         ctx.stroke();
 
-        // Inner wake
-        ctx.strokeStyle = rgba("#80b8e8", 0.14);
+        ctx.strokeStyle = rgba(WHITE, 0.07);
         ctx.lineWidth = 3;
         ctx.beginPath();
-        ctx.moveTo(left + 60, midY + 18);
-        ctx.quadraticCurveTo(S * 0.5, midY - 4, right - 64, midY + 18);
-        ctx.stroke();
-
-        // Thin bright wake
-        ctx.strokeStyle = rgba(WHITE, 0.09);
-        ctx.lineWidth = 1.8;
-        ctx.beginPath();
-        ctx.moveTo(left + 80, midY + 28);
-        ctx.quadraticCurveTo(S * 0.5, midY + 8, right - 82, midY + 28);
+        ctx.moveTo(left + 70, midY + 22);
+        ctx.quadraticCurveTo(S * 0.5, midY + 2, right - 74, midY + 22);
         ctx.stroke();
         ctx.globalCompositeOperation = "source-over";
 
         // Reflection streaks under boat
         ctx.globalCompositeOperation = "screen";
-        for (let i = 0; i < 8; i++) {
-          const rx = S * 0.32 + i * 50;
-          const ry = waterlineY + 34 + (i % 3) * 8;
-          const rg = ctx.createLinearGradient(rx, ry, rx + 80, ry + 4);
+        for (let i = 0; i < 6; i++) {
+          const rx = S * 0.37 + i * 55;
+          const ry = waterlineY + 38 + (i % 2) * 10;
+          const rg = ctx.createLinearGradient(rx, ry, rx + 90, ry + 6);
           rg.addColorStop(0, "transparent");
-          rg.addColorStop(0.5, "rgba(255,215,110,0.07)");
+          rg.addColorStop(0.5, "rgba(255,215,110,0.06)");
           rg.addColorStop(1, "transparent");
           ctx.fillStyle = rg;
-          ctx.fillRect(rx - 35, ry - 8, 150, 24);
+          ctx.fillRect(rx - 40, ry - 10, 170, 28);
         }
         ctx.globalCompositeOperation = "source-over";
 
-        // Water sparkles
+        // Sparse water sparkles
         const sp = rng(1337);
-        for (let i = 0; i < 35; i++) {
+        for (let i = 0; i < 26; i++) {
           const x = sp() * S;
-          const y = lerp(waterlineY + 30, S, sp());
-          const rad = sp() * 2.2 + 0.5;
-          const a = sp() * 0.12 + 0.04;
+          const y = lerp(waterlineY + 40, S, sp());
+          const rad = sp() * 2.0 + 0.6;
+          const a = sp() * 0.1 + 0.04;
           ctx.beginPath();
           ctx.arc(x, y, rad, 0, Math.PI * 2);
           ctx.fillStyle = rgba(WHITE, a);
@@ -575,15 +521,15 @@
 
         ctx.restore(); // end water clip
 
-        // Waterline "front lip" — subtle dark edge
+        // Waterline “front lip”
         strokeWaterline(ctx, waterlineY, waterPhase);
 
-        // Bottom depth fade
-        const bot = ctx.createLinearGradient(0, S * 0.84, 0, S);
+        // Bottom fade (polish)
+        const bot = ctx.createLinearGradient(0, S * 0.82, 0, S);
         bot.addColorStop(0, "transparent");
-        bot.addColorStop(1, "rgba(5,10,25,0.45)");
+        bot.addColorStop(1, "rgba(0,0,0,0.35)");
         ctx.fillStyle = bot;
-        ctx.fillRect(0, S * 0.84, S, S * 0.16);
+        ctx.fillRect(0, S * 0.82, S, S * 0.18);
       }
 
       // --- Render + download ---
