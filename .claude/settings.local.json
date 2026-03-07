@@ -24,7 +24,10 @@
       "Bash(gh api:*)",
       "mcp__plugin_github_github__pull_request_read",
       "mcp__plugin_github_github__get_file_contents",
-      "mcp__plugin_github_github__list_branches"
+      "mcp__plugin_github_github__list_branches",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(make build:*)"
     ]
   }
 }
