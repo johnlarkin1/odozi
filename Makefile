@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template beta release match-appstore match-development website-dev website-build website-install
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template tag beta beta-local release release-local match-appstore match-development website-dev website-build website-install
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -103,10 +103,37 @@ resolve: ## Resolve Swift package dependencies
 lint: ## Lint Swift source files with SwiftLint
 	swiftlint lint --strict
 
+tag: ## Create a version tag locally (BUMP=minor|patch, default patch)
+	@BUMP=$${BUMP:-patch}; \
+	LATEST=$$(git tag -l 'v*' --sort=-v:refname | head -n 1); \
+	if [ -z "$$LATEST" ]; then \
+		NEW="v0.1.0"; \
+	else \
+		MAJOR=$$(echo "$${LATEST#v}" | cut -d. -f1); \
+		MINOR=$$(echo "$${LATEST#v}" | cut -d. -f2); \
+		PATCH=$$(echo "$${LATEST#v}" | cut -d. -f3); \
+		if [ "$$BUMP" = "minor" ]; then \
+			MINOR=$$((MINOR + 1)); PATCH=0; \
+		else \
+			PATCH=$$((PATCH + 1)); \
+		fi; \
+		NEW="v$${MAJOR}.$${MINOR}.$${PATCH}"; \
+	fi; \
+	echo "$$LATEST -> $$NEW ($$BUMP)"; \
+	git tag "$$NEW" && git push origin "$$NEW"
+
 beta: ## Build and upload to TestFlight via Fastlane
 	bundle exec fastlane beta
 
+beta-local: ## Build and upload to TestFlight from local machine (loads .env.local)
+	@if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
+	bundle exec fastlane beta
+
 release: ## Build and submit to App Store via Fastlane
+	bundle exec fastlane release
+
+release-local: ## Build and submit to App Store from local machine (loads .env.local)
+	@if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
 	bundle exec fastlane release
 
 match-appstore: ## Sync App Store signing certificates

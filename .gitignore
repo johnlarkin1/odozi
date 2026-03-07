@@ -92,6 +92,7 @@ iOSInjectionProject/
 .worktrees/
 
 .env
+.env.local
 Odyssey.xcconfig
 
 # Fastlane
