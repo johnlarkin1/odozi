@@ -19,7 +19,12 @@
       "WebFetch(domain:developers.cloudflare.com)",
       "Bash(git ls-tree:*)",
       "Bash(git diff-tree:*)",
-      "Skill(code-review:code-review)"
+      "Skill(code-review:code-review)",
+      "Skill(code-review:code-review)",
+      "Bash(gh api:*)",
+      "mcp__plugin_github_github__pull_request_read",
+      "mcp__plugin_github_github__get_file_contents",
+      "mcp__plugin_github_github__list_branches"
     ]
   }
 }

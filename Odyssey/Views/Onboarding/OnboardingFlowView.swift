@@ -4,6 +4,9 @@ struct OnboardingFlowView: View {
     @Bindable var viewModel: OnboardingViewModel
     let onComplete: () -> Void
 
+    @Environment(AuthManager.self) private var authManager
+    @State private var showAccountSheet = false
+
     var body: some View {
         ZStack {
             Color.black.ignoresSafeArea()
@@ -36,6 +39,10 @@ struct OnboardingFlowView: View {
                 .padding(.bottom, 8)
             }
         }
+        .sheet(isPresented: $showAccountSheet) {
+            BackupPromptModal()
+                .environment(authManager)
+        }
     }
 
     @ViewBuilder
@@ -62,7 +69,7 @@ struct OnboardingFlowView: View {
     }
 
     private func handleCreateAccount() {
-        viewModel.beginAccountCreation()
+        showAccountSheet = true
     }
 
     private func handleEnable() {
