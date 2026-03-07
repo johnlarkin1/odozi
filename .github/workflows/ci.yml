@@ -23,6 +23,7 @@ jobs:
         run: swiftlint lint --strict --reporter github-actions-logging
 
   build-and-test:
+    if: github.event_name == 'push'
     needs: lint
     runs-on: macos-15
     steps:
