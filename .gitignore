@@ -110,3 +110,5 @@ website/.next/
 website/out/
 
 .claude/worktrees
+
+docs/MATCH_FASTLANE_INFO.md
