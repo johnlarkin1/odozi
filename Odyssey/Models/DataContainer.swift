@@ -69,6 +69,7 @@ struct DataContainer {
         }
     }
 
+    #if DEBUG
     @MainActor
     static func previewContainer() throws -> ModelContainer {
         let container = try create(inMemory: true)
@@ -79,4 +80,5 @@ struct DataContainer {
         try context.save()
         return container
     }
+    #endif
 }

@@ -7,5 +7,5 @@ app_identifier([
   "com.johnlarkin.Odyssey.OdysseyDeviceActivityReport"
 ])
 team_id("P3Q6VLD666")
-keychain_name(ENV["MATCH_KEYCHAIN_NAME"] || "fastlane_keychain")
+keychain_name(ENV["MATCH_KEYCHAIN_NAME"] || "login")
 keychain_password(ENV["MATCH_KEYCHAIN_PASSWORD"] || "")
