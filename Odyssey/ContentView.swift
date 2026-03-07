@@ -7,6 +7,7 @@ struct ContentView: View {
     }
 }
 
+#if DEBUG
 #Preview {
     // swiftlint:disable:next force_try
     let container = (try? DataContainer.previewContainer()) ?? (try! ModelContainer(
@@ -17,3 +18,4 @@ struct ContentView: View {
         .modelContainer(container)
         .environment(\.colorScheme, .dark)
 }
+#endif
