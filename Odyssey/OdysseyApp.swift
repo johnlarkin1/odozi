@@ -136,6 +136,7 @@ struct OdysseyApp: App {
                     entry.screenTimeSeconds = screenTime.seconds
                     entry.pickups = screenTime.pickups
                     try? context.save()
+                    NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
                 }
             }
         }
