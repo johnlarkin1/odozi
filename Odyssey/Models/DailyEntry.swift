@@ -3,6 +3,7 @@ import SwiftData
 
 extension Notification.Name {
     static let didSaveFirstEntry = Notification.Name("didSaveFirstEntry")
+    static let screenTimeDidUpdate = Notification.Name("screenTimeDidUpdate")
 }
 
 @Model

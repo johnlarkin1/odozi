@@ -73,6 +73,10 @@ struct TodayView: View {
                     }
                 }
             }
+            .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
+                viewModel?.checkForTodayEntry()
+                todayEntry = viewModel?.fetchTodayEntry()
+            }
             .onChange(of: showingGuidedFlow) { _, newValue in
                 if !newValue {
                     viewModel?.checkForTodayEntry()
