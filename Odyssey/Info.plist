@@ -26,6 +26,8 @@
 	</array>
 	<key>NSHealthShareUsageDescription</key>
 	<string>Odyssey reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Odyssey does not write any health data, but this permission is required by the HealthKit framework.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Odyssey captures your location once daily to add context to your journal entries and show where your journey takes you.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
