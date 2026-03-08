@@ -1,5 +1,5 @@
 {
-  "originHash" : "3542fa0c353e5f442dd5a7293cfd52256626cad5dc2aedd441b000cb622d3efd",
+  "originHash" : "a8eeec277c7868a0df7b2132e97243b29e77fc83d5ebe065bd49838f28808e25",
   "pins" : [
     {
       "identity" : "clerk-ios",
@@ -15,8 +15,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/airbnb/lottie-spm.git",
       "state" : {
-        "revision" : "96790253c1a82223bd43da651121abfd7e96d0f3",
-        "version" : "4.3.4"
+        "revision" : "69faaefa7721fba9e434a52c16adf4329c9084db",
+        "version" : "4.6.0"
       }
     },
     {
