@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint update-secret-template tag beta beta-local release release-local match-appstore match-development match-force-local website-dev website-build website-install
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -103,6 +103,11 @@ resolve: ## Resolve Swift package dependencies
 lint: ## Lint Swift source files with SwiftLint
 	swiftlint lint --strict
 
+format: ## Format Swift source files with SwiftFormat
+	swiftformat .
+
+fmt: format ## Alias for format
+
 tag: ## Create a version tag locally (BUMP=minor|patch, default patch)
 	@BUMP=$${BUMP:-patch}; \
 	LATEST=$$(git tag -l 'v*' --sort=-v:refname | head -n 1); \
@@ -125,14 +130,26 @@ tag: ## Create a version tag locally (BUMP=minor|patch, default patch)
 beta: ## Build and upload to TestFlight via Fastlane
 	bundle exec fastlane beta
 
-beta-local: ## Build and upload to TestFlight from local machine (loads .env.local)
+beta-local: ## Build and upload to TestFlight with Screen Time entitlements (loads .env.local)
+	@sed -i '' 's|\.NoScreenTime\.entitlements|.entitlements|g' Odyssey.xcodeproj/project.pbxproj; \
+	trap 'git checkout -- Odyssey.xcodeproj/project.pbxproj' EXIT; \
+	if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
+	bundle exec fastlane beta
+
+beta-local-no-screen: ## Build and upload to TestFlight without Screen Time entitlements (loads .env.local)
 	@if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
 	bundle exec fastlane beta
 
 release: ## Build and submit to App Store via Fastlane
 	bundle exec fastlane release
 
-release-local: ## Build and submit to App Store from local machine (loads .env.local)
+release-local: ## Build and submit to App Store with Screen Time entitlements (loads .env.local)
+	@sed -i '' 's|\.NoScreenTime\.entitlements|.entitlements|g' Odyssey.xcodeproj/project.pbxproj; \
+	trap 'git checkout -- Odyssey.xcodeproj/project.pbxproj' EXIT; \
+	if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
+	bundle exec fastlane release
+
+release-local-no-screen: ## Build and submit to App Store without Screen Time entitlements (loads .env.local)
 	@if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
 	bundle exec fastlane release
 
