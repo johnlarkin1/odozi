@@ -37,4 +37,21 @@ enum SharedDefaults {
         let pickups = suite.integer(forKey: pickupsKey)
         return (seconds, pickups)
     }
+
+    // Widget <-> App communication
+    static let widgetMoodValueKey = "widgetMoodValue"
+    static let widgetMoodTimestampKey = "widgetMoodTimestamp"
+
+    static func setWidgetMood(value: Int) {
+        suite.set(value, forKey: widgetMoodValueKey)
+        suite.set(Date().timeIntervalSince1970, forKey: widgetMoodTimestampKey)
+    }
+
+    static func getWidgetMood() -> (value: Int, date: Date)? {
+        let timestamp = suite.double(forKey: widgetMoodTimestampKey)
+        guard timestamp > 0 else { return nil }
+        let date = Date(timeIntervalSince1970: timestamp)
+        guard Calendar.current.isDateInToday(date) else { return nil }
+        return (suite.integer(forKey: widgetMoodValueKey), date)
+    }
 }
