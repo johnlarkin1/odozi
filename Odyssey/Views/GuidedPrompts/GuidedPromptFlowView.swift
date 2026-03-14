@@ -59,7 +59,8 @@ struct GuidedPromptFlowView: View {
                     set: { vm.showingCompletion = $0 }
                 )) {
                     CompletionCard(
-                        locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay
+                        locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
+                        unlockedAchievements: vm.newlyUnlockedAchievements
                     ) {
                         dismiss()
                     }
