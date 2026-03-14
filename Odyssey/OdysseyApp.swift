@@ -210,6 +210,9 @@ struct OdysseyApp: App {
 
         NotificationService.rescheduleIfNeeded()
 
+        // Refresh weekly digest notification with latest stats
+        await WeeklyDigestNotificationManager.refreshContent(context: context)
+
         // Sync pending entries if signed in
         if authManager.hasAccount {
             await syncService.syncPendingEntries(modelContext: context, authManager: authManager)

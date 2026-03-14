@@ -10,6 +10,10 @@ final class UserPreferences {
     var locationCaptureMode: String = LocationCaptureMode.evening.rawValue
     var locationCaptureHour: Int = 20
     var locationCaptureMinute: Int = 0
+    var weeklyDigestEnabled: Bool = false
+    var weeklyDigestWeekday: Int = 1
+    var weeklyDigestHour: Int = 18
+    var weeklyDigestMinute: Int = 0
     var createdAt: Date = Date()
     var updatedAt: Date = Date()
 

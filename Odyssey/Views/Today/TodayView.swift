@@ -64,6 +64,12 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                 GuidedPromptFlowView()
             }
+            .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
+                if shouldShow {
+                    showingGuidedFlow = true
+                    NavigationState.shared.showGuidedPrompt = false
+                }
+            }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
                     Task {
