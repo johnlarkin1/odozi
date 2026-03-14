@@ -8,7 +8,7 @@ struct DataContainer {
     static let appGroupID = "group.com.johnlarkin.Odyssey"
 
     static func create(inMemory: Bool = false) throws -> ModelContainer {
-        let schema = Schema([DailyEntry.self, UserPreferences.self])
+        let schema = Schema([DailyEntry.self, UserPreferences.self, Achievement.self])
         let config: ModelConfiguration
 
         if inMemory {
