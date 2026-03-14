@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -174,3 +174,76 @@ website-dev: ## Start website dev server
 
 website-build: ## Build website for production (static export)
 	cd website && npm run build
+
+# --- Load Testing ---
+
+LOADTEST_DIR = $(SERVER_DIR)/loadtests
+LOADTEST_KEYS_DIR = $(LOADTEST_DIR)/keys
+LOADTEST_PRIVATE_KEY = $(LOADTEST_KEYS_DIR)/test_private.pem
+LOADTEST_PUBLIC_KEY = $(LOADTEST_KEYS_DIR)/test_public.pem
+
+loadtest-keys: ## Generate RSA keypair for load testing
+	cd $(LOADTEST_DIR) && python -m common.auth generate-keys
+
+loadtest: ## Run Locust load test with web UI (auto-starts server if needed)
+	@STARTED_SERVER=0; \
+	if ! curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
+		echo "Starting backend in load test mode on port $(SERVER_PORT)..."; \
+		(cd $(SERVER_DIR) && \
+			ODYSSEY_LOADTEST_PUBLIC_KEY_PATH=loadtests/keys/test_public.pem \
+			ODYSSEY_LOADTEST_DISABLE_RATELIMIT=1 \
+			cargo run) & \
+		SERVER_PID=$$!; \
+		STARTED_SERVER=1; \
+		echo "Waiting for backend (PID $$SERVER_PID)..."; \
+		for i in $$(seq 1 30); do \
+			if curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
+				echo "Backend ready on http://localhost:$(SERVER_PORT)"; \
+				break; \
+			fi; \
+			if [ $$i -eq 30 ]; then \
+				echo "ERROR: Backend failed to start within 30s"; \
+				kill $$SERVER_PID 2>/dev/null; \
+				exit 1; \
+			fi; \
+			sleep 1; \
+		done; \
+	else \
+		echo "Backend already running on port $(SERVER_PORT)"; \
+	fi; \
+	trap 'echo "\nStopping..."; if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; echo "Stopped backend"; fi; exit 0' INT TERM; \
+	echo "Starting Locust web UI at http://localhost:8089 ..."; \
+	cd $(LOADTEST_DIR) && locust -f locustfile.py --host http://localhost:$(SERVER_PORT); \
+	if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; fi
+
+loadtest-headless: ## Run headless Locust load test (100 users, 10/s spawn, 60s)
+	@STARTED_SERVER=0; \
+	if ! curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
+		echo "Starting backend in load test mode on port $(SERVER_PORT)..."; \
+		(cd $(SERVER_DIR) && \
+			ODYSSEY_LOADTEST_PUBLIC_KEY_PATH=loadtests/keys/test_public.pem \
+			ODYSSEY_LOADTEST_DISABLE_RATELIMIT=1 \
+			cargo run) & \
+		SERVER_PID=$$!; \
+		STARTED_SERVER=1; \
+		echo "Waiting for backend (PID $$SERVER_PID)..."; \
+		for i in $$(seq 1 30); do \
+			if curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
+				echo "Backend ready on http://localhost:$(SERVER_PORT)"; \
+				break; \
+			fi; \
+			if [ $$i -eq 30 ]; then \
+				echo "ERROR: Backend failed to start within 30s"; \
+				kill $$SERVER_PID 2>/dev/null; \
+				exit 1; \
+			fi; \
+			sleep 1; \
+		done; \
+	else \
+		echo "Backend already running on port $(SERVER_PORT)"; \
+	fi; \
+	trap 'if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; fi; exit 0' INT TERM; \
+	cd $(LOADTEST_DIR) && locust -f locustfile.py \
+		--host http://localhost:$(SERVER_PORT) \
+		--headless -u 100 -r 10 -t 60s; \
+	if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; echo "Stopped backend"; fi
