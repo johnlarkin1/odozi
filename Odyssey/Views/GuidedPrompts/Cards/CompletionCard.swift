@@ -4,12 +4,15 @@ struct CompletionCard: View {
     var entryDate: Date?
     var locationDisplay: String?
     var unlockedAchievements: [Achievement] = []
+    var isGeneratingInsight: Bool = false
+    var insight: JournalInsightResult?
     let onDismiss: () -> Void
 
     @State private var showCheckmark = false
     @State private var showMessage = false
     @State private var showAchievement = false
     @State private var showButton = false
+    @State private var showInsight = false
 
     var body: some View {
         ZStack {
@@ -58,6 +61,57 @@ struct CompletionCard: View {
                     .transition(.scale.combined(with: .opacity))
                 }
 
+                if isGeneratingInsight && insight == nil {
+                    VStack(spacing: 8) {
+                        ProgressView()
+                            .tint(.secondary)
+                        Text("Reflecting on your entry...")
+                            .font(.subheadline)
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.top, 8)
+                }
+
+                if showInsight, let insight {
+                    VStack(spacing: 16) {
+                        HStack(spacing: 6) {
+                            Image(systemName: "sparkles")
+                                .font(.caption)
+                            Text(insight.detectedEmotion)
+                                .font(.caption.weight(.semibold))
+                        }
+                        .foregroundStyle(Color.cosmicPurple)
+                        .padding(.horizontal, 12)
+                        .padding(.vertical, 6)
+                        .background(Color.cosmicPurple.opacity(0.15), in: Capsule())
+
+                        Text(insight.encouragement)
+                            .font(.body)
+                            .foregroundStyle(.white)
+                            .multilineTextAlignment(.center)
+
+                        Text(insight.followUpQuestion)
+                            .font(.subheadline)
+                            .italic()
+                            .foregroundStyle(Color.accentTeal)
+                            .multilineTextAlignment(.center)
+
+                        HStack(spacing: 6) {
+                            Image(systemName: "lightbulb.fill")
+                                .foregroundStyle(Color.accentAmber)
+                                .font(.caption)
+                            Text(insight.suggestion)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        .multilineTextAlignment(.leading)
+                    }
+                    .padding(20)
+                    .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 16))
+                    .padding(.horizontal, 24)
+                    .transition(.opacity.combined(with: .move(edge: .bottom)))
+                }
+
                 Spacer()
 
                 if showButton {
@@ -91,6 +145,12 @@ struct CompletionCard: View {
             }
             withAnimation(.easeInOut(duration: 0.4).delay(hasAchievements ? 2.0 : 1.2)) {
                 showButton = true
+            }
+        }
+        .onChange(of: insight?.detectedEmotion) {
+            guard insight != nil else { return }
+            withAnimation(.easeInOut(duration: 0.5)) {
+                showInsight = true
             }
         }
     }

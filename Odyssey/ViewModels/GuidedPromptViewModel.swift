@@ -19,6 +19,8 @@ final class GuidedPromptViewModel {
     var locationCapturedAt: Date?
     var locationErrorMessage: String?
     var locationPermissionDenied = false
+    var isGeneratingInsight = false
+    var insight: JournalInsightResult?
 
     private let modelContext: ModelContext
     let targetDate: Date
@@ -178,6 +180,40 @@ final class GuidedPromptViewModel {
 
         isComplete = true
         showingCompletion = true
+
+        if UserDefaults.standard.bool(forKey: "aiReflectionsEnabled")
+            && FoundationModelsAvailability.isAvailable {
+            generateInsight()
+        }
+    }
+
+    private func generateInsight() {
+        isGeneratingInsight = true
+        let responses = self.responses
+        Task {
+            let result = await JournalInsightService.generateInsight(from: responses)
+            self.isGeneratingInsight = false
+            if let result {
+                self.insight = result
+                cacheInsightJSON(result)
+            }
+        }
+    }
+
+    private func cacheInsightJSON(_ result: JournalInsightResult) {
+        let repository = DailyEntryRepository(context: modelContext)
+        guard let entry = try? repository.fetchOrCreateToday() else { return }
+        let dict: [String: String] = [
+            "followUpQuestion": result.followUpQuestion,
+            "detectedEmotion": result.detectedEmotion,
+            "encouragement": result.encouragement,
+            "suggestion": result.suggestion
+        ]
+        if let data = try? JSONSerialization.data(withJSONObject: dict),
+           let json = String(data: data, encoding: .utf8) {
+            entry.aiReflectionJSON = json
+            try? modelContext.save()
+        }
     }
 
     func loadCurrentLocation() {
