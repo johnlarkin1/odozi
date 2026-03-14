@@ -83,6 +83,11 @@ enum NotificationService {
         scheduleReminder(timeOfDay: timeOfDay, customHour: customHour, customMinute: customMinute)
     }
 
+    static func registerAllCategories() {
+        let digestCategory = WeeklyDigestNotificationManager.registerCategory()
+        UNUserNotificationCenter.current().setNotificationCategories([digestCategory])
+    }
+
     static func cancelTodaysPendingReminder() {
         // Remove the pending notification so the user isn't reminded after they already journaled
         UNUserNotificationCenter.current()
