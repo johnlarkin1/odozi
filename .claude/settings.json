@@ -1,7 +1,39 @@
 {
   "permissions": {
     "allow": [
-      "Bash(xcodebuild:*)"
+      "Bash(xcodebuild:*)",
+      "Bash(xargs ls:*)",
+      "Bash(wc:*)",
+      "Bash(xargs cat:*)",
+      "Bash(xcrun simctl:*)",
+      "Skill(generate-pr)",
+      "Bash(make run:*)",
+      "Bash(find:*)",
+      "Bash(python3:*)",
+      "Bash(gh pr:*)",
+      "WebSearch",
+      "WebFetch(domain:clerk.com)",
+      "WebFetch(domain:clerk.github.io)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:swiftpackageindex.com)",
+      "WebFetch(domain:swiftpackageregistry.com)",
+      "WebFetch(domain:developers.cloudflare.com)",
+      "Bash(git ls-tree:*)",
+      "Bash(git diff-tree:*)",
+      "Skill(code-review:code-review)",
+      "Skill(code-review:code-review)",
+      "Bash(gh api:*)",
+      "mcp__plugin_github_github__pull_request_read",
+      "mcp__plugin_github_github__get_file_contents",
+      "mcp__plugin_github_github__list_branches",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(make build:*)",
+      "mcp__plugin_github_github__issue_write",
+      "Bash(ls:*)",
+      "WebFetch(domain:medium.com)",
+      "WebFetch(domain:crunchybagel.com)",
+      "Bash(bundle exec:*)"
     ]
   },
   "env": {

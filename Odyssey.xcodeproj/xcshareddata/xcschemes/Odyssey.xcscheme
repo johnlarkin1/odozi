@@ -38,6 +38,16 @@
                ReferencedContainer = "container:Odyssey.xcodeproj">
             </BuildableReference>
          </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "5FAFBC242B49E1A80018504E"
+               BuildableName = "OdysseyUITests.xctest"
+               BlueprintName = "OdysseyUITests"
+               ReferencedContainer = "container:Odyssey.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
    </TestAction>
    <LaunchAction

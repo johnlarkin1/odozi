@@ -111,5 +111,6 @@ website/.next/
 website/out/
 
 .claude/worktrees
-
+.claude/claude.settings.json
 docs/MATCH_FASTLANE_INFO.md
+
