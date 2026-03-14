@@ -72,8 +72,12 @@ struct DataContainer {
     #if DEBUG
     @MainActor
     static func previewContainer() throws -> ModelContainer {
+        try createSeededContainer()
+    }
+
+    static func createSeededContainer() throws -> ModelContainer {
         let container = try create(inMemory: true)
-        let context = container.mainContext
+        let context = ModelContext(container)
         for entry in SampleData.entries {
             context.insert(entry)
         }

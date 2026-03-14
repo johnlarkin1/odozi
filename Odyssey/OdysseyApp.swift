@@ -21,17 +21,34 @@ struct OdysseyApp: App {
     let container: ModelContainer?
     let containerError: Error?
 
+    static var isScreenshotMode: Bool {
+        ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] != nil
+    }
+
     init() {
         if let key = ClerkConfiguration.publishableKey,
-           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
+           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil,
+           !Self.isScreenshotMode {
             Clerk.configure(publishableKey: key)
             AuthManager.clerkConfigured = true
         }
 
         do {
+            #if DEBUG
+            let c = if Self.isScreenshotMode {
+                try DataContainer.createSeededContainer()
+            } else {
+                try DataContainer.create()
+            }
+            #else
             let c = try DataContainer.create()
+            #endif
             container = c
             containerError = nil
+
+            if Self.isScreenshotMode {
+                UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
+            }
 
             // Skip onboarding for returning users (existing entries = already using the app)
             if !UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {

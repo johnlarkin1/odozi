@@ -28,6 +28,17 @@ struct SampleData {
                 "Helped a colleague"
             ]
 
+            // Ohio city coordinates with tight offsets to keep pins on land
+            let locations: [(lat: Double, lng: Double, city: String)] = [
+                (39.9612, -82.9988, "Columbus"),
+                (41.4993, -81.6944, "Cleveland"),
+                (39.1031, -84.5120, "Cincinnati"),
+                (40.7989, -81.3784, "Canton"),
+                (39.7589, -84.1916, "Dayton"),
+                (41.6528, -83.5379, "Toledo"),
+            ]
+            let loc = locations[daysAgo % locations.count]
+
             return DailyEntry(
                 date: date,
                 feeling: feeling,
@@ -39,10 +50,10 @@ struct SampleData {
                 tension: daysAgo % 3 == 0 ? "Work deadline stress" : "",
                 journalEntry: daysAgo % 2 == 0 ? "Today was a good day overall. I felt productive and connected." : "",
                 drinks: Int.random(in: 0...3),
-                latitude: 41.8781 + Double.random(in: -0.5...0.5),
-                longitude: -87.6298 + Double.random(in: -0.5...0.5),
-                city: ["Chicago", "Evanston", "Oak Park", "Naperville"].randomElement()!,
-                state: "IL",
+                latitude: loc.lat + Double.random(in: -0.05...0.05),
+                longitude: loc.lng + Double.random(in: -0.05...0.05),
+                city: loc.city,
+                state: "OH",
                 country: "US",
                 stepCount: Int.random(in: 3000...15000),
                 walkingDistanceMeters: Double.random(in: 2000...12000),
