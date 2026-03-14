@@ -16,6 +16,7 @@ use axum::extract::DefaultBodyLimit;
 use axum::http::{HeaderValue, Method, header};
 use axum::middleware;
 use axum::{Json, Router, routing::get};
+use jsonwebtoken::DecodingKey;
 use serde_json::json;
 use sqlx::PgPool;
 use tokio::net::TcpListener;
@@ -32,6 +33,7 @@ pub struct AppState {
     pub db: PgPool,
     pub jwks: Arc<JwksCache>,
     pub config: Config,
+    pub loadtest_key: Option<DecodingKey>,
 }
 
 async fn health() -> Json<serde_json::Value> {
@@ -60,13 +62,27 @@ async fn main() {
 
     let jwks = Arc::new(JwksCache::new(&config.clerk_jwks_url));
 
+    let loadtest_key = if let Some(ref path) = config.loadtest_public_key_path {
+        let pem = std::fs::read(path).expect("Failed to read loadtest public key PEM file");
+        let key = DecodingKey::from_rsa_pem(&pem).expect("Invalid RSA PEM for loadtest key");
+        tracing::warn!("LOAD TEST MODE ACTIVE — accepting tokens signed with {path}");
+        Some(key)
+    } else {
+        None
+    };
+
+    if config.loadtest_disable_ratelimit {
+        tracing::warn!("LOAD TEST MODE — rate limiting is DISABLED");
+    }
+
+    let limiter = RateLimiter::new(!config.loadtest_disable_ratelimit);
+
     let state = AppState {
         db: pool,
         jwks,
         config,
+        loadtest_key,
     };
-
-    let limiter = RateLimiter::new();
 
     let cors = CorsLayer::new()
         .allow_origin(AllowOrigin::predicate(|origin: &HeaderValue, _| {

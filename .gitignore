@@ -114,3 +114,7 @@ website/out/
 .claude/claude.settings.json
 docs/MATCH_FASTLANE_INFO.md
 
+# Load test keys
+odyssey-server/loadtests/keys/*.pem
+
+**/*__pycache*

@@ -19,12 +19,14 @@ struct RateLimitEntry {
 #[derive(Clone)]
 pub struct RateLimiter {
     state: Arc<Mutex<HashMap<String, RateLimitEntry>>>,
+    enabled: bool,
 }
 
 impl RateLimiter {
-    pub fn new() -> Self {
+    pub fn new(enabled: bool) -> Self {
         Self {
             state: Arc::new(Mutex::new(HashMap::new())),
+            enabled,
         }
     }
 }
@@ -49,6 +51,10 @@ pub async fn rate_limit_middleware(
     request: axum::extract::Request,
     next: Next,
 ) -> Response {
+    if !limiter.enabled {
+        return next.run(request).await;
+    }
+
     let key = extract_client_ip(&request);
     let now = Instant::now();
     let window = std::time::Duration::from_secs(WINDOW_SECS);

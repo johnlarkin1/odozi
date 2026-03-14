@@ -103,6 +103,20 @@ fn decode_token(key: &JwkKey, token: &str, expected_audience: Option<&str>) -> R
     Ok(data.claims)
 }
 
+fn decode_with_key(
+    key: &DecodingKey,
+    token: &str,
+) -> Result<Claims, AppError> {
+    let mut validation = Validation::new(Algorithm::RS256);
+    validation.validate_aud = false;
+    validation.required_spec_claims = std::collections::HashSet::new();
+
+    let data = decode::<Claims>(token, key, &validation)
+        .map_err(|e| AppError::Unauthorized(format!("Invalid load test token: {e}")))?;
+
+    Ok(data.claims)
+}
+
 impl FromRequestParts<AppState> for AuthUser {
     type Rejection = AppError;
 
@@ -123,6 +137,15 @@ impl FromRequestParts<AppState> for AuthUser {
         }
 
         let token = &auth_header[7..];
+
+        // Load test bypass: if a loadtest key is configured, validate against it directly
+        if let Some(ref loadtest_key) = state.loadtest_key {
+            let claims = decode_with_key(loadtest_key, token)?;
+            let user_id = claims
+                .sub
+                .ok_or_else(|| AppError::Unauthorized("JWT missing sub claim".to_string()))?;
+            return Ok(AuthUser { user_id });
+        }
 
         // Extract kid from token header
         let header = jsonwebtoken::decode_header(token)
