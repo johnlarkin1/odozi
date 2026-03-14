@@ -6,6 +6,8 @@ import SwiftData
 final class InsightsViewModel {
     var entries: [DailyEntry] = []
     var dateRange: DateRange = .month
+    var achievementUnlockedCount: Int = 0
+    var achievementTotalCount: Int = 0
 
     private let modelContext: ModelContext
 
@@ -35,28 +37,7 @@ final class InsightsViewModel {
     }
 
     var longestStreak: Int {
-        let sorted = entries.filter { $0.hasPromptData }.sorted { $0.date < $1.date }
-        let calendar = Calendar.current
-        var longest = 0
-        var current = 0
-        var lastDate: Date?
-
-        for entry in sorted {
-            let entryDate = calendar.startOfDay(for: entry.date)
-            if let last = lastDate {
-                let daysBetween = calendar.dateComponents([.day], from: last, to: entryDate).day ?? 0
-                if daysBetween == 1 {
-                    current += 1
-                } else {
-                    current = 1
-                }
-            } else {
-                current = 1
-            }
-            longest = max(longest, current)
-            lastDate = entryDate
-        }
-        return longest
+        entries.longestStreak
     }
 
     var topFeelingWords: [(word: String, count: Int)] {
@@ -144,5 +125,12 @@ final class InsightsViewModel {
             sortBy: [SortDescriptor(\.date, order: .reverse)]
         )
         entries = (try? modelContext.fetch(descriptor)) ?? []
+        loadAchievements()
+    }
+
+    func loadAchievements() {
+        let service = AchievementService(modelContext: modelContext)
+        achievementUnlockedCount = service.unlockedCount()
+        achievementTotalCount = service.totalCount()
     }
 }

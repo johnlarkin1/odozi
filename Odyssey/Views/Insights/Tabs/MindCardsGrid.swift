@@ -17,6 +17,7 @@ struct MindCardsGrid: View {
             feelingWordsCard
             colorPaletteCard
             streaksCard
+            achievementsCard
         }
     }
 
@@ -62,6 +63,22 @@ struct MindCardsGrid: View {
                             .fill(Color(hex: hex))
                             .frame(width: 20, height: 20)
                     }
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    private var achievementsCard: some View {
+        NavigationLink(destination: AchievementGalleryView()) {
+            InsightCard(title: "Achievements", icon: "trophy.fill", color: .cosmicPurple) {
+                HStack(spacing: 4) {
+                    Text("\(viewModel.achievementUnlockedCount)")
+                        .font(.title2.bold())
+                        .fontDesign(.rounded)
+                    Text("/ \(viewModel.achievementTotalCount)")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
         }
