@@ -11,7 +11,7 @@ platform :ios do
     scan(
       project: "Odyssey.xcodeproj",
       scheme: "Odyssey",
-      devices: ["iPhone 16"],
+      devices: ["iPhone 16 Pro Max"],
       code_coverage: true,
       result_bundle: true
     )
@@ -24,6 +24,51 @@ platform :ios do
       strict: true,
       reporter: "github-actions-logging"
     )
+  end
+
+  # ──────────────────────────────────────────────
+  # Screenshots
+  # ──────────────────────────────────────────────
+
+  desc "Capture App Store screenshots"
+  lane :screenshots do
+    setup_xcconfig
+    capture_screenshots(
+      scheme: "Odyssey",
+      devices: ["iPhone 16 Pro Max"],
+      languages: ["en-US"],
+      output_directory: "./screenshots",
+      clear_previous_screenshots: true,
+      override_status_bar: true,
+      stop_after_first_error: true,
+      skip_open_summary: true,
+      only_testing: ["OdysseyUITests/AppStoreScreenshotTests"]
+    )
+
+    # Generate HTML gallery (fastlane's built-in one doesn't support iPhone 16)
+    screenshots_dir = File.expand_path("../screenshots/en-US")
+    images = Dir[File.join(screenshots_dir, "*.png")].sort.map { |f| File.basename(f) }
+    html = <<~HTML
+      <!DOCTYPE html>
+      <html><head>
+        <title>Odyssey App Store Screenshots</title>
+        <style>
+          body { background: #1a1a2e; color: #eee; font-family: -apple-system, sans-serif; text-align: center; padding: 40px 20px; }
+          h1 { color: #F5A623; }
+          .grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 24px; margin-top: 32px; }
+          .card { background: #16213e; border-radius: 16px; padding: 16px; }
+          .card img { height: 500px; border-radius: 8px; }
+          .card p { margin-top: 8px; font-size: 14px; color: #aaa; }
+        </style>
+      </head><body>
+        <h1>Odyssey — App Store Screenshots</h1>
+        <p>#{images.length} screenshots captured on #{Time.now.strftime('%B %d, %Y')}</p>
+        <div class="grid">
+          #{images.map { |f| "<div class='card'><img src='en-US/#{f}' /><p>#{f.sub(/^iPhone \\d+ ?\\w*-/, '').sub('.png', '')}</p></div>" }.join("\n      ")}
+        </div>
+      </body></html>
+    HTML
+    File.write("../screenshots/screenshots.html", html)
   end
 
   # ──────────────────────────────────────────────

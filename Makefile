@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -162,6 +162,9 @@ match-development: ## Sync development signing certificates
 match-force-local: ## Force-regenerate App Store profiles from local machine (loads .env.local)
 	@if [ -f .env.local ]; then set -a; . ./.env.local; set +a; fi; \
 	bundle exec fastlane match appstore --force
+
+screenshots: ## Capture App Store screenshots via Fastlane
+	bundle exec fastlane screenshots
 
 website-install: ## Install website dependencies
 	cd website && npm install
