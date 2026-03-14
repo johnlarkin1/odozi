@@ -74,6 +74,8 @@
 		5FAFBC202B49E1A80018504E /* OdysseyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC1F2B49E1A80018504E /* OdysseyTests.swift */; };
 		5FAFBC2A2B49E1A80018504E /* OdysseyUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC292B49E1A80018504E /* OdysseyUITests.swift */; };
 		5FAFBC2C2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */; };
+		AA00000000000001SCREEN01 /* AppStoreScreenshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000002SCREEN02 /* AppStoreScreenshotTests.swift */; };
+		AA00000000000003SCREEN03 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000004SCREEN04 /* SnapshotHelper.swift */; };
 		5FAFBC482B49F70B0018504E /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC472B49F70B0018504E /* LottieView.swift */; };
 		5FC58CD194D220AFA863E3D8 /* JournalEntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2602055E4D1CCA4D9E95B851 /* JournalEntryDetailView.swift */; };
 		5FF8E9E02F54E7A3007B9C1A /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5FF8E9E12F54E7A3007B9C1A /* ClerkKit */; };
@@ -314,6 +316,8 @@
 		5FAFBC252B49E1A80018504E /* OdysseyUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = OdysseyUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		5FAFBC292B49E1A80018504E /* OdysseyUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyUITests.swift; sourceTree = "<group>"; };
 		5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OdysseyUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		AA00000000000002SCREEN02 /* AppStoreScreenshotTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStoreScreenshotTests.swift; sourceTree = "<group>"; };
+		AA00000000000004SCREEN04 /* SnapshotHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SnapshotHelper.swift; sourceTree = "<group>"; };
 		5FAFBC472B49F70B0018504E /* LottieView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LottieView.swift; sourceTree = "<group>"; };
 		62784F5EB2C1B4B1DBBA14FC /* OverviewTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OverviewTabView.swift; sourceTree = "<group>"; };
 		638F8D021F793E5A525CF7AB /* SharedDefaults.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedDefaults.swift; sourceTree = "<group>"; };
@@ -727,6 +731,8 @@
 			children = (
 				5FAFBC292B49E1A80018504E /* OdysseyUITests.swift */,
 				5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */,
+				AA00000000000002SCREEN02 /* AppStoreScreenshotTests.swift */,
+				AA00000000000004SCREEN04 /* SnapshotHelper.swift */,
 			);
 			path = OdysseyUITests;
 			sourceTree = "<group>";
@@ -1299,6 +1305,8 @@
 			files = (
 				5FAFBC2A2B49E1A80018504E /* OdysseyUITests.swift in Sources */,
 				5FAFBC2C2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift in Sources */,
+				AA00000000000001SCREEN01 /* AppStoreScreenshotTests.swift in Sources */,
+				AA00000000000003SCREEN03 /* SnapshotHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
