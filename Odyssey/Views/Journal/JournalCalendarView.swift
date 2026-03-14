@@ -109,6 +109,6 @@ struct JournalCalendarView: View {
     }
 
     private func entryFor(_ date: Date) -> DailyEntry? {
-        entries.first { Calendar.current.isDate($0.date, inSameDayAs: date) }
+        entries.first { $0.hasPromptData && Calendar.current.isDate($0.date, inSameDayAs: date) }
     }
 }

@@ -19,44 +19,52 @@ enum NotificationService {
     }
 
     static func scheduleReminder(timeOfDay: ReminderTimeOfDay, customHour: Int = 20, customMinute: Int = 0) {
-        let center = UNUserNotificationCenter.current()
-        center.removePendingNotificationRequests(withIdentifiers: [reminderID])
-
-        let content = UNMutableNotificationContent()
-        content.title = "Time to Journal"
-        content.body = timeOfDay.notificationBody
-        content.sound = .default
-
-        let hour: Int
-        let minute: Int
-        if timeOfDay == .custom {
-            hour = customHour
-            minute = customMinute
-        } else {
-            hour = timeOfDay.hour
-            minute = 0
-        }
-
-        var dateComponents = DateComponents()
-        dateComponents.hour = hour
-        dateComponents.minute = minute
-
-        let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
-        let request = UNNotificationRequest(identifier: reminderID, content: content, trigger: trigger)
-
-        center.add(request) { error in
-            if let error {
-                logger.error("Failed to schedule reminder: \(error)")
-            } else {
-                logger.info("Scheduled daily reminder at \(hour):\(minute)")
-            }
-        }
-
-        // Persist preference
+        // Persist preference immediately
         UserDefaults.standard.set(true, forKey: "reminderEnabled")
         UserDefaults.standard.set(timeOfDay.rawValue, forKey: "reminderTimeOfDay")
         UserDefaults.standard.set(customHour, forKey: "reminderCustomHour")
         UserDefaults.standard.set(customMinute, forKey: "reminderCustomMinute")
+
+        // Request authorization then schedule inside a Task
+        Task {
+            let granted = await requestAuthorization()
+            guard granted else {
+                logger.warning("Notification permission not granted — reminder not scheduled")
+                return
+            }
+
+            let center = UNUserNotificationCenter.current()
+            center.removePendingNotificationRequests(withIdentifiers: [reminderID])
+
+            let content = UNMutableNotificationContent()
+            content.title = "Time to Journal"
+            content.body = timeOfDay.notificationBody
+            content.sound = .default
+
+            let hour: Int
+            let minute: Int
+            if timeOfDay == .custom {
+                hour = customHour
+                minute = customMinute
+            } else {
+                hour = timeOfDay.hour
+                minute = 0
+            }
+
+            var dateComponents = DateComponents()
+            dateComponents.hour = hour
+            dateComponents.minute = minute
+
+            let trigger = UNCalendarNotificationTrigger(dateMatching: dateComponents, repeats: true)
+            let request = UNNotificationRequest(identifier: reminderID, content: content, trigger: trigger)
+
+            do {
+                try await center.add(request)
+                logger.info("Scheduled daily reminder at \(hour):\(minute)")
+            } catch {
+                logger.error("Failed to schedule reminder: \(error)")
+            }
+        }
     }
 
     static func cancelReminder() {

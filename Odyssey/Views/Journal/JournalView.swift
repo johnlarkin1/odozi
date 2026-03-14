@@ -23,9 +23,9 @@ struct JournalView: View {
                         }
                         .listRowBackground(Color.cardSurface)
 
-                        // Entries list
+                        // Entries list — only show entries where the user actually journaled
                         Section("Entries") {
-                            let filtered = filteredEntries(vm.allEntries)
+                            let filtered = filteredEntries(vm.allEntries).filter { $0.hasPromptData }
                             if filtered.isEmpty {
                                 Text("No entries yet")
                                     .foregroundStyle(.secondary)

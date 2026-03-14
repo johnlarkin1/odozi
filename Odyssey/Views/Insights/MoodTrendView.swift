@@ -22,7 +22,7 @@ struct MoodTrendView: View {
                 // Chart
                 Chart {
                     if showMood {
-                        ForEach(entries, id: \.date) { entry in
+                        ForEach(moodEntries, id: \.date) { entry in
                             LineMark(
                                 x: .value("Date", entry.date),
                                 y: .value("Mood", entry.feeling),
@@ -32,15 +32,39 @@ struct MoodTrendView: View {
                             .interpolationMethod(.catmullRom)
                         }
 
+                        // Filled circles for completed entries, hollow for background-only
+                        ForEach(moodEntries, id: \.date) { entry in
+                            if entry.hasPromptData {
+                                PointMark(
+                                    x: .value("Date", entry.date),
+                                    y: .value("Mood", entry.feeling)
+                                )
+                                .foregroundStyle(Color.accentAmber)
+                                .symbolSize(30)
+                            } else {
+                                PointMark(
+                                    x: .value("Date", entry.date),
+                                    y: .value("Mood", entry.feeling)
+                                )
+                                .foregroundStyle(Color.cardSurface)
+                                .symbolSize(30)
+                                .annotation(position: .overlay) {
+                                    Circle()
+                                        .strokeBorder(Color.accentAmber, lineWidth: 1.5)
+                                        .frame(width: 6, height: 6)
+                                }
+                            }
+                        }
+
                         // Average line
-                        let avg = entries.isEmpty ? 0 : Double(entries.reduce(0) { $0 + $1.feeling }) / Double(entries.count)
+                        let avg = averageMood
                         RuleMark(y: .value("Avg Mood", avg))
                             .foregroundStyle(Color.accentAmber.opacity(0.4))
                             .lineStyle(StrokeStyle(dash: [5, 5]))
                     }
 
                     if showSleep {
-                        ForEach(entries, id: \.date) { entry in
+                        ForEach(sleepEntries, id: \.date) { entry in
                             LineMark(
                                 x: .value("Date", entry.date),
                                 y: .value("Sleep", entry.sleepQuality),
@@ -49,10 +73,33 @@ struct MoodTrendView: View {
                             .foregroundStyle(Color.accentTeal)
                             .interpolationMethod(.catmullRom)
                         }
+
+                        ForEach(sleepEntries, id: \.date) { entry in
+                            if entry.hasPromptData {
+                                PointMark(
+                                    x: .value("Date", entry.date),
+                                    y: .value("Sleep", entry.sleepQuality)
+                                )
+                                .foregroundStyle(Color.accentTeal)
+                                .symbolSize(30)
+                            } else {
+                                PointMark(
+                                    x: .value("Date", entry.date),
+                                    y: .value("Sleep", entry.sleepQuality)
+                                )
+                                .foregroundStyle(Color.cardSurface)
+                                .symbolSize(30)
+                                .annotation(position: .overlay) {
+                                    Circle()
+                                        .strokeBorder(Color.accentTeal, lineWidth: 1.5)
+                                        .frame(width: 6, height: 6)
+                                }
+                            }
+                        }
                     }
 
                     if showDrinks {
-                        ForEach(entries, id: \.date) { entry in
+                        ForEach(entries.filter { $0.hasPromptData }, id: \.date) { entry in
                             BarMark(
                                 x: .value("Date", entry.date),
                                 y: .value("Drinks", entry.drinks)
@@ -79,18 +126,24 @@ struct MoodTrendView: View {
         .cosmicBackground()
     }
 
+    /// All entries that have mood data (user-submitted entries only for averages, all for line continuity)
+    private var moodEntries: [DailyEntry] { entries }
+    private var sleepEntries: [DailyEntry] { entries }
+
     private var averageMood: Double {
-        guard !entries.isEmpty else { return 0 }
-        return Double(entries.reduce(0) { $0 + $1.feeling }) / Double(entries.count)
+        let valid = entries.filter { $0.hasPromptData }
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0) { $0 + $1.feeling }) / Double(valid.count)
     }
 
     private var averageSleep: Double {
-        guard !entries.isEmpty else { return 0 }
-        return Double(entries.reduce(0) { $0 + $1.sleepQuality }) / Double(entries.count)
+        let valid = entries.filter { $0.hasPromptData }
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0) { $0 + $1.sleepQuality }) / Double(valid.count)
     }
 
     private var totalDrinks: Int {
-        entries.reduce(0) { $0 + $1.drinks }
+        entries.filter { $0.hasPromptData }.reduce(0) { $0 + $1.drinks }
     }
 
     private func toggleChip(_ label: String, isOn: Binding<Bool>, color: Color) -> some View {
