@@ -77,6 +77,9 @@ struct TodayView: View {
                 viewModel?.checkForTodayEntry()
                 todayEntry = viewModel?.fetchTodayEntry()
             }
+            .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
+                showingGuidedFlow = true
+            }
             .onChange(of: showingGuidedFlow) { _, newValue in
                 if !newValue {
                     viewModel?.checkForTodayEntry()

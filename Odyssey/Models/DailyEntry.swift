@@ -4,6 +4,7 @@ import SwiftData
 extension Notification.Name {
     static let didSaveFirstEntry = Notification.Name("didSaveFirstEntry")
     static let screenTimeDidUpdate = Notification.Name("screenTimeDidUpdate")
+    static let openGuidedPrompt = Notification.Name("openGuidedPrompt")
 }
 
 @Model
