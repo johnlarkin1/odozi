@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { LockIcon, ShieldIcon, BanIcon } from "./Icons";
 
 const APP_STORE_URL = "https://apps.apple.com/app/odyssey-journal/id6743597741";
 
@@ -32,12 +33,12 @@ export function PrivacySection() {
           className="mt-10 grid gap-6 sm:grid-cols-3"
         >
           {[
-            { icon: "🔒", title: "Local-First", desc: "All data stored on your device by default" },
-            { icon: "🛡️", title: "E2E Encrypted", desc: "Optional cloud backup that only you can read" },
-            { icon: "🚫", title: "No Tracking", desc: "Zero analytics, zero ads, zero data sharing" },
+            { icon: <LockIcon className="text-success-green" />, title: "Local-First", desc: "All data stored on your device by default" },
+            { icon: <ShieldIcon className="text-success-green" />, title: "E2E Encrypted", desc: "Optional cloud backup that only you can read" },
+            { icon: <BanIcon className="text-success-green" />, title: "No Tracking", desc: "Zero analytics, zero ads, zero data sharing" },
           ].map((item) => (
             <div key={item.title} className="rounded-2xl border border-white/10 bg-card-surface/50 p-6">
-              <div className="text-3xl">{item.icon}</div>
+              <div>{item.icon}</div>
               <p className="mt-3 font-semibold text-star-white">{item.title}</p>
               <p className="mt-1 text-sm text-star-white/60">{item.desc}</p>
             </div>
@@ -64,9 +65,24 @@ export function FinalCTASection() {
               odyssey.
             </span>
           </h2>
-          <p className="mt-4 text-star-white/60">
+          <p className="mt-4 text-lg text-star-white/60">
             Free to download. No account required.
           </p>
+
+          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-star-white/50">
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-success-green" />
+              No account required
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-success-green" />
+              No ads, ever
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="inline-block h-1.5 w-1.5 rounded-full bg-success-green" />
+              No subscription
+            </span>
+          </div>
 
           <div className="mt-10">
             <a

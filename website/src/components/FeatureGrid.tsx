@@ -2,42 +2,60 @@
 
 import { motion } from "framer-motion";
 import { FeatureCard } from "./FeatureCard";
+import {
+  SmileIcon,
+  PaletteIcon,
+  MoonIcon,
+  HeartIcon,
+  TrophyIcon,
+  CloudLightningIcon,
+  PenLineIcon,
+  WineIcon,
+  MapPinIcon,
+  ActivityIcon,
+  SmartphoneIcon,
+  TrendingUpIcon,
+  CloudIcon,
+  FlameIcon,
+  MapIcon,
+  Link2Icon,
+} from "./Icons";
 
 const journalingSteps = [
-  { icon: "😊", title: "Mood", description: "Rate how you're feeling on a simple scale" },
-  { icon: "🎨", title: "Feeling", description: "Pick a word and color that match your emotion" },
-  { icon: "😴", title: "Sleep", description: "Log how well you slept last night" },
-  { icon: "🙏", title: "Gratitude", description: "Name something you're grateful for" },
-  { icon: "🏆", title: "Win", description: "Celebrate a small or big win today" },
-  { icon: "😤", title: "Tension", description: "Acknowledge what's weighing on you" },
-  { icon: "📝", title: "Journal", description: "Free-write whatever's on your mind" },
-  { icon: "🍷", title: "Drinks", description: "Track your alcohol consumption" },
+  { icon: <SmileIcon className="text-accent-amber" />, title: "Mood", description: "Rate how you're feeling on a simple scale" },
+  { icon: <PaletteIcon className="text-accent-amber" />, title: "Feeling", description: "Pick a word and color that match your emotion" },
+  { icon: <MoonIcon className="text-accent-amber" />, title: "Sleep", description: "Log how well you slept last night" },
+  { icon: <HeartIcon className="text-accent-amber" />, title: "Gratitude", description: "Name something you're grateful for" },
+  { icon: <TrophyIcon className="text-accent-amber" />, title: "Win", description: "Celebrate a small or big win today" },
+  { icon: <CloudLightningIcon className="text-accent-amber" />, title: "Tension", description: "Acknowledge what's weighing on you" },
+  { icon: <PenLineIcon className="text-accent-amber" />, title: "Journal", description: "Free-write whatever's on your mind" },
+  { icon: <WineIcon className="text-accent-amber" />, title: "Drinks", description: "Track your alcohol consumption" },
 ];
 
 const passiveCapture = [
   {
-    icon: "📍",
+    icon: <MapPinIcon className="text-accent-teal" />,
     title: "Location",
     description: "A single GPS snapshot, reverse-geocoded to city and state. No continuous tracking.",
   },
   {
-    icon: "🏃",
+    icon: <ActivityIcon className="text-accent-teal" />,
     title: "Health",
     description: "Steps, walking distance, and sleep analysis from HealthKit — with your permission.",
   },
   {
-    icon: "📱",
+    icon: <SmartphoneIcon className="text-accent-teal" />,
     title: "Screen Time",
     description: "Total screen time and pickups via the DeviceActivity framework.",
   },
 ];
 
 const insights = [
-  { icon: "📈", title: "Mood Trends", description: "Charts that show how your mood changes over weeks and months" },
-  { icon: "☁️", title: "Word Cloud", description: "Your most-used journal words, beautifully visualized" },
-  { icon: "🔥", title: "Streaks", description: "Build consistency with daily journaling streaks" },
-  { icon: "🗺️", title: "Journey Map", description: "Color-coded mood pins on a map of where you've been" },
-  { icon: "🔗", title: "Correlations", description: "See connections between sleep, steps, screen time, and mood" },
+  { icon: <TrendingUpIcon className="text-cosmic-purple" />, title: "Mood Trends", description: "Charts that show how your mood changes over weeks and months" },
+  { icon: <CloudIcon className="text-cosmic-purple" />, title: "Word Cloud", description: "Your most-used journal words, beautifully visualized" },
+  { icon: <FlameIcon className="text-cosmic-purple" />, title: "Streaks", description: "Build consistency with daily journaling streaks" },
+  { icon: <MapIcon className="text-cosmic-purple" />, title: "Journey Map", description: "Color-coded mood pins on a map of where you've been" },
+  { icon: <Link2Icon className="text-cosmic-purple" />, title: "Correlations", description: "See connections between sleep, steps, screen time, and mood" },
 ];
 
 export function GuidedJournalingSection() {
