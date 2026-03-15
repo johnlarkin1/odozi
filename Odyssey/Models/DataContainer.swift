@@ -75,13 +75,26 @@ struct DataContainer {
         try createSeededContainer()
     }
 
+    @MainActor
     static func createSeededContainer() throws -> ModelContainer {
         let container = try create(inMemory: true)
         let context = ModelContext(container)
-        for entry in SampleData.entries {
+        let entries = SampleData.entries
+        for entry in entries {
             context.insert(entry)
         }
         try context.save()
+
+        // Seed and evaluate achievements against sample data
+        let achievementService = AchievementService(modelContext: context)
+        achievementService.seedIfNeeded()
+        let unlocked = achievementService.evaluateAll(entries: entries, latestEntry: entries.first)
+        // Clear "new" indicator so the gallery looks settled
+        for achievement in unlocked {
+            achievement.isNew = false
+        }
+        try context.save()
+
         return container
     }
     #endif
