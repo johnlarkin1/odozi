@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { LogoMark } from "./Header";
 
 const APP_STORE_URL = "https://apps.apple.com/app/odyssey-journal/id6743597741";
 
@@ -10,7 +10,13 @@ export function Footer() {
         <div className="grid gap-8 sm:grid-cols-4">
           <div>
             <div className="flex items-center gap-2">
-              <LogoMark />
+              <Image
+                src="/app-icon.png"
+                alt="Odyssey app icon"
+                width={28}
+                height={28}
+                className="rounded-md"
+              />
               <p className="text-lg font-bold text-star-white">Odyssey</p>
             </div>
             <p className="mt-2 text-sm text-star-white/60">

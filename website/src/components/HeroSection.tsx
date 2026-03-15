@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import { motion } from "framer-motion";
 import { CosmicBackground } from "./CosmicBackground";
 
@@ -46,7 +47,7 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* iPhone mockup placeholder */}
+      {/* iPhone mockup with real screenshot */}
       <motion.div
         initial={{ opacity: 0, y: 50 }}
         animate={{ opacity: 1, y: 0 }}
@@ -54,11 +55,14 @@ export function HeroSection() {
         className="relative z-10 mt-16"
       >
         <div className="mx-auto h-[500px] w-[250px] rounded-[40px] border-2 border-white/10 bg-card-surface/50 p-3 shadow-2xl backdrop-blur-sm">
-          <div className="flex h-full w-full items-center justify-center rounded-[32px] bg-gradient-to-b from-cosmic-purple/20 to-deep-space">
-            <div className="text-center">
-              <div className="text-4xl">🌌</div>
-              <p className="mt-3 text-xs text-star-white/40">App Preview</p>
-            </div>
+          <div className="relative h-full w-full overflow-hidden rounded-[32px]">
+            <Image
+              src="/screenshots/today-tab.png"
+              alt="Odyssey app — Today tab showing daily greeting, mood check-in, and health stats"
+              fill
+              className="object-cover object-top"
+              priority
+            />
           </div>
         </div>
       </motion.div>

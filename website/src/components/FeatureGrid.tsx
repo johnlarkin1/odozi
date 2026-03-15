@@ -173,16 +173,17 @@ export function YearInReviewSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-12 grid gap-4 sm:grid-cols-3"
+          className="mt-12 flex justify-center"
         >
-          {["Mood Journey", "Top Feelings", "Streak Record"].map((label) => (
-            <div
-              key={label}
-              className="flex h-48 items-center justify-center rounded-2xl border border-white/10 bg-gradient-to-br from-cosmic-purple/20 to-nebula-pink/20"
-            >
-              <p className="text-sm text-star-white/40">{label}</p>
+          <div className="mx-auto h-[420px] w-[210px] rounded-[32px] border-2 border-white/10 bg-card-surface/50 p-2.5 shadow-2xl backdrop-blur-sm">
+            <div className="relative h-full w-full overflow-hidden rounded-[24px]">
+              <img
+                src="/screenshots/year-in-review.png"
+                alt="Odyssey Year in Review — Your 2026 Odyssey with animated globe"
+                className="h-full w-full object-cover object-top"
+              />
             </div>
-          ))}
+          </div>
         </motion.div>
       </div>
     </section>
