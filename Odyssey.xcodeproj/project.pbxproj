@@ -210,6 +210,7 @@
 		FA6C21484F83845F417763B0 /* CalendarHeatmapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A5E80FEF87628B3A56F7DDB /* CalendarHeatmapView.swift */; };
 		FB9339CF5117A006B134CC83 /* CompletionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = EF6477F0BFB8A770D8D6821B /* CompletionCard.swift */; };
 		FEB17F14CE86EBBB2FFB9F86 /* AchievementServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9FA75598AA98C8AD29BF5 /* AchievementServiceTests.swift */; };
+		854FAC25D34A186E2505F879 /* WidgetSnapshotTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF20F46E3D7F3982885ED619 /* WidgetSnapshotTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -389,6 +390,7 @@
 		85ACB266874D81294F8852CA /* ChartModePicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChartModePicker.swift; sourceTree = "<group>"; };
 		86BFC96DB01664F4F6CC1A2C /* ScatterCorrelationView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScatterCorrelationView.swift; sourceTree = "<group>"; };
 		88A9FA75598AA98C8AD29BF5 /* AchievementServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementServiceTests.swift; sourceTree = "<group>"; };
+		DF20F46E3D7F3982885ED619 /* WidgetSnapshotTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetSnapshotTests.swift; sourceTree = "<group>"; };
 		89424D2BCF94A65F2487A178 /* LogMoodIntent.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LogMoodIntent.swift; sourceTree = "<group>"; };
 		8A90B323B0F5900D138A2D16 /* BackgroundSnapshotService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackgroundSnapshotService.swift; sourceTree = "<group>"; };
 		8A923F6EEF4C408126C0DDEE /* AchievementBadgeCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeCell.swift; sourceTree = "<group>"; };
@@ -828,6 +830,7 @@
 				AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */,
 				DD26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift */,
 				88A9FA75598AA98C8AD29BF5 /* AchievementServiceTests.swift */,
+				DF20F46E3D7F3982885ED619 /* WidgetSnapshotTests.swift */,
 				D3F4701C9B4B5B7D8B94B3B5 /* WidgetDataAccessTests.swift */,
 				FF542CB95D8B38CD695E5F57 /* SharedDefaultsWidgetTests.swift */,
 			);
@@ -1472,6 +1475,7 @@
 				BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */,
 				CC26D7E8F0A1B2C3D4E5F6A7 /* KeychainServiceAuthTokenTests.swift in Sources */,
 				FEB17F14CE86EBBB2FFB9F86 /* AchievementServiceTests.swift in Sources */,
+				854FAC25D34A186E2505F879 /* WidgetSnapshotTests.swift in Sources */,
 				30521C15C7E1A17E147E1B9E /* WidgetDataAccessTests.swift in Sources */,
 				DDFBDFAA51A696FB3698FB0A /* SharedDefaultsWidgetTests.swift in Sources */,
 			);
