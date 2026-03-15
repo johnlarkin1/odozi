@@ -83,6 +83,18 @@ enum NotificationService {
         scheduleReminder(timeOfDay: timeOfDay, customHour: customHour, customMinute: customMinute)
     }
 
+    static func registerAllCategories() {
+        let center = UNUserNotificationCenter.current()
+        let digestCategory = WeeklyDigestNotificationManager.registerCategory()
+        // Fetch existing categories and merge so we never overwrite categories
+        // registered by other parts of the app or extensions.
+        center.getNotificationCategories { existing in
+            var merged = existing
+            merged.insert(digestCategory)
+            center.setNotificationCategories(merged)
+        }
+    }
+
     static func cancelTodaysPendingReminder() {
         // Remove the pending notification so the user isn't reminded after they already journaled
         UNUserNotificationCenter.current()

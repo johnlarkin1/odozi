@@ -23,6 +23,8 @@ struct ProfileView: View {
     @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
     @AppStorage("reminderCustomHour") private var reminderCustomHour = 20
     @AppStorage("reminderCustomMinute") private var reminderCustomMinute = 0
+    @AppStorage("weeklyDigestEnabled") private var weeklyDigestEnabled = false
+    @AppStorage("weeklyDigestWeekday") private var weeklyDigestWeekday = 1
     @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
     @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
     @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
@@ -127,6 +129,17 @@ struct ProfileView: View {
                                 .foregroundStyle(.secondary)
                         }
                     }
+
+                    NavigationLink {
+                        WeeklyDigestSettingsView()
+                    } label: {
+                        HStack {
+                            Label("Weekly Digest", systemImage: "calendar.badge.clock")
+                            Spacer()
+                            Text(weeklyDigestStatusText)
+                                .foregroundStyle(.secondary)
+                        }
+                    }
                 }
                 .listRowBackground(Color.cardSurface)
 
@@ -192,6 +205,18 @@ struct ProfileView: View {
             return formatTime(hour: locationCaptureHour, minute: locationCaptureMinute)
         }
         return mode.label
+    }
+
+    private static let weekdayShortNames = [
+        1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed",
+        5: "Thu", 6: "Fri", 7: "Sat"
+    ]
+
+    private var weeklyDigestStatusText: String {
+        if weeklyDigestEnabled {
+            return Self.weekdayShortNames[weeklyDigestWeekday] ?? "Sun"
+        }
+        return "Off"
     }
 
     private var reminderStatusText: String {

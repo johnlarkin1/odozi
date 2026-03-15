@@ -2,15 +2,20 @@ import Foundation
 import BackgroundTasks
 import UIKit
 import SwiftData
+import UserNotifications
 import os
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundTasks")
 
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(
         _ application: UIApplication,
         didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
+        // Register notification categories and delegate
+        NotificationService.registerAllCategories()
+        UNUserNotificationCenter.current().delegate = self
+
         // Register primary snapshot task (8 PM)
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.snapshot", using: nil) { task in
             guard let refreshTask = task as? BGAppRefreshTask else { return }
@@ -27,6 +32,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         scheduleProcessingTask()
 
         return true
+    }
+
+    // MARK: - UNUserNotificationCenterDelegate
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        didReceive response: UNNotificationResponse,
+        withCompletionHandler completionHandler: @escaping () -> Void
+    ) {
+        let categoryIdentifier = response.notification.request.content.categoryIdentifier
+
+        if categoryIdentifier == WeeklyDigestNotificationManager.categoryIdentifier {
+            switch response.actionIdentifier {
+            case "START_ENTRY":
+                NavigationState.shared.selectedTab = .today
+                NavigationState.shared.showGuidedPrompt = true
+            case "OPEN_INSIGHTS", UNNotificationDefaultActionIdentifier:
+                NavigationState.shared.selectedTab = .insights
+            default:
+                break
+            }
+        }
+
+        completionHandler()
+    }
+
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        completionHandler([.banner, .sound])
     }
 
     // MARK: - Primary: BGAppRefreshTask at 8 PM
