@@ -12,6 +12,7 @@ final class GuidedPromptViewModel {
     var skippedSteps: Set<PromptStep> = []
     var isComplete = false
     var showingCompletion = false
+    var newlyUnlockedAchievements: [Achievement] = []
     var isUpdatingLocation = false
     var currentLocationDisplay: String = "No location captured"
     var locationCapturedAt: Date?
@@ -104,6 +105,13 @@ final class GuidedPromptViewModel {
 
             try modelContext.save()
             NotificationCenter.default.post(name: .didSaveFirstEntry, object: nil)
+
+            let achievementService = AchievementService(modelContext: modelContext)
+            let allEntries = (try? modelContext.fetch(FetchDescriptor<DailyEntry>())) ?? []
+            let unlocked = achievementService.evaluateAll(entries: allEntries, latestEntry: entry)
+            if !unlocked.isEmpty {
+                newlyUnlockedAchievements = unlocked
+            }
         } catch {
             guidedPromptLogger.error("Failed to save guided prompt entry: \(error)")
         }

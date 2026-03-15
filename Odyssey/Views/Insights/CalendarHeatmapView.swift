@@ -51,7 +51,7 @@ struct CalendarHeatmapView: View {
             }
             .padding(.top, 16)
         }
-        .background(Color.black)
+        .cosmicBackground()
         .navigationTitle("Heatmap")
     }
 

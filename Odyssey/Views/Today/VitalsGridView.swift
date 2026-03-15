@@ -38,7 +38,7 @@ struct VitalsGridView: View {
             vitalCard(
                 icon: "flame.fill",
                 value: streak > 0 ? "\(streak)" : "--",
-                label: "Day Streak",
+                label: nextMilestoneLabel,
                 color: .accentAmber,
                 index: 3
             )
@@ -71,6 +71,17 @@ struct VitalsGridView: View {
             return entry.screenTimeFormatted
         }
         return "--"
+    }
+
+    private var nextMilestoneLabel: String {
+        let milestones = [3, 7, 14, 30, 60, 90, 180, 365]
+        if let next = milestones.first(where: { $0 > streak }) {
+            let remaining = next - streak
+            if remaining == 1 {
+                return "1 day to \(next)!"
+            }
+        }
+        return "Day Streak"
     }
 
     private func formatNumber(_ n: Int) -> String {

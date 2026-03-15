@@ -14,7 +14,7 @@ set -euo pipefail
 # ── Configuration ──────────────────────────────────────────────────────
 PROJECT="Odyssey.xcodeproj"
 SCHEME="Odyssey"
-DEFAULT_TESTS="OdysseyUITests/FeatureDemoTests"
+DEFAULT_TESTS="FeatureDemos"  # Marker: resolved to individual classes below
 OUTPUT_DIR="$(pwd)/build/demos"
 SIMULATOR_NAME="iPhone 16 Pro Max"
 ENV_FILE="$(pwd)/.env"
@@ -231,13 +231,67 @@ xcrun simctl io "$UDID" recordVideo --codec=h264 "$VIDEO_PATH" &
 RECORD_PID=$!
 sleep 1  # Give recorder time to initialize
 
+# ── Resolve test targets ─────────────────────────────────────────────
+# When --tests is not specified, try to find a demo matching the current branch.
+# For example, branch "feature-streaks-achievement" matches "StreaksAchievementsDemo.swift".
+# Falls back to running ALL demo classes if no match is found.
+ONLY_TESTING_FLAGS=()
+DEMO_DIR="$(pwd)/OdysseyUITests/FeatureDemos"
+
+if [[ "$TEST_TARGET" == "FeatureDemos" ]]; then
+    # Normalize branch name: remove common prefixes, convert to lowercase for matching
+    BRANCH_NORMALIZED=$(echo "$BRANCH" | sed -E 's/^(feature|feat|fix|bugfix)[/-]//' | tr '[:upper:]' '[:lower:]' | tr '-' ' ')
+
+    # Try to find a demo class whose filename (lowercased, without "Demo.swift") matches
+    MATCHED_CLASS=""
+    for file in "$DEMO_DIR"/*Demo.swift; do
+        [[ -f "$file" ]] || continue
+        classname=$(basename "$file" .swift)
+        # Skip the base class and full walkthrough (those aren't feature-specific)
+        [[ "$classname" == "FeatureDemoBase" || "$classname" == "FullWalkthroughDemo" ]] && continue
+        # Normalize the class name for comparison: remove "Demo" suffix, split on capitals
+        class_normalized=$(echo "$classname" | sed 's/Demo$//' | sed 's/\([a-z]\)\([A-Z]\)/\1 \2/g' | tr '[:upper:]' '[:lower:]')
+        # Check if all words from the class name appear in the branch name
+        # Use prefix matching (first 4+ chars) to handle singular/plural differences
+        all_match=true
+        for word in $class_normalized; do
+            prefix="${word:0:4}"
+            if ! echo "$BRANCH_NORMALIZED" | grep -qi "$prefix"; then
+                all_match=false
+                break
+            fi
+        done
+        if $all_match; then
+            MATCHED_CLASS="$classname"
+            break
+        fi
+    done
+
+    if [[ -n "$MATCHED_CLASS" ]]; then
+        ONLY_TESTING_FLAGS=(-only-testing:"OdysseyUITests/$MATCHED_CLASS")
+        info "Branch '$BRANCH' matched demo: $MATCHED_CLASS"
+    else
+        # No match — run all demo classes
+        while IFS= read -r classname; do
+            ONLY_TESTING_FLAGS+=(-only-testing:"OdysseyUITests/$classname")
+        done < <(grep -l 'class.*: FeatureDemoBase' "$DEMO_DIR"/*.swift 2>/dev/null \
+            | xargs -I{} basename {} .swift)
+        if [[ ${#ONLY_TESTING_FLAGS[@]} -eq 0 ]]; then
+            error "No demo classes found in $DEMO_DIR"
+        fi
+        info "No branch-specific demo found, running all: ${ONLY_TESTING_FLAGS[*]}"
+    fi
+else
+    ONLY_TESTING_FLAGS=(-only-testing:"$TEST_TARGET")
+    info "Running tests: $TEST_TARGET"
+fi
+
 # ── Run UI tests ──────────────────────────────────────────────────────
-info "Running tests: $TEST_TARGET"
 set +e
 xcodebuild -project "$PROJECT" -scheme "$SCHEME" \
     -destination "platform=iOS Simulator,id=$UDID" \
     -derivedDataPath build \
-    -only-testing:"$TEST_TARGET" \
+    "${ONLY_TESTING_FLAGS[@]}" \
     test-without-building 2>&1 | tail -20
 TEST_EXIT=$?
 set -e

@@ -16,6 +16,8 @@ struct OdysseyApp: App {
     @State private var syncService = SyncService()
     @State private var showBackupPrompt = false
     @State private var showRetentionAlert = false
+    @State private var showAchievementWelcome = false
+    @State private var retroactiveUnlockCount = 0
     @State private var oldEntryCount = 0
 
     let container: ModelContainer?
@@ -45,6 +47,11 @@ struct OdysseyApp: App {
             #endif
             container = c
             containerError = nil
+
+            // Seed achievements
+            let seedContext = ModelContext(c)
+            let achievementService = AchievementService(modelContext: seedContext)
+            achievementService.seedIfNeeded()
 
             if Self.isScreenshotMode {
                 UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
@@ -80,6 +87,7 @@ struct OdysseyApp: App {
                             .modelContainer(container)
                             .task {
                                 await authManager.initialize()
+                                performRetroactiveAchievementEvaluation()
                             }
                             .fullScreenCover(isPresented: $showBackupPrompt) {
                                 BackupPromptModal()
@@ -93,6 +101,12 @@ struct OdysseyApp: App {
                                     showBackupPrompt = true
                                     UserDefaults.standard.set(true, forKey: "hasSeenBackupPrompt")
                                 }
+                            }
+                            .sheet(isPresented: $showAchievementWelcome) {
+                                AchievementWelcomeSheet(unlockCount: retroactiveUnlockCount) {
+                                    showAchievementWelcome = false
+                                }
+                                .environment(\.colorScheme, .dark)
                             }
                             .alert("Clean Up Old Entries", isPresented: $showRetentionAlert) {
                                 Button("Delete \(oldEntryCount) Entries", role: .destructive) {
@@ -129,6 +143,36 @@ struct OdysseyApp: App {
                     }
                 }
             }
+        }
+    }
+
+    @MainActor
+    private func performRetroactiveAchievementEvaluation() {
+        guard let container else { return }
+        let key = "hasRunInitialAchievementEvaluation"
+        guard !UserDefaults.standard.bool(forKey: key) else { return }
+
+        let context = container.mainContext
+        let service = AchievementService(modelContext: context)
+        let entries = (try? context.fetch(FetchDescriptor<DailyEntry>())) ?? []
+
+        guard !entries.isEmpty else {
+            UserDefaults.standard.set(true, forKey: key)
+            return
+        }
+
+        let unlocked = service.evaluateAll(entries: entries, latestEntry: nil)
+        UserDefaults.standard.set(true, forKey: key)
+
+        if !unlocked.isEmpty {
+            // Suppress "new" indicator for retroactively earned badges
+            for achievement in unlocked {
+                achievement.isNew = false
+            }
+            try? context.save()
+
+            retroactiveUnlockCount = unlocked.count
+            showAchievementWelcome = true
         }
     }
 
@@ -174,6 +218,46 @@ struct OdysseyApp: App {
             oldEntryCount = count
             showRetentionAlert = true
         }
+    }
+}
+
+private struct AchievementWelcomeSheet: View {
+    let unlockCount: Int
+    let onDismiss: () -> Void
+
+    var body: some View {
+        VStack(spacing: 24) {
+            Spacer()
+
+            Image(systemName: "trophy.fill")
+                .font(.system(size: 64))
+                .foregroundStyle(Color.accentAmber)
+
+            Text("Welcome to Achievements!")
+                .font(.title.bold())
+                .foregroundStyle(.white)
+
+            Text("Based on your journaling history, you've already unlocked **\(unlockCount)** achievements. Check them out in Insights!")
+                .font(.body)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
+
+            Spacer()
+
+            Button(action: onDismiss) {
+                Text("View Gallery")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 16)
+                    .background(Color.accentAmber)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
+            }
+            .padding(.horizontal, 32)
+            .padding(.bottom, 40)
+        }
+        .background(Color.black.ignoresSafeArea())
     }
 }
 

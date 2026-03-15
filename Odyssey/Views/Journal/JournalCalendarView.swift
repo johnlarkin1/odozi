@@ -39,7 +39,7 @@ struct JournalCalendarView: View {
 
             // Day headers
             LazyVGrid(columns: columns, spacing: 8) {
-                ForEach(weekdays, id: \.self) { day in
+                ForEach(Array(weekdays.enumerated()), id: \.offset) { _, day in
                     Text(day)
                         .font(.caption2.weight(.medium))
                         .foregroundStyle(.secondary)

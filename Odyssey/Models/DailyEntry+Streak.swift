@@ -21,4 +21,50 @@ extension Array where Element == DailyEntry {
         }
         return streak
     }
+
+    var longestStreak: Int {
+        let sorted = self.filter { $0.hasPromptData }.sorted { $0.date < $1.date }
+        let calendar = Calendar.current
+        var longest = 0
+        var current = 0
+        var lastDate: Date?
+
+        for entry in sorted {
+            let entryDate = calendar.startOfDay(for: entry.date)
+            if let last = lastDate {
+                let daysBetween = calendar.dateComponents([.day], from: last, to: entryDate).day ?? 0
+                if daysBetween == 1 {
+                    current += 1
+                } else if daysBetween > 1 {
+                    current = 1
+                }
+            } else {
+                current = 1
+            }
+            longest = Swift.max(longest, current)
+            lastDate = entryDate
+        }
+        return longest
+    }
+
+    var totalJournalWordCount: Int {
+        self.filter { $0.hasPromptData }
+            .reduce(0) { $0 + $1.journalEntry.split(separator: " ").count }
+    }
+
+    var uniqueCityCount: Int {
+        Set(self.compactMap(\.city)).count
+    }
+
+    var uniqueCountryCount: Int {
+        Set(self.compactMap(\.country)).count
+    }
+
+    var uniqueFeelingColorCount: Int {
+        Set(self.map(\.feelingColorHex).filter { $0 != "#FFFFFF" }).count
+    }
+
+    var uniqueGratitudeCount: Int {
+        Set(self.map(\.gratitude).filter { !$0.isEmpty }).count
+    }
 }

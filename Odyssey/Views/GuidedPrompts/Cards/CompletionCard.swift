@@ -2,10 +2,12 @@ import SwiftUI
 
 struct CompletionCard: View {
     var locationDisplay: String?
+    var unlockedAchievements: [Achievement] = []
     let onDismiss: () -> Void
 
     @State private var showCheckmark = false
     @State private var showMessage = false
+    @State private var showAchievement = false
     @State private var showButton = false
 
     var body: some View {
@@ -41,6 +43,14 @@ struct CompletionCard: View {
                     .transition(.opacity)
                 }
 
+                if showAchievement, let top = unlockedAchievements.first {
+                    AchievementUnlockBanner(
+                        achievement: top,
+                        additionalCount: unlockedAchievements.count - 1
+                    )
+                    .transition(.scale.combined(with: .opacity))
+                }
+
                 Spacer()
 
                 if showButton {
@@ -60,13 +70,19 @@ struct CompletionCard: View {
             }
         }
         .onAppear {
+            let hasAchievements = !unlockedAchievements.isEmpty
             withAnimation(.spring(response: 0.6, dampingFraction: 0.7).delay(0.2)) {
                 showCheckmark = true
             }
             withAnimation(.easeInOut(duration: 0.5).delay(0.6)) {
                 showMessage = true
             }
-            withAnimation(.easeInOut(duration: 0.4).delay(1.2)) {
+            if hasAchievements {
+                withAnimation(.spring(response: 0.5, dampingFraction: 0.8).delay(1.5)) {
+                    showAchievement = true
+                }
+            }
+            withAnimation(.easeInOut(duration: 0.4).delay(hasAchievements ? 2.0 : 1.2)) {
                 showButton = true
             }
         }
