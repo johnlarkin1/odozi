@@ -190,6 +190,35 @@ export function ShieldIcon(props: IconProps) {
   );
 }
 
+export function AnchorIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M12 22V8" />
+      <path d="M5 12H2a10 10 0 0 0 20 0h-3" />
+      <circle cx="12" cy="5" r="3" />
+    </Icon>
+  );
+}
+
+export function CompassIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <circle cx="12" cy="12" r="10" />
+      <polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76" />
+    </Icon>
+  );
+}
+
+export function SailboatIcon(props: IconProps) {
+  return (
+    <Icon {...props}>
+      <path d="M22 18H2a4 4 0 0 0 4 4h12a4 4 0 0 0 4-4Z" />
+      <path d="M21 14 10 2 3 14" />
+      <path d="M10 2v16" />
+    </Icon>
+  );
+}
+
 export function BanIcon(props: IconProps) {
   return (
     <Icon {...props}>

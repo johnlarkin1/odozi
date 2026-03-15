@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { LockIcon, ShieldIcon, BanIcon } from "./Icons";
+import { AnchorIcon, ShieldIcon, BanIcon } from "./Icons";
 
 const APP_STORE_URL = "https://apps.apple.com/app/odyssey-journal/id6743597741";
 
@@ -16,8 +16,8 @@ export function PrivacySection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-3xl font-bold sm:text-4xl">
-            Your journal. Your data.{" "}
-            <span className="text-success-green">Period.</span>
+            A safe harbor for{" "}
+            <span className="text-success-green">your thoughts.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-star-white/60">
             Odyssey is local-first. Your entries live on your device. Optional cloud backup
@@ -33,7 +33,7 @@ export function PrivacySection() {
           className="mt-10 grid gap-6 sm:grid-cols-3"
         >
           {[
-            { icon: <LockIcon className="text-success-green" />, title: "Local-First", desc: "All data stored on your device by default" },
+            { icon: <AnchorIcon className="text-success-green" />, title: "Anchored Locally", desc: "All data stored on your device by default" },
             { icon: <ShieldIcon className="text-success-green" />, title: "E2E Encrypted", desc: "Optional cloud backup that only you can read" },
             { icon: <BanIcon className="text-success-green" />, title: "No Tracking", desc: "Zero analytics, zero ads, zero data sharing" },
           ].map((item) => (
@@ -51,8 +51,34 @@ export function PrivacySection() {
 
 export function FinalCTASection() {
   return (
-    <section className="relative px-6 py-32">
-      <div className="mx-auto max-w-3xl text-center">
+    <section className="relative overflow-hidden px-6 py-32">
+      {/* Horizon wave */}
+      <div className="pointer-events-none absolute inset-0" aria-hidden="true">
+        <svg
+          className="absolute bottom-0 left-0 w-full opacity-[0.08]"
+          viewBox="0 0 1440 200"
+          preserveAspectRatio="none"
+          fill="none"
+        >
+          <path
+            d="M0 100C360 40 720 160 1080 80C1260 40 1380 100 1440 100V200H0Z"
+            fill="url(#cta-wave)"
+          />
+          <path
+            d="M0 140C240 100 480 180 720 120C960 60 1200 160 1440 140V200H0Z"
+            fill="url(#cta-wave)"
+            opacity="0.5"
+          />
+          <defs>
+            <linearGradient id="cta-wave" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stopColor="#8C5CF5" />
+              <stop offset="50%" stopColor="#2EC4B6" />
+              <stop offset="100%" stopColor="#8C5CF5" />
+            </linearGradient>
+          </defs>
+        </svg>
+      </div>
+      <div className="relative mx-auto max-w-3xl text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -60,13 +86,13 @@ export function FinalCTASection() {
           transition={{ duration: 0.6 }}
         >
           <h2 className="text-4xl font-bold sm:text-5xl">
-            Begin your{" "}
+            Set sail on your{" "}
             <span className="bg-gradient-to-r from-accent-amber via-cosmic-purple to-accent-teal bg-clip-text text-transparent">
               odyssey.
             </span>
           </h2>
           <p className="mt-4 text-lg text-star-white/60">
-            Free to download. No account required.
+            Free to download. No account required. The horizon is waiting.
           </p>
 
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-star-white/50">

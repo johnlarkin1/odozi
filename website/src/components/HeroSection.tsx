@@ -28,8 +28,8 @@ export function HeroSection() {
         </p>
 
         <p className="mx-auto mt-4 max-w-lg text-base text-star-white/50">
-          A guided journaling app that captures your world — location, health,
-          screen time — and reveals patterns in your wellbeing.
+          A guided journaling app that charts your world — location, health,
+          screen time — and reveals constellations in your wellbeing.
         </p>
 
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

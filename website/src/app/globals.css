@@ -25,6 +25,29 @@ body {
   color: var(--color-star-white);
 }
 
+/* Twinkling stars */
+.star {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  border-radius: 50%;
+  background: var(--color-star-white);
+  opacity: 0.3;
+  animation: twinkle 4s ease-in-out infinite;
+}
+
+.star-bright {
+  width: 3px;
+  height: 3px;
+  opacity: 0.5;
+  box-shadow: 0 0 4px 1px rgba(237, 240, 250, 0.3);
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.7; }
+}
+
 /* Prose overrides for legal pages */
 .prose {
   --tw-prose-body: var(--color-star-white);

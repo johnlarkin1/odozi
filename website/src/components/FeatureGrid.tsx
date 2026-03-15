@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { FeatureCard } from "./FeatureCard";
+import { SectionStars } from "./CosmicBackground";
 import {
   SmileIcon,
   PaletteIcon,
@@ -61,6 +62,7 @@ const insights = [
 export function GuidedJournalingSection() {
   return (
     <section id="features" className="relative px-6 py-24">
+      <SectionStars />
       <div className="mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -71,7 +73,7 @@ export function GuidedJournalingSection() {
         >
           <h2 className="text-3xl font-bold sm:text-4xl">
             Eight gentle prompts.{" "}
-            <span className="text-accent-amber">One meaningful habit.</span>
+            <span className="text-accent-amber">One daily voyage.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-star-white/60">
             Odyssey guides you through a short daily check-in. Every step is skippable — no pressure, just presence.
@@ -91,6 +93,7 @@ export function GuidedJournalingSection() {
 export function PassiveCaptureSection() {
   return (
     <section className="relative px-6 py-24">
+      <SectionStars />
       <div className="mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -101,10 +104,10 @@ export function PassiveCaptureSection() {
         >
           <h2 className="text-3xl font-bold sm:text-4xl">
             While you journal,{" "}
-            <span className="text-accent-teal">Odyssey listens.</span>
+            <span className="text-accent-teal">Odyssey reads the stars.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-star-white/60">
-            Background data capture enriches your entries without any extra effort.
+            Background data capture charts the waters around you — no extra effort required.
           </p>
         </motion.div>
 
@@ -121,6 +124,7 @@ export function PassiveCaptureSection() {
 export function InsightsSection() {
   return (
     <section className="relative px-6 py-24">
+      <SectionStars />
       <div className="mx-auto max-w-6xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -130,11 +134,11 @@ export function InsightsSection() {
           className="text-center"
         >
           <h2 className="text-3xl font-bold sm:text-4xl">
-            Patterns{" "}
+            Constellations{" "}
             <span className="text-cosmic-purple">emerge.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-star-white/60">
-            Odyssey reveals connections between your mood, habits, and the world around you.
+            Like stars forming patterns in the night sky, Odyssey reveals connections between your mood, habits, and the world around you.
           </p>
         </motion.div>
 
@@ -163,8 +167,8 @@ export function YearInReviewSection() {
             <span className="text-nebula-pink">Wrapped.</span>
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-star-white/60">
-            A Spotify Wrapped-style year-in-review with shareable cards — your moods, streaks,
-            top feelings, and more, beautifully presented.
+            A Spotify Wrapped-style captain&apos;s log of your year — moods, streaks,
+            top feelings, and more, beautifully charted into shareable cards.
           </p>
         </motion.div>
 
