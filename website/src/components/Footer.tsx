@@ -23,7 +23,7 @@ export function Footer() {
               Your daily journey inward.
             </p>
             <p className="mt-3 text-xs text-star-white/40">
-              Made with care in Chicago.
+              Made with care in NYC.
             </p>
           </div>
 
@@ -42,8 +42,8 @@ export function Footer() {
 
           <div className="flex flex-col gap-2 text-sm">
             <p className="font-semibold text-star-white">Contact</p>
-            <a href="mailto:john@johnjlarkin.com" className="text-star-white/60 transition hover:text-accent-teal">
-              john@johnjlarkin.com
+            <a href="mailto:john@odozi.app" className="text-star-white/60 transition hover:text-accent-teal">
+              john@odozi.app
             </a>
           </div>
 

@@ -121,7 +121,7 @@ export default function TermsOfService() {
       <h2>13. Contact</h2>
       <p>
         If you have questions about these terms, please contact us at{" "}
-        <a href="mailto:john@johnjlarkin.com">john@johnjlarkin.com</a>.
+        <a href="mailto:john@odozi.app">john@odozi.app</a>.
       </p>
     </article>
   );

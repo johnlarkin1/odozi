@@ -141,7 +141,7 @@ export default function PrivacyPolicy() {
       <h2>11. Contact</h2>
       <p>
         If you have questions about this privacy policy, please contact us at{" "}
-        <a href="mailto:john@johnjlarkin.com">john@johnjlarkin.com</a>.
+        <a href="mailto:john@odozi.app">john@odozi.app</a>.
       </p>
     </article>
   );
