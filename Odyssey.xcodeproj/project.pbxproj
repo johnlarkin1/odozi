@@ -24,6 +24,7 @@
 		1A346A475B0A0B8DFC6E7D4B /* TrendCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECC6BD469E6111D22872AA2 /* TrendCalculator.swift */; };
 		1EB889A4FCA3B9F0E06DCB27 /* MoodPromptCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9A031525A5FC924473BEECBB /* MoodPromptCard.swift */; };
 		1FBF1A25746DDA50153B5D1B /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16B404D9A36EF3C7E7D7C35 /* Achievement.swift */; };
+		A7C3E91F2D8B4A0E1F6C7D3B /* Achievement.swift in Sources */ = {isa = PBXBuildFile; fileRef = B16B404D9A36EF3C7E7D7C35 /* Achievement.swift */; };
 		21BAF14AD79C48DC9B558A24 /* PromptResponses.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E0E78DC1B6B94D9A9D78AB2 /* PromptResponses.swift */; };
 		257D7F63F732AD440B963F34 /* OnboardingFlowView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1E5FC4D0C6A339D742CC7770 /* OnboardingFlowView.swift */; };
 		27241EE143C7E3E2C42F0F97 /* InsightCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = E40EA6B9C8DAA6C8610945BB /* InsightCard.swift */; };
@@ -1511,6 +1512,7 @@
 				70B3957045C6CD228CF31BAA /* SharedDefaults.swift in Sources */,
 				5D4A6D40BA43A151A401FEF8 /* ReminderTimeOfDay.swift in Sources */,
 				49F51E5E720BB58EF84D4F1F /* LocationCaptureMode.swift in Sources */,
+				A7C3E91F2D8B4A0E1F6C7D3B /* Achievement.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1937,6 +1939,10 @@
 				PRODUCT_NAME = OdysseyWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					"$(inherited)",
+					EXTENSION,
+				);
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1964,6 +1970,10 @@
 				PRODUCT_NAME = OdysseyWidget;
 				SDKROOT = iphoneos;
 				SKIP_INSTALL = YES;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = (
+					"$(inherited)",
+					EXTENSION,
+				);
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
