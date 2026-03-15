@@ -14,7 +14,7 @@ set -euo pipefail
 # ── Configuration ──────────────────────────────────────────────────────
 PROJECT="Odyssey.xcodeproj"
 SCHEME="Odyssey"
-DEFAULT_TESTS="OdysseyUITests/FeatureDemoTests"
+DEFAULT_TESTS="FeatureDemos"  # Marker: resolved to individual classes below
 OUTPUT_DIR="$(pwd)/build/demos"
 SIMULATOR_NAME="iPhone 16 Pro Max"
 ENV_FILE="$(pwd)/.env"
@@ -231,13 +231,31 @@ xcrun simctl io "$UDID" recordVideo --codec=h264 "$VIDEO_PATH" &
 RECORD_PID=$!
 sleep 1  # Give recorder time to initialize
 
+# ── Resolve test targets ─────────────────────────────────────────────
+# If using the default "FeatureDemos" marker, discover all Demo classes
+# in the FeatureDemos/ directory and pass each as a separate -only-testing flag.
+ONLY_TESTING_FLAGS=()
+if [[ "$TEST_TARGET" == "FeatureDemos" ]]; then
+    DEMO_DIR="$(pwd)/OdysseyUITests/FeatureDemos"
+    while IFS= read -r classname; do
+        ONLY_TESTING_FLAGS+=(-only-testing:"OdysseyUITests/$classname")
+    done < <(grep -l 'class.*: FeatureDemoBase' "$DEMO_DIR"/*.swift 2>/dev/null \
+        | xargs -I{} basename {} .swift)
+    if [[ ${#ONLY_TESTING_FLAGS[@]} -eq 0 ]]; then
+        error "No demo classes found in $DEMO_DIR"
+    fi
+    info "Running tests: ${ONLY_TESTING_FLAGS[*]}"
+else
+    ONLY_TESTING_FLAGS=(-only-testing:"$TEST_TARGET")
+    info "Running tests: $TEST_TARGET"
+fi
+
 # ── Run UI tests ──────────────────────────────────────────────────────
-info "Running tests: $TEST_TARGET"
 set +e
 xcodebuild -project "$PROJECT" -scheme "$SCHEME" \
     -destination "platform=iOS Simulator,id=$UDID" \
     -derivedDataPath build \
-    -only-testing:"$TEST_TARGET" \
+    "${ONLY_TESTING_FLAGS[@]}" \
     test-without-building 2>&1 | tail -20
 TEST_EXIT=$?
 set -e

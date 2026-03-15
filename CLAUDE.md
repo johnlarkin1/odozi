@@ -84,8 +84,26 @@ make help
 | Year-in-Review | `Odyssey/Views/YearInReview/ReviewCards/` |
 | Design tokens | `Odyssey/Extensions/Color+Extensions.swift` |
 | Shared defaults | `Odyssey/Services/SharedDefaults.swift` |
+| Feature demo tests | `OdysseyUITests/FeatureDemos/` |
+| Demo base class | `OdysseyUITests/FeatureDemos/FeatureDemoBase.swift` |
+| Demo recording script | `scripts/record-demo.sh` |
 | Marketing website | `website/` (Next.js 15, static export, deployed to odozi.app) |
 | Fastlane config | `fastlane/` |
+
+## Developer Loop
+
+When building a new feature, follow this flow:
+
+1. **Implement** the feature (models, services, views)
+2. **Write unit tests** in `OdysseyTests/`
+3. **Write a feature demo UI test** in `OdysseyUITests/FeatureDemos/`
+   - Create a new file `<FeatureName>Demo.swift` subclassing `FeatureDemoBase`
+   - Add one or more `test…Demo` methods that walk through the feature at a human-readable pace
+   - Use the inherited helpers (`tapTab`, `wait(for:)`, `advancePrompt`, `submitQuickEntry`, etc.)
+   - Add `pause()` calls between interactions so the recorded video is watchable
+   - See `FeatureDemoBase.swift` header for full instructions
+4. **Record a demo** with `/demo` — this records a simulator video, uploads to Dropbox, and posts to the PR
+5. **Verify** the video shows the feature working end-to-end before requesting review
 
 ## Key Conventions
 
