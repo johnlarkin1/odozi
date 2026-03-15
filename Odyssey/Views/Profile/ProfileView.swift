@@ -170,6 +170,17 @@ struct ProfileView: View {
                 }
                 .listRowBackground(Color.cardSurface)
 
+                #if DEBUG
+                Section("Developer") {
+                    NavigationLink {
+                        DevToolsView()
+                    } label: {
+                        Label("Developer Tools", systemImage: "hammer.fill")
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
+                #endif
+
                 Section("About") {
                     HStack {
                         Text("Version")
