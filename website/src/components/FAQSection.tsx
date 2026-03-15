@@ -43,13 +43,13 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     <div className="border-b border-white/10">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="flex w-full items-center justify-between py-5 text-left"
+        className="flex w-full items-center justify-between py-6 text-left"
       >
-        <span className="pr-4 font-medium text-star-white">{question}</span>
+        <span className="pr-4 text-lg font-medium text-star-white">{question}</span>
         <motion.span
           animate={{ rotate: isOpen ? 45 : 0 }}
           transition={{ duration: 0.2 }}
-          className="flex-shrink-0 text-xl text-star-white/40"
+          className="flex-shrink-0 text-2xl text-star-white/40"
         >
           +
         </motion.span>
@@ -64,7 +64,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
             transition={{ duration: 0.25 }}
             className="overflow-hidden"
           >
-            <p className="pb-5 text-sm leading-relaxed text-star-white/60">{answer}</p>
+            <p className="pb-6 text-base leading-relaxed text-star-white/60">{answer}</p>
           </motion.div>
         )}
       </AnimatePresence>
@@ -74,8 +74,8 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
 
 export function FAQSection() {
   return (
-    <section id="faq" className="relative px-6 py-24">
-      <div className="mx-auto max-w-2xl">
+    <section id="faq" className="relative px-6 py-28">
+      <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -83,7 +83,7 @@ export function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-3xl font-bold sm:text-4xl">
+          <h2 className="text-4xl font-bold sm:text-5xl">
             Frequently asked{" "}
             <span className="text-accent-amber">questions.</span>
           </h2>
@@ -94,7 +94,7 @@ export function FAQSection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.15 }}
-          className="mt-12"
+          className="mt-14"
         >
           {faqs.map((faq) => (
             <FAQItem key={faq.question} {...faq} />
