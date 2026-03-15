@@ -12,7 +12,7 @@ enum WeeklyDigestNotificationManager {
 
     static func registerCategory() -> UNNotificationCategory {
         let openInsights = UNNotificationAction(
-            identifier: "OPEN_JOURNAL",
+            identifier: "OPEN_INSIGHTS",
             title: "Open Insights",
             options: [.foreground]
         )

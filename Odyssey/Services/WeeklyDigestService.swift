@@ -75,10 +75,16 @@ enum WeeklyDigestService {
             .max(by: { $0.value.count < $1.value.count })?
             .value.first
 
-        // Streak — fetch all entries for accurate streak calc
-        let allDescriptor = FetchDescriptor<DailyEntry>(sortBy: [SortDescriptor(\DailyEntry.date, order: .reverse)])
-        let allEntries: [DailyEntry] = (try? context.fetch(allDescriptor)) ?? []
-        let streak = allEntries.currentStreak
+        // Streak — fetch recent entries (up to 365 days back) to avoid loading the full history
+        let streakCutoff = calendar.date(byAdding: .day, value: -365, to: calendar.startOfDay(for: endDate))!
+        let streakDescriptor = FetchDescriptor<DailyEntry>(
+            predicate: #Predicate<DailyEntry> { entry in
+                entry.date >= streakCutoff
+            },
+            sortBy: [SortDescriptor(\DailyEntry.date, order: .reverse)]
+        )
+        let recentEntries: [DailyEntry] = (try? context.fetch(streakDescriptor)) ?? []
+        let streak = recentEntries.currentStreak
 
         // Sleep quality average
         let sleepQualities = promptEntries.map { $0.sleepQuality }

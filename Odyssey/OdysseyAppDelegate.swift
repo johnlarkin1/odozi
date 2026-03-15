@@ -48,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
             case "START_ENTRY":
                 NavigationState.shared.selectedTab = .today
                 NavigationState.shared.showGuidedPrompt = true
-            case "OPEN_JOURNAL", UNNotificationDefaultActionIdentifier:
+            case "OPEN_INSIGHTS", UNNotificationDefaultActionIdentifier:
                 NavigationState.shared.selectedTab = .insights
             default:
                 break

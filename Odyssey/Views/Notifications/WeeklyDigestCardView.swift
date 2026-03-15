@@ -150,7 +150,7 @@ func renderDigestCard(_ data: WeeklyDigestData) -> URL? {
     guard let image = renderer.uiImage,
           let pngData = image.pngData() else { return nil }
 
-    let url = FileManager.default.temporaryDirectory.appendingPathComponent("weekly-digest-card.png")
+    let url = FileManager.default.temporaryDirectory.appendingPathComponent("weekly-digest-card-\(UUID().uuidString).png")
     do {
         try pngData.write(to: url)
         return url

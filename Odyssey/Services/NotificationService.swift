@@ -84,8 +84,15 @@ enum NotificationService {
     }
 
     static func registerAllCategories() {
+        let center = UNUserNotificationCenter.current()
         let digestCategory = WeeklyDigestNotificationManager.registerCategory()
-        UNUserNotificationCenter.current().setNotificationCategories([digestCategory])
+        // Fetch existing categories and merge so we never overwrite categories
+        // registered by other parts of the app or extensions.
+        center.getNotificationCategories { existing in
+            var merged = existing
+            merged.insert(digestCategory)
+            center.setNotificationCategories(merged)
+        }
     }
 
     static func cancelTodaysPendingReminder() {
