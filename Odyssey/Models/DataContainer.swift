@@ -69,7 +69,7 @@ struct DataContainer {
         }
     }
 
-    #if DEBUG
+    #if DEBUG && !EXTENSION
     @MainActor
     static func previewContainer() throws -> ModelContainer {
         try createSeededContainer()
