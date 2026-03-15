@@ -54,13 +54,14 @@ export function HeroSection() {
         transition={{ duration: 0.8, delay: 0.3 }}
         className="relative z-10 mt-20"
       >
-        <div className="mx-auto h-[680px] w-[340px] rounded-[48px] border-2 border-white/10 bg-card-surface/50 p-3.5 shadow-2xl backdrop-blur-sm sm:h-[740px] sm:w-[370px]">
+        <div className="mx-auto h-[680px] w-[340px] rounded-[48px] border-2 border-white/10 bg-card-surface/50 p-3.5 shadow-2xl backdrop-blur-sm sm:h-[820px] sm:w-[410px]">
           <div className="relative h-full w-full overflow-hidden rounded-[38px]">
             <Image
               src="/screenshots/today-tab.png"
               alt="Odyssey app — Today tab showing daily greeting, mood check-in, and health stats"
-              fill
-              className="object-cover object-top"
+              width={1320}
+              height={2868}
+              className="h-full w-full object-cover object-top"
               priority
             />
           </div>

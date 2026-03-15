@@ -48,6 +48,11 @@ body {
   50% { opacity: 0.7; }
 }
 
+/* Hide scrollbar on carousel */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Prose overrides for legal pages */
 .prose {
   --tw-prose-body: var(--color-star-white);
