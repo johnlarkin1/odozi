@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr
+.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -269,3 +269,12 @@ loadtest-headless: ## Run headless Locust load test (100 users, 10/s spawn, 60s)
 		--host http://localhost:$(SERVER_PORT) \
 		--headless -u 100 -r 10 -t 60s; \
 	if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; echo "Stopped backend"; fi
+
+# --- Widget Screenshots ---
+
+widget-screenshots: ## Render widget screenshots to build/widget-screenshots/
+	./scripts/widget-screenshots.sh
+
+widget-screenshots-pr: ## Render widget screenshots and post to a PR (usage: make widget-screenshots-pr PR=42)
+	@if [ -z "$(PR)" ]; then echo "Usage: make widget-screenshots-pr PR=<number>"; exit 1; fi
+	./scripts/widget-screenshots.sh --dropbox --pr $(PR)

@@ -10,14 +10,14 @@ struct AccessoryMoodWidgetView: View {
 
             if let mood = entry.todayMood {
                 VStack(spacing: 1) {
-                    Text(emojiForMood(mood))
+                    Image(systemName: "circle.fill")
                         .font(.title3)
                     Text("\(mood)")
                         .font(.caption2.bold())
                 }
             } else {
                 VStack(spacing: 1) {
-                    Image(systemName: "sun.max.fill")
+                    Image(systemName: "pencil.circle")
                         .font(.title3)
                     Text("Log")
                         .font(.caption2.bold())
@@ -26,16 +26,6 @@ struct AccessoryMoodWidgetView: View {
         }
         .containerBackground(for: .widget) { Color.clear }
         .widgetURL(URL(string: "odyssey://guided-prompt"))
-    }
-
-    private func emojiForMood(_ value: Int) -> String {
-        switch value {
-        case 1...2: return "😣"
-        case 3...4: return "😕"
-        case 5...6: return "😐"
-        case 7...8: return "😊"
-        default: return "🤩"
-        }
     }
 }
 
