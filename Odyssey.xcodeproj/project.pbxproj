@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */; };
+		6C64645FB7764D87A5889C47 /* WeeklyDigestServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */; };
 		8643E7DD254B48029820CA09 /* WeeklyDigestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4954B25C2747C8A0430510 /* WeeklyDigestService.swift */; };
 		CA5EC237DFA24A80B7D448AB /* WeeklyDigestNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685B2DC6078E46DB92E61C54 /* WeeklyDigestNotificationManager.swift */; };
 		D6FB64013CA14E9AB702C5AD /* WeeklyDigestSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84E2066C868C45D7A8916EDD /* WeeklyDigestSettingsView.swift */; };
@@ -297,6 +298,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestServiceTests.swift; sourceTree = "<group>"; };
 		0E4954B25C2747C8A0430510 /* WeeklyDigestService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestService.swift; sourceTree = "<group>"; };
 		685B2DC6078E46DB92E61C54 /* WeeklyDigestNotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestNotificationManager.swift; sourceTree = "<group>"; };
 		84E2066C868C45D7A8916EDD /* WeeklyDigestSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestSettingsView.swift; sourceTree = "<group>"; };
@@ -854,6 +856,7 @@
 		5FAFBC1E2B49E1A80018504E /* OdysseyTests */ = {
 			isa = PBXGroup;
 			children = (
+				D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */,
 				5FAFBC1F2B49E1A80018504E /* OdysseyTests.swift */,
 				2F4C94785483837CD4EF05E2 /* DateExtensionsTests.swift */,
 				ED5EB7B9A9760675936EC1E2 /* UIColorExtensionsTests.swift */,
@@ -1506,6 +1509,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6C64645FB7764D87A5889C47 /* WeeklyDigestServiceTests.swift in Sources */,
 				5FAFBC202B49E1A80018504E /* OdysseyTests.swift in Sources */,
 				95EB6E8CC567FDF5FD761EDE /* DateExtensionsTests.swift in Sources */,
 				B39E094A6DDC821E43378EF8 /* UIColorExtensionsTests.swift in Sources */,
