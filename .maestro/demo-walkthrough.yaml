@@ -1,0 +1,158 @@
+appId: com.johnlarkin.Odyssey
+tags:
+  - demo
+---
+# Full app walkthrough for PR demo videos
+# Run: maestro test --format junit .maestro/demo-walkthrough.yaml
+# Record: maestro record .maestro/demo-walkthrough.yaml
+
+# ── Today Tab ──────────────────────────
+- launchApp:
+    clearState: false
+
+- waitForAnimationToEnd
+
+# Show the Today tab for a moment
+- extendedWaitUntil:
+    visible: ".*"
+    timeout: 5000
+- scroll:
+    direction: DOWN
+
+- wait: 2000
+
+# ── Start Guided Prompt ────────────────
+- tapOn:
+    text: "Set sail on today's entry"
+    optional: true
+
+- tapOn:
+    text: "Edit today's entry"
+    optional: true
+
+- wait: 2000
+
+# Interact with mood selection
+- tapOn:
+    text: "Good"
+    optional: true
+
+- wait: 1000
+
+# Try to advance through prompts
+- tapOn:
+    text: "Next"
+    optional: true
+- wait: 1500
+
+- tapOn:
+    text: "Skip"
+    optional: true
+- wait: 1500
+
+- tapOn:
+    text: "Next"
+    optional: true
+- wait: 1500
+
+- tapOn:
+    text: "Skip"
+    optional: true
+- wait: 1500
+
+- tapOn:
+    text: "Skip"
+    optional: true
+- wait: 1500
+
+- tapOn:
+    text: "Skip"
+    optional: true
+- wait: 1500
+
+- tapOn:
+    text: "Skip"
+    optional: true
+- wait: 1500
+
+# Submit or skip the last step
+- tapOn:
+    text: "Submit"
+    optional: true
+
+- tapOn:
+    text: "Done"
+    optional: true
+
+- wait: 3000
+
+# Dismiss completion
+- tapOn:
+    text: "Close"
+    optional: true
+
+- tapOn:
+    text: "Done"
+    optional: true
+
+- wait: 1000
+
+# ── Journal Tab ────────────────────────
+- tapOn:
+    id: "Journal"
+    optional: true
+- tapOn:
+    text: "Journal"
+    optional: true
+- wait: 2000
+
+- scroll:
+    direction: DOWN
+- wait: 1000
+
+- scroll:
+    direction: UP
+- wait: 1000
+
+# ── Insights Tab ───────────────────────
+- tapOn:
+    id: "Insights"
+    optional: true
+- tapOn:
+    text: "Insights"
+    optional: true
+- wait: 3000
+
+- scroll:
+    direction: DOWN
+- wait: 2000
+
+- scroll:
+    direction: DOWN
+- wait: 2000
+
+- scroll:
+    direction: UP
+- wait: 1000
+
+- scroll:
+    direction: UP
+- wait: 1000
+
+# ── Profile Tab ────────────────────────
+- tapOn:
+    id: "Profile"
+    optional: true
+- tapOn:
+    text: "Profile"
+    optional: true
+- wait: 2000
+
+# ── Back to Today ──────────────────────
+- tapOn:
+    id: "Today"
+    optional: true
+- tapOn:
+    text: "Today"
+    optional: true
+- wait: 1000
