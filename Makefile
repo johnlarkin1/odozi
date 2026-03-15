@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless
+.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -165,6 +165,15 @@ match-force-local: ## Force-regenerate App Store profiles from local machine (lo
 
 screenshots: ## Capture App Store screenshots via Fastlane
 	bundle exec fastlane screenshots
+
+# --- Demo Recording ---
+
+demo: ## Record a demo video of the app (saved to build/demos/)
+	./scripts/record-demo.sh --dropbox
+
+demo-pr: ## Record demo video and post to a PR (usage: make demo-pr PR=42)
+	@if [ -z "$(PR)" ]; then echo "Usage: make demo-pr PR=<number>"; exit 1; fi
+	./scripts/record-demo.sh --dropbox --pr $(PR)
 
 website-install: ## Install website dependencies
 	cd website && npm install
