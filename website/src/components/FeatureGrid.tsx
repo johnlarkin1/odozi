@@ -1,5 +1,7 @@
 "use client";
 
+import Image from "next/image";
+import { useRef, useState, useCallback } from "react";
 import { motion } from "framer-motion";
 import { FeatureCard } from "./FeatureCard";
 import { SectionStars } from "./CosmicBackground";
@@ -51,13 +53,139 @@ const passiveCapture = [
   },
 ];
 
-const insights = [
+const insightsList = [
   { icon: <TrendingUpIcon className="text-cosmic-purple" />, title: "Mood Trends", description: "Charts that show how your mood changes over weeks and months" },
   { icon: <CloudIcon className="text-cosmic-purple" />, title: "Word Cloud", description: "Your most-used journal words, beautifully visualized" },
   { icon: <FlameIcon className="text-cosmic-purple" />, title: "Streaks", description: "Build consistency with daily journaling streaks" },
   { icon: <MapIcon className="text-cosmic-purple" />, title: "Journey Map", description: "Color-coded mood pins on a map of where you've been" },
   { icon: <Link2Icon className="text-cosmic-purple" />, title: "Correlations", description: "See connections between sleep, steps, screen time, and mood" },
 ];
+
+const screenshots = [
+  { src: "/screenshots/today-tab.png", label: "Today", alt: "Today tab with daily greeting and health stats" },
+  { src: "/screenshots/guided-journaling.png", label: "Journaling", alt: "Guided journaling flow with mood check-in" },
+  { src: "/screenshots/insights-dashboard.png", label: "Insights", alt: "Insights dashboard with mood trends and streaks" },
+  { src: "/screenshots/map-visualization.png", label: "Map", alt: "Journey map with color-coded mood pins" },
+  { src: "/screenshots/word-cloud.png", label: "Word Cloud", alt: "Word cloud of most-used journal words" },
+  { src: "/screenshots/year-in-review.png", label: "Year in Review", alt: "Spotify Wrapped-style year in review" },
+];
+
+export function ScreenshotCarousel() {
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [activeIndex, setActiveIndex] = useState(0);
+
+  const scrollToIndex = useCallback((index: number) => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const items = container.querySelectorAll("[data-carousel-item]");
+    if (items[index]) {
+      items[index].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      setActiveIndex(index);
+    }
+  }, []);
+
+  const handleScroll = useCallback(() => {
+    const container = scrollRef.current;
+    if (!container) return;
+    const items = container.querySelectorAll("[data-carousel-item]");
+    const containerCenter = container.scrollLeft + container.clientWidth / 2;
+    let closest = 0;
+    let minDist = Infinity;
+    items.forEach((item, i) => {
+      const el = item as HTMLElement;
+      const itemCenter = el.offsetLeft + el.clientWidth / 2;
+      const dist = Math.abs(containerCenter - itemCenter);
+      if (dist < minDist) {
+        minDist = dist;
+        closest = i;
+      }
+    });
+    setActiveIndex(closest);
+  }, []);
+
+  return (
+    <section className="relative py-28">
+      <SectionStars />
+      <div className="mx-auto max-w-6xl px-6">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="text-center"
+        >
+          <h2 className="text-4xl font-bold sm:text-5xl">
+            See it in{" "}
+            <span className="text-accent-teal">action.</span>
+          </h2>
+          <p className="mx-auto mt-5 max-w-xl text-lg text-star-white/60">
+            Swipe through real screenshots from the app.
+          </p>
+        </motion.div>
+      </div>
+
+      {/* Carousel */}
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        className="mt-14"
+      >
+        <div
+          ref={scrollRef}
+          onScroll={handleScroll}
+          className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-[calc(50vw-160px)] pb-4 sm:px-[calc(50vw-190px)] scrollbar-hide"
+          style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
+        >
+          {screenshots.map((shot, i) => (
+            <div
+              key={shot.src}
+              data-carousel-item
+              className="flex-shrink-0 snap-center cursor-pointer"
+              onClick={() => scrollToIndex(i)}
+            >
+              <div
+                className={`h-[640px] w-[320px] rounded-[44px] border-2 p-3 shadow-2xl backdrop-blur-sm transition-all duration-300 sm:h-[740px] sm:w-[370px] ${
+                  activeIndex === i
+                    ? "border-white/20 bg-card-surface/60 scale-100"
+                    : "border-white/5 bg-card-surface/30 scale-95 opacity-60"
+                }`}
+              >
+                <div className="relative h-full w-full overflow-hidden rounded-[34px]">
+                  <Image
+                    src={shot.src}
+                    alt={shot.alt}
+                    width={1320}
+                    height={2868}
+                    className="h-full w-full object-cover object-top"
+                  />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+
+        {/* Dots + labels */}
+        <div className="mt-8 flex items-center justify-center gap-3">
+          {screenshots.map((shot, i) => (
+            <button
+              key={shot.src}
+              onClick={() => scrollToIndex(i)}
+              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+                activeIndex === i
+                  ? "bg-white/15 text-star-white"
+                  : "text-star-white/40 hover:text-star-white/60"
+              }`}
+            >
+              {shot.label}
+            </button>
+          ))}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
 
 export function GuidedJournalingSection() {
   return (
@@ -143,7 +271,7 @@ export function InsightsSection() {
         </motion.div>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {insights.map((item, i) => (
+          {insightsList.map((item, i) => (
             <FeatureCard key={item.title} {...item} delay={i * 0.08} />
           ))}
         </div>
@@ -170,24 +298,6 @@ export function YearInReviewSection() {
             A Spotify Wrapped-style captain&apos;s log of your year — moods, streaks,
             top feelings, and more, beautifully charted into shareable cards.
           </p>
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, delay: 0.2 }}
-          className="mt-14 flex justify-center"
-        >
-          <div className="mx-auto h-[560px] w-[280px] rounded-[40px] border-2 border-white/10 bg-card-surface/50 p-3 shadow-2xl backdrop-blur-sm sm:h-[640px] sm:w-[320px]">
-            <div className="relative h-full w-full overflow-hidden rounded-[32px]">
-              <img
-                src="/screenshots/year-in-review.png"
-                alt="Odyssey Year in Review — Your 2026 Odyssey with animated globe"
-                className="h-full w-full object-cover object-top"
-              />
-            </div>
-          </div>
         </motion.div>
       </div>
     </section>
