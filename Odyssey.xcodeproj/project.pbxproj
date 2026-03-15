@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */; };
+		BB1111111111111111111101 /* WeeklyDigestDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = BB1111111111111111111102 /* WeeklyDigestDemo.swift */; };
 		6C64645FB7764D87A5889C47 /* WeeklyDigestServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */; };
 		8643E7DD254B48029820CA09 /* WeeklyDigestService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0E4954B25C2747C8A0430510 /* WeeklyDigestService.swift */; };
 		CA5EC237DFA24A80B7D448AB /* WeeklyDigestNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685B2DC6078E46DB92E61C54 /* WeeklyDigestNotificationManager.swift */; };
@@ -416,6 +417,7 @@
 		8A923F6EEF4C408126C0DDEE /* AchievementBadgeCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeCell.swift; sourceTree = "<group>"; };
 		8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenTimePermissionCard.swift; sourceTree = "<group>"; };
 		93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsDashboardDemo.swift; sourceTree = "<group>"; };
+		BB1111111111111111111102 /* WeeklyDigestDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeeklyDigestDemo.swift; sourceTree = "<group>"; };
 		97569FD9C2589433BE90F633 /* ReviewMoodCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewMoodCard.swift; sourceTree = "<group>"; };
 		9A031525A5FC924473BEECBB /* MoodPromptCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoodPromptCard.swift; sourceTree = "<group>"; };
 		9A5E80FEF87628B3A56F7DDB /* CalendarHeatmapView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CalendarHeatmapView.swift; sourceTree = "<group>"; };
@@ -1052,6 +1054,7 @@
 				C9A1BD63A880ED11BE9E27A7 /* GuidedPromptDemo.swift */,
 				93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */,
 				801680621A14AEF3730F85FB /* StreaksAchievementsDemo.swift */,
+				BB1111111111111111111102 /* WeeklyDigestDemo.swift */,
 			);
 			name = FeatureDemos;
 			path = FeatureDemos;
@@ -1542,6 +1545,7 @@
 				A85EC80D0D7463CE12251E51 /* GuidedPromptDemo.swift in Sources */,
 				03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */,
 				6D92F9C7577182199C2F92E3 /* StreaksAchievementsDemo.swift in Sources */,
+				BB1111111111111111111101 /* WeeklyDigestDemo.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
