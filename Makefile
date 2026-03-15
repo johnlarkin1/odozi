@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr
+.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -91,6 +91,9 @@ test-unit: ## Run unit tests only
 
 test-ui: ## Run UI tests only
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DESTINATION)' -only-testing:OdysseyUITests test
+
+build-widget: ## Build OdysseyWidget extension
+	xcodebuild -project $(PROJECT) -scheme OdysseyWidget -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' build
 
 build-monitor: ## Build DeviceActivityMonitor extension
 	xcodebuild -project $(PROJECT) -scheme OdysseyDeviceActivityMonitor -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' build

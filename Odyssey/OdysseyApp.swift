@@ -1,6 +1,7 @@
 import SwiftUI
 import SwiftData
 import ClerkKit
+import WidgetKit
 import os
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "App")
@@ -94,8 +95,13 @@ struct OdysseyApp: App {
                                     .environment(authManager)
                                     .environment(\.colorScheme, .dark)
                             }
+                            .onOpenURL { url in
+                                guard url.scheme == "odyssey", url.host == "guided-prompt" else { return }
+                                NotificationCenter.default.post(name: .openGuidedPrompt, object: nil)
+                            }
                             .onReceive(NotificationCenter.default.publisher(for: .didSaveFirstEntry)) { _ in
                                 NotificationService.cancelTodaysPendingReminder()
+                                WidgetCenter.shared.reloadAllTimelines()
                                 let hasSeenPrompt = UserDefaults.standard.bool(forKey: "hasSeenBackupPrompt")
                                 if !hasSeenPrompt && !authManager.hasAccount {
                                     showBackupPrompt = true
@@ -218,6 +224,8 @@ struct OdysseyApp: App {
             oldEntryCount = count
             showRetentionAlert = true
         }
+
+        WidgetCenter.shared.reloadAllTimelines()
     }
 }
 
