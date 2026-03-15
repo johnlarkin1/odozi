@@ -42,6 +42,6 @@ struct ColorPaletteView: View {
             .padding(.top, 16)
         }
         .navigationTitle("Color Palette")
-        .background(Color.black)
+        .cosmicBackground()
     }
 }

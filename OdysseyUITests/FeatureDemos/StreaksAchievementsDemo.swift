@@ -28,16 +28,12 @@ final class StreaksAchievementsDemo: FeatureDemoBase {
         tapTab("Insights")
         pause(3)
 
-        // Scroll down to reveal Achievements and Streaks cards
-        app.swipeUp()
-        pause(2)
-
         // ── Achievement Gallery ──────────────────────────────────
-        let achievementsCard = app.buttons.matching(
-            NSPredicate(format: "label CONTAINS[c] 'achievement'")
-        ).firstMatch
+        let achievementsCard = app.buttons["achievementsCard"]
+        scrollUntilVisible(achievementsCard)
+        pause(1)
 
-        if wait(for: achievementsCard) {
+        if achievementsCard.exists && achievementsCard.isHittable {
             achievementsCard.tap()
             pause(3)
 
@@ -64,10 +60,11 @@ final class StreaksAchievementsDemo: FeatureDemoBase {
         }
 
         // ── Streaks detail card ──────────────────────────────────
-        let streaksCard = app.buttons.matching(
-            NSPredicate(format: "label CONTAINS[c] 'streak'")
-        ).firstMatch
-        if wait(for: streaksCard) {
+        let streaksCard = app.buttons["streaksCard"]
+        scrollUntilVisible(streaksCard)
+        pause(1)
+
+        if streaksCard.exists && streaksCard.isHittable {
             streaksCard.tap()
             pause(3)
             navigateBack()
@@ -76,5 +73,16 @@ final class StreaksAchievementsDemo: FeatureDemoBase {
         // Back to Today to close the loop
         tapTab("Today")
         pause(2)
+    }
+
+    /// Swipe up repeatedly until the element is hittable (max 5 attempts).
+    private func scrollUntilVisible(_ element: XCUIElement, maxAttempts: Int = 5) {
+        for _ in 0..<maxAttempts {
+            if element.exists && element.isHittable {
+                return
+            }
+            app.swipeUp()
+            pause(0.5)
+        }
     }
 }

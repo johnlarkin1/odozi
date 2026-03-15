@@ -50,7 +50,7 @@ struct WordCloudView: View {
             }
         }
         .navigationTitle("Feeling Words")
-        .background(Color.black)
+        .cosmicBackground()
     }
 
     private func fontSize(for count: Int) -> CGFloat {

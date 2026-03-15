@@ -83,6 +83,7 @@ struct MindCardsGrid: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("achievementsCard")
     }
 
     private var streaksCard: some View {
@@ -103,5 +104,6 @@ struct MindCardsGrid: View {
             }
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier("streaksCard")
     }
 }

@@ -47,7 +47,7 @@ struct AchievementGalleryView: View {
             .padding(.top, 16)
         }
         .navigationTitle("Achievements")
-        .background(Color.black)
+        .cosmicBackground()
         .onAppear {
             loadAchievements()
             markAllSeen()

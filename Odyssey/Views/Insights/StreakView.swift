@@ -54,7 +54,7 @@ struct StreakView: View {
             }
         }
         .navigationTitle("Streaks")
-        .background(Color.black)
+        .cosmicBackground()
     }
 
     private var monthlyData: [(month: String, count: Int)] {

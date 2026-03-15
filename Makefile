@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr
+.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release test test-unit test-ui clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -60,6 +60,16 @@ run-app: ## Build and run iOS app only (uses Odyssey.xcconfig URL)
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' -derivedDataPath build build
 	xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Odyssey.app
 	xcrun simctl launch booted com.johnlarkin.Odyssey
+
+preview: ## Launch app in simulator with 30 days of seeded sample data
+	xcrun simctl boot "iPhone 16 Pro Max" 2>/dev/null || true
+	open -a Simulator
+	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) \
+		-destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' -derivedDataPath build -quiet build
+	xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Odyssey.app
+	xcrun simctl terminate booted com.johnlarkin.Odyssey 2>/dev/null || true
+	SIMCTL_CHILD_SCREENSHOT_MODE=1 xcrun simctl launch booted com.johnlarkin.Odyssey
+	@echo "App launched with sample data. Use 'make run-app' for normal mode."
 
 run-server: ## Start the Rust backend server
 	cd $(SERVER_DIR) && cargo run
