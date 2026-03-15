@@ -68,10 +68,27 @@ struct MediumMoodWidgetView: View {
     // MARK: - Completed
 
     private func completedState(mood: Int) -> some View {
-        HStack(spacing: 16) {
+        let moodColor = Color.moodGradient(for: mood)
+
+        return HStack(spacing: 16) {
             VStack(spacing: 4) {
-                Text(emojiForMood(mood))
-                    .font(.system(size: 44))
+                ZStack {
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [moodColor, moodColor.opacity(0.15)],
+                                center: .center,
+                                startRadius: 5,
+                                endRadius: 45
+                            )
+                        )
+                        .frame(width: 64, height: 64)
+
+                    Text("\(mood)")
+                        .font(.system(size: 28, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                }
+
                 Text("\(mood)/10")
                     .font(.title3.bold())
                     .foregroundStyle(.white)
@@ -116,16 +133,6 @@ struct MediumMoodWidgetView: View {
             }
         }
         .padding(4)
-    }
-
-    private func emojiForMood(_ value: Int) -> String {
-        switch value {
-        case 1...2: return "😣"
-        case 3...4: return "😕"
-        case 5...6: return "😐"
-        case 7...8: return "😊"
-        default: return "🤩"
-        }
     }
 }
 

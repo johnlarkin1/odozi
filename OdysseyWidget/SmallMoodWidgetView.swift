@@ -4,8 +4,8 @@ import WidgetKit
 struct SmallMoodWidgetView: View {
     let entry: MoodWidgetEntry
 
-    private let moodOptions: [(emoji: String, value: Int)] = [
-        ("😣", 2), ("😕", 4), ("😐", 5), ("😊", 7), ("🤩", 9)
+    private let moodOptions: [(value: Int, label: String)] = [
+        (2, "Low"), (4, "Meh"), (5, "OK"), (7, "Good"), (9, "Great")
     ]
 
     var body: some View {
@@ -26,6 +26,10 @@ struct SmallMoodWidgetView: View {
 
     private var promptState: some View {
         VStack(spacing: 8) {
+            Text("Odyssey")
+                .font(.caption2.bold())
+                .foregroundStyle(Color.accentAmber)
+
             Text("How are you?")
                 .font(.caption.bold())
                 .foregroundStyle(.white)
@@ -33,13 +37,13 @@ struct SmallMoodWidgetView: View {
             LazyVGrid(columns: Array(repeating: GridItem(.flexible(), spacing: 4), count: 5), spacing: 4) {
                 ForEach(moodOptions, id: \.value) { option in
                     Button(intent: LogMoodIntent(moodValue: option.value)) {
-                        Text(option.emoji)
-                            .font(.title3)
-                            .frame(maxWidth: .infinity)
-                            .padding(.vertical, 4)
-                            .background(
-                                RoundedRectangle(cornerRadius: 6)
-                                    .fill(Color.white.opacity(0.1))
+                        Circle()
+                            .fill(Color.moodGradient(for: option.value))
+                            .frame(width: 28, height: 28)
+                            .overlay(
+                                Text("\(option.value)")
+                                    .font(.system(size: 11, weight: .bold, design: .rounded))
+                                    .foregroundStyle(.white)
                             )
                     }
                     .buttonStyle(.plain)
@@ -64,8 +68,14 @@ struct SmallMoodWidgetView: View {
 
     private func completedState(mood: Int) -> some View {
         VStack(spacing: 6) {
-            Text(emojiForMood(mood))
-                .font(.largeTitle)
+            Circle()
+                .fill(Color.moodGradient(for: mood))
+                .frame(width: 52, height: 52)
+                .overlay(
+                    Text("\(mood)")
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundStyle(.white)
+                )
 
             Text("Mood: \(mood)/10")
                 .font(.caption.bold())
@@ -91,16 +101,6 @@ struct SmallMoodWidgetView: View {
                         .foregroundStyle(.secondary)
                 }
             }
-        }
-    }
-
-    private func emojiForMood(_ value: Int) -> String {
-        switch value {
-        case 1...2: return "😣"
-        case 3...4: return "😕"
-        case 5...6: return "😐"
-        case 7...8: return "😊"
-        default: return "🤩"
         }
     }
 }
