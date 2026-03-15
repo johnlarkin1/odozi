@@ -99,6 +99,18 @@ DESTINATION="platform=iOS Simulator,name=$SIMULATOR_NAME"
 # ── Prepare output directory ─────────────────────────────────────────
 mkdir -p "$OUTPUT_DIR"
 
+# ── Resolve simulator UDID ────────────────────────────────────────────
+SIM_UDID=$(xcrun simctl list devices available -j | python3 -c "
+import sys, json
+data = json.loads(sys.stdin.read())
+for runtime, devs in data['devices'].items():
+    for d in devs:
+        if d['name'] == '$SIMULATOR_NAME' and d['isAvailable']:
+            print(d['udid'])
+            sys.exit(0)
+sys.exit(1)
+") || error "Simulator '$SIMULATOR_NAME' not found"
+
 # ── Build and run snapshot tests ──────────────────────────────────────
 info "Building and running widget snapshot tests..."
 xcodebuild -project "$PROJECT" -scheme "$SCHEME" \
@@ -109,8 +121,14 @@ xcodebuild -project "$PROJECT" -scheme "$SCHEME" \
 
 TEST_EXIT=${PIPESTATUS[0]}
 
-# ── Collect screenshots from test output ─────────────────────────────
-# Tests write to both tmp and build/widget-screenshots/
+# ── Copy screenshots from simulator sandbox to build dir ─────────────
+# Tests write to NSTemporaryDirectory()/widget-screenshots/ inside the simulator.
+# Find and copy those PNGs to the host output directory.
+SIM_DATA_DIR="$HOME/Library/Developer/CoreSimulator/Devices/$SIM_UDID/data"
+find "$SIM_DATA_DIR" -path "*/tmp/widget-screenshots/*.png" 2>/dev/null | while read -r png; do
+    cp "$png" "$OUTPUT_DIR/"
+done
+
 SCREENSHOT_COUNT=$(find "$OUTPUT_DIR" -name "*.png" 2>/dev/null | wc -l | tr -d ' ')
 info "Generated $SCREENSHOT_COUNT screenshots in $OUTPUT_DIR"
 

@@ -7,6 +7,8 @@ import SwiftUI
 @MainActor
 final class WidgetSnapshotTests: XCTestCase {
 
+    /// Screenshots are written to the app sandbox's tmp/widget-screenshots/.
+    /// The widget-screenshots.sh script copies them out after tests finish.
     private let outputDir = URL(fileURLWithPath: NSTemporaryDirectory())
         .appendingPathComponent("widget-screenshots")
 
@@ -67,13 +69,6 @@ final class WidgetSnapshotTests: XCTestCase {
 
         let path = outputDir.appendingPathComponent("\(name).png")
         try data.write(to: path)
-
-        // Also write to build dir if available
-        let buildDir = URL(fileURLWithPath: FileManager.default.currentDirectoryPath)
-            .appendingPathComponent("build/widget-screenshots")
-        try? FileManager.default.createDirectory(at: buildDir, withIntermediateDirectories: true)
-        let buildPath = buildDir.appendingPathComponent("\(name).png")
-        try? data.write(to: buildPath)
 
         print("Screenshot saved: \(path.path)")
     }
