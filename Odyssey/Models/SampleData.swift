@@ -30,9 +30,9 @@ struct SampleData {
 
             // Ohio city coordinates with tight offsets to keep pins on land
             let locations: [(lat: Double, lng: Double, city: String)] = [
-                (39.9612, -82.9988, "Columbus"),
-                (41.4993, -81.6944, "Cleveland"),
                 (39.1031, -84.5120, "Cincinnati"),
+                (41.4993, -81.6944, "Cleveland"),
+                (39.9612, -82.9988, "Columbus"),
                 (40.7989, -81.3784, "Canton"),
                 (39.7589, -84.1916, "Dayton"),
                 (41.6528, -83.5379, "Toledo"),

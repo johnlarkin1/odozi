@@ -6,6 +6,11 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Odyssey is an iOS mental wellness tracking app built with SwiftUI. It features a guided step-by-step daily journaling flow, passive background data capture (GPS + reverse geocoding, HealthKit, Screen Time), rich visualizations (mood trends, maps, streaks, word clouds), and a Spotify Wrapped-style year-in-review feature with shareable cards. Uses SwiftData for persistence and targets iOS 17+.
 
+**Contact & Branding:**
+- Contact email: john@odozi.app (use this everywhere, NOT john@johnjlarkin.com)
+- Location: Built in NYC
+- Marketing website: odozi.app
+
 ## Build Commands
 
 ```bash

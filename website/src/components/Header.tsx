@@ -1,9 +1,24 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 
 const APP_STORE_URL = "https://apps.apple.com/app/odyssey-journal/id6743597741";
+
+function LogoMark() {
+  return (
+    <Image
+      src="/app-icon.png"
+      alt="Odyssey app icon"
+      width={28}
+      height={28}
+      className="rounded-md"
+    />
+  );
+}
+
+export { LogoMark };
 
 export function Header() {
   const [mobileOpen, setMobileOpen] = useState(false);
@@ -11,7 +26,8 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-deep-space/80 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
-        <Link href="/" className="text-xl font-bold tracking-tight text-star-white">
+        <Link href="/" className="flex items-center gap-2 text-xl font-bold tracking-tight text-star-white">
+          <LogoMark />
           Odyssey
         </Link>
 
@@ -19,6 +35,9 @@ export function Header() {
         <div className="hidden items-center gap-8 md:flex">
           <Link href="/#features" className="text-sm text-star-white/70 transition hover:text-accent-teal">
             Features
+          </Link>
+          <Link href="/#faq" className="text-sm text-star-white/70 transition hover:text-accent-teal">
+            FAQ
           </Link>
           <Link href="/privacy" className="text-sm text-star-white/70 transition hover:text-accent-teal">
             Privacy
@@ -54,6 +73,9 @@ export function Header() {
           <div className="flex flex-col gap-4">
             <Link href="/#features" onClick={() => setMobileOpen(false)} className="text-star-white/70">
               Features
+            </Link>
+            <Link href="/#faq" onClick={() => setMobileOpen(false)} className="text-star-white/70">
+              FAQ
             </Link>
             <Link href="/privacy" onClick={() => setMobileOpen(false)} className="text-star-white/70">
               Privacy
