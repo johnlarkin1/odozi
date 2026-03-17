@@ -15,7 +15,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Odyssey — Your Daily Journey Inward",
+  title: "Odyssey - Your Daily Journey",
   description:
     "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.",
   metadataBase: new URL("https://odozi.app"),
@@ -23,24 +23,33 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Odyssey — Your Daily Journey Inward",
+    title: "Odyssey - Your Daily Journey",
     description:
       "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.",
     url: "https://odozi.app",
     siteName: "Odyssey",
-    images: "/og-image.png",
+    images: [{ url: "/og-image.gif", width: 1200, height: 630 }],
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Odyssey — Your Daily Journey Inward",
+    title: "Odyssey - Your Daily Journey",
     description:
       "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.",
-    images: "/og-image.png",
+    images: [{ url: "/og-image.gif", width: 1200, height: 630 }],
+  },
+  icons: {
+    icon: [
+      { url: "/favicon-48x48.png", sizes: "48x48", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon.svg", type: "image/svg+xml" },
+    ],
+    apple: "/apple-touch-icon.png",
   },
 };
 
-// Static JSON-LD structured data — all values are hardcoded string literals, no user input
+// Static JSON-LD structured data - all values are hardcoded string literals, no user input
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
@@ -53,7 +62,7 @@ const jsonLd = {
     priceCurrency: "USD",
   },
   description:
-    "A guided journaling app for iOS that captures your world — location, health, screen time — and reveals patterns in your wellbeing.",
+    "A guided journaling app for iOS that captures your world - location, health, screen time - and reveals patterns in your wellbeing.",
   url: "https://odozi.app",
   downloadUrl: "https://apps.apple.com/app/odyssey-journal/id6743597741",
   author: {
