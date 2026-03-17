@@ -1,0 +1,85 @@
+<svg width="32" height="32" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <radialGradient id="bg" cx="50%" cy="50%" r="72%">
+      <stop offset="0%" stop-color="#1a1040"/>
+      <stop offset="60%" stop-color="#0e0a22"/>
+      <stop offset="100%" stop-color="#060410"/>
+    </radialGradient>
+    <radialGradient id="neb1" cx="40%" cy="38%" r="35%">
+      <stop offset="0%" stop-color="#E86BAD" stop-opacity="0.18"/>
+      <stop offset="50%" stop-color="#8C5CF5" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#8C5CF5" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="neb2" cx="60%" cy="45%" r="30%">
+      <stop offset="0%" stop-color="#8C5CF5" stop-opacity="0.22"/>
+      <stop offset="60%" stop-color="#5A28C8" stop-opacity="0.08"/>
+      <stop offset="100%" stop-color="#5A28C8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="boatGlow" cx="50%" cy="49%" r="28%">
+      <stop offset="0%" stop-color="#F5A623" stop-opacity="0.12"/>
+      <stop offset="100%" stop-color="#F5A623" stop-opacity="0"/>
+    </radialGradient>
+    <linearGradient id="mainSail" x1="481" y1="133" x2="796" y2="666">
+      <stop offset="0%" stop-color="#FFD76E"/>
+      <stop offset="40%" stop-color="#F5A623"/>
+      <stop offset="80%" stop-color="#E86B5A"/>
+      <stop offset="100%" stop-color="#E86BAD"/>
+    </linearGradient>
+    <linearGradient id="jibSail" x1="481" y1="133" x2="246" y2="666">
+      <stop offset="0%" stop-color="#FFD76E"/>
+      <stop offset="50%" stop-color="#E8A040"/>
+      <stop offset="100%" stop-color="#D06080"/>
+    </linearGradient>
+    <linearGradient id="hull" x1="205" y1="666" x2="799" y2="746">
+      <stop offset="0%" stop-color="#C07830"/>
+      <stop offset="100%" stop-color="#8C5CF5"/>
+    </linearGradient>
+    <linearGradient id="ocean" x1="0" y1="696" x2="0" y2="1024">
+      <stop offset="0%" stop-color="#121a40"/>
+      <stop offset="40%" stop-color="#0e1435"/>
+      <stop offset="100%" stop-color="#060818"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1024" height="1024" fill="url(#bg)"/>
+
+  <!-- Nebula glows -->
+  <rect width="1024" height="1024" fill="url(#neb1)"/>
+  <rect width="1024" height="1024" fill="url(#neb2)"/>
+  <rect width="1024" height="1024" fill="url(#boatGlow)"/>
+
+  <!-- Stars -->
+  <circle cx="120" cy="80" r="2" fill="#EDF0FA" opacity="0.6"/>
+  <circle cx="380" cy="50" r="1.5" fill="#EDF0FA" opacity="0.5"/>
+  <circle cx="680" cy="90" r="2.5" fill="#EDF0FA" opacity="0.7"/>
+  <circle cx="900" cy="60" r="1.8" fill="#EDF0FA" opacity="0.5"/>
+  <circle cx="200" cy="200" r="1.2" fill="#EDF0FA" opacity="0.4"/>
+  <circle cx="750" cy="180" r="3" fill="#EDF0FA" opacity="0.8"/>
+  <circle cx="500" cy="70" r="1.5" fill="#EDF0FA" opacity="0.5"/>
+  <circle cx="100" cy="350" r="1" fill="#EDF0FA" opacity="0.3"/>
+  <circle cx="950" cy="280" r="2" fill="#EDF0FA" opacity="0.6"/>
+  <circle cx="300" cy="300" r="1.8" fill="#EDF0FA" opacity="0.4"/>
+  <circle cx="850" cy="400" r="1.2" fill="#EDF0FA" opacity="0.3"/>
+
+  <!-- Main sail -->
+  <path d="M487 133 Q702 319 796 656 L487 656 Z" fill="url(#mainSail)"/>
+
+  <!-- Jib sail -->
+  <path d="M475 153 Q323 389 246 646 L475 646 Z" fill="url(#jibSail)"/>
+
+  <!-- Mast -->
+  <line x1="481" y1="123" x2="481" y2="678" stroke="#E8B860" stroke-width="6"/>
+
+  <!-- Hull -->
+  <path d="M203 668 Q214 748 502 730 Q788 712 799 668 Z" fill="url(#hull)"/>
+
+  <!-- Ocean -->
+  <rect x="0" y="696" width="1024" height="328" fill="url(#ocean)"/>
+
+  <!-- Wave crest lines -->
+  <path d="M0 700 Q256 685 512 700 Q768 715 1024 700" stroke="#5a80e0" stroke-width="2.5" fill="none" opacity="0.3"/>
+  <path d="M0 730 Q256 720 512 735 Q768 750 1024 730" stroke="#5a80e0" stroke-width="2" fill="none" opacity="0.2"/>
+  <path d="M0 760 Q256 750 512 765 Q768 780 1024 760" stroke="#8C5CF5" stroke-width="1.8" fill="none" opacity="0.15"/>
+  <path d="M0 800 Q256 790 512 805 Q768 820 1024 800" stroke="#2EC4B6" stroke-width="1.5" fill="none" opacity="0.1"/>
+</svg>
