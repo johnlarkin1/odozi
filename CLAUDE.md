@@ -11,6 +11,8 @@ Odyssey is an iOS mental wellness tracking app built with SwiftUI. It features a
 - Location: Built in NYC
 - Marketing website: odozi.app
 
+**License:** PolyForm Noncommercial 1.0.0 — code is open source for learning, personal use, and non-commercial purposes. Commercial use is not permitted. See `LICENSE.md`.
+
 ## Build Commands
 
 ```bash
