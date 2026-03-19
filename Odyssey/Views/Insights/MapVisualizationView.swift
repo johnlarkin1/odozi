@@ -70,7 +70,9 @@ struct MapVisualizationView: View {
             )
         }
         .navigationTitle("My Map")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .onAppear {
             if locationViewModel == nil {
                 locationViewModel = DailyEntryViewModel(modelContext: modelContext)

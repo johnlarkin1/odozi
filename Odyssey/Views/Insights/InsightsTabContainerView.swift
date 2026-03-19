@@ -27,7 +27,9 @@ struct InsightsTabContainerView: View {
                 WorldTabView(viewModel: viewModel)
                     .tag(InsightsTab.world)
             }
+            #if os(iOS)
             .tabViewStyle(.page(indexDisplayMode: .never))
+            #endif
         }
     }
 }

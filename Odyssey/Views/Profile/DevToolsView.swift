@@ -205,7 +205,9 @@ struct DevToolsView: View {
                     }
                     .cosmicBackground()
                     .navigationTitle("Digest Preview")
+                    #if os(iOS)
                     .navigationBarTitleDisplayMode(.inline)
+                    #endif
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Done") { showDigestPreview = false }

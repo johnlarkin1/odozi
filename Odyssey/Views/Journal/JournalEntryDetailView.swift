@@ -93,7 +93,9 @@ struct JournalEntryDetailView: View {
             .padding(.top, 16)
         }
         .cosmicBackground()
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 
     private func detailCard(title: String, value: String, color: Color) -> some View {

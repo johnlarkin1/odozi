@@ -65,7 +65,9 @@ struct SignInView: View {
             Spacer()
         }
         .navigationTitle("Sign In")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .onChange(of: authManager.isSignedIn) { _, isSignedIn in
             if isSignedIn {
                 dismiss()

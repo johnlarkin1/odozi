@@ -3,12 +3,6 @@ import SwiftUI
 // MARK: - Cross-platform compatibility helpers
 
 #if os(macOS)
-extension View {
-    /// No-op on macOS — iOS-only navigation bar title display mode.
-    func navigationBarTitleDisplayMode(_ mode: Any) -> some View {
-        self
-    }
-}
 
 extension ToolbarItemPlacement {
     /// Maps iOS topBarTrailing to macOS automatic placement.
@@ -25,6 +19,16 @@ extension Image {
     init(platformImage: PlatformImage) {
         self.init(nsImage: platformImage)
     }
+}
+
+// MARK: - iOS-only view modifier shims
+
+enum UIKeyboardType { case emailAddress, numberPad, phonePad }
+enum TextInputAutocapitalization { case never }
+
+extension View {
+    func keyboardType(_ type: UIKeyboardType) -> some View { self }
+    func textInputAutocapitalization(_ cap: TextInputAutocapitalization?) -> some View { self }
 }
 
 #else

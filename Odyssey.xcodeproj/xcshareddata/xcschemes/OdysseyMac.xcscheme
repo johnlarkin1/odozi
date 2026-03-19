@@ -15,7 +15,7 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "ABD0420F1D66A6BBE77A99DE"
-               BuildableName = "OdysseyMac.app"
+               BuildableName = "Odyssey.app"
                BlueprintName = "OdysseyMac"
                ReferencedContainer = "container:Odyssey.xcodeproj">
             </BuildableReference>

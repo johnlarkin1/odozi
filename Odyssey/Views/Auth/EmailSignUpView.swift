@@ -51,7 +51,9 @@ struct EmailSignUpView: View {
             Spacer()
         }
         .navigationTitle("Create Account")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
     }
 
     // MARK: - Credentials
