@@ -1,24 +1,37 @@
 import { Context, Next } from "hono";
 
 // Simple in-memory rate limiter for Cloudflare Workers
-// In production, consider using Cloudflare's Rate Limiting API or Durable Objects
+// Cloudflare provides L7 DDoS protection; this is best-effort per-isolate
 const requestCounts = new Map<string, { count: number; resetAt: number }>();
 
 const WINDOW_MS = 60_000; // 1 minute
-const MAX_REQUESTS = 60; // 60 requests per minute per user
+const MAX_REQUESTS = 60; // 60 requests per minute per IP
+const MAX_MAP_SIZE = 10_000;
+
+function purgeExpired() {
+  if (requestCounts.size <= MAX_MAP_SIZE) return;
+  const now = Date.now();
+  for (const [key, record] of requestCounts) {
+    if (now > record.resetAt) {
+      requestCounts.delete(key);
+    }
+  }
+}
 
 export async function rateLimitMiddleware(c: Context, next: Next) {
-  const userId = c.get("userId") as string;
-  if (!userId) {
-    await next();
-    return;
-  }
+  // Use Cloudflare's connecting IP header, fall back to a generic key
+  const key =
+    c.req.header("cf-connecting-ip") ??
+    c.req.header("x-forwarded-for")?.split(",")[0]?.trim() ??
+    "unknown";
 
   const now = Date.now();
-  const record = requestCounts.get(userId);
+  purgeExpired();
+
+  const record = requestCounts.get(key);
 
   if (!record || now > record.resetAt) {
-    requestCounts.set(userId, { count: 1, resetAt: now + WINDOW_MS });
+    requestCounts.set(key, { count: 1, resetAt: now + WINDOW_MS });
     await next();
     return;
   }

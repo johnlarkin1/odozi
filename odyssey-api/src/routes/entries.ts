@@ -1,7 +1,7 @@
 import { Hono } from "hono";
-import { eq, and, gt, sql } from "drizzle-orm";
+import { eq, and, gt } from "drizzle-orm";
 import { entries, users, syncLog } from "../db/schema";
-import { syncUploadSchema } from "../utils/validation";
+import { syncUploadSchema, validateSyncEntry } from "../utils/validation";
 import type { Env } from "../types";
 import { createDb } from "../db/client";
 
@@ -32,6 +32,8 @@ app.post("/", async (c) => {
   let upsertedCount = 0;
 
   for (const entry of parsed.data.entries) {
+    validateSyncEntry(entry);
+
     await db
       .insert(entries)
       .values({
@@ -146,12 +148,12 @@ app.get("/", async (c) => {
     updatedAt: row.updatedAt.toISOString(),
   }));
 
-  const cursor =
+  const nextCursor =
     results.length === limit
       ? results[results.length - 1].updatedAt.toISOString()
       : null;
 
-  return c.json({ entries: mappedEntries, cursor });
+  return c.json({ entries: mappedEntries, cursor: nextCursor });
 });
 
 // DELETE /entries/:date — Delete a single entry

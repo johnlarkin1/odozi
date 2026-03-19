@@ -29,3 +29,4 @@ Files are named `NNN-short-title.md` (e.g., `001-on-device-llm.md`). Numbers are
 | 002 | [Mood Check-in Widget](002-mood-widget.md) | draft | widgetkit, engagement, home-screen |
 | 003 | [Weekly Digest Notifications](003-weekly-digest.md) | draft | notifications, retention, weekly-summary |
 | 004 | [Streaks + Achievements](004-streaks-achievements.md) | draft | gamification, streaks, badges |
+| 005 | [Cloudflare Workers Backend Migration](005-cloudflare-workers-backend.md) | draft | backend, infrastructure, cloudflare, cost-optimization |
