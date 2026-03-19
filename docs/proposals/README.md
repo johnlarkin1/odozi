@@ -30,3 +30,5 @@ Files are named `NNN-short-title.md` (e.g., `001-on-device-llm.md`). Numbers are
 | 003 | [Weekly Digest Notifications](003-weekly-digest.md) | draft | notifications, retention, weekly-summary |
 | 004 | [Streaks + Achievements](004-streaks-achievements.md) | draft | gamification, streaks, badges |
 | 005 | [Cloudflare Workers Backend Migration](005-cloudflare-workers-backend.md) | draft | backend, infrastructure, cloudflare, cost-optimization |
+| 006 | [Web Portal — View-Only Journal Dashboard](006-web-portal.md) | draft | web, portal, next.js, clerk, dashboard, cross-platform |
+| 007 | [Apple Watch Companion & macOS Desktop App](007-apple-watch-macos-companion.md) | draft | watchos, macos, multi-platform, swiftui, healthkit, complications |
