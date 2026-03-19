@@ -18,7 +18,9 @@ struct DataContainer {
                 isStoredInMemoryOnly: true
             )
         } else {
+            #if os(iOS)
             migrateStoreToAppGroupIfNeeded()
+            #endif
             let storeURL = appGroupStoreURL
             config = ModelConfiguration(
                 "Odyssey",
@@ -31,6 +33,13 @@ struct DataContainer {
     }
 
     static var appGroupStoreURL: URL {
+        #if os(macOS)
+        // macOS: store in Application Support (no App Group needed)
+        let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
+        let odysseyDir = appSupport.appendingPathComponent("Odyssey")
+        try? FileManager.default.createDirectory(at: odysseyDir, withIntermediateDirectories: true)
+        return odysseyDir.appendingPathComponent("Odyssey.store")
+        #else
         if let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID
         ) {
@@ -39,6 +48,7 @@ struct DataContainer {
         logger.warning("App Group container unavailable, falling back to Application Support")
         let appSupport = FileManager.default.urls(for: .applicationSupportDirectory, in: .userDomainMask)[0]
         return appSupport.appendingPathComponent("Odyssey.store")
+        #endif
     }
 
     static func migrateStoreToAppGroupIfNeeded() {

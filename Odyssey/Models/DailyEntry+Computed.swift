@@ -2,7 +2,7 @@ import SwiftUI
 
 extension DailyEntry {
     var feelingColor: Color {
-        Color(UIColor.fromHexString(feelingColorHex))
+        Color(PlatformColor.fromHexString(feelingColorHex))
     }
 
     var moodLabel: String {

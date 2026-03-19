@@ -1,15 +1,20 @@
 import SwiftUI
 import SwiftData
+#if os(iOS)
 import DeviceActivity
+#endif
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
+    #if os(iOS)
     @State private var selectAppsModel = ScreenTimeSelectAppsModel()
+    #endif
     @Query private var allEntries: [DailyEntry]
 
     private var localEntryCount: Int { allEntries.count }
 
+    #if os(iOS)
     @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
     @State private var filter = DeviceActivityFilter(
         segment: .daily(
@@ -18,6 +23,7 @@ struct ProfileView: View {
         users: .all,
         devices: .init([.iPhone, .iPad])
     )
+    #endif
 
     @AppStorage("reminderEnabled") private var reminderEnabled = true
     @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
@@ -97,6 +103,7 @@ struct ProfileView: View {
                     }
                 }
 
+                #if os(iOS)
                 Section("Screen Time") {
                     DeviceActivityReport(context, filter: filter)
                         .frame(height: 60)
@@ -117,6 +124,7 @@ struct ProfileView: View {
                     }
                 }
                 .listRowBackground(Color.cardSurface)
+                #endif
 
                 Section("Reminders") {
                     NavigationLink {

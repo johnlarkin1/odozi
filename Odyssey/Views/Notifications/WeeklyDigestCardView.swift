@@ -147,8 +147,15 @@ func renderDigestCard(_ data: WeeklyDigestData) -> URL? {
     )
     renderer.scale = 3.0
 
+    #if os(macOS)
+    guard let image = renderer.nsImage,
+          let tiffData = image.tiffRepresentation,
+          let bitmap = NSBitmapImageRep(data: tiffData),
+          let pngData = bitmap.representation(using: .png, properties: [:]) else { return nil }
+    #else
     guard let image = renderer.uiImage,
           let pngData = image.pngData() else { return nil }
+    #endif
 
     let url = FileManager.default.temporaryDirectory.appendingPathComponent("weekly-digest-card-\(UUID().uuidString).png")
     do {

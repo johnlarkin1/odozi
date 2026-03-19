@@ -52,8 +52,8 @@ struct FeelingPromptCard: View {
                                 .onChanged { value in
                                     let x = max(0, min(value.location.x, geo.size.width))
                                     let hue = x / geo.size.width
-                                    let uiColor = UIColor(hue: hue, saturation: 0.6, brightness: 0.85, alpha: 1.0)
-                                    colorHex = uiColor.toHexString()
+                                    let color = PlatformColor(hue: hue, saturation: 0.6, brightness: 0.85, alpha: 1.0)
+                                    colorHex = color.toHexString()
                                 }
                         )
                         .accessibilityLabel("Color picker gradient")

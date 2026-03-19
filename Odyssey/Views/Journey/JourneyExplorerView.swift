@@ -28,7 +28,9 @@ struct JourneyExplorerView: View {
                         if let entry = vm.selectedEntry {
                             JourneyDayDetailCard(
                                 entry: entry,
+                                #if os(iOS)
                                 autoThumbnails: vm.autoPhotoThumbnails,
+                                #endif
                                 isLoadingPhotos: vm.isLoadingPhotos,
                                 onAttachPhoto: { data in
                                     vm.attachPhoto(jpegData: data, to: entry)
@@ -78,7 +80,7 @@ struct JourneyExplorerView: View {
         .navigationTitle("Journey")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 NavigationLink(destination: YearInReviewView()) {
                     Image(systemName: "sparkles")
                         .foregroundStyle(Color.accentAmber)

@@ -1,7 +1,9 @@
 import SwiftUI
 import CoreLocation
+#if os(iOS)
 import FamilyControls
 import DeviceActivity
+#endif
 import os
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Onboarding")
@@ -75,6 +77,7 @@ final class OnboardingViewModel {
     }
 
     func requestHealthKitAccess() {
+        #if os(iOS)
         guard HealthKitService.isAvailable else {
             goToNext()
             return
@@ -84,10 +87,13 @@ final class OnboardingViewModel {
             try? await service.requestAuthorization()
             await MainActor.run { goToNext() }
         }
+        #else
+        goToNext()
+        #endif
     }
 
     func requestScreenTimeAccess() {
-        #if !targetEnvironment(simulator)
+        #if os(iOS) && !targetEnvironment(simulator)
         let authorizationCenter = AuthorizationCenter.shared
         Task {
             do {
@@ -104,6 +110,7 @@ final class OnboardingViewModel {
         #endif
     }
 
+    #if os(iOS)
     private func setupDeviceActivityMonitoring() {
         let schedule = DeviceActivitySchedule(
             intervalStart: DateComponents(hour: 0, minute: 0, second: 0),
@@ -121,4 +128,5 @@ final class OnboardingViewModel {
             logger.error("Device activity monitoring setup failed: \(error)")
         }
     }
+    #endif
 }
