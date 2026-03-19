@@ -18,6 +18,9 @@ struct PromptNavigationBar: View {
                 }
                 .font(.body.weight(.medium))
             }
+            #if os(macOS)
+            .keyboardShortcut("[", modifiers: .command)
+            #endif
             .opacity(isFirstStep ? 0 : 1)
             .disabled(isFirstStep)
             .accessibilityLabel("Go back")
@@ -49,6 +52,9 @@ struct PromptNavigationBar: View {
                         .background(Color.accentAmber)
                         .clipShape(Capsule())
                 }
+                #if os(macOS)
+                .keyboardShortcut(.return, modifiers: .command)
+                #endif
                 .accessibilityLabel("Submit entry")
                 .accessibilityHint("Double tap to save your journal entry")
             } else {
@@ -64,6 +70,9 @@ struct PromptNavigationBar: View {
                     .background(Color.accentAmber)
                     .clipShape(Capsule())
                 }
+                #if os(macOS)
+                .keyboardShortcut(.return, modifiers: .command)
+                #endif
                 .accessibilityLabel("Next prompt")
                 .accessibilityHint("Double tap to go to the next prompt")
             }
