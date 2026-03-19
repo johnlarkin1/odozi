@@ -2,7 +2,9 @@ import SwiftUI
 
 struct JourneyDayDetailCard: View {
     let entry: DailyEntry
+    #if os(iOS)
     let autoThumbnails: [UIImage]
+    #endif
     let isLoadingPhotos: Bool
     var onAttachPhoto: ((Data) -> Void)?
     var onRemoveAttached: ((Int) -> Void)?
@@ -65,6 +67,7 @@ struct JourneyDayDetailCard: View {
 
             // Photo strip
             let attachedData = entry.attachedPhotoData ?? []
+            #if os(iOS)
             if !autoThumbnails.isEmpty || !attachedData.isEmpty {
                 JourneyPhotoStrip(
                     autoThumbnails: autoThumbnails,
@@ -74,7 +77,6 @@ struct JourneyDayDetailCard: View {
                     onRemoveAttached: onRemoveAttached
                 )
             } else {
-                // Show just the add button when no photos
                 JourneyPhotoStrip(
                     autoThumbnails: [],
                     attachedPhotoData: [],
@@ -83,6 +85,16 @@ struct JourneyDayDetailCard: View {
                     onRemoveAttached: onRemoveAttached
                 )
             }
+            #else
+            if !attachedData.isEmpty {
+                JourneyPhotoStrip(
+                    attachedPhotoData: attachedData,
+                    isLoading: isLoadingPhotos,
+                    onAttachPhoto: onAttachPhoto,
+                    onRemoveAttached: onRemoveAttached
+                )
+            }
+            #endif
         }
         .padding(16)
         .background(

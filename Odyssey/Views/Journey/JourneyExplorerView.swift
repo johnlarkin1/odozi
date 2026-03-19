@@ -26,6 +26,7 @@ struct JourneyExplorerView: View {
                     VStack(spacing: 12) {
                         // Detail card (slides up when entry selected)
                         if let entry = vm.selectedEntry {
+                            #if os(iOS)
                             JourneyDayDetailCard(
                                 entry: entry,
                                 autoThumbnails: vm.autoPhotoThumbnails,
@@ -38,6 +39,19 @@ struct JourneyExplorerView: View {
                                 }
                             )
                             .transition(.move(edge: .bottom).combined(with: .opacity))
+                            #else
+                            JourneyDayDetailCard(
+                                entry: entry,
+                                isLoadingPhotos: vm.isLoadingPhotos,
+                                onAttachPhoto: { data in
+                                    vm.attachPhoto(jpegData: data, to: entry)
+                                },
+                                onRemoveAttached: { index in
+                                    vm.removeAttachedPhoto(at: index, from: entry)
+                                }
+                            )
+                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                            #endif
                         }
 
                         // Timeline slider (always visible when entries exist)
@@ -76,9 +90,11 @@ struct JourneyExplorerView: View {
             }
         }
         .navigationTitle("Journey")
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
+            ToolbarItem(placement: .automatic) {
                 NavigationLink(destination: YearInReviewView()) {
                     Image(systemName: "sparkles")
                         .foregroundStyle(Color.accentAmber)

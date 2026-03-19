@@ -8,8 +8,36 @@
 import SwiftUI
 import Lottie
 
-struct LottieView: UIViewRepresentable {
+#if os(macOS)
+struct LottieView: NSViewRepresentable {
+    var lottieFile: String
+    var loopMode: LottieLoopMode = .playOnce
+    var animationView = LottieAnimationView()
 
+    func makeNSView(context: Context) -> NSView {
+        let view = NSView()
+
+        animationView.animation = LottieAnimation.named(lottieFile)
+        animationView.contentMode = .scaleAspectFill
+        animationView.loopMode = loopMode
+
+        animationView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(animationView)
+
+        NSLayoutConstraint.activate([
+            animationView.widthAnchor.constraint(equalTo: view.widthAnchor),
+            animationView.heightAnchor.constraint(equalTo: view.heightAnchor)
+        ])
+
+        return view
+    }
+
+    func updateNSView(_ nsView: NSView, context: Context) {
+        animationView.play()
+    }
+}
+#else
+struct LottieView: UIViewRepresentable {
     var lottieFile: String
     var loopMode: LottieLoopMode = .playOnce
     var animationView = LottieAnimationView()
@@ -36,6 +64,7 @@ struct LottieView: UIViewRepresentable {
         animationView.play()
     }
 }
+#endif
 
 #Preview {
     LottieView(lottieFile: "rotating_earth")

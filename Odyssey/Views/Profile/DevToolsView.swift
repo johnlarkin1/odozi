@@ -70,6 +70,7 @@ struct DevToolsView: View {
             // MARK: - Background Services
 
             Section("Background Services") {
+                #if os(iOS)
                 Button("Run Snapshot Capture") {
                     runAction {
                         let service = BackgroundSnapshotService()
@@ -80,6 +81,7 @@ struct DevToolsView: View {
                         return "Snapshot: \(city) · \(steps)"
                     }
                 }
+                #endif
 
                 Button("Capture Location Only") {
                     runAction {
@@ -146,7 +148,7 @@ struct DevToolsView: View {
                 HStack {
                     Text("Screenshot Mode")
                     Spacer()
-                    Text(OdysseyApp.isScreenshotMode ? "On" : "Off")
+                    Text(ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] != nil ? "On" : "Off")
                         .foregroundStyle(.secondary)
                 }
 
@@ -203,7 +205,9 @@ struct DevToolsView: View {
                     }
                     .cosmicBackground()
                     .navigationTitle("Digest Preview")
+                    #if os(iOS)
                     .navigationBarTitleDisplayMode(.inline)
+                    #endif
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button("Done") { showDigestPreview = false }

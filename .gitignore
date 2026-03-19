@@ -106,7 +106,7 @@ TestResults.xcresult
 coverage.json
 
 # Website (Next.js)
-website/node_modules/
+node_modules/
 website/.next/
 website/out/
 

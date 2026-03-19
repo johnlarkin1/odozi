@@ -20,6 +20,16 @@ struct GuidedPromptFlowView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 12)
 
+                        #if os(macOS)
+                        promptCard(for: vm.currentStep, viewModel: vm)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .id(vm.currentStep)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: .trailing).combined(with: .opacity),
+                                removal: .move(edge: .leading).combined(with: .opacity)
+                            ))
+                            .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
+                        #else
                         TabView(selection: Binding(
                             get: { vm.currentStep },
                             set: { vm.currentStep = $0 }
@@ -30,6 +40,7 @@ struct GuidedPromptFlowView: View {
                             }
                         }
                         .tabViewStyle(.page(indexDisplayMode: .never))
+                        #endif
 
                         PromptNavigationBar(
                             isFirstStep: vm.isFirstStep,
@@ -54,6 +65,20 @@ struct GuidedPromptFlowView: View {
                     .padding(.trailing, 16)
                     .padding(.top, 12)
                 }
+                #if os(macOS)
+                .sheet(isPresented: Binding(
+                    get: { vm.showingCompletion },
+                    set: { vm.showingCompletion = $0 }
+                )) {
+                    CompletionCard(
+                        locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
+                        unlockedAchievements: vm.newlyUnlockedAchievements
+                    ) {
+                        dismiss()
+                    }
+                    .frame(minWidth: 400, minHeight: 500)
+                }
+                #else
                 .fullScreenCover(isPresented: Binding(
                     get: { vm.showingCompletion },
                     set: { vm.showingCompletion = $0 }
@@ -65,6 +90,7 @@ struct GuidedPromptFlowView: View {
                         dismiss()
                     }
                 }
+                #endif
             } else {
                 Color.black.ignoresSafeArea()
             }

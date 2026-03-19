@@ -37,7 +37,9 @@ struct YearInReviewView: View {
                             ReviewGratitudeCard(gratitudes: data.topGratitudes).tag(8)
                             ReviewClosingCard(year: data.year, onDismiss: { dismiss() }).tag(9)
                         }
+                        #if os(iOS)
                         .tabViewStyle(.page(indexDisplayMode: .never))
+                        #endif
                     }
                 }
             } else {
@@ -47,7 +49,9 @@ struct YearInReviewView: View {
                 }
             }
         }
+        #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
+        #endif
         .onAppear {
             if viewModel == nil {
                 viewModel = YearInReviewViewModel(modelContext: modelContext)

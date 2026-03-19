@@ -1,7 +1,9 @@
 import SwiftUI
 import SwiftData
 import MapKit
+#if os(iOS)
 import Photos
+#endif
 
 @MainActor
 @Observable
@@ -14,11 +16,15 @@ final class JourneyExplorerViewModel {
         MapCamera(centerCoordinate: .init(latitude: 20, longitude: 0), distance: 40_000_000)
     )
 
+    #if os(iOS)
     var autoPhotoThumbnails: [UIImage] = []
+    #endif
     var isLoadingPhotos = false
 
     private let modelContext: ModelContext
+    #if os(iOS)
     private let photoService = PhotoLibraryService.shared
+    #endif
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
@@ -77,7 +83,9 @@ final class JourneyExplorerViewModel {
             }
         }
 
+        #if os(iOS)
         Task { await loadAutoPhotos(for: entry) }
+        #endif
     }
 
     func selectBySliderIndex(_ index: Double) {
@@ -87,6 +95,7 @@ final class JourneyExplorerViewModel {
         selectEntry(entries[clamped])
     }
 
+    #if os(iOS)
     func loadAutoPhotos(for entry: DailyEntry) async {
         isLoadingPhotos = true
         defer { isLoadingPhotos = false }
@@ -106,6 +115,7 @@ final class JourneyExplorerViewModel {
         }
         autoPhotoThumbnails = thumbnails
     }
+    #endif
 
     func attachPhoto(jpegData: Data, to entry: DailyEntry) {
         var existing = entry.attachedPhotoData ?? []

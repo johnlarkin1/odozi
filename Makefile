@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 16
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
+.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release build-mac test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -82,6 +82,12 @@ build: ## Build debug configuration
 
 build-release: ## Build release configuration
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_RELEASE) -destination '$(DESTINATION)' build
+
+build-mac: ## Build macOS app (debug)
+	xcodebuild -project $(PROJECT) -scheme OdysseyMac -configuration $(CONFIG_DEBUG) -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
+
+build-mac-release: ## Build macOS app (release)
+	xcodebuild -project $(PROJECT) -scheme OdysseyMac -configuration $(CONFIG_RELEASE) -destination 'platform=macOS' CODE_SIGNING_ALLOWED=NO build
 
 test: ## Run all tests (unit + UI)
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -destination '$(DESTINATION)' test

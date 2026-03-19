@@ -61,9 +61,16 @@ struct TodayView: View {
                 backgroundGradient
             }
             .cosmicBackground()
+            #if os(macOS)
+            .sheet(isPresented: $showingGuidedFlow) {
+                GuidedPromptFlowView()
+                    .frame(minWidth: 500, idealWidth: 600, minHeight: 600, idealHeight: 700)
+            }
+            #else
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                 GuidedPromptFlowView()
             }
+            #endif
             .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
                 if shouldShow {
                     showingGuidedFlow = true
@@ -79,10 +86,12 @@ struct TodayView: View {
                     }
                 }
             }
+            #if os(iOS)
             .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
                 viewModel?.checkForTodayEntry()
                 todayEntry = viewModel?.fetchTodayEntry()
             }
+            #endif
             .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
                 showingGuidedFlow = true
             }

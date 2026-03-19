@@ -22,7 +22,9 @@ struct LocationTimingSettingsView: View {
                 locationCaptureHour = comps.hour ?? 20
                 locationCaptureMinute = comps.minute ?? 0
                 updateSwiftData()
+                #if os(iOS)
                 SnapshotScheduler.scheduleSnapshotTask()
+                #endif
             }
         )
     }
@@ -34,7 +36,9 @@ struct LocationTimingSettingsView: View {
                     Button {
                         locationCaptureModeRaw = mode.rawValue
                         updateSwiftData()
-                        SnapshotScheduler.scheduleSnapshotTask()
+                        #if os(iOS)
+                SnapshotScheduler.scheduleSnapshotTask()
+                #endif
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {

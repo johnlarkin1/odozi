@@ -9,6 +9,18 @@ struct ShareableCardRenderer {
     /// high-quality output suitable for sharing on any device.
     private static let shareRenderScale: CGFloat = 3.0
 
+    #if os(macOS)
+    @MainActor
+    static func render<Content: View>(_ content: Content, size: CGSize = standardShareCardSize) -> NSImage? {
+        let renderer = ImageRenderer(content:
+                                        content
+                                        .frame(width: size.width, height: size.height)
+                                        .environment(\.colorScheme, .dark)
+        )
+        renderer.scale = shareRenderScale
+        return renderer.nsImage
+    }
+    #else
     @MainActor
     static func render<Content: View>(_ content: Content, size: CGSize = standardShareCardSize) -> UIImage? {
         let renderer = ImageRenderer(content:
@@ -19,4 +31,5 @@ struct ShareableCardRenderer {
         renderer.scale = shareRenderScale
         return renderer.uiImage
     }
+    #endif
 }
