@@ -1,7 +1,7 @@
 import { Hono } from "hono";
 import { eq } from "drizzle-orm";
 import { encryptedKeyBackups, users } from "../db/schema";
-import { keyBackupSchema } from "../utils/validation";
+import { keyBackupSchema, validateKeyBackup } from "../utils/validation";
 import type { Env } from "../types";
 import { createDb } from "../db/client";
 
@@ -16,6 +16,8 @@ app.put("/", async (c) => {
   if (!parsed.success) {
     return c.json({ error: "Validation failed", details: parsed.error.flatten() }, 400);
   }
+
+  validateKeyBackup(parsed.data);
 
   const db = createDb(c.env.DATABASE_URL);
 
