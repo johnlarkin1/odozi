@@ -24,7 +24,6 @@
 		0C75DEA53567E527F0537FBD /* JourneyExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* JourneyExplorerView.swift */; };
 		0F21CBFC1793A2C01C5880D0 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E7870D5E38DE543E0ED2C /* SampleData.swift */; };
 		0F9B342D454A7EF5A78269C7 /* MacMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB6A59374B91D8A0881333F /* MacMainView.swift */; };
-		AA11223344556677AABB0001 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11223344556677AABB0002 /* MacSettingsView.swift */; };
 		0FFB49C8954DE5DA482C7C0E /* LocationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* LocationCard.swift */; };
 		1115D60DD17B21F0DB722467 /* FullWalkthroughDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87191FFF15D31AEA9D54DC /* FullWalkthroughDemo.swift */; };
 		123519BA13C224E5807F22E8 /* InsightsTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2046CA0E37A6B22BB6615E /* InsightsTabBar.swift */; };
@@ -109,6 +108,8 @@
 		5D4A6D40BA43A151A401FEF8 /* ReminderTimeOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = E80FD024C95558B01BEA392E /* ReminderTimeOfDay.swift */; };
 		5E39DC9E5887177EB13C8C94 /* DrinksPromptCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 812204442C574F4378F19004 /* DrinksPromptCard.swift */; };
 		5E6F7A8B9C0D1E2F3A4B5C6D /* JourneyTimelineSlider.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5F6A7B8C9D0E1F2A3B4C5D6 /* JourneyTimelineSlider.swift */; };
+		5F0A1D852F6C1DBB007927FA /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = C52FF8A0D5582BB57EB44A32 /* ClerkKit */; };
+		5F0A1D862F6C1DBB007927FA /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 61B10ECEAC92CE19137803BC /* Lottie */; };
 		5F2B9D85498D1A1F1FACE2B0 /* SharedDefaults.swift in Sources */ = {isa = PBXBuildFile; fileRef = 638F8D021F793E5A525CF7AB /* SharedDefaults.swift */; };
 		5F96AA732B49FD6600999B84 /* Lottie in Frameworks */ = {isa = PBXBuildFile; productRef = 5F96AA722B49FD6600999B84 /* Lottie */; };
 		5F96AA762B49FE9600999B84 /* rotating_earth.json in Resources */ = {isa = PBXBuildFile; fileRef = 5F96AA752B49FE9500999B84 /* rotating_earth.json */; };
@@ -230,6 +231,7 @@
 		AA00000000000003SCREEN03 /* SnapshotHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000004SCREEN04 /* SnapshotHelper.swift */; };
 		AA01A1B1C1D1E1F101010101 /* DailyEntryRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02A2B2C2D2E2F202020202 /* DailyEntryRepository.swift */; };
 		AA03A3B3C3D3E3F303030303 /* DailyEntry+Streak.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04A4B4C4D4E4F404040404 /* DailyEntry+Streak.swift */; };
+		AA11223344556677AABB0001 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11223344556677AABB0002 /* MacSettingsView.swift */; };
 		AAB99AA653D09C2DF8203F47 /* PromptProgressBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 20FBEA1FBB6F97D9470A1A33 /* PromptProgressBar.swift */; };
 		AB124E2EFDF84CF4B23ADDC7 /* WeeklyDigestCardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C41BE663473A41E0AB6B05CA /* WeeklyDigestCardView.swift */; };
 		AB8D49FB59B1F5B518D76BBD /* MapVisualizationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2827F5D60870DE3D25E38D6B /* MapVisualizationView.swift */; };
@@ -484,7 +486,7 @@
 		4D0D7FE6859B631359A8FC77 /* DailyEntry+Computed.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "DailyEntry+Computed.swift"; sourceTree = "<group>"; };
 		4E0E78DC1B6B94D9A9D78AB2 /* PromptResponses.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PromptResponses.swift; sourceTree = "<group>"; };
 		5357AA89DC0B9F0A1AE8A7CF /* FeelingPromptCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeelingPromptCard.swift; sourceTree = "<group>"; };
-		54415549762184E6E56E7496 /* OdysseyMac.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = OdysseyMac.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		54415549762184E6E56E7496 /* Odyssey.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Odyssey.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		544BCBDDD4BEA77E53E0CF5B /* MediumMoodWidgetView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MediumMoodWidgetView.swift; sourceTree = "<group>"; };
 		5B7A0B21D5A37C00B603DCDA /* InsightsTab.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsTab.swift; sourceTree = "<group>"; };
 		5DAA03677F50ED2C50A8140C /* PromptStep.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PromptStep.swift; sourceTree = "<group>"; };
@@ -584,6 +586,7 @@
 		AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
 		AA09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatus.swift; sourceTree = "<group>"; };
 		AA10D1E2F3A4B5C6D7E8F9A0 /* DataRetentionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRetentionService.swift; sourceTree = "<group>"; };
+		AA11223344556677AABB0002 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
 		AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupPromptModal.swift; sourceTree = "<group>"; };
 		AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInView.swift; sourceTree = "<group>"; };
 		AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountView.swift; sourceTree = "<group>"; };
@@ -613,7 +616,6 @@
 		C9A739CE8449DECE5322E83B /* OnboardingNavigationBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingNavigationBar.swift; sourceTree = "<group>"; };
 		CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeCard.swift; sourceTree = "<group>"; };
 		CEB6A59374B91D8A0881333F /* MacMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
-		AA11223344556677AABB0002 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
 		CF91790A7312437C2A5EB939 /* CrossPlatform.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrossPlatform.swift; sourceTree = "<group>"; };
 		D167085E6095764E803C5AF7 /* WordCloudView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WordCloudView.swift; sourceTree = "<group>"; };
 		D3F4701C9B4B5B7D8B94B3B5 /* WidgetDataAccessTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetDataAccessTests.swift; sourceTree = "<group>"; };
@@ -655,7 +657,7 @@
 		F59B20C772D1CA1B76EC90CE /* InsightsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InsightsViewModelTests.swift; sourceTree = "<group>"; };
 		F6A7B8C9D0E1F2A3B4C5D6E7 /* JourneyDayDetailCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyDayDetailCard.swift; sourceTree = "<group>"; };
 		F6D2AFCA93E4D4730304B2C9 /* MindTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MindTabView.swift; sourceTree = "<group>"; };
-		F754E8DBD6ECCDF9E0C403BC /* OdysseyWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; name = OdysseyWidget.appex; path = OdysseyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		F754E8DBD6ECCDF9E0C403BC /* OdysseyWidget.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = OdysseyWidget.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		F818AA569D58A9850835A0EF /* NotificationPermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationPermissionCard.swift; sourceTree = "<group>"; };
 		FB80AF02CA56C0E95B58A7C9 /* DailyEntryComputedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEntryComputedTests.swift; sourceTree = "<group>"; };
 		FF542CB95D8B38CD695E5F57 /* SharedDefaultsWidgetTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedDefaultsWidgetTests.swift; sourceTree = "<group>"; };
@@ -714,6 +716,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5F0A1D862F6C1DBB007927FA /* Lottie in Frameworks */,
+				5F0A1D852F6C1DBB007927FA /* ClerkKit in Frameworks */,
 				45133E449493D3FA00558D70 /* Cocoa.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -817,7 +821,6 @@
 				6ED367CEDA6ACD9E8D7B65B4 /* OdysseyWidget.entitlements */,
 				16E9CB4DEA233A0428DB0A19 /* OdysseyWidget.NoScreenTime.entitlements */,
 			);
-			name = OdysseyWidget;
 			path = OdysseyWidget;
 			sourceTree = "<group>";
 		};
@@ -985,7 +988,7 @@
 				5F96AAA42B4C38DD00999B84 /* OdysseyDeviceActivityMonitor.appex */,
 				5F96AAB82B4C410D00999B84 /* OdysseyDeviceActivityReport.appex */,
 				F754E8DBD6ECCDF9E0C403BC /* OdysseyWidget.appex */,
-				54415549762184E6E56E7496 /* OdysseyMac.app */,
+				54415549762184E6E56E7496 /* Odyssey.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -1130,6 +1133,14 @@
 			path = Journey;
 			sourceTree = "<group>";
 		};
+		AA11223344556677AABB0003 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA11223344556677AABB0002 /* MacSettingsView.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
 		B47170D3EF5799179798661E /* Today */ = {
 			isa = PBXGroup;
 			children = (
@@ -1150,16 +1161,7 @@
 				AA11223344556677AABB0003 /* Views */,
 				B5F7178D132AAE792EDB296F /* OdysseyMac.entitlements */,
 			);
-			name = OdysseyMac;
 			path = OdysseyMac;
-			sourceTree = "<group>";
-		};
-		AA11223344556677AABB0003 /* Views */ = {
-			isa = PBXGroup;
-			children = (
-				AA11223344556677AABB0002 /* MacSettingsView.swift */,
-			);
-			path = Views;
 			sourceTree = "<group>";
 		};
 		CC01B2C3D4E5F6A7B8C9D0E1 /* Encryption */ = {
@@ -1241,7 +1243,6 @@
 				801680621A14AEF3730F85FB /* StreaksAchievementsDemo.swift */,
 				BB1111111111111111111102 /* WeeklyDigestDemo.swift */,
 			);
-			name = FeatureDemos;
 			path = FeatureDemos;
 			sourceTree = "<group>";
 		};
@@ -1413,7 +1414,7 @@
 				61B10ECEAC92CE19137803BC /* Lottie */,
 			);
 			productName = OdysseyMac;
-			productReference = 54415549762184E6E56E7496 /* OdysseyMac.app */;
+			productReference = 54415549762184E6E56E7496 /* Odyssey.app */;
 			productType = "com.apple.product-type.application";
 		};
 		C040EB5937BB9750C3F34423 /* OdysseyWidget */ = {
@@ -2340,15 +2341,19 @@
 		};
 		752E3F82EC110D101D590955 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EE01A2B3C4D5E6F708192A3B /* Odyssey.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_ENTITLEMENTS = OdysseyMac/OdysseyMac.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Odyssey/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2357,6 +2362,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.johnlarkin.OdysseyMac;
 				PRODUCT_NAME = Odyssey;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -2366,15 +2372,19 @@
 		};
 		CBDDA6ABFCD0787D4B56871A /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = EE01A2B3C4D5E6F708192A3B /* Odyssey.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGNING_ALLOWED = NO;
 				CODE_SIGN_ENTITLEMENTS = OdysseyMac/OdysseyMac.entitlements;
+				CODE_SIGN_IDENTITY = "Apple Development";
+				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = "";
+				INFOPLIST_FILE = Odyssey/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2383,6 +2393,7 @@
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.johnlarkin.OdysseyMac;
 				PRODUCT_NAME = Odyssey;
+				PROVISIONING_PROFILE_SPECIFIER = "";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_STRICT_CONCURRENCY = complete;
@@ -2398,6 +2409,7 @@
 				CODE_SIGNING_ALLOWED = "$(inherited)";
 				CODE_SIGN_ENTITLEMENTS = OdysseyWidget/OdysseyWidget.NoScreenTime.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
@@ -2426,6 +2438,7 @@
 				CODE_SIGNING_ALLOWED = "$(inherited)";
 				CODE_SIGN_ENTITLEMENTS = OdysseyWidget/OdysseyWidget.NoScreenTime.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyWidget/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
