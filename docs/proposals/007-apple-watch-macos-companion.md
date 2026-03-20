@@ -758,6 +758,7 @@ let category = UNNotificationCategory(
 - [x] **Phase 3: Auth + Cloud Sync** — `WatchAuthManager` (token-only, no Clerk SDK), `WatchSyncService` (upload/download via APIClient + EncryptionService), `WatchSessionReceiver` (WCSession delegate), `WatchConnectivityService` (iOS-side token transfer via `transferUserInfo`), `AuthManager` sends token to watch on refresh
 - [x] **Phase 4: HealthKit on Watch** — `HealthKitService` extended with `fetchAverageHeartRate(for:)` under `#if os(watchOS)`, heart rate added to read types, `WatchHealthCapture` orchestrates concurrent HealthKit → DailyEntry population
 - [x] **Phase 5: Complications** — `MoodComplication` widget with `MoodTimelineProvider`, views for `.accessoryCircular`, `.accessoryRectangular`, `.accessoryInline`, `.accessoryCorner`, midnight refresh policy
+- [x] **Build Artifacts** — Entitlements (`OdysseyWatch.entitlements`, `OdysseyWatch.NoScreenTime.entitlements`) and asset catalog (`Assets.xcassets` with app icon, accent color)
 - [ ] **Phase 6 (Future):** Notifications, week summary charts, bidirectional WatchConnectivity sync, background refresh
 
 ### Deviations from Original Design
@@ -772,16 +773,36 @@ The `OdysseyWatch` Xcode target must be created manually in Xcode:
 1. File > New > Target > watchOS > App
 2. Product Name: `OdysseyWatch`, Bundle ID: `com.johnlarkin.Odyssey.watchkitapp`
 3. Watch app for: `Odyssey` (companion), SwiftUI, watchOS 10.0 minimum
-4. Add shared files to target membership (see shared file list in Phase 1 plan)
-5. Add all `OdysseyWatch/*.swift` files to the new target
+4. Delete the auto-generated `OdysseyWatchApp.swift` (ours already exists)
+5. Add all `OdysseyWatch/*.swift` files to the new target (including `Complications/`)
+6. Add shared files to target membership (see shared file list in Phase 1 plan):
+   - `DailyEntry.swift`, `DataContainer.swift`, `DailyEntryRepository.swift`, `UserPreferences.swift`
+   - `Color+Extensions.swift`, `UIColor+Extensions.swift`, `PlatformColor.swift`
+   - `APIClient.swift`, `EncryptionService.swift`, `HealthKitService.swift`
+   - `SharedDefaults.swift`
+7. Set entitlements: Signing & Capabilities > set `OdysseyWatch.entitlements`
+8. Add HealthKit capability in Signing & Capabilities
+9. Add App Group capability with `group.com.johnlarkin.Odyssey`
+10. Set asset catalog: Build Settings > Asset Catalog Compiler > `OdysseyWatch/Assets.xcassets`
+11. Verify build: `make build-watch`
+
+## What's Next (watchOS)
+
+All Phase 1-5 Swift source code is landed. After manual Xcode target creation, the remaining work:
+
+1. **Wire `WatchHealthCapture` into app lifecycle** — `WatchHealthCapture` is built but never called from `OdysseyWatchApp`. Needs to run on `scenePhase == .active` and/or via background refresh.
+2. **Custom dictation for feeling picker** — The "Custom..." button in `FeelingPickerView` is a stub. Wire up watchOS dictation (`TextFieldStyle` or `presentTextInputController`).
+3. **8 PM notification with actions** — Register `DAILY_CHECKIN` category with `QUICK_CHECKIN` and `SNOOZE` actions. Handle in `WatchNotificationHandler` to navigate to `QuickCheckInView`.
+4. **Week summary with real Swift Charts** — `WeekSummaryView` currently uses placeholder rectangles. Replace with `Chart` + `BarMark` for mood trend.
+5. **Bidirectional WatchConnectivity sync** — Currently watch only receives auth tokens from iPhone. Need iPhone → Watch full entry data (after guided prompt) and Watch → iPhone quick check-in enrichment.
+6. **Background refresh** — `WKApplicationRefreshBackgroundTask` for periodic HealthKit capture without user opening the app.
+7. **Error state handling** — `WatchSyncService` and `TodayGlanceView` need proper error/loading/offline states instead of silent failures.
 
 ## Next Steps
 
-1. **Merge PR #85** after resolving CI, tests, and photo attachment issues
-2. **Create `OdysseyWatch` Xcode target** with shared model files
-3. **Build quick check-in flow** with Digital Crown mood input
-4. **Implement mood complications** using WidgetKit
-5. **Test cloud sync** from watch → API → iPhone (verify field-level merge works with partial entries)
-6. **Resolve watch auth** — prototype WatchConnectivity token transfer
-7. **Add macOS keyboard shortcuts** and menu bar extra
-8. **Write platform-specific tests** for both macOS and watchOS
+1. **Create `OdysseyWatch` Xcode target** manually (see Manual Step Required above)
+2. **Merge PR #85** after resolving CI, tests, and photo attachment issues
+3. **Test cloud sync** from watch → API → iPhone (verify field-level merge works with partial entries)
+4. **Resolve watch auth** — prototype WatchConnectivity token transfer
+5. **Add macOS keyboard shortcuts** and menu bar extra
+6. **Write platform-specific tests** for both macOS and watchOS
