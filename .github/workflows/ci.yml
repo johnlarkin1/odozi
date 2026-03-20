@@ -22,6 +22,30 @@ jobs:
       - name: Lint
         run: swiftlint lint --strict --reporter github-actions-logging
 
+  build-mac:
+    if: github.event_name == 'push'
+    needs: lint
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Cache SPM packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('Odyssey.xcodeproj/project.pbxproj') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: Create xcconfig
+        run: cp Odyssey.xcconfig.example Odyssey.xcconfig
+
+      - name: Resolve packages
+        run: make resolve
+
+      - name: Build macOS
+        run: make build-mac
+
   build-and-test:
     if: github.event_name == 'push'
     needs: lint

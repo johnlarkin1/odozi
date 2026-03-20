@@ -24,6 +24,7 @@
 		0C75DEA53567E527F0537FBD /* JourneyExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* JourneyExplorerView.swift */; };
 		0F21CBFC1793A2C01C5880D0 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E7870D5E38DE543E0ED2C /* SampleData.swift */; };
 		0F9B342D454A7EF5A78269C7 /* MacMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB6A59374B91D8A0881333F /* MacMainView.swift */; };
+		AA11223344556677AABB0001 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11223344556677AABB0002 /* MacSettingsView.swift */; };
 		0FFB49C8954DE5DA482C7C0E /* LocationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* LocationCard.swift */; };
 		1115D60DD17B21F0DB722467 /* FullWalkthroughDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2C87191FFF15D31AEA9D54DC /* FullWalkthroughDemo.swift */; };
 		123519BA13C224E5807F22E8 /* InsightsTabBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA2046CA0E37A6B22BB6615E /* InsightsTabBar.swift */; };
@@ -612,6 +613,7 @@
 		C9A739CE8449DECE5322E83B /* OnboardingNavigationBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingNavigationBar.swift; sourceTree = "<group>"; };
 		CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeCard.swift; sourceTree = "<group>"; };
 		CEB6A59374B91D8A0881333F /* MacMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
+		AA11223344556677AABB0002 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
 		CF91790A7312437C2A5EB939 /* CrossPlatform.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrossPlatform.swift; sourceTree = "<group>"; };
 		D167085E6095764E803C5AF7 /* WordCloudView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WordCloudView.swift; sourceTree = "<group>"; };
 		D3F4701C9B4B5B7D8B94B3B5 /* WidgetDataAccessTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetDataAccessTests.swift; sourceTree = "<group>"; };
@@ -1145,10 +1147,19 @@
 			children = (
 				E38FC67B61B742497562BF76 /* OdysseyMacApp.swift */,
 				CEB6A59374B91D8A0881333F /* MacMainView.swift */,
+				AA11223344556677AABB0003 /* Views */,
 				B5F7178D132AAE792EDB296F /* OdysseyMac.entitlements */,
 			);
 			name = OdysseyMac;
 			path = OdysseyMac;
+			sourceTree = "<group>";
+		};
+		AA11223344556677AABB0003 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				AA11223344556677AABB0002 /* MacSettingsView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		CC01B2C3D4E5F6A7B8C9D0E1 /* Encryption */ = {
@@ -1788,6 +1799,7 @@
 			files = (
 				E2726F2A40A062FCD797CA23 /* OdysseyMacApp.swift in Sources */,
 				0F9B342D454A7EF5A78269C7 /* MacMainView.swift in Sources */,
+				AA11223344556677AABB0001 /* MacSettingsView.swift in Sources */,
 				D89F98A80FC1DB220415137B /* WeeklyDigestService.swift in Sources */,
 				A4D697EA7A33F8F377F9A068 /* WeeklyDigestNotificationManager.swift in Sources */,
 				ED00C78B25D40C6DC8D26438 /* WeeklyDigestSettingsView.swift in Sources */,

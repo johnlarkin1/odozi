@@ -12,6 +12,8 @@ struct OdysseyMacApp: App {
 
     @State private var authManager = AuthManager()
     @State private var syncService = SyncService()
+    @State private var selectedSection: SidebarSection = .today
+    @State private var showGuidedPrompt = false
 
     let container: ModelContainer?
     let containerError: Error?
@@ -41,7 +43,8 @@ struct OdysseyMacApp: App {
         WindowGroup {
             Group {
                 if let container {
-                    MacMainView()
+                    MacMainView(selectedSection: $selectedSection, showGuidedPrompt: $showGuidedPrompt)
+                        .frame(minWidth: 800, minHeight: 600)
                         .environment(\.colorScheme, .dark)
                         .environment(authManager)
                         .environment(syncService)
@@ -63,7 +66,47 @@ struct OdysseyMacApp: App {
             }
         }
         .defaultSize(width: 1100, height: 750)
-        .windowResizability(.contentSize)
+        .windowResizability(.contentMinSize)
+        .commands {
+            CommandGroup(replacing: .newItem) {
+                Button("New Entry") {
+                    selectedSection = .today
+                    showGuidedPrompt = true
+                }
+                .keyboardShortcut("n", modifiers: .command)
+            }
+
+            CommandMenu("Navigate") {
+                Button("Today") {
+                    selectedSection = .today
+                }
+                .keyboardShortcut("1", modifiers: .command)
+
+                Button("Journal") {
+                    selectedSection = .journal
+                }
+                .keyboardShortcut("2", modifiers: .command)
+
+                Button("Insights") {
+                    selectedSection = .insights
+                }
+                .keyboardShortcut("3", modifiers: .command)
+            }
+
+            CommandGroup(replacing: .help) {
+                Link("Odyssey Help", destination: URL(string: "https://odozi.app")!)
+            }
+        }
+
+        Settings {
+            if let container {
+                MacSettingsView()
+                    .environment(\.colorScheme, .dark)
+                    .environment(authManager)
+                    .environment(syncService)
+                    .modelContainer(container)
+            }
+        }
     }
 
     @MainActor
