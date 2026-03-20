@@ -131,6 +131,9 @@ final class AuthManager {
             if let token = try await Clerk.shared.auth.getToken() {
                 sessionToken = token
                 try? KeychainService.storeAuthToken(token)
+                #if os(iOS)
+                WatchConnectivityService.shared.sendToken(token)
+                #endif
             }
         } catch {
             // Token refresh failed — return cached token

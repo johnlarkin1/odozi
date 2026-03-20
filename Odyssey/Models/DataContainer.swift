@@ -8,7 +8,11 @@ struct DataContainer {
     static let appGroupID = "group.com.johnlarkin.Odyssey"
 
     static func create(inMemory: Bool = false) throws -> ModelContainer {
+        #if os(watchOS)
+        let schema = Schema([DailyEntry.self, UserPreferences.self])
+        #else
         let schema = Schema([DailyEntry.self, UserPreferences.self, Achievement.self])
+        #endif
         let config: ModelConfiguration
 
         if inMemory {
@@ -39,6 +43,15 @@ struct DataContainer {
         let odysseyDir = appSupport.appendingPathComponent("Odyssey")
         try? FileManager.default.createDirectory(at: odysseyDir, withIntermediateDirectories: true)
         return odysseyDir.appendingPathComponent("Odyssey.store")
+        #elseif os(watchOS)
+        // watchOS: use App Group shared with iOS companion
+        if let container = FileManager.default.containerURL(
+            forSecurityApplicationGroupIdentifier: appGroupID
+        ) {
+            return container.appendingPathComponent("Odyssey.store")
+        }
+        let docs = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)[0]
+        return docs.appendingPathComponent("Odyssey.store")
         #else
         if let container = FileManager.default.containerURL(
             forSecurityApplicationGroupIdentifier: appGroupID

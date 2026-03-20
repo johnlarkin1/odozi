@@ -87,6 +87,9 @@ struct OdysseyApp: App {
                             }
                             .modelContainer(container)
                             .task {
+                                #if os(iOS)
+                                WatchConnectivityService.shared.activate()
+                                #endif
                                 await authManager.initialize()
                                 performRetroactiveAchievementEvaluation()
                             }
