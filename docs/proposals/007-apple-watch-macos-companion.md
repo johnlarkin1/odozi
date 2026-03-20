@@ -1,6 +1,6 @@
 ---
 title: Apple Watch Companion & macOS Desktop App
-status: draft
+status: in-progress
 date: 2026-03-19
 tags: [watchos, macos, multi-platform, swiftui, healthkit, complications]
 ---
@@ -748,6 +748,32 @@ let category = UNNotificationCategory(
 6. **Watch journal text.** Should the watch allow free-text journal entry via dictation? It's technically possible but the UX is poor for long-form writing. Recommendation: no — keep the watch focused on quick check-in (mood + feeling word only). Users can add journal text on iPhone/Mac later; merge handles this gracefully.
 
 7. **Heart rate as mood proxy.** Should we surface heart rate variability on the watch as a "stress indicator" alongside self-reported mood? This is a compelling feature but raises questions about accuracy and user anxiety. Worth a separate proposal.
+
+## Progress
+
+### watchOS Implementation (branch: `feat-explore-apple-watch-support`)
+
+- [x] **Phase 1: Skeleton App** — `OdysseyWatch/` directory with `@main` entry point, 3-tab TabView (Today Glance, Quick Check-In, Week Summary), `DataContainer.swift` updated with `#if os(watchOS)` schema (excludes Achievement), watchOS storage path, `build-watch` Makefile target
+- [x] **Phase 2: Quick Check-In Flow** — `MoodCrownView` (Digital Crown 1-10 with haptics), `FeelingPickerView` (6 presets + custom), `CheckInConfirmationView` (haptic + auto-dismiss), saves to SwiftData with `needsSync = true`
+- [x] **Phase 3: Auth + Cloud Sync** — `WatchAuthManager` (token-only, no Clerk SDK), `WatchSyncService` (upload/download via APIClient + EncryptionService), `WatchSessionReceiver` (WCSession delegate), `WatchConnectivityService` (iOS-side token transfer via `transferUserInfo`), `AuthManager` sends token to watch on refresh
+- [x] **Phase 4: HealthKit on Watch** — `HealthKitService` extended with `fetchAverageHeartRate(for:)` under `#if os(watchOS)`, heart rate added to read types, `WatchHealthCapture` orchestrates concurrent HealthKit → DailyEntry population
+- [x] **Phase 5: Complications** — `MoodComplication` widget with `MoodTimelineProvider`, views for `.accessoryCircular`, `.accessoryRectangular`, `.accessoryInline`, `.accessoryCorner`, midnight refresh policy
+- [ ] **Phase 6 (Future):** Notifications, week summary charts, bidirectional WatchConnectivity sync, background refresh
+
+### Deviations from Original Design
+
+- `SyncService.swift` is NOT shared with watchOS (depends on `AuthManager` which imports ClerkKit). Instead, `WatchSyncService` reimplements sync using `APIClient` + `EncryptionService` directly.
+- `Achievement.swift` excluded from watchOS schema as planned.
+- `PlatformColor.swift` updated with explicit `#elseif os(watchOS)` case.
+
+### Manual Step Required
+
+The `OdysseyWatch` Xcode target must be created manually in Xcode:
+1. File > New > Target > watchOS > App
+2. Product Name: `OdysseyWatch`, Bundle ID: `com.johnlarkin.Odyssey.watchkitapp`
+3. Watch app for: `Odyssey` (companion), SwiftUI, watchOS 10.0 minimum
+4. Add shared files to target membership (see shared file list in Phase 1 plan)
+5. Add all `OdysseyWatch/*.swift` files to the new target
 
 ## Next Steps
 

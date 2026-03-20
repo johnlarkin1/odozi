@@ -10,11 +10,15 @@ actor HealthKitService {
     func requestAuthorization() async throws {
         guard HealthKitService.isAvailable else { return }
 
-        let readTypes: Set<HKObjectType> = [
+        var readTypes: Set<HKObjectType> = [
             HKQuantityType(.stepCount),
             HKQuantityType(.distanceWalkingRunning),
             HKCategoryType(.sleepAnalysis)
         ]
+
+        #if os(watchOS)
+        readTypes.insert(HKQuantityType(.heartRate))
+        #endif
 
         try await store.requestAuthorization(toShare: [], read: readTypes)
     }
@@ -114,4 +118,21 @@ actor HealthKitService {
               let sleepEnd = calendar.date(byAdding: .hour, value: 12, to: start) else { return nil }
         return DateInterval(start: sleepStart, end: sleepEnd)
     }
+
+    #if os(watchOS)
+    func fetchAverageHeartRate(for date: Date) async throws -> Double? {
+        guard let interval = dayInterval(for: date) else { return nil }
+        let type = HKQuantityType(.heartRate)
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: HKSamplePredicate.quantitySample(type: type, predicate: predicate),
+            options: .discreteAverage
+        )
+
+        let result = try await descriptor.result(for: store)
+        guard let avg = result?.averageQuantity() else { return nil }
+        return avg.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+    }
+    #endif
 }
