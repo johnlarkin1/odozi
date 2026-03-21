@@ -56,20 +56,22 @@ export function HeroSection() {
 
   return (
     <section
-      className="relative grid overflow-hidden"
+      className="relative grid"
       style={{
         height: "calc(100dvh - 57px)",
         gridTemplateRows: "auto 1fr auto",
+        overflowX: "clip",
+        overflowY: "hidden",
       }}
     >
       <CosmicBackground />
 
-      {/* Row 1: Hero text (auto-sized) */}
+      {/* Row 1: Hero text */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
-        className="relative z-10 mx-auto max-w-4xl px-6 pt-4 text-center sm:pt-8"
+        className="relative z-10 w-full px-6 pt-4 text-center sm:pt-8"
       >
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-7xl">
           <span className="bg-gradient-to-r from-accent-amber via-cosmic-purple to-accent-teal bg-clip-text text-transparent">
@@ -101,12 +103,12 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Row 2: Carousel (1fr — fills all remaining space) */}
+      {/* Row 2: Carousel (1fr — fills remaining space) */}
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.25 }}
-        className="relative z-10 min-h-0 w-full pt-4 sm:pt-6"
+        className="relative z-10 min-h-0 min-w-0 w-full pt-4 sm:pt-6"
       >
         <div
           ref={scrollRef}
@@ -145,7 +147,7 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Row 3: Dot labels (auto-sized) */}
+      {/* Row 3: Dot labels */}
       <div className="relative z-10 flex items-center justify-center gap-2 py-2 sm:gap-3 sm:py-3">
         {screenshots.map((shot, i) => (
           <button
