@@ -5,7 +5,6 @@ import {
   PassiveCaptureSection,
   InsightsSection,
   YearInReviewSection,
-  ScreenshotCarousel,
 } from "@/components/FeatureGrid";
 import { PrivacySection, FinalCTASection } from "@/components/CTASection";
 import { FAQSection } from "@/components/FAQSection";
@@ -22,7 +21,6 @@ export default function Home() {
       <WaveDivider />
       <InsightsSection />
       <YearInReviewSection />
-      <ScreenshotCarousel />
       <WaveDivider />
       <PrivacySection />
       <FAQSection />
