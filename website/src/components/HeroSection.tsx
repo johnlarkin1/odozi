@@ -56,7 +56,7 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative flex h-[100dvh] flex-col items-center overflow-hidden">
+    <section className="relative flex h-[calc(100dvh-57px)] flex-col items-center overflow-hidden">
       <CosmicBackground />
 
       {/* Hero text — compact, pinned to top */}
