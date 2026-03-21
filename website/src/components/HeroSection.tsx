@@ -56,15 +56,15 @@ export function HeroSection() {
   }, []);
 
   return (
-    <section className="relative flex h-[100dvh] flex-col items-center justify-center overflow-hidden">
+    <section className="relative flex h-[100dvh] flex-col items-center overflow-hidden">
       <CosmicBackground />
 
-      {/* Hero text — compact */}
+      {/* Hero text — compact, pinned to top */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
-        className="relative z-10 mx-auto max-w-4xl px-6 text-center"
+        className="relative z-10 mx-auto mt-4 max-w-4xl flex-shrink-0 px-6 text-center sm:mt-8"
       >
         <h1 className="text-5xl font-bold leading-tight tracking-tight sm:text-7xl">
           <span className="bg-gradient-to-r from-accent-amber via-cosmic-purple to-accent-teal bg-clip-text text-transparent">
@@ -96,28 +96,28 @@ export function HeroSection() {
         </div>
       </motion.div>
 
-      {/* Screenshot carousel */}
+      {/* Screenshot carousel — fills remaining viewport */}
       <motion.div
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.25 }}
-        className="relative z-10 mt-8 w-full sm:mt-10"
+        className="relative z-10 mt-6 flex w-full flex-1 flex-col sm:mt-8"
       >
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex snap-x snap-mandatory items-end gap-4 overflow-x-auto px-[calc(50vw-140px)] pb-2 sm:gap-6 sm:px-[calc(50vw-170px)] scrollbar-hide"
+          className="flex flex-1 snap-x snap-mandatory items-center gap-4 overflow-x-auto px-[calc(50vw-140px)] sm:gap-6 sm:px-[calc(50vw-170px)] scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {screenshots.map((shot, i) => (
             <div
               key={shot.src}
               data-carousel-item
-              className="flex-shrink-0 snap-center cursor-pointer"
+              className="flex h-full flex-shrink-0 snap-center cursor-pointer items-center"
               onClick={() => scrollToIndex(i)}
             >
               <div
-                className={`h-[clamp(300px,40dvh,560px)] w-[clamp(150px,20dvh,280px)] rounded-[40px] border-2 p-2.5 shadow-2xl backdrop-blur-sm transition-all duration-300 sm:rounded-[44px] sm:p-3 ${
+                className={`aspect-[9/19.5] h-[85%] max-h-[700px] min-h-[280px] rounded-[40px] border-2 p-2.5 shadow-2xl backdrop-blur-sm transition-all duration-300 sm:rounded-[44px] sm:p-3 ${
                   activeIndex === i
                     ? "border-white/20 bg-card-surface/60 scale-100"
                     : "border-white/5 bg-card-surface/30 scale-[0.92] opacity-60"
@@ -139,7 +139,7 @@ export function HeroSection() {
         </div>
 
         {/* Dot labels */}
-        <div className="mt-4 flex items-center justify-center gap-2 sm:gap-3">
+        <div className="flex flex-shrink-0 items-center justify-center gap-2 py-3 sm:gap-3 sm:py-4">
           {screenshots.map((shot, i) => (
             <button
               key={shot.src}
