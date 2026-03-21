@@ -23,7 +23,7 @@ extension Array where Element == DailyEntry {
     }
 
     var longestStreak: Int {
-        let sorted = self.filter { $0.hasPromptData }.sorted { $0.date < $1.date }
+        let sorted = filter { $0.hasPromptData }.sorted { $0.date < $1.date }
         let calendar = Calendar.current
         var longest = 0
         var current = 0
@@ -48,23 +48,23 @@ extension Array where Element == DailyEntry {
     }
 
     var totalJournalWordCount: Int {
-        self.filter { $0.hasPromptData }
+        filter { $0.hasPromptData }
             .reduce(0) { $0 + $1.journalEntry.split(separator: " ").count }
     }
 
     var uniqueCityCount: Int {
-        Set(self.compactMap(\.city)).count
+        Set(compactMap(\.city)).count
     }
 
     var uniqueCountryCount: Int {
-        Set(self.compactMap(\.country)).count
+        Set(compactMap(\.country)).count
     }
 
     var uniqueFeelingColorCount: Int {
-        Set(self.map(\.feelingColorHex).filter { $0 != "#FFFFFF" }).count
+        Set(map(\.feelingColorHex).filter { $0 != "#FFFFFF" }).count
     }
 
     var uniqueGratitudeCount: Int {
-        Set(self.map(\.gratitude).filter { !$0.isEmpty }).count
+        Set(map(\.gratitude).filter { !$0.isEmpty }).count
     }
 }

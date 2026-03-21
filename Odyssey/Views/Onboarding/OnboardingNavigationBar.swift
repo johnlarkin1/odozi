@@ -68,9 +68,9 @@ struct OnboardingNavigationBar: View {
 
     private var enableButtonTitle: String {
         #if targetEnvironment(simulator)
-        if step == .screenTime {
-            return "Continue"
-        }
+            if step == .screenTime {
+                return "Continue"
+            }
         #endif
         return "Enable"
     }

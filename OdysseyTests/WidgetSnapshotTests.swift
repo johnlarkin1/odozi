@@ -1,12 +1,11 @@
-import XCTest
-import SwiftUI
 @testable import Odyssey
+import SwiftUI
+import XCTest
 
 /// Renders widget views to PNG screenshots in `build/widget-screenshots/`.
 /// Run with: `make widget-screenshots`
 @MainActor
 final class WidgetSnapshotTests: XCTestCase {
-
     /// Screenshots are written to the app sandbox's tmp/widget-screenshots/.
     /// The widget-screenshots.sh script copies them out after tests finish.
     private let outputDir = URL(fileURLWithPath: NSTemporaryDirectory())
@@ -62,7 +61,8 @@ final class WidgetSnapshotTests: XCTestCase {
         renderer.scale = 3.0
 
         guard let image = renderer.uiImage,
-              let data = image.pngData() else {
+              let data = image.pngData()
+        else {
             XCTFail("Failed to render \(name)")
             return
         }
@@ -75,6 +75,7 @@ final class WidgetSnapshotTests: XCTestCase {
 }
 
 // MARK: - Snapshot Views
+
 // Self-contained replicas of widget layouts using the same design tokens.
 // These avoid WidgetKit/AppIntents cross-target compilation issues.
 
@@ -220,7 +221,7 @@ private struct MediumWidgetSnapshot: View {
             }
 
             HStack(spacing: 4) {
-                ForEach(1...10, id: \.self) { value in
+                ForEach(1 ... 10, id: \.self) { value in
                     VStack(spacing: 2) {
                         RoundedRectangle(cornerRadius: 4)
                             .fill(Color.moodGradient(for: value))
@@ -291,7 +292,7 @@ private struct MediumWidgetSnapshot: View {
                 }
 
                 HStack(spacing: 2) {
-                    ForEach(1...10, id: \.self) { value in
+                    ForEach(1 ... 10, id: \.self) { value in
                         RoundedRectangle(cornerRadius: 2)
                             .fill(value == mood ? Color.moodGradient(for: value) : Color.white.opacity(0.1))
                             .frame(height: 6)

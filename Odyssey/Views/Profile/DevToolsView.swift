@@ -1,256 +1,256 @@
 #if DEBUG
-import SwiftUI
-import SwiftData
-import UserNotifications
+    import SwiftData
+    import SwiftUI
+    import UserNotifications
 
-struct DevToolsView: View {
-    @Environment(\.modelContext) private var modelContext
-    @Query private var allEntries: [DailyEntry]
+    struct DevToolsView: View {
+        @Environment(\.modelContext) private var modelContext
+        @Query private var allEntries: [DailyEntry]
 
-    @State private var statusMessage: String?
-    @State private var statusIsError = false
-    @State private var showDigestPreview = false
-    @State private var digestData: WeeklyDigestData?
-    @State private var pendingNotificationCount: Int?
+        @State private var statusMessage: String?
+        @State private var statusIsError = false
+        @State private var showDigestPreview = false
+        @State private var digestData: WeeklyDigestData?
+        @State private var pendingNotificationCount: Int?
 
-    var body: some View {
-        List {
-            // MARK: - Notifications
+        var body: some View {
+            List {
+                // MARK: - Notifications
 
-            Section("Notifications") {
-                Button("Send Test Reminder (5s)") {
-                    runAction {
-                        let content = UNMutableNotificationContent()
-                        content.title = "Odyssey Reminder"
-                        content.body = "Time to check in with yourself today."
-                        content.sound = .default
+                Section("Notifications") {
+                    Button("Send Test Reminder (5s)") {
+                        runAction {
+                            let content = UNMutableNotificationContent()
+                            content.title = "Odyssey Reminder"
+                            content.body = "Time to check in with yourself today."
+                            content.sound = .default
 
-                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-                        let request = UNNotificationRequest(identifier: "dev-test-reminder", content: content, trigger: trigger)
-                        try await UNUserNotificationCenter.current().add(request)
-                        return "Reminder scheduled — arrives in 5s"
-                    }
-                }
-
-                Button("Send Test Digest (5s)") {
-                    runAction {
-                        let digest = WeeklyDigestService.computeDigest(context: modelContext)
-                        let content = UNMutableNotificationContent()
-                        content.title = "Your Weekly Digest"
-                        content.body = WeeklyDigestNotificationManager.formatDigestBody(digest)
-                        content.sound = .default
-                        content.categoryIdentifier = WeeklyDigestNotificationManager.categoryIdentifier
-
-                        if let imageURL = renderDigestCard(digest),
-                           let attachment = try? UNNotificationAttachment(identifier: "digest-card", url: imageURL, options: nil) {
-                            content.attachments = [attachment]
+                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                            let request = UNNotificationRequest(identifier: "dev-test-reminder", content: content, trigger: trigger)
+                            try await UNUserNotificationCenter.current().add(request)
+                            return "Reminder scheduled — arrives in 5s"
                         }
-
-                        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
-                        let request = UNNotificationRequest(identifier: "dev-test-digest", content: content, trigger: trigger)
-                        try await UNUserNotificationCenter.current().add(request)
-                        return "Digest notification scheduled — arrives in 5s"
                     }
-                }
 
-                Button("Refresh Digest Content") {
-                    runAction {
-                        await WeeklyDigestNotificationManager.refreshContent(context: modelContext)
-                        return "Digest content refreshed"
-                    }
-                }
+                    Button("Send Test Digest (5s)") {
+                        runAction {
+                            let digest = WeeklyDigestService.computeDigest(context: modelContext)
+                            let content = UNMutableNotificationContent()
+                            content.title = "Your Weekly Digest"
+                            content.body = WeeklyDigestNotificationManager.formatDigestBody(digest)
+                            content.sound = .default
+                            content.categoryIdentifier = WeeklyDigestNotificationManager.categoryIdentifier
 
-                Button("Preview Digest Card") {
-                    digestData = WeeklyDigestService.computeDigest(context: modelContext)
-                    showDigestPreview = true
-                }
-            }
-            .listRowBackground(Color.cardSurface)
+                            if let imageURL = renderDigestCard(digest),
+                               let attachment = try? UNNotificationAttachment(identifier: "digest-card", url: imageURL, options: nil) {
+                                content.attachments = [attachment]
+                            }
 
-            // MARK: - Background Services
-
-            Section("Background Services") {
-                #if os(iOS)
-                Button("Run Snapshot Capture") {
-                    runAction {
-                        let service = BackgroundSnapshotService()
-                        let snapshot = await service.captureSnapshot()
-                        applySnapshotData(snapshot, to: modelContext)
-                        let city = snapshot.city ?? "Unknown"
-                        let steps = snapshot.stepCount.map { "\($0) steps" } ?? "no steps"
-                        return "Snapshot: \(city) · \(steps)"
-                    }
-                }
-                #endif
-
-                Button("Capture Location Only") {
-                    runAction {
-                        let service = LocationCaptureService()
-                        let location = try await service.captureCurrentLocation()
-                        let city = location.city ?? "Unknown"
-                        let state = location.state ?? ""
-                        return "Location: \(city), \(state)"
-                    }
-                }
-            }
-            .listRowBackground(Color.cardSurface)
-
-            // MARK: - Deep Links & Navigation
-
-            Section("Deep Links & Navigation") {
-                Button("→ Insights Tab") {
-                    NavigationState.shared.selectedTab = .insights
-                    showStatus("Switched to Insights tab")
-                }
-
-                Button("→ Guided Prompt") {
-                    NavigationState.shared.selectedTab = .today
-                    NavigationState.shared.showGuidedPrompt = true
-                    showStatus("Opened Guided Prompt")
-                }
-            }
-            .listRowBackground(Color.cardSurface)
-
-            // MARK: - Data
-
-            Section("Data") {
-                HStack {
-                    Text("Entry Count")
-                    Spacer()
-                    Text("\(allEntries.count)")
-                        .foregroundStyle(.secondary)
-                }
-
-                Button("Seed 30 Sample Entries") {
-                    runAction {
-                        let entries = SampleData.entries
-                        for entry in entries {
-                            modelContext.insert(entry)
+                            let trigger = UNTimeIntervalNotificationTrigger(timeInterval: 5, repeats: false)
+                            let request = UNNotificationRequest(identifier: "dev-test-digest", content: content, trigger: trigger)
+                            try await UNUserNotificationCenter.current().add(request)
+                            return "Digest notification scheduled — arrives in 5s"
                         }
-                        try modelContext.save()
-                        return "Inserted \(entries.count) sample entries"
+                    }
+
+                    Button("Refresh Digest Content") {
+                        runAction {
+                            await WeeklyDigestNotificationManager.refreshContent(context: modelContext)
+                            return "Digest content refreshed"
+                        }
+                    }
+
+                    Button("Preview Digest Card") {
+                        digestData = WeeklyDigestService.computeDigest(context: modelContext)
+                        showDigestPreview = true
                     }
                 }
+                .listRowBackground(Color.cardSurface)
 
-                Button("Delete All Entries", role: .destructive) {
-                    runAction {
-                        try modelContext.delete(model: DailyEntry.self)
-                        try modelContext.save()
-                        return "Deleted all entries"
+                // MARK: - Background Services
+
+                Section("Background Services") {
+                    #if os(iOS)
+                        Button("Run Snapshot Capture") {
+                            runAction {
+                                let service = BackgroundSnapshotService()
+                                let snapshot = await service.captureSnapshot()
+                                applySnapshotData(snapshot, to: modelContext)
+                                let city = snapshot.city ?? "Unknown"
+                                let steps = snapshot.stepCount.map { "\($0) steps" } ?? "no steps"
+                                return "Snapshot: \(city) · \(steps)"
+                            }
+                        }
+                    #endif
+
+                    Button("Capture Location Only") {
+                        runAction {
+                            let service = LocationCaptureService()
+                            let location = try await service.captureCurrentLocation()
+                            let city = location.city ?? "Unknown"
+                            let state = location.state ?? ""
+                            return "Location: \(city), \(state)"
+                        }
                     }
                 }
-            }
-            .listRowBackground(Color.cardSurface)
+                .listRowBackground(Color.cardSurface)
 
-            // MARK: - Info
+                // MARK: - Deep Links & Navigation
 
-            Section("Info") {
-                HStack {
-                    Text("Screenshot Mode")
-                    Spacer()
-                    Text(ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] != nil ? "On" : "Off")
-                        .foregroundStyle(.secondary)
+                Section("Deep Links & Navigation") {
+                    Button("→ Insights Tab") {
+                        NavigationState.shared.selectedTab = .insights
+                        showStatus("Switched to Insights tab")
+                    }
+
+                    Button("→ Guided Prompt") {
+                        NavigationState.shared.selectedTab = .today
+                        NavigationState.shared.showGuidedPrompt = true
+                        showStatus("Opened Guided Prompt")
+                    }
                 }
+                .listRowBackground(Color.cardSurface)
 
-                HStack {
-                    Text("Digest Enabled")
-                    Spacer()
-                    Text(UserDefaults.standard.bool(forKey: "weeklyDigestEnabled") ? "On" : "Off")
-                        .foregroundStyle(.secondary)
-                }
+                // MARK: - Data
 
-                HStack {
-                    Text("Pending Notifications")
-                    Spacer()
-                    if let count = pendingNotificationCount {
-                        Text("\(count)")
+                Section("Data") {
+                    HStack {
+                        Text("Entry Count")
+                        Spacer()
+                        Text("\(allEntries.count)")
                             .foregroundStyle(.secondary)
-                    } else {
-                        Button("Check") {
-                            Task {
-                                let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
-                                pendingNotificationCount = requests.count
+                    }
+
+                    Button("Seed 30 Sample Entries") {
+                        runAction {
+                            let entries = SampleData.entries
+                            for entry in entries {
+                                modelContext.insert(entry)
+                            }
+                            try modelContext.save()
+                            return "Inserted \(entries.count) sample entries"
+                        }
+                    }
+
+                    Button("Delete All Entries", role: .destructive) {
+                        runAction {
+                            try modelContext.delete(model: DailyEntry.self)
+                            try modelContext.save()
+                            return "Deleted all entries"
+                        }
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
+
+                // MARK: - Info
+
+                Section("Info") {
+                    HStack {
+                        Text("Screenshot Mode")
+                        Spacer()
+                        Text(ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] != nil ? "On" : "Off")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    HStack {
+                        Text("Digest Enabled")
+                        Spacer()
+                        Text(UserDefaults.standard.bool(forKey: "weeklyDigestEnabled") ? "On" : "Off")
+                            .foregroundStyle(.secondary)
+                    }
+
+                    HStack {
+                        Text("Pending Notifications")
+                        Spacer()
+                        if let count = pendingNotificationCount {
+                            Text("\(count)")
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Button("Check") {
+                                Task {
+                                    let requests = await UNUserNotificationCenter.current().pendingNotificationRequests()
+                                    pendingNotificationCount = requests.count
+                                }
                             }
                         }
                     }
                 }
+                .listRowBackground(Color.cardSurface)
             }
-            .listRowBackground(Color.cardSurface)
-        }
-        .scrollContentBackground(.hidden)
-        .navigationTitle("Developer Tools")
-        .cosmicBackground()
-        .safeAreaInset(edge: .bottom) {
-            if let message = statusMessage {
-                Text(message)
-                    .font(.footnote.weight(.medium))
-                    .foregroundStyle(.white)
-                    .padding(.horizontal, 16)
-                    .padding(.vertical, 10)
-                    .background(
-                        Capsule()
-                            .fill(statusIsError ? Color.coralRed : Color.successGreen)
-                    )
-                    .padding(.bottom, 8)
-                    .transition(.move(edge: .bottom).combined(with: .opacity))
-                    .animation(.easeInOut, value: statusMessage)
-            }
-        }
-        .sheet(isPresented: $showDigestPreview) {
-            if let data = digestData {
-                NavigationStack {
-                    ScrollView {
-                        WeeklyDigestCardView(data: data)
-                            .padding()
-                    }
-                    .cosmicBackground()
-                    .navigationTitle("Digest Preview")
-                    #if os(iOS)
-                    .navigationBarTitleDisplayMode(.inline)
-                    #endif
-                    .toolbar {
-                        ToolbarItem(placement: .cancellationAction) {
-                            Button("Done") { showDigestPreview = false }
-                        }
-                    }
+            .scrollContentBackground(.hidden)
+            .navigationTitle("Developer Tools")
+            .cosmicBackground()
+            .safeAreaInset(edge: .bottom) {
+                if let message = statusMessage {
+                    Text(message)
+                        .font(.footnote.weight(.medium))
+                        .foregroundStyle(.white)
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 10)
+                        .background(
+                            Capsule()
+                                .fill(statusIsError ? Color.coralRed : Color.successGreen)
+                        )
+                        .padding(.bottom, 8)
+                        .transition(.move(edge: .bottom).combined(with: .opacity))
+                        .animation(.easeInOut, value: statusMessage)
                 }
-                .environment(\.colorScheme, .dark)
+            }
+            .sheet(isPresented: $showDigestPreview) {
+                if let data = digestData {
+                    NavigationStack {
+                        ScrollView {
+                            WeeklyDigestCardView(data: data)
+                                .padding()
+                        }
+                        .cosmicBackground()
+                        .navigationTitle("Digest Preview")
+                        #if os(iOS)
+                            .navigationBarTitleDisplayMode(.inline)
+                        #endif
+                            .toolbar {
+                                ToolbarItem(placement: .cancellationAction) {
+                                    Button("Done") { showDigestPreview = false }
+                                }
+                            }
+                    }
+                    .environment(\.colorScheme, .dark)
+                }
             }
         }
-    }
 
-    // MARK: - Helpers
+        // MARK: - Helpers
 
-    private func runAction(_ action: @escaping () async throws -> String) {
-        Task {
-            do {
-                let message = try await action()
-                showStatus(message)
-            } catch {
-                showStatus("Error: \(error.localizedDescription)", isError: true)
+        private func runAction(_ action: @escaping () async throws -> String) {
+            Task {
+                do {
+                    let message = try await action()
+                    showStatus(message)
+                } catch {
+                    showStatus("Error: \(error.localizedDescription)", isError: true)
+                }
             }
         }
-    }
 
-    private func showStatus(_ message: String, isError: Bool = false) {
-        withAnimation {
-            statusMessage = message
-            statusIsError = isError
-        }
-        Task {
-            try? await Task.sleep(for: .seconds(2.5))
+        private func showStatus(_ message: String, isError: Bool = false) {
             withAnimation {
-                statusMessage = nil
+                statusMessage = message
+                statusIsError = isError
+            }
+            Task {
+                try? await Task.sleep(for: .seconds(2.5))
+                withAnimation {
+                    statusMessage = nil
+                }
             }
         }
     }
-}
 
-#Preview {
-    NavigationStack {
-        DevToolsView()
-            .modelContainer(for: DailyEntry.self, inMemory: true)
+    #Preview {
+        NavigationStack {
+            DevToolsView()
+                .modelContainer(for: DailyEntry.self, inMemory: true)
+        }
+        .environment(\.colorScheme, .dark)
     }
-    .environment(\.colorScheme, .dark)
-}
 #endif

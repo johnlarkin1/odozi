@@ -94,7 +94,7 @@ struct JournalEntryDetailView: View {
         }
         .cosmicBackground()
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 

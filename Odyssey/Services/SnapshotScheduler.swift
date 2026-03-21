@@ -31,7 +31,7 @@ enum SnapshotScheduler {
 
         case .randomized:
             // Random minute offset between 480 (8 AM) and 1320 (10 PM)
-            let totalMinutes = Int.random(in: 480...1320)
+            let totalMinutes = Int.random(in: 480 ... 1320)
             targetHour = totalMinutes / 60
             targetMinute = totalMinutes % 60
         }

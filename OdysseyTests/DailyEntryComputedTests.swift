@@ -1,9 +1,8 @@
-import XCTest
-import SwiftUI
 @testable import Odyssey
+import SwiftUI
+import XCTest
 
 final class DailyEntryComputedTests: XCTestCase {
-
     // MARK: - screenTimeFormatted
 
     func testScreenTimeFormattedNilReturnsNA() {

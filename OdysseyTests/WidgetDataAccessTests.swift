@@ -1,13 +1,12 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 /// Tests for the widget data access logic (fetch today, record mood, streak calculation).
 /// Uses the same in-memory SwiftData container pattern as DailyEntryViewModelTests.
 /// These validate the core logic that WidgetDataAccess uses in the widget target.
 @MainActor
 final class WidgetDataAccessTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -109,8 +108,8 @@ final class WidgetDataAccessTests: XCTestCase {
         XCTAssertEqual(entries.count, 2, "Should create today's entry without touching yesterday's")
 
         let sorted = entries.sorted { $0.date > $1.date }
-        XCTAssertEqual(sorted[0].feeling, 9)  // today
-        XCTAssertEqual(sorted[1].feeling, 4)  // yesterday unchanged
+        XCTAssertEqual(sorted[0].feeling, 9) // today
+        XCTAssertEqual(sorted[1].feeling, 4) // yesterday unchanged
     }
 
     // MARK: - Streak Calculation
@@ -121,7 +120,7 @@ final class WidgetDataAccessTests: XCTestCase {
     }
 
     func testStreakCountsConsecutiveSubmittedDays() throws {
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             _ = try insertEntry(daysAgo: i, feeling: 7, hasUserSubmitted: true)
         }
 
@@ -203,7 +202,7 @@ final class WidgetDataAccessTests: XCTestCase {
         var streak = 0
         var checkDate = calendar.startOfDay(for: Date())
 
-        for _ in 0..<365 {
+        for _ in 0 ..< 365 {
             let nextDay = calendar.date(byAdding: .day, value: 1, to: checkDate)!
             var descriptor = FetchDescriptor<DailyEntry>(
                 predicate: #Predicate<DailyEntry> { entry in

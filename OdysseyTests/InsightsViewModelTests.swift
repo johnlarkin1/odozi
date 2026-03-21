@@ -1,10 +1,9 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 @MainActor
 final class InsightsViewModelTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -150,7 +149,7 @@ final class InsightsViewModelTests: XCTestCase {
         let vm = InsightsViewModel(modelContext: context)
         // 5 consecutive days
         var entries: [DailyEntry] = []
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             entries.append(makeEntry(daysAgo: i, journalEntry: "Day \(i)"))
         }
         try populateAndLoad(vm, entries: entries)

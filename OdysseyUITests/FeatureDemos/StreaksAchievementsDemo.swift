@@ -10,7 +10,6 @@ import XCTest
 /// and evaluates achievements, so the gallery is pre-populated with unlocked badges.
 @MainActor
 final class StreaksAchievementsDemo: FeatureDemoBase {
-
     func testStreaksAndAchievementsDemo() throws {
         app.launch()
         pause(3)
@@ -77,7 +76,7 @@ final class StreaksAchievementsDemo: FeatureDemoBase {
 
     /// Swipe up repeatedly until the element is hittable (max 5 attempts).
     private func scrollUntilVisible(_ element: XCUIElement, maxAttempts: Int = 5) {
-        for _ in 0..<maxAttempts {
+        for _ in 0 ..< maxAttempts {
             if element.exists && element.isHittable {
                 return
             }

@@ -1,6 +1,6 @@
 import Foundation
-import SwiftData
 import os
+import SwiftData
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DataRetention")
 
@@ -51,7 +51,8 @@ enum DataRetentionService {
         let descriptor = FetchDescriptor(predicate: predicate)
 
         guard let oldEntries = try? context.fetch(descriptor),
-              !oldEntries.isEmpty else {
+              !oldEntries.isEmpty
+        else {
             return
         }
 

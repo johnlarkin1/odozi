@@ -222,13 +222,13 @@ struct BackupPromptModal: View {
 
             Button {
                 #if os(iOS)
-                UIPasteboard.general.setItems(
-                    [[UIPasteboard.typeAutomatic: recoveryKey]],
-                    options: [.expirationDate: Date().addingTimeInterval(60)]
-                )
+                    UIPasteboard.general.setItems(
+                        [[UIPasteboard.typeAutomatic: recoveryKey]],
+                        options: [.expirationDate: Date().addingTimeInterval(60)]
+                    )
                 #else
-                NSPasteboard.general.clearContents()
-                NSPasteboard.general.setString(recoveryKey, forType: .string)
+                    NSPasteboard.general.clearContents()
+                    NSPasteboard.general.setString(recoveryKey, forType: .string)
                 #endif
                 copied = true
                 Task {

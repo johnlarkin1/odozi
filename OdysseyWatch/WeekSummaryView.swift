@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct WeekSummaryView: View {
     @Query(filter: #Predicate<DailyEntry> { _ in true },
@@ -78,7 +78,7 @@ struct WeekSummaryView: View {
     private func last7Days() -> [Date] {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
-        return (0..<7).compactMap { calendar.date(byAdding: .day, value: -6 + $0, to: today) }
+        return (0 ..< 7).compactMap { calendar.date(byAdding: .day, value: -6 + $0, to: today) }
     }
 
     private func dayLabel(_ date: Date) -> String {

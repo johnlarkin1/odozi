@@ -4,34 +4,34 @@ import SwiftUI
 private struct CosmicCanvasView: View {
     private static let stars: [(x: Double, y: Double, size: Double, brightness: Double)] = {
         var rng = SeededRandomNumberGenerator(seed: 42)
-        return (0..<40).map { _ in
+        return (0 ..< 40).map { _ in
             (
-                x: Double.random(in: 0...1, using: &rng),
-                y: Double.random(in: 0...1, using: &rng),
-                size: Double.random(in: 1...2.5, using: &rng),
-                brightness: Double.random(in: 0.3...1.0, using: &rng)
+                x: Double.random(in: 0 ... 1, using: &rng),
+                y: Double.random(in: 0 ... 1, using: &rng),
+                size: Double.random(in: 1 ... 2.5, using: &rng),
+                brightness: Double.random(in: 0.3 ... 1.0, using: &rng)
             )
         }
     }()
 
     private static let shootingStars: [(startX: Double, startY: Double, dx: Double, dy: Double, length: Double)] = {
         var rng = SeededRandomNumberGenerator(seed: 99)
-        return (0..<12).map { _ in
-            let startX = Double.random(in: 0.1...0.9, using: &rng)
-            let startY = Double.random(in: 0.05...0.4, using: &rng)
-            let angle = Double.random(in: 0.4...1.0, using: &rng)
+        return (0 ..< 12).map { _ in
+            let startX = Double.random(in: 0.1 ... 0.9, using: &rng)
+            let startY = Double.random(in: 0.05 ... 0.4, using: &rng)
+            let angle = Double.random(in: 0.4 ... 1.0, using: &rng)
             return (
                 startX: startX,
                 startY: startY,
                 dx: cos(angle),
                 dy: sin(angle),
-                length: Double.random(in: 0.1...0.18, using: &rng)
+                length: Double.random(in: 0.1 ... 0.18, using: &rng)
             )
         }
     }()
 
     var body: some View {
-        TimelineView(.animation(minimumInterval: 1.0/30.0)) { timeline in
+        TimelineView(.animation(minimumInterval: 1.0 / 30.0)) { timeline in
             let time = timeline.date.timeIntervalSinceReferenceDate
 
             Canvas { context, size in
@@ -64,7 +64,7 @@ private struct CosmicCanvasView: View {
 
                 // Shooting stars
                 let interval: Double = 7
-                let duration: Double = 1.0
+                let duration = 1.0
                 let cycleIndex = Int(time / interval) % Self.shootingStars.count
                 let elapsed = time.truncatingRemainder(dividingBy: interval)
                 let t = elapsed / duration
@@ -83,7 +83,7 @@ private struct CosmicCanvasView: View {
 
                     // Tail segments with decreasing brightness
                     let segments = 5
-                    for i in 0..<segments {
+                    for i in 0 ..< segments {
                         let segStart = Double(i) / Double(segments)
                         let segEnd = Double(i + 1) / Double(segments)
 
@@ -142,10 +142,10 @@ private struct SeededRandomNumberGenerator: RandomNumberGenerator {
     }
 
     mutating func next() -> UInt64 {
-        state &+= 0x9E3779B97F4A7C15
+        state &+= 0x9E37_79B9_7F4A_7C15
         var z = state
-        z = (z ^ (z >> 30)) &* 0xBF58476D1CE4E5B9
-        z = (z ^ (z >> 27)) &* 0x94D049BB133111EB
+        z = (z ^ (z >> 30)) &* 0xBF58_476D_1CE4_E5B9
+        z = (z ^ (z >> 27)) &* 0x94D0_49BB_1331_11EB
         return z ^ (z >> 31)
     }
 }

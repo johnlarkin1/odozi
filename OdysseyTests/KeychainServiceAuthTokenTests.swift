@@ -1,8 +1,7 @@
-import XCTest
 @testable import Odyssey
+import XCTest
 
 final class KeychainServiceAuthTokenTests: XCTestCase {
-
     override func tearDown() {
         super.tearDown()
         try? KeychainService.deleteAuthToken()

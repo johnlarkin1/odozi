@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct WeeklyDigestSettingsView: View {
     @AppStorage("weeklyDigestEnabled") private var digestEnabled = false
@@ -56,7 +56,7 @@ struct WeeklyDigestSettingsView: View {
 
             if digestEnabled {
                 Section("Day") {
-                    ForEach(1...7, id: \.self) { weekday in
+                    ForEach(1 ... 7, id: \.self) { weekday in
                         Button {
                             digestWeekday = weekday
                             WeeklyDigestNotificationManager.schedule(

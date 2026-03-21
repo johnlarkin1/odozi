@@ -143,18 +143,17 @@ struct WeeklyDigestCardView: View {
 func renderDigestCard(_ data: WeeklyDigestData) -> URL? {
     let renderer = ImageRenderer(content:
         WeeklyDigestCardView(data: data)
-            .environment(\.colorScheme, .dark)
-    )
+            .environment(\.colorScheme, .dark))
     renderer.scale = 3.0
 
     #if os(macOS)
-    guard let image = renderer.nsImage,
-          let tiffData = image.tiffRepresentation,
-          let bitmap = NSBitmapImageRep(data: tiffData),
-          let pngData = bitmap.representation(using: .png, properties: [:]) else { return nil }
+        guard let image = renderer.nsImage,
+              let tiffData = image.tiffRepresentation,
+              let bitmap = NSBitmapImageRep(data: tiffData),
+              let pngData = bitmap.representation(using: .png, properties: [:]) else { return nil }
     #else
-    guard let image = renderer.uiImage,
-          let pngData = image.pngData() else { return nil }
+        guard let image = renderer.uiImage,
+              let pngData = image.pngData() else { return nil }
     #endif
 
     let url = FileManager.default.temporaryDirectory.appendingPathComponent("weekly-digest-card-\(UUID().uuidString).png")

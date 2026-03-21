@@ -1,8 +1,8 @@
-import SwiftUI
-import SwiftData
 import ClerkKit
-import WidgetKit
 import os
+import SwiftData
+import SwiftUI
+import WidgetKit
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "App")
 
@@ -38,13 +38,13 @@ struct OdysseyApp: App {
 
         do {
             #if DEBUG
-            let c = if Self.isScreenshotMode {
-                try DataContainer.createSeededContainer()
-            } else {
-                try DataContainer.create()
-            }
+                let c = if Self.isScreenshotMode {
+                    try DataContainer.createSeededContainer()
+                } else {
+                    try DataContainer.create()
+                }
             #else
-            let c = try DataContainer.create()
+                let c = try DataContainer.create()
             #endif
             container = c
             containerError = nil
@@ -88,7 +88,7 @@ struct OdysseyApp: App {
                             .modelContainer(container)
                             .task {
                                 #if os(iOS)
-                                WatchConnectivityService.shared.activate()
+                                    WatchConnectivityService.shared.activate()
                                 #endif
                                 await authManager.initialize()
                                 performRetroactiveAchievementEvaluation()

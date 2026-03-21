@@ -1,8 +1,8 @@
-import SwiftUI
-import SwiftData
 import MapKit
+import SwiftData
+import SwiftUI
 #if os(iOS)
-import Photos
+    import Photos
 #endif
 
 @MainActor
@@ -17,13 +17,13 @@ final class JourneyExplorerViewModel {
     )
 
     #if os(iOS)
-    var autoPhotoThumbnails: [UIImage] = []
+        var autoPhotoThumbnails: [UIImage] = []
     #endif
     var isLoadingPhotos = false
 
     private let modelContext: ModelContext
     #if os(iOS)
-    private let photoService = PhotoLibraryService.shared
+        private let photoService = PhotoLibraryService.shared
     #endif
 
     init(modelContext: ModelContext) {
@@ -41,8 +41,8 @@ final class JourneyExplorerViewModel {
 
     var sliderRange: ClosedRange<Double> {
         let count = locatedEntries.count
-        guard count > 1 else { return 0...0 }
-        return 0...Double(count - 1)
+        guard count > 1 else { return 0 ... 0 }
+        return 0 ... Double(count - 1)
     }
 
     var entryCount: Int {
@@ -84,7 +84,7 @@ final class JourneyExplorerViewModel {
         }
 
         #if os(iOS)
-        Task { await loadAutoPhotos(for: entry) }
+            Task { await loadAutoPhotos(for: entry) }
         #endif
     }
 
@@ -96,25 +96,25 @@ final class JourneyExplorerViewModel {
     }
 
     #if os(iOS)
-    func loadAutoPhotos(for entry: DailyEntry) async {
-        isLoadingPhotos = true
-        defer { isLoadingPhotos = false }
+        func loadAutoPhotos(for entry: DailyEntry) async {
+            isLoadingPhotos = true
+            defer { isLoadingPhotos = false }
 
-        let status = await photoService.requestAuthorization()
-        guard status == .authorized || status == .limited else {
-            autoPhotoThumbnails = []
-            return
-        }
-
-        let assets = await photoService.fetchAssets(for: entry.date)
-        var thumbnails: [UIImage] = []
-        for asset in assets.prefix(6) {
-            if let thumb = await photoService.loadThumbnail(for: asset) {
-                thumbnails.append(thumb)
+            let status = await photoService.requestAuthorization()
+            guard status == .authorized || status == .limited else {
+                autoPhotoThumbnails = []
+                return
             }
+
+            let assets = await photoService.fetchAssets(for: entry.date)
+            var thumbnails: [UIImage] = []
+            for asset in assets.prefix(6) {
+                if let thumb = await photoService.loadThumbnail(for: asset) {
+                    thumbnails.append(thumb)
+                }
+            }
+            autoPhotoThumbnails = thumbnails
         }
-        autoPhotoThumbnails = thumbnails
-    }
     #endif
 
     func attachPhoto(jpegData: Data, to entry: DailyEntry) {

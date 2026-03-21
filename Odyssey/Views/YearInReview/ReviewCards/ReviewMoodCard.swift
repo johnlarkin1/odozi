@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct ReviewMoodCard: View {
     let averageMood: Double
@@ -45,7 +45,7 @@ struct ReviewMoodCard: View {
                     .interpolationMethod(.catmullRom)
                     .foregroundStyle(Color.accentAmber.opacity(0.1))
                 }
-                .chartYScale(domain: 0...10)
+                .chartYScale(domain: 0 ... 10)
                 .frame(height: 120)
                 .padding(.horizontal, 32)
 

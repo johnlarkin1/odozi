@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct YearInReviewView: View {
     @Environment(\.modelContext) private var modelContext
@@ -16,7 +16,7 @@ struct YearInReviewView: View {
                     VStack(spacing: 0) {
                         // Progress dots
                         HStack(spacing: 4) {
-                            ForEach(0..<vm.totalCards, id: \.self) { i in
+                            ForEach(0 ..< vm.totalCards, id: \.self) { i in
                                 Capsule()
                                     .fill(i <= currentPage ? Color.accentAmber : Color.white.opacity(0.2))
                                     .frame(height: 3)

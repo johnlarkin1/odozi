@@ -8,30 +8,30 @@
 import Foundation
 
 #if os(macOS)
-import AppKit
+    import AppKit
 #else
-import UIKit
+    import UIKit
 #endif
 
 extension PlatformColor {
     // Convert PlatformColor to Hex String
     func toHexString() -> String {
         #if os(macOS)
-        guard let rgbColor = usingColorSpace(.sRGB) else { return "#000000" }
-        var r: CGFloat = 0
-        var g: CGFloat = 0
-        var b: CGFloat = 0
-        var a: CGFloat = 0
-        rgbColor.getRed(&r, green: &g, blue: &b, alpha: &a)
+            guard let rgbColor = usingColorSpace(.sRGB) else { return "#000000" }
+            var r: CGFloat = 0
+            var g: CGFloat = 0
+            var b: CGFloat = 0
+            var a: CGFloat = 0
+            rgbColor.getRed(&r, green: &g, blue: &b, alpha: &a)
         #else
-        var r: CGFloat = 0
-        var g: CGFloat = 0
-        var b: CGFloat = 0
-        var a: CGFloat = 0
-        self.getRed(&r, green: &g, blue: &b, alpha: &a)
+            var r: CGFloat = 0
+            var g: CGFloat = 0
+            var b: CGFloat = 0
+            var a: CGFloat = 0
+            getRed(&r, green: &g, blue: &b, alpha: &a)
         #endif
 
-        let rgb: Int = (Int)(r*255)<<16 | (Int)(g*255)<<8 | (Int)(b*255)<<0
+        let rgb = Int(r * 255) << 16 | Int(g * 255) << 8 | Int(b * 255) << 0
         return String(format: "#%06x", rgb)
     }
 

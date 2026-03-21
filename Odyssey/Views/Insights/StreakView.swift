@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct StreakView: View {
     let currentStreak: Int
@@ -70,7 +70,7 @@ struct StreakView: View {
 
         // Last 6 months
         let now = Date()
-        return (0..<6).reversed().compactMap { monthsAgo in
+        return (0 ..< 6).reversed().compactMap { monthsAgo in
             guard let date = calendar.date(byAdding: .month, value: -monthsAgo, to: now) else { return nil }
             let key = formatter.string(from: date)
             return (key, monthly[key] ?? 0)

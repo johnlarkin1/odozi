@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
@@ -62,45 +62,45 @@ struct TodayView: View {
             }
             .cosmicBackground()
             #if os(macOS)
-            .sheet(isPresented: $showingGuidedFlow) {
-                GuidedPromptFlowView()
-                    .frame(minWidth: 500, idealWidth: 600, minHeight: 600, idealHeight: 700)
-            }
-            #else
-            .fullScreenCover(isPresented: $showingGuidedFlow) {
-                GuidedPromptFlowView()
-            }
-            #endif
-            .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
-                if shouldShow {
-                    showingGuidedFlow = true
-                    NavigationState.shared.showGuidedPrompt = false
+                .sheet(isPresented: $showingGuidedFlow) {
+                    GuidedPromptFlowView()
+                        .frame(minWidth: 500, idealWidth: 600, minHeight: 600, idealHeight: 700)
                 }
-            }
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active {
-                    Task {
-                        try? await Task.sleep(for: .seconds(4))
+            #else
+                .fullScreenCover(isPresented: $showingGuidedFlow) {
+                        GuidedPromptFlowView()
+                    }
+            #endif
+                    .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
+                        if shouldShow {
+                            showingGuidedFlow = true
+                            NavigationState.shared.showGuidedPrompt = false
+                        }
+                    }
+                    .onChange(of: scenePhase) { _, newPhase in
+                        if newPhase == .active {
+                            Task {
+                                try? await Task.sleep(for: .seconds(4))
+                                viewModel?.checkForTodayEntry()
+                                todayEntry = viewModel?.fetchTodayEntry()
+                            }
+                        }
+                    }
+            #if os(iOS)
+                    .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
                         viewModel?.checkForTodayEntry()
                         todayEntry = viewModel?.fetchTodayEntry()
                     }
-                }
-            }
-            #if os(iOS)
-            .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
-                viewModel?.checkForTodayEntry()
-                todayEntry = viewModel?.fetchTodayEntry()
-            }
             #endif
-            .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
-                showingGuidedFlow = true
-            }
-            .onChange(of: showingGuidedFlow) { _, newValue in
-                if !newValue {
-                    viewModel?.checkForTodayEntry()
-                    todayEntry = viewModel?.fetchTodayEntry()
-                }
-            }
+                    .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
+                        showingGuidedFlow = true
+                    }
+                    .onChange(of: showingGuidedFlow) { _, newValue in
+                        if !newValue {
+                            viewModel?.checkForTodayEntry()
+                            todayEntry = viewModel?.fetchTodayEntry()
+                        }
+                    }
         }
         .onAppear {
             if viewModel == nil {
@@ -212,8 +212,8 @@ struct TodayView: View {
     private var greetingText: String {
         let hour = Calendar.current.component(.hour, from: Date())
         switch hour {
-        case 0..<12: return "Good Morning"
-        case 12..<17: return "Good Afternoon"
+        case 0 ..< 12: return "Good Morning"
+        case 12 ..< 17: return "Good Afternoon"
         default: return "Good Evening"
         }
     }

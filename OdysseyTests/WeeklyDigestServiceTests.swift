@@ -1,10 +1,9 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 @MainActor
 final class WeeklyDigestServiceTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -89,7 +88,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "Has data"),
             makeEntry(daysAgo: 1, journalEntry: "Also has data"),
-            makeEntry(daysAgo: 2, singleWordFeeling: "", journalEntry: "")  // No prompt data
+            makeEntry(daysAgo: 2, singleWordFeeling: "", journalEntry: "") // No prompt data
         ]
         try insertEntries(entries)
 
@@ -101,7 +100,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testDaysJournaledExcludesEntriesOutsideWeek() throws {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "This week"),
-            makeEntry(daysAgo: 10, journalEntry: "Outside week")  // >7 days ago
+            makeEntry(daysAgo: 10, journalEntry: "Outside week") // >7 days ago
         ]
         try insertEntries(entries)
 
@@ -268,7 +267,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testTotalStepsAggregatesAllEntries() throws {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "a", stepCount: 5000),
-            makeEntry(daysAgo: 1, stepCount: 8000),  // background-only also counts
+            makeEntry(daysAgo: 1, stepCount: 8000), // background-only also counts
             makeEntry(daysAgo: 2, journalEntry: "b", stepCount: nil)
         ]
         try insertEntries(entries)
@@ -302,7 +301,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, sleepHours: 7.0),
             makeEntry(daysAgo: 1, sleepHours: 8.0),
-            makeEntry(daysAgo: 2, sleepHours: nil)  // excluded from avg
+            makeEntry(daysAgo: 2, sleepHours: nil) // excluded from avg
         ]
         try insertEntries(entries)
 
@@ -320,8 +319,8 @@ final class WeeklyDigestServiceTests: XCTestCase {
 
     func testAverageScreenTimeHours() throws {
         let entries = [
-            makeEntry(daysAgo: 0, screenTimeSeconds: 7200),   // 2h
-            makeEntry(daysAgo: 1, screenTimeSeconds: 10800),  // 3h
+            makeEntry(daysAgo: 0, screenTimeSeconds: 7200), // 2h
+            makeEntry(daysAgo: 1, screenTimeSeconds: 10800) // 3h
         ]
         try insertEntries(entries)
 

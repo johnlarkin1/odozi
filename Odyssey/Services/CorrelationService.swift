@@ -51,8 +51,8 @@ enum CorrelationService {
         let metrics = MetricDefinition.allCases
         var best: CorrelationResult?
 
-        for i in 0..<metrics.count {
-            for j in (i + 1)..<metrics.count {
+        for i in 0 ..< metrics.count {
+            for j in (i + 1) ..< metrics.count {
                 if trivialPairs.contains([metrics[i], metrics[j]]) { continue }
                 guard let result = correlate(metrics[i], metrics[j], entries: entries) else { continue }
                 if let current = best {

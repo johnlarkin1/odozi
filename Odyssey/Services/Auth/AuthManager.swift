@@ -1,6 +1,6 @@
+import ClerkKit
 import Foundation
 import SwiftUI
-import ClerkKit
 
 enum AuthStrategy {
     case apple
@@ -16,7 +16,7 @@ enum AuthError: Error, LocalizedError {
         switch self {
         case .notAuthenticated:
             return "Not signed in. Please sign in and try again."
-        case .serverError(let message):
+        case let .serverError(message):
             return message
         }
     }
@@ -132,7 +132,7 @@ final class AuthManager {
                 sessionToken = token
                 try? KeychainService.storeAuthToken(token)
                 #if os(iOS)
-                WatchConnectivityService.shared.sendToken(token)
+                    WatchConnectivityService.shared.sendToken(token)
                 #endif
             }
         } catch {

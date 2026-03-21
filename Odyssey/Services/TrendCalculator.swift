@@ -22,7 +22,7 @@ enum TrendCalculator {
         guard values.count >= 2 else { return .flat }
 
         let mid = values.count / 2
-        let priorSlice = values[0..<mid]
+        let priorSlice = values[0 ..< mid]
         let currentSlice = values[mid...]
 
         guard !priorSlice.isEmpty, !currentSlice.isEmpty else { return .flat }

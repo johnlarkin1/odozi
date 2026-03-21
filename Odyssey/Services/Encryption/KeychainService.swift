@@ -1,5 +1,5 @@
-import Foundation
 import CryptoKit
+import Foundation
 import Security
 
 enum KeychainError: Error {
@@ -9,7 +9,7 @@ enum KeychainError: Error {
     case unexpectedData
 }
 
-struct KeychainService {
+enum KeychainService {
     private static let service = "com.johnlarkin.Odyssey.encryption"
     private static let account = "master-key"
 
@@ -127,7 +127,8 @@ struct KeychainService {
         switch status {
         case errSecSuccess:
             guard let data = result as? Data,
-                  let token = String(data: data, encoding: .utf8) else {
+                  let token = String(data: data, encoding: .utf8)
+            else {
                 throw KeychainError.unexpectedData
             }
             return token

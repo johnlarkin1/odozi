@@ -1,10 +1,9 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 @MainActor
 final class DailyEntryViewModelTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -142,7 +141,7 @@ final class DailyEntryViewModelTests: XCTestCase {
     // MARK: - fetchEntries(from:to:)
 
     func testFetchEntriesInRange() throws {
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             let entry = makeEntry(daysAgo: i)
             context.insert(entry)
         }
@@ -158,7 +157,7 @@ final class DailyEntryViewModelTests: XCTestCase {
     // MARK: - fetchAllEntries
 
     func testFetchAllEntries() throws {
-        for i in 0..<3 {
+        for i in 0 ..< 3 {
             context.insert(makeEntry(daysAgo: i))
         }
         try context.save()
@@ -172,7 +171,7 @@ final class DailyEntryViewModelTests: XCTestCase {
 
     func testCurrentStreakWithConsecutiveDays() throws {
         // Create entries for today, yesterday, and 2 days ago
-        for i in 0..<3 {
+        for i in 0 ..< 3 {
             context.insert(makeEntry(daysAgo: i, journalEntry: "Day \(i)"))
         }
         try context.save()

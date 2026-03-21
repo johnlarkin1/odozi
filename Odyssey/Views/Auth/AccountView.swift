@@ -61,89 +61,89 @@ struct AccountView: View {
         }
         .navigationTitle("Account")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
-        .alert("Sign Out", isPresented: $showSignOutConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Sign Out", role: .destructive) {
-                Task {
-                    await authManager.signOut()
-                    dismiss()
-                }
-            }
-        } message: {
-            Text("Your data will remain on this device but will no longer sync to the cloud.")
-        }
-        .alert("Delete Account", isPresented: $showDeleteConfirmation) {
-            Button("Cancel", role: .cancel) {}
-            Button("Delete Everything", role: .destructive) {
-                Task {
-                    do {
-                        try await authManager.deleteAccount()
+            .alert("Sign Out", isPresented: $showSignOutConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Sign Out", role: .destructive) {
+                    Task {
+                        await authManager.signOut()
                         dismiss()
-                    } catch {
-                        deleteErrorMessage = error.localizedDescription
-                        showDeleteError = true
                     }
                 }
+            } message: {
+                Text("Your data will remain on this device but will no longer sync to the cloud.")
             }
-        } message: {
-            Text("This will permanently delete your account and all cloud backups. Local data on this device will be preserved.")
-        }
-        .alert("Deletion Failed", isPresented: $showDeleteError) {
-            Button("OK", role: .cancel) {}
-        } message: {
-            Text(deleteErrorMessage)
-        }
-        .sheet(isPresented: $showRecoveryKey) {
-            NavigationStack {
-                VStack(spacing: 16) {
-                    Image(systemName: "key.fill")
-                        .font(.system(size: 48))
-                        .foregroundStyle(Color.accentAmber)
-                        .padding(.top, 32)
-
-                    Text("Recovery Key")
-                        .font(.title2)
-                        .fontWeight(.bold)
-
-                    Text(recoveryKey)
-                        .font(.system(.caption, design: .monospaced))
-                        .padding()
-                        .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 8))
-                        .padding(.horizontal, 24)
-
-                    Button {
-                        #if os(iOS)
-                        UIPasteboard.general.setItems(
-                            [[UIPasteboard.typeAutomatic: recoveryKey]],
-                            options: [.expirationDate: Date().addingTimeInterval(60)]
-                        )
-                        #else
-                        NSPasteboard.general.clearContents()
-                        NSPasteboard.general.setString(recoveryKey, forType: .string)
-                        #endif
-                        copied = true
-                        Task {
-                            try? await Task.sleep(for: .seconds(3))
-                            copied = false
-                        }
-                    } label: {
-                        Label(copied ? "Copied! (expires in 60s)" : "Copy to Clipboard", systemImage: "doc.on.doc")
-                    }
-
-                    Spacer()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Done") {
-                            showRecoveryKey = false
+            .alert("Delete Account", isPresented: $showDeleteConfirmation) {
+                Button("Cancel", role: .cancel) {}
+                Button("Delete Everything", role: .destructive) {
+                    Task {
+                        do {
+                            try await authManager.deleteAccount()
+                            dismiss()
+                        } catch {
+                            deleteErrorMessage = error.localizedDescription
+                            showDeleteError = true
                         }
                     }
                 }
+            } message: {
+                Text("This will permanently delete your account and all cloud backups. Local data on this device will be preserved.")
             }
-            .environment(\.colorScheme, .dark)
-        }
+            .alert("Deletion Failed", isPresented: $showDeleteError) {
+                Button("OK", role: .cancel) {}
+            } message: {
+                Text(deleteErrorMessage)
+            }
+            .sheet(isPresented: $showRecoveryKey) {
+                NavigationStack {
+                    VStack(spacing: 16) {
+                        Image(systemName: "key.fill")
+                            .font(.system(size: 48))
+                            .foregroundStyle(Color.accentAmber)
+                            .padding(.top, 32)
+
+                        Text("Recovery Key")
+                            .font(.title2)
+                            .fontWeight(.bold)
+
+                        Text(recoveryKey)
+                            .font(.system(.caption, design: .monospaced))
+                            .padding()
+                            .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 8))
+                            .padding(.horizontal, 24)
+
+                        Button {
+                            #if os(iOS)
+                                UIPasteboard.general.setItems(
+                                    [[UIPasteboard.typeAutomatic: recoveryKey]],
+                                    options: [.expirationDate: Date().addingTimeInterval(60)]
+                                )
+                            #else
+                                NSPasteboard.general.clearContents()
+                                NSPasteboard.general.setString(recoveryKey, forType: .string)
+                            #endif
+                            copied = true
+                            Task {
+                                try? await Task.sleep(for: .seconds(3))
+                                copied = false
+                            }
+                        } label: {
+                            Label(copied ? "Copied! (expires in 60s)" : "Copy to Clipboard", systemImage: "doc.on.doc")
+                        }
+
+                        Spacer()
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button("Done") {
+                                showRecoveryKey = false
+                            }
+                        }
+                    }
+                }
+                .environment(\.colorScheme, .dark)
+            }
     }
 
     private func generateRecoveryKey() async {

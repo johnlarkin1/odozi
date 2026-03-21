@@ -9,7 +9,7 @@ struct FeelingPickerView: View {
         ("stressed", "Stressed"),
         ("sad", "Sad"),
         ("excited", "Excited"),
-        ("meh", "Meh"),
+        ("meh", "Meh")
     ]
 
     var body: some View {

@@ -1,5 +1,5 @@
-import WidgetKit
 import SwiftData
+import WidgetKit
 
 struct MoodWidgetEntry: TimelineEntry {
     let date: Date
@@ -9,7 +9,7 @@ struct MoodWidgetEntry: TimelineEntry {
 }
 
 struct MoodWidgetProvider: TimelineProvider {
-    func placeholder(in context: Context) -> MoodWidgetEntry {
+    func placeholder(in _: Context) -> MoodWidgetEntry {
         MoodWidgetEntry(date: .now, todayMood: 7, hasUserSubmitted: true, currentStreak: 3)
     }
 
@@ -21,7 +21,7 @@ struct MoodWidgetProvider: TimelineProvider {
         completion(fetchEntry())
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<MoodWidgetEntry>) -> Void) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<MoodWidgetEntry>) -> Void) {
         let entry = fetchEntry()
 
         // Reload at midnight so the widget resets for the new day

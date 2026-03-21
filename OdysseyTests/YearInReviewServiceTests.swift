@@ -1,10 +1,9 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 @MainActor
 final class YearInReviewServiceTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -282,7 +281,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testCompletionPercentage() throws {
         // Create entries for first 10 days of 2025
         var entries: [DailyEntry] = []
-        for day in 1...10 {
+        for day in 1 ... 10 {
             entries.append(makeEntry(year: 2025, month: 1, day: day, journalEntry: "Day \(day)"))
         }
         try insertEntries(entries)

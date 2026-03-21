@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @MainActor
 @Observable
@@ -13,7 +13,7 @@ final class YearInReviewViewModel {
 
     init(modelContext: ModelContext) {
         self.modelContext = modelContext
-        self.selectedYear = Calendar.current.component(.year, from: Date())
+        selectedYear = Calendar.current.component(.year, from: Date())
     }
 
     func loadData() {

@@ -1,5 +1,5 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 enum WidgetDataAccess {
     static func makeContainer() throws -> ModelContainer {
@@ -47,7 +47,7 @@ enum WidgetDataAccess {
         var streak = 0
         var checkDate = calendar.startOfDay(for: Date())
 
-        for _ in 0..<365 {
+        for _ in 0 ..< 365 {
             let nextDay = calendar.date(byAdding: .day, value: 1, to: checkDate)!
             var descriptor = FetchDescriptor<DailyEntry>(
                 predicate: #Predicate<DailyEntry> { entry in

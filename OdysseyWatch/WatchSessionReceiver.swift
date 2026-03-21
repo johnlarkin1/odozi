@@ -1,6 +1,6 @@
 import Foundation
-import WatchConnectivity
 import os
+import WatchConnectivity
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "WatchSession")
 
@@ -20,7 +20,7 @@ class WatchSessionReceiver: NSObject, ObservableObject, WCSessionDelegate {
 
     // MARK: - WCSessionDelegate
 
-    func session(_ session: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
+    func session(_: WCSession, activationDidCompleteWith activationState: WCSessionActivationState, error: Error?) {
         if let error {
             logger.error("WCSession activation failed: \(error)")
         } else {
@@ -29,7 +29,7 @@ class WatchSessionReceiver: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     // Receive auth token from iPhone via transferUserInfo (guaranteed delivery)
-    func session(_ session: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
+    func session(_: WCSession, didReceiveUserInfo userInfo: [String: Any] = [:]) {
         guard let token = userInfo["authToken"] as? String else { return }
         logger.info("Received auth token from iPhone")
 
@@ -39,7 +39,7 @@ class WatchSessionReceiver: NSObject, ObservableObject, WCSessionDelegate {
     }
 
     // Also handle real-time messages for immediate token delivery
-    func session(_ session: WCSession, didReceiveMessage message: [String: Any]) {
+    func session(_: WCSession, didReceiveMessage message: [String: Any]) {
         guard let token = message["authToken"] as? String else { return }
         logger.info("Received auth token via message from iPhone")
 

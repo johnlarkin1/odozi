@@ -1,9 +1,8 @@
-import XCTest
 import CryptoKit
 @testable import Odyssey
+import XCTest
 
 final class EncryptionServiceTests: XCTestCase {
-
     // MARK: - EncryptionService Tests
 
     func testEncryptDecryptRoundtrip() async throws {

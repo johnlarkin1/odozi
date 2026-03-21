@@ -16,7 +16,7 @@ struct TotalActivityReport: DeviceActivityReportScene {
         formatter.zeroFormattingBehavior = .dropAll
 
         var totalDuration: TimeInterval = 0
-        var totalPickups: Int = 0
+        var totalPickups = 0
 
         for await activityData in data {
             for await segment in activityData.activitySegments {

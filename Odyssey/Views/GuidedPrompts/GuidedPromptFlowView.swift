@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct GuidedPromptFlowView: View {
     @Environment(\.modelContext) private var modelContext
@@ -21,25 +21,25 @@ struct GuidedPromptFlowView: View {
                         .padding(.top, 12)
 
                         #if os(macOS)
-                        promptCard(for: vm.currentStep, viewModel: vm)
-                            .frame(maxWidth: .infinity, maxHeight: .infinity)
-                            .id(vm.currentStep)
-                            .transition(.asymmetric(
-                                insertion: .move(edge: .trailing).combined(with: .opacity),
-                                removal: .move(edge: .leading).combined(with: .opacity)
-                            ))
-                            .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
+                            promptCard(for: vm.currentStep, viewModel: vm)
+                                .frame(maxWidth: .infinity, maxHeight: .infinity)
+                                .id(vm.currentStep)
+                                .transition(.asymmetric(
+                                    insertion: .move(edge: .trailing).combined(with: .opacity),
+                                    removal: .move(edge: .leading).combined(with: .opacity)
+                                ))
+                                .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
                         #else
-                        TabView(selection: Binding(
-                            get: { vm.currentStep },
-                            set: { vm.currentStep = $0 }
-                        )) {
-                            ForEach(PromptStep.allCases) { step in
-                                promptCard(for: step, viewModel: vm)
-                                    .tag(step)
+                            TabView(selection: Binding(
+                                get: { vm.currentStep },
+                                set: { vm.currentStep = $0 }
+                            )) {
+                                ForEach(PromptStep.allCases) { step in
+                                    promptCard(for: step, viewModel: vm)
+                                        .tag(step)
+                                }
                             }
-                        }
-                        .tabViewStyle(.page(indexDisplayMode: .never))
+                            .tabViewStyle(.page(indexDisplayMode: .never))
                         #endif
 
                         PromptNavigationBar(
@@ -80,16 +80,16 @@ struct GuidedPromptFlowView: View {
                 }
                 #else
                 .fullScreenCover(isPresented: Binding(
-                    get: { vm.showingCompletion },
-                    set: { vm.showingCompletion = $0 }
-                )) {
-                    CompletionCard(
-                        locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
-                        unlockedAchievements: vm.newlyUnlockedAchievements
-                    ) {
-                        dismiss()
-                    }
-                }
+                            get: { vm.showingCompletion },
+                            set: { vm.showingCompletion = $0 }
+                        )) {
+                            CompletionCard(
+                                locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
+                                unlockedAchievements: vm.newlyUnlockedAchievements
+                            ) {
+                                dismiss()
+                            }
+                        }
                 #endif
             } else {
                 Color.black.ignoresSafeArea()

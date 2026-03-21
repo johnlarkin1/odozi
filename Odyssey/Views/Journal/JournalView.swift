@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct JournalView: View {
     @Environment(\.modelContext) private var modelContext

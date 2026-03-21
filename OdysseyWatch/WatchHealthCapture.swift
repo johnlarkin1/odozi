@@ -1,6 +1,6 @@
 import Foundation
-import SwiftData
 import os
+import SwiftData
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "WatchHealth")
 
@@ -31,7 +31,7 @@ struct WatchHealthCapture {
         async let distance = healthKit.fetchWalkingDistance(for: today)
         async let sleep = healthKit.fetchSleepHours(for: today)
         #if os(watchOS)
-        async let heartRate = healthKit.fetchAverageHeartRate(for: today)
+            async let heartRate = healthKit.fetchAverageHeartRate(for: today)
         #endif
 
         do {

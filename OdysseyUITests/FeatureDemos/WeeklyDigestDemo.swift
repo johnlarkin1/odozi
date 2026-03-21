@@ -3,7 +3,6 @@ import XCTest
 /// Demo of the Weekly Digest settings: toggle, day picker, time picker.
 @MainActor
 final class WeeklyDigestDemo: FeatureDemoBase {
-
     func testWeeklyDigestSettingsDemo() throws {
         app.launch()
         pause(2)

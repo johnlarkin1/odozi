@@ -1,10 +1,9 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 @MainActor
 final class GuidedPromptViewModelTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -70,7 +69,7 @@ final class GuidedPromptViewModelTests: XCTestCase {
     func testGoToNextFromLastStepSubmits() {
         let vm = GuidedPromptViewModel(modelContext: context)
         // Navigate to last step
-        for _ in 0..<8 {
+        for _ in 0 ..< 8 {
             vm.goToNext()
         }
         XCTAssertEqual(vm.currentStep, .location)
@@ -133,7 +132,7 @@ final class GuidedPromptViewModelTests: XCTestCase {
     func testIsLastStep() {
         let vm = GuidedPromptViewModel(modelContext: context)
         XCTAssertFalse(vm.isLastStep)
-        for _ in 0..<8 {
+        for _ in 0 ..< 8 {
             vm.goToNext()
         }
         XCTAssertTrue(vm.isLastStep)

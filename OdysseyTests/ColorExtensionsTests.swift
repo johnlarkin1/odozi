@@ -1,9 +1,8 @@
-import XCTest
-import SwiftUI
 @testable import Odyssey
+import SwiftUI
+import XCTest
 
 final class ColorExtensionsTests: XCTestCase {
-
     // MARK: - moodGradient
 
     func testMoodGradientAtMinimumValue() {

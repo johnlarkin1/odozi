@@ -30,11 +30,10 @@ import XCTest
 ///
 @MainActor
 class FeatureDemoBase: XCTestCase {
-
     let app = XCUIApplication()
 
     override func setUpWithError() throws {
-        continueAfterFailure = true  // Keep recording even if an assertion fails
+        continueAfterFailure = true // Keep recording even if an assertion fails
         app.launchEnvironment["SCREENSHOT_MODE"] = "1"
     }
 
@@ -66,7 +65,7 @@ class FeatureDemoBase: XCTestCase {
         advancePrompt()
 
         // Steps 2-7: Interact briefly with each, then advance
-        for step in 2...7 {
+        for step in 2 ... 7 {
             pause(1.5)
             let textFields = app.textViews.allElementsBoundByIndex + app.textFields.allElementsBoundByIndex
             if let field = textFields.first, field.exists {
@@ -84,7 +83,7 @@ class FeatureDemoBase: XCTestCase {
         ).firstMatch
         if wait(for: submitButton) {
             submitButton.tap()
-            pause(3)  // Show completion animation
+            pause(3) // Show completion animation
         } else {
             advancePrompt()
             pause(2)
@@ -106,7 +105,7 @@ class FeatureDemoBase: XCTestCase {
         }
 
         // Skip through all steps
-        for _ in 1...7 {
+        for _ in 1 ... 7 {
             advancePrompt()
             pause(0.3)
         }
@@ -179,7 +178,7 @@ class FeatureDemoBase: XCTestCase {
     func sampleText(for step: Int) -> String {
         switch step {
         case 2: return "Peaceful"
-        case 3: return "8"  // sleep hours
+        case 3: return "8" // sleep hours
         case 4: return "Morning coffee with a friend"
         case 5: return "Shipped the new feature"
         case 6: return "Nothing major"

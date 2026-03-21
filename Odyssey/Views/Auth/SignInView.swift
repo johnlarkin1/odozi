@@ -66,13 +66,13 @@ struct SignInView: View {
         }
         .navigationTitle("Sign In")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
-        .onChange(of: authManager.isSignedIn) { _, isSignedIn in
-            if isSignedIn {
-                dismiss()
+            .onChange(of: authManager.isSignedIn) { _, isSignedIn in
+                if isSignedIn {
+                    dismiss()
+                }
             }
-        }
     }
 
     private func signInButton(icon: String, title: String, action: @escaping () -> Void) -> some View {

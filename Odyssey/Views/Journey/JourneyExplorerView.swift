@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct JourneyExplorerView: View {
     @Environment(\.modelContext) private var modelContext
@@ -27,30 +27,30 @@ struct JourneyExplorerView: View {
                         // Detail card (slides up when entry selected)
                         if let entry = vm.selectedEntry {
                             #if os(iOS)
-                            JourneyDayDetailCard(
-                                entry: entry,
-                                autoThumbnails: vm.autoPhotoThumbnails,
-                                isLoadingPhotos: vm.isLoadingPhotos,
-                                onAttachPhoto: { data in
-                                    vm.attachPhoto(jpegData: data, to: entry)
-                                },
-                                onRemoveAttached: { index in
-                                    vm.removeAttachedPhoto(at: index, from: entry)
-                                }
-                            )
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                                JourneyDayDetailCard(
+                                    entry: entry,
+                                    autoThumbnails: vm.autoPhotoThumbnails,
+                                    isLoadingPhotos: vm.isLoadingPhotos,
+                                    onAttachPhoto: { data in
+                                        vm.attachPhoto(jpegData: data, to: entry)
+                                    },
+                                    onRemoveAttached: { index in
+                                        vm.removeAttachedPhoto(at: index, from: entry)
+                                    }
+                                )
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
                             #else
-                            JourneyDayDetailCard(
-                                entry: entry,
-                                isLoadingPhotos: vm.isLoadingPhotos,
-                                onAttachPhoto: { data in
-                                    vm.attachPhoto(jpegData: data, to: entry)
-                                },
-                                onRemoveAttached: { index in
-                                    vm.removeAttachedPhoto(at: index, from: entry)
-                                }
-                            )
-                            .transition(.move(edge: .bottom).combined(with: .opacity))
+                                JourneyDayDetailCard(
+                                    entry: entry,
+                                    isLoadingPhotos: vm.isLoadingPhotos,
+                                    onAttachPhoto: { data in
+                                        vm.attachPhoto(jpegData: data, to: entry)
+                                    },
+                                    onRemoveAttached: { index in
+                                        vm.removeAttachedPhoto(at: index, from: entry)
+                                    }
+                                )
+                                .transition(.move(edge: .bottom).combined(with: .opacity))
                             #endif
                         }
 
@@ -91,21 +91,21 @@ struct JourneyExplorerView: View {
         }
         .navigationTitle("Journey")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                NavigationLink(destination: YearInReviewView()) {
-                    Image(systemName: "sparkles")
-                        .foregroundStyle(Color.accentAmber)
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    NavigationLink(destination: YearInReviewView()) {
+                        Image(systemName: "sparkles")
+                            .foregroundStyle(Color.accentAmber)
+                    }
                 }
             }
-        }
-        .onAppear {
-            if viewModel == nil {
-                viewModel = JourneyExplorerViewModel(modelContext: modelContext)
+            .onAppear {
+                if viewModel == nil {
+                    viewModel = JourneyExplorerViewModel(modelContext: modelContext)
+                }
+                viewModel?.loadEntries()
             }
-            viewModel?.loadEntries()
-        }
     }
 }

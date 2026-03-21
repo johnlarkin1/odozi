@@ -1,9 +1,8 @@
-import XCTest
 import CoreLocation
 @testable import Odyssey
+import XCTest
 
 final class LocationAuthorizationTests: XCTestCase {
-
     /// Test that location authorization follows standard iOS patterns
     /// Apps should request "When In Use" permission first, then upgrade to "Always"
     /// only when background location access is actually needed

@@ -104,8 +104,8 @@ final class DailyEntry {
         self.sleepHours = sleepHours
         self.screenTimeSeconds = screenTimeSeconds
         self.pickups = pickups
-        self.createdAt = Date()
-        self.updatedAt = Date()
+        createdAt = Date()
+        updatedAt = Date()
         self.lastSyncedAt = lastSyncedAt
         self.needsSync = needsSync
     }
