@@ -24,15 +24,15 @@ export function HeroSection() {
     const container = scrollRef.current;
     if (!container) return;
     const items = container.querySelectorAll("[data-carousel-item]");
-    if (items[index]) {
-      items[index].scrollIntoView({ behavior: instant ? "instant" : "smooth", inline: "center", block: "nearest" });
-      setActiveIndex(index);
-    }
+    const el = items[index] as HTMLElement | undefined;
+    if (!el) return;
+    const scrollTarget = el.offsetLeft - container.clientWidth / 2 + el.clientWidth / 2;
+    container.scrollTo({ left: scrollTarget, behavior: instant ? "instant" : "smooth" });
+    setActiveIndex(index);
   }, []);
 
-  // Center the first item on mount
+  // Center the first item on mount (horizontal only, no page scroll)
   useEffect(() => {
-    // Small delay to ensure layout is complete
     requestAnimationFrame(() => scrollToIndex(0, true));
   }, [scrollToIndex]);
 
