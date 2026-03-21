@@ -65,7 +65,7 @@ struct OdysseyMacApp: App {
                 }
             }
         }
-        .defaultSize(width: 1100, height: 750)
+        .defaultSize(width: 1200, height: 800)
         .windowResizability(.contentMinSize)
         .commands {
             CommandGroup(replacing: .newItem) {
