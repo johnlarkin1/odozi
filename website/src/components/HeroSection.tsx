@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState, useCallback } from "react";
+import { useRef, useState, useCallback, useEffect } from "react";
 import { motion } from "framer-motion";
 import { CosmicBackground } from "./CosmicBackground";
 
@@ -20,15 +20,21 @@ export function HeroSection() {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  const scrollToIndex = useCallback((index: number) => {
+  const scrollToIndex = useCallback((index: number, instant = false) => {
     const container = scrollRef.current;
     if (!container) return;
     const items = container.querySelectorAll("[data-carousel-item]");
     if (items[index]) {
-      items[index].scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+      items[index].scrollIntoView({ behavior: instant ? "instant" : "smooth", inline: "center", block: "nearest" });
       setActiveIndex(index);
     }
   }, []);
+
+  // Center the first item on mount
+  useEffect(() => {
+    // Small delay to ensure layout is complete
+    requestAnimationFrame(() => scrollToIndex(0, true));
+  }, [scrollToIndex]);
 
   const handleScroll = useCallback(() => {
     const container = scrollRef.current;
@@ -95,7 +101,7 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 40 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.25 }}
-        className="relative z-10 mt-6 flex w-full flex-1 flex-col justify-end overflow-hidden sm:mt-8"
+        className="relative z-10 mt-4 flex w-full flex-1 flex-col justify-end overflow-hidden sm:mt-6"
       >
         <div
           ref={scrollRef}
