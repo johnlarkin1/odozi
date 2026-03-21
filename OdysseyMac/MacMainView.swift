@@ -1,3 +1,4 @@
+import SwiftData
 import SwiftUI
 
 enum SidebarSection: String, CaseIterable, Identifiable {
@@ -17,6 +18,15 @@ enum SidebarSection: String, CaseIterable, Identifiable {
         }
     }
 
+    var sidebarGroup: String {
+        switch self {
+        case .today: "Daily"
+        case .journal: "Library"
+        case .insights: "Analytics"
+        case .profile: "Settings"
+        }
+    }
+
     /// Sections shown in the macOS sidebar (excludes Profile — settings go to Cmd+,)
     static var macCases: [SidebarSection] {
         [.today, .journal, .insights]
@@ -26,29 +36,92 @@ enum SidebarSection: String, CaseIterable, Identifiable {
 struct MacMainView: View {
     @Binding var selectedSection: SidebarSection
     @Binding var showGuidedPrompt: Bool
+    @Environment(\.modelContext) private var modelContext
 
     var body: some View {
         NavigationSplitView {
-            List(SidebarSection.macCases, selection: $selectedSection) { section in
-                Label(section.rawValue, systemImage: section.icon)
-                    .tag(section)
-            }
-            .navigationTitle("Odyssey")
-            .listStyle(.sidebar)
+            sidebarContent
+                .navigationTitle("Odyssey")
+                .listStyle(.sidebar)
         } detail: {
             detailView
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
                 .cosmicBackground()
+                .toolbar {
+                    ToolbarItemGroup(placement: .automatic) {
+                        detailToolbar
+                    }
+                }
         }
         .navigationSplitViewStyle(.balanced)
+        .navigationSplitViewColumnWidth(min: 200, ideal: 220, max: 280)
         .onChange(of: showGuidedPrompt) { _, shouldShow in
             if shouldShow {
-                // Drive the guided prompt via NavigationState so TodayView picks it up
                 NavigationState.shared.showGuidedPrompt = true
                 showGuidedPrompt = false
             }
         }
     }
+
+    // MARK: - Sidebar
+
+    private var sidebarContent: some View {
+        List(selection: $selectedSection) {
+            Section("Daily") {
+                sidebarRow(for: .today)
+            }
+
+            Section("Library") {
+                sidebarRow(for: .journal)
+            }
+
+            Section("Analytics") {
+                sidebarRow(for: .insights)
+            }
+        }
+    }
+
+    private func sidebarRow(for section: SidebarSection) -> some View {
+        Label {
+            Text(section.rawValue)
+        } icon: {
+            Image(systemName: section.icon)
+                .foregroundStyle(sidebarIconColor(for: section))
+        }
+        .tag(section)
+    }
+
+    private func sidebarIconColor(for section: SidebarSection) -> Color {
+        switch section {
+        case .today: .accentAmber
+        case .journal: .accentTeal
+        case .insights: .cosmicPurple
+        case .profile: .secondary
+        }
+    }
+
+    // MARK: - Detail Toolbar
+
+    @ViewBuilder
+    private var detailToolbar: some View {
+        switch selectedSection {
+        case .today:
+            Button {
+                NavigationState.shared.showGuidedPrompt = true
+            } label: {
+                Label("New Entry", systemImage: "plus.circle.fill")
+            }
+            .help("Start a new journal entry (⌘N)")
+        case .journal:
+            EmptyView()
+        case .insights:
+            EmptyView()
+        case .profile:
+            EmptyView()
+        }
+    }
+
+    // MARK: - Detail View
 
     @ViewBuilder
     private var detailView: some View {
@@ -60,7 +133,6 @@ struct MacMainView: View {
         case .insights:
             InsightsDashboardView()
         case .profile:
-            // Shouldn't appear in macOS sidebar, but handle gracefully
             ProfileView()
         }
     }

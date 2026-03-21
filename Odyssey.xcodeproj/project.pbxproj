@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		01ADAPT01GRID01IOS0000001 /* AdaptiveGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */; };
+		01ADAPT01GRID01MAC0000002 /* AdaptiveGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */; };
 		03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */; };
 		045753DFF91B844D89D03064 /* InsightsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7A0B21D5A37C00B603DCDA /* InsightsTab.swift */; };
 		04EB166CB7A7EC94EB5B8122 /* MetricDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE292778346244DD63835D87 /* MetricDefinition.swift */; };
@@ -675,6 +677,7 @@
 		CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeCard.swift; sourceTree = "<group>"; };
 		CEB6A59374B91D8A0881333F /* MacMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
 		AA11223344556677AABB0002 /* MacSettingsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacSettingsView.swift; sourceTree = "<group>"; };
+		01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdaptiveGrid.swift; sourceTree = "<group>"; };
 		CF91790A7312437C2A5EB939 /* CrossPlatform.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = CrossPlatform.swift; sourceTree = "<group>"; };
 		D07542946A33B7411C077B1B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = Platforms/WatchOS.platform/Developer/SDKs/WatchOS11.0.sdk/System/Library/Frameworks/Foundation.framework; sourceTree = DEVELOPER_DIR; };
 		D167085E6095764E803C5AF7 /* WordCloudView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WordCloudView.swift; sourceTree = "<group>"; };
@@ -1138,6 +1141,7 @@
 				5F96AA892B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift */,
 				C635C49F97ED57570F72EFF6 /* MainTabView.swift */,
 				83A3FEE0129740CFD3D3A1FE /* ScreenTimeDataExtractor.swift */,
+				01ADAPT01GRID01GRP0000001 /* Shared */,
 				B47170D3EF5799179798661E /* Today */,
 				03CB4C0FAB8F3F33E1509E29 /* Journal */,
 				8B9C0D1E2F3A4B5C6D7E8F9A /* Journey */,
@@ -1213,6 +1217,14 @@
 			);
 			name = Complications;
 			path = Complications;
+			sourceTree = "<group>";
+		};
+		01ADAPT01GRID01GRP0000001 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */,
+			);
+			path = Shared;
 			sourceTree = "<group>";
 		};
 		B47170D3EF5799179798661E /* Today */ = {
@@ -1868,6 +1880,7 @@
 				B665616B6B9BFA2E14566129 /* AchievementGalleryView.swift in Sources */,
 				0A39BED997942A8688B01FB9 /* PlatformColor.swift in Sources */,
 				145EDDBFFBC0A8962A69266F /* CrossPlatform.swift in Sources */,
+				01ADAPT01GRID01IOS0000001 /* AdaptiveGrid.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2106,6 +2119,7 @@
 				6C05ED9FDC17123805CADF6F /* AchievementGalleryView.swift in Sources */,
 				1F9847DBC489D2DEDC29A129 /* PlatformColor.swift in Sources */,
 				0B2B4F7EF6E15528D6D3F15D /* CrossPlatform.swift in Sources */,
+				01ADAPT01GRID01MAC0000002 /* AdaptiveGrid.swift in Sources */,
 				12DCDC32DD42957BF54869DF /* SingleLocationDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

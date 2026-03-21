@@ -4,13 +4,8 @@ import SwiftUI
 struct MindCardsGrid: View {
     let viewModel: InsightsViewModel
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
-
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
+        AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
             sparklineNavigationCard(for: .mood)
             sparklineNavigationCard(for: .sleepRating)
             sparklineNavigationCard(for: .drinks)

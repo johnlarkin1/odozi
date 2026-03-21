@@ -7,13 +7,8 @@ struct VitalsGridView: View {
 
     @State private var cardsVisible = false
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
-
     var body: some View {
-        LazyVGrid(columns: columns, spacing: 12) {
+        AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
             vitalCard(
                 icon: "figure.walk",
                 value: stepsValue,

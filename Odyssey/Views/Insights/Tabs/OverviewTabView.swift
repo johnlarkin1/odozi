@@ -3,42 +3,37 @@ import SwiftUI
 struct OverviewTabView: View {
     let viewModel: InsightsViewModel
 
-    private let columns = [
-        GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12)
-    ]
-
     var body: some View {
         ScrollView {
             VStack(spacing: 16) {
                 // Mind section
                 sectionHeader("Mind")
                 MindCardsGrid(viewModel: viewModel)
-                    .padding(.horizontal, 16)
+                    .adaptiveHorizontalPadding()
 
                 // Body section
                 sectionHeader("Body")
-                LazyVGrid(columns: columns, spacing: 12) {
+                AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
                     sparklineNavigationCard(for: .steps)
                     sparklineNavigationCard(for: .walkingDistance)
                     sparklineNavigationCard(for: .sleepHours)
                 }
-                .padding(.horizontal, 16)
+                .adaptiveHorizontalPadding()
 
                 // World section
                 sectionHeader("World")
-                LazyVGrid(columns: columns, spacing: 12) {
+                AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
                     sparklineNavigationCard(for: .screenTime)
                     sparklineNavigationCard(for: .pickups)
                 }
-                .padding(.horizontal, 16)
+                .adaptiveHorizontalPadding()
 
                 citiesCountriesCard
-                    .padding(.horizontal, 16)
+                    .adaptiveHorizontalPadding()
 
                 // Cosmic Correlation hero
                 CosmicCorrelationHeroView(viewModel: viewModel)
-                    .padding(.horizontal, 16)
+                    .adaptiveHorizontalPadding()
 
                 // Journey Explorer banner
                 NavigationLink(destination: JourneyExplorerView()) {
@@ -77,7 +72,7 @@ struct OverviewTabView: View {
                     )
                 }
                 .buttonStyle(.plain)
-                .padding(.horizontal, 16)
+                .adaptiveHorizontalPadding()
 
                 Spacer(minLength: 32)
             }
@@ -93,7 +88,7 @@ struct OverviewTabView: View {
             .foregroundStyle(.secondary)
             .textCase(.uppercase)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal, 16)
+            .adaptiveHorizontalPadding()
     }
 
     // MARK: - Sparkline Navigation Card

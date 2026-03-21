@@ -42,3 +42,16 @@ import SwiftUI
         }
     }
 #endif
+
+// MARK: - Adaptive layout helpers
+
+extension View {
+    /// Platform-aware horizontal padding: wider on macOS, standard on iOS.
+    func adaptiveHorizontalPadding() -> some View {
+        #if os(macOS)
+            self.padding(.horizontal, 24)
+        #else
+            self.padding(.horizontal, 16)
+        #endif
+    }
+}
