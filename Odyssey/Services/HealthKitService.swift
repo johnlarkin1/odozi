@@ -13,7 +13,7 @@ actor HealthKitService {
         var readTypes: Set<HKObjectType> = [
             HKQuantityType(.stepCount),
             HKQuantityType(.distanceWalkingRunning),
-            HKCategoryType(.sleepAnalysis),
+            HKCategoryType(.sleepAnalysis)
         ]
 
         #if os(watchOS)
@@ -70,7 +70,7 @@ actor HealthKitService {
             HKCategoryValueSleepAnalysis.asleepCore.rawValue,
             HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
             HKCategoryValueSleepAnalysis.asleepREM.rawValue,
-            HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue,
+            HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue
         ]
 
         // Merge overlapping intervals to avoid double-counting across sources (Watch + iPhone)

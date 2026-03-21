@@ -174,10 +174,12 @@ open class Snapshot: NSObject {
                 let image = screenshot.image
             #endif
 
-            guard var simulator = ProcessInfo().environment["SIMULATOR_DEVICE_NAME"], let screenshotsDir = screenshotsDirectory else { return }
+            guard var simulator = ProcessInfo().environment["SIMULATOR_DEVICE_NAME"],
+                  let screenshotsDir = screenshotsDirectory else { return }
 
             do {
-                // The simulator name contains "Clone X of " inside the screenshot file when running parallelized UI Tests on concurrent devices
+                // The simulator name contains "Clone X of " inside the screenshot file when running parallelized UI Tests on concurrent
+                // devices
                 let regex = try NSRegularExpression(pattern: "Clone [0-9]+ of ")
                 let range = NSRange(location: 0, length: simulator.count)
                 simulator = regex.stringByReplacingMatches(in: simulator, range: range, withTemplate: "")
@@ -223,7 +225,10 @@ open class Snapshot: NSObject {
         }
 
         let networkLoadingIndicator = app.otherElements.deviceStatusBars.networkLoadingIndicators.element
-        let networkLoadingIndicatorDisappeared = XCTNSPredicateExpectation(predicate: NSPredicate(format: "exists == false"), object: networkLoadingIndicator)
+        let networkLoadingIndicatorDisappeared = XCTNSPredicateExpectation(
+            predicate: NSPredicate(format: "exists == false"),
+            object: networkLoadingIndicator
+        )
         _ = XCTWaiter.wait(for: [networkLoadingIndicatorDisappeared], timeout: timeout)
     }
 

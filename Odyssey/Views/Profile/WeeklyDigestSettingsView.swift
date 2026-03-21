@@ -11,7 +11,7 @@ struct WeeklyDigestSettingsView: View {
 
     private static let weekdayNames = [
         1: "Sunday", 2: "Monday", 3: "Tuesday", 4: "Wednesday",
-        5: "Thursday", 6: "Friday", 7: "Saturday",
+        5: "Thursday", 6: "Friday", 7: "Saturday"
     ]
 
     private var timeBinding: Binding<Date> {

@@ -20,8 +20,7 @@ struct OdysseyMacApp: App {
 
     init() {
         if let key = ClerkConfiguration.publishableKey,
-           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil
-        {
+           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
             Clerk.configure(publishableKey: key)
             AuthManager.clerkConfigured = true
         }

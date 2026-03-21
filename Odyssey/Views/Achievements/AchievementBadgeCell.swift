@@ -32,9 +32,18 @@ struct AchievementBadgeCell: View {
 
     private var tierGradient: LinearGradient {
         switch achievement.tier {
-        case 0: return LinearGradient(colors: [.accentAmber.opacity(0.3), .accentAmber.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case 1: return LinearGradient(colors: [.accentTeal.opacity(0.3), .accentAmber.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
-        case 2: return LinearGradient(colors: [.cosmicPurple.opacity(0.3), .nebulaPink.opacity(0.15)], startPoint: .topLeading, endPoint: .bottomTrailing)
+        case 0: return LinearGradient(
+                colors: [.accentAmber.opacity(0.3), .accentAmber.opacity(0.15)],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
+        case 1: return LinearGradient(
+                colors: [.accentTeal.opacity(0.3), .accentAmber.opacity(0.15)],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
+        case 2: return LinearGradient(
+                colors: [.cosmicPurple.opacity(0.3), .nebulaPink.opacity(0.15)],
+                startPoint: .topLeading, endPoint: .bottomTrailing
+            )
         default: return LinearGradient(colors: [.accentAmber.opacity(0.3)], startPoint: .top, endPoint: .bottom)
         }
     }

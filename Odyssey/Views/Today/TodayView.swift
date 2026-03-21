@@ -199,7 +199,7 @@ struct TodayView: View {
         return LinearGradient(
             colors: [
                 moodColor.opacity(0.15),
-                Color.clear,
+                Color.clear
             ],
             startPoint: .top,
             endPoint: .bottom

@@ -657,8 +657,7 @@ final class SyncService {
            localEntry.longitude == remote.longitude,
            localEntry.city == remote.city,
            localEntry.state == remote.state,
-           localEntry.country == remote.country
-        {
+           localEntry.country == remote.country {
             return
         }
 

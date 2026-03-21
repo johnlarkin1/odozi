@@ -36,7 +36,7 @@ enum AchievementConditions {
         return false
     }
 
-    static func hasStepMaster(entries: [DailyEntry]) -> Bool {
+    static func hasStepChampion(entries: [DailyEntry]) -> Bool {
         entries.contains { ($0.stepCount ?? 0) >= 10000 }
     }
 
@@ -146,7 +146,7 @@ enum AchievementRegistry {
             iconName: "safari.fill",
             sortOrder: 7, tier: 2,
             condition: { entries, _ in entries.longestStreak >= 365 }
-        ),
+        )
     ]
 
     // MARK: - First-Time Achievements
@@ -201,7 +201,7 @@ enum AchievementRegistry {
             condition: { entries, _ in
                 entries.contains { $0.feeling > 0 && $0.hasUserSubmitted }
             }
-        ),
+        )
     ]
 
     // MARK: - Depth Achievements
@@ -277,7 +277,7 @@ enum AchievementRegistry {
             iconName: "text.book.closed.fill",
             sortOrder: 6, tier: 2,
             condition: { entries, _ in entries.totalJournalWordCount >= 50000 }
-        ),
+        )
     ]
 
     // MARK: - Exploration Achievements
@@ -314,7 +314,7 @@ enum AchievementRegistry {
             iconName: "airplane",
             sortOrder: 2, tier: 2,
             condition: { entries, _ in entries.uniqueCountryCount >= 3 }
-        ),
+        )
     ]
 
     // MARK: - Wellness Achievements
@@ -332,12 +332,12 @@ enum AchievementRegistry {
         ),
         .init(
             id: "step_master", category: "wellness",
-            title: "Step Master",
+            title: "Step Champion",
             description: "You moved your body today",
             iconName: "figure.run",
             sortOrder: 1, tier: 0,
             condition: { entries, _ in
-                AchievementConditions.hasStepMaster(entries: entries)
+                AchievementConditions.hasStepChampion(entries: entries)
             }
         ),
         .init(
@@ -395,6 +395,6 @@ enum AchievementRegistry {
             condition: { entries, latest in
                 AchievementConditions.hasComeback(entries: entries, latest: latest)
             }
-        ),
+        )
     ]
 }

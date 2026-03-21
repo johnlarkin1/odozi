@@ -15,8 +15,7 @@ enum ShareableCardRenderer {
             let renderer = ImageRenderer(content:
                 content
                     .frame(width: size.width, height: size.height)
-                    .environment(\.colorScheme, .dark)
-            )
+                    .environment(\.colorScheme, .dark))
             renderer.scale = shareRenderScale
             return renderer.nsImage
         }
@@ -26,8 +25,7 @@ enum ShareableCardRenderer {
             let renderer = ImageRenderer(content:
                 content
                     .frame(width: size.width, height: size.height)
-                    .environment(\.colorScheme, .dark)
-            )
+                    .environment(\.colorScheme, .dark))
             renderer.scale = shareRenderScale
             return renderer.uiImage
         }

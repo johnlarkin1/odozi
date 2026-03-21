@@ -1,0 +1,18 @@
+# SwiftFormat configuration for Odyssey
+# Aligned with .swiftlint.yml rules
+
+# Trailing commas: SwiftLint enforces no trailing commas
+--commas inline
+
+# Wrap opening braces onto same line (matches SwiftLint opening_brace rule)
+--allman false
+
+# Disable wrapMultilineStatementBraces — it puts { on its own line for
+# multi-line if/guard conditions, which conflicts with SwiftLint opening_brace
+--disable wrapMultilineStatementBraces
+
+# Excluded paths (matches .swiftlint.yml)
+--exclude DerivedData,build,.build,.worktrees,Packages,.swiftpm,Odyssey.xcodeproj
+
+# Line length (matches .swiftlint.yml warning threshold)
+--maxwidth 140

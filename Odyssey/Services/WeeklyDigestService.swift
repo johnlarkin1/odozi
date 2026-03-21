@@ -66,7 +66,9 @@ enum WeeklyDigestService {
 
         // Mood averages
         let avgMood = promptEntries.isEmpty ? 0 : Double(promptEntries.map { $0.feeling }.reduce(0, +)) / Double(promptEntries.count)
-        let prevAvgMood: Double? = prevPromptEntries.isEmpty ? nil : Double(prevPromptEntries.map { $0.feeling }.reduce(0, +)) / Double(prevPromptEntries.count)
+        let prevAvgMood: Double? = prevPromptEntries.isEmpty
+            ? nil
+            : Double(prevPromptEntries.map { $0.feeling }.reduce(0, +)) / Double(prevPromptEntries.count)
         let delta: Double? = prevAvgMood.map { avgMood - $0 }
 
         // Top emotion
@@ -102,7 +104,9 @@ enum WeeklyDigestService {
 
         // Screen time average
         let screenTimeValues = currentWeekEntries.compactMap { $0.screenTimeSeconds }
-        let avgScreenTimeHours: Double? = screenTimeValues.isEmpty ? nil : (screenTimeValues.reduce(0, +) / Double(screenTimeValues.count)) / 3600.0
+        let avgScreenTimeHours: Double? = screenTimeValues.isEmpty
+            ? nil
+            : (screenTimeValues.reduce(0, +) / Double(screenTimeValues.count)) / 3600.0
 
         return WeeklyDigestData(
             weekStartDate: weekStart,

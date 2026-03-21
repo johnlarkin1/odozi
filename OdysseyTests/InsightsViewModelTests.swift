@@ -100,7 +100,7 @@ final class InsightsViewModelTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Good"),
             makeEntry(daysAgo: 1, feeling: 6, journalEntry: "Okay"),
-            makeEntry(daysAgo: 2, feeling: 4, journalEntry: "Meh"),
+            makeEntry(daysAgo: 2, feeling: 4, journalEntry: "Meh")
         ]
         try populateAndLoad(vm, entries: entries)
         vm.dateRange = .allTime
@@ -135,7 +135,7 @@ final class InsightsViewModelTests: XCTestCase {
         let vm = InsightsViewModel(modelContext: context)
         let entries = [
             makeEntry(daysAgo: 0, sleepQuality: 9, journalEntry: "Well rested"),
-            makeEntry(daysAgo: 1, sleepQuality: 7, journalEntry: "Okay sleep"),
+            makeEntry(daysAgo: 1, sleepQuality: 7, journalEntry: "Okay sleep")
         ]
         try populateAndLoad(vm, entries: entries)
         vm.dateRange = .allTime
@@ -166,7 +166,7 @@ final class InsightsViewModelTests: XCTestCase {
             makeEntry(daysAgo: 2, journalEntry: "c"),
             // gap at daysAgo: 3
             makeEntry(daysAgo: 4, journalEntry: "d"),
-            makeEntry(daysAgo: 5, journalEntry: "e"),
+            makeEntry(daysAgo: 5, journalEntry: "e")
         ]
         try populateAndLoad(vm, entries: entries)
 
@@ -186,7 +186,7 @@ final class InsightsViewModelTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, singleWordFeeling: "Happy", journalEntry: "a"),
             makeEntry(daysAgo: 1, singleWordFeeling: "happy", journalEntry: "b"), // same word, different case
-            makeEntry(daysAgo: 2, singleWordFeeling: "Calm", journalEntry: "c"),
+            makeEntry(daysAgo: 2, singleWordFeeling: "Calm", journalEntry: "c")
         ]
         try populateAndLoad(vm, entries: entries)
         vm.dateRange = .allTime
@@ -201,7 +201,7 @@ final class InsightsViewModelTests: XCTestCase {
         let vm = InsightsViewModel(modelContext: context)
         let entries = [
             makeEntry(daysAgo: 0, singleWordFeeling: "", journalEntry: "a"),
-            makeEntry(daysAgo: 1, singleWordFeeling: "Peaceful", journalEntry: "b"),
+            makeEntry(daysAgo: 1, singleWordFeeling: "Peaceful", journalEntry: "b")
         ]
         try populateAndLoad(vm, entries: entries)
         vm.dateRange = .allTime
@@ -230,7 +230,7 @@ final class InsightsViewModelTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, feelingColorHex: "#FF0000"),
             makeEntry(daysAgo: 1, feelingColorHex: "#FFFFFF"), // Should be excluded
-            makeEntry(daysAgo: 2, feelingColorHex: "#00FF00"),
+            makeEntry(daysAgo: 2, feelingColorHex: "#00FF00")
         ]
         try populateAndLoad(vm, entries: entries)
         vm.dateRange = .allTime

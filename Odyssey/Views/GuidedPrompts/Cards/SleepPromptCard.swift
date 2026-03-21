@@ -6,7 +6,7 @@ struct SleepPromptCard: View {
     private let sleepLabels: [(value: Int, label: String)] = [
         (1, "Terrible"), (2, "Very Poor"), (3, "Poor"), (4, "Below Avg"),
         (5, "Average"), (6, "Decent"), (7, "Good"), (8, "Great"),
-        (9, "Excellent"), (10, "Perfect"),
+        (9, "Excellent"), (10, "Perfect")
     ]
 
     var body: some View {

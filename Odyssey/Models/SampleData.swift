@@ -17,7 +17,7 @@ import Foundation
                     "Got a great night's sleep",
                     "Finished a challenging project",
                     "Had a meaningful conversation",
-                    "Enjoyed a home-cooked meal",
+                    "Enjoyed a home-cooked meal"
                 ]
                 let wins = [
                     "Completed my workout",
@@ -25,7 +25,7 @@ import Foundation
                     "Read for 30 minutes",
                     "Cooked a healthy dinner",
                     "Had a productive morning",
-                    "Helped a colleague",
+                    "Helped a colleague"
                 ]
 
                 // Ohio city coordinates with tight offsets to keep pins on land
@@ -35,7 +35,7 @@ import Foundation
                     (39.9612, -82.9988, "Columbus"),
                     (40.7989, -81.3784, "Canton"),
                     (39.7589, -84.1916, "Dayton"),
-                    (41.6528, -83.5379, "Toledo"),
+                    (41.6528, -83.5379, "Toledo")
                 ]
                 let loc = locations[daysAgo % locations.count]
 

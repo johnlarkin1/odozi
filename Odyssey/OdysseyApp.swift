@@ -31,8 +31,7 @@ struct OdysseyApp: App {
     init() {
         if let key = ClerkConfiguration.publishableKey,
            ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil,
-           !Self.isScreenshotMode
-        {
+           !Self.isScreenshotMode {
             Clerk.configure(publishableKey: key)
             AuthManager.clerkConfigured = true
         }

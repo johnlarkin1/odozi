@@ -21,8 +21,7 @@ enum DataRetentionService {
         // Cooldown: if user dismissed less than 30 days ago, don't prompt again
         if let dismissedAt = UserDefaults.standard.object(forKey: dismissedAtKey) as? Date,
            let cooldownEnd = Calendar.current.date(byAdding: .day, value: cooldownDays, to: dismissedAt),
-           Date() < cooldownEnd
-        {
+           Date() < cooldownEnd {
             return 0
         }
 

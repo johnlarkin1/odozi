@@ -83,7 +83,7 @@ struct MoodComplication: Widget {
             .accessoryCircular,
             .accessoryRectangular,
             .accessoryCorner,
-            .accessoryInline,
+            .accessoryInline
         ])
     }
 }

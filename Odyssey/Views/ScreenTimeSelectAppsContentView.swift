@@ -39,8 +39,7 @@ struct ScreenTimeSelectAppsContentView: View {
             }
 
             if model.activitySelection.applicationTokens.isEmpty &&
-                model.activitySelection.categoryTokens.isEmpty
-            {
+                model.activitySelection.categoryTokens.isEmpty {
                 Section {
                     Text("No apps selected")
                         .foregroundStyle(.secondary)

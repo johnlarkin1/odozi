@@ -11,13 +11,13 @@ struct AchievementGalleryView: View {
         "first": "First Steps",
         "depth": "Going Deeper",
         "exploration": "Explorer",
-        "wellness": "Wellness",
+        "wellness": "Wellness"
     ]
 
     private let columns = [
         GridItem(.flexible(), spacing: 16),
         GridItem(.flexible(), spacing: 16),
-        GridItem(.flexible(), spacing: 16),
+        GridItem(.flexible(), spacing: 16)
     ]
 
     var body: some View {

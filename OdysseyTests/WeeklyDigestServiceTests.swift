@@ -88,7 +88,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "Has data"),
             makeEntry(daysAgo: 1, journalEntry: "Also has data"),
-            makeEntry(daysAgo: 2, singleWordFeeling: "", journalEntry: ""), // No prompt data
+            makeEntry(daysAgo: 2, singleWordFeeling: "", journalEntry: "") // No prompt data
         ]
         try insertEntries(entries)
 
@@ -100,7 +100,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testDaysJournaledExcludesEntriesOutsideWeek() throws {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "This week"),
-            makeEntry(daysAgo: 10, journalEntry: "Outside week"), // >7 days ago
+            makeEntry(daysAgo: 10, journalEntry: "Outside week") // >7 days ago
         ]
         try insertEntries(entries)
 
@@ -114,7 +114,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Great"),
             makeEntry(daysAgo: 1, feeling: 6, journalEntry: "Good"),
-            makeEntry(daysAgo: 2, feeling: 4, journalEntry: "Meh"),
+            makeEntry(daysAgo: 2, feeling: 4, journalEntry: "Meh")
         ]
         try insertEntries(entries)
 
@@ -125,7 +125,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testAverageMoodExcludesNonPromptEntries() throws {
         let entries = [
             makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Has data"),
-            makeEntry(daysAgo: 1, feeling: 2, singleWordFeeling: "", journalEntry: ""),
+            makeEntry(daysAgo: 1, feeling: 2, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 
@@ -139,12 +139,12 @@ final class WeeklyDigestServiceTests: XCTestCase {
         // Previous week: avg mood 5
         let prevEntries = [
             makeEntry(daysAgo: 10, feeling: 4, journalEntry: "a"),
-            makeEntry(daysAgo: 11, feeling: 6, journalEntry: "b"),
+            makeEntry(daysAgo: 11, feeling: 6, journalEntry: "b")
         ]
         // Current week: avg mood 8
         let currentEntries = [
             makeEntry(daysAgo: 0, feeling: 7, journalEntry: "c"),
-            makeEntry(daysAgo: 1, feeling: 9, journalEntry: "d"),
+            makeEntry(daysAgo: 1, feeling: 9, journalEntry: "d")
         ]
         try insertEntries(prevEntries + currentEntries)
 
@@ -212,7 +212,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, singleWordFeeling: "Happy", journalEntry: "a"),
             makeEntry(daysAgo: 1, singleWordFeeling: "happy", journalEntry: "b"),
-            makeEntry(daysAgo: 2, singleWordFeeling: "Calm", journalEntry: "c"),
+            makeEntry(daysAgo: 2, singleWordFeeling: "Calm", journalEntry: "c")
         ]
         try insertEntries(entries)
 
@@ -224,7 +224,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
 
     func testTopEmotionNilWhenNoFeelings() throws {
         let entries = [
-            makeEntry(daysAgo: 0, singleWordFeeling: "", journalEntry: "No feeling word"),
+            makeEntry(daysAgo: 0, singleWordFeeling: "", journalEntry: "No feeling word")
         ]
         try insertEntries(entries)
 
@@ -235,7 +235,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testTopEmotionSkipsEmptyStrings() throws {
         let entries = [
             makeEntry(daysAgo: 0, singleWordFeeling: "", journalEntry: "a"),
-            makeEntry(daysAgo: 1, singleWordFeeling: "Grateful", journalEntry: "b"),
+            makeEntry(daysAgo: 1, singleWordFeeling: "Grateful", journalEntry: "b")
         ]
         try insertEntries(entries)
 
@@ -248,7 +248,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testAverageSleepQuality() throws {
         let entries = [
             makeEntry(daysAgo: 0, sleepQuality: 9, journalEntry: "a"),
-            makeEntry(daysAgo: 1, sleepQuality: 7, journalEntry: "b"),
+            makeEntry(daysAgo: 1, sleepQuality: 7, journalEntry: "b")
         ]
         try insertEntries(entries)
 
@@ -268,7 +268,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "a", stepCount: 5000),
             makeEntry(daysAgo: 1, stepCount: 8000), // background-only also counts
-            makeEntry(daysAgo: 2, journalEntry: "b", stepCount: nil),
+            makeEntry(daysAgo: 2, journalEntry: "b", stepCount: nil)
         ]
         try insertEntries(entries)
 
@@ -287,7 +287,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "a", drinks: 2),
             makeEntry(daysAgo: 1, journalEntry: "b", drinks: 1),
-            makeEntry(daysAgo: 2, journalEntry: "c", drinks: 0),
+            makeEntry(daysAgo: 2, journalEntry: "c", drinks: 0)
         ]
         try insertEntries(entries)
 
@@ -301,7 +301,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, sleepHours: 7.0),
             makeEntry(daysAgo: 1, sleepHours: 8.0),
-            makeEntry(daysAgo: 2, sleepHours: nil), // excluded from avg
+            makeEntry(daysAgo: 2, sleepHours: nil) // excluded from avg
         ]
         try insertEntries(entries)
 
@@ -320,7 +320,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testAverageScreenTimeHours() throws {
         let entries = [
             makeEntry(daysAgo: 0, screenTimeSeconds: 7200), // 2h
-            makeEntry(daysAgo: 1, screenTimeSeconds: 10800), // 3h
+            makeEntry(daysAgo: 1, screenTimeSeconds: 10800) // 3h
         ]
         try insertEntries(entries)
 

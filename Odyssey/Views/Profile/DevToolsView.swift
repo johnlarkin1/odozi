@@ -42,8 +42,7 @@
                             content.categoryIdentifier = WeeklyDigestNotificationManager.categoryIdentifier
 
                             if let imageURL = renderDigestCard(digest),
-                               let attachment = try? UNNotificationAttachment(identifier: "digest-card", url: imageURL, options: nil)
-                            {
+                               let attachment = try? UNNotificationAttachment(identifier: "digest-card", url: imageURL, options: nil) {
                                 content.attachments = [attachment]
                             }
 

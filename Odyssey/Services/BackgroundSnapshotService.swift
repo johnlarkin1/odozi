@@ -64,7 +64,7 @@ actor BackgroundSnapshotService {
         async let distance = try? healthKitService.fetchWalkingDistance(for: date)
         async let sleep = try? healthKitService.fetchSleepHours(for: date)
 
-        return await (steps, distance, sleep)
+        return await(steps, distance, sleep)
     }
 
     private func readScreenTimeFromDefaults() -> (seconds: Double, pickups: Int)? {

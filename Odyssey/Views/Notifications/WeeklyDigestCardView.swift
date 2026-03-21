@@ -143,8 +143,7 @@ struct WeeklyDigestCardView: View {
 func renderDigestCard(_ data: WeeklyDigestData) -> URL? {
     let renderer = ImageRenderer(content:
         WeeklyDigestCardView(data: data)
-            .environment(\.colorScheme, .dark)
-    )
+            .environment(\.colorScheme, .dark))
     renderer.scale = 3.0
 
     #if os(macOS)

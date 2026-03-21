@@ -228,7 +228,7 @@ struct ProfileView: View {
 
     private static let weekdayShortNames = [
         1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed",
-        5: "Thu", 6: "Fri", 7: "Sat",
+        5: "Thu", 6: "Fri", 7: "Sat"
     ]
 
     private var weeklyDigestStatusText: String {
@@ -272,7 +272,8 @@ struct ProfileView: View {
             let escapedWin = entry.win.replacingOccurrences(of: "\"", with: "\"\"")
             let escapedTension = entry.tension.replacingOccurrences(of: "\"", with: "\"\"")
 
-            let line = "\(dateFormatter.string(from: entry.date)),\(entry.feeling),\(entry.sleepQuality),\(entry.singleWordFeeling),\"\(escapedJournal)\",\(entry.drinks),\"\(escapedWin)\",\"\(escapedTension)\",\"\(escapedGratitude)\",\(entry.stepCount ?? 0),\(entry.screenTimeFormatted),\(entry.city ?? "")"
+            let line =
+                "\(dateFormatter.string(from: entry.date)),\(entry.feeling),\(entry.sleepQuality),\(entry.singleWordFeeling),\"\(escapedJournal)\",\(entry.drinks),\"\(escapedWin)\",\"\(escapedTension)\",\"\(escapedGratitude)\",\(entry.stepCount ?? 0),\(entry.screenTimeFormatted),\(entry.city ?? "")"
             csv.append(line + "\n")
         }
 

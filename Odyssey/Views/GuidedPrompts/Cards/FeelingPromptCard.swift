@@ -9,7 +9,7 @@ struct FeelingPromptCard: View {
         ("Silver", "#90A4AE"),
         ("Pearl", "#E0E0E0"),
         ("Snow", "#FFFFFF"),
-        ("Night", "#546E7A"),
+        ("Night", "#546E7A")
     ]
 
     var body: some View {

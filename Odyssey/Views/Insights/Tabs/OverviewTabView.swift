@@ -5,7 +5,7 @@ struct OverviewTabView: View {
 
     private let columns = [
         GridItem(.flexible(), spacing: 12),
-        GridItem(.flexible(), spacing: 12),
+        GridItem(.flexible(), spacing: 12)
     ]
 
     var body: some View {
