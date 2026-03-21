@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct ScatterCorrelationView: View {
     let primaryMetric: MetricDefinition

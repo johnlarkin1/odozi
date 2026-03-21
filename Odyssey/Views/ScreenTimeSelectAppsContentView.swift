@@ -5,8 +5,8 @@
 //  Created by John Larkin on 1/8/24.
 //
 
-import SwiftUI
 import FamilyControls
+import SwiftUI
 
 struct ScreenTimeSelectAppsContentView: View {
     @State private var pickerIsPresented = false
@@ -39,7 +39,8 @@ struct ScreenTimeSelectAppsContentView: View {
             }
 
             if model.activitySelection.applicationTokens.isEmpty &&
-                model.activitySelection.categoryTokens.isEmpty {
+                model.activitySelection.categoryTokens.isEmpty
+            {
                 Section {
                     Text("No apps selected")
                         .foregroundStyle(.secondary)

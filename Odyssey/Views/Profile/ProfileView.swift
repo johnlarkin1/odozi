@@ -1,28 +1,28 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 #if os(iOS)
-import DeviceActivity
+    import DeviceActivity
 #endif
 
 struct ProfileView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     #if os(iOS)
-    @State private var selectAppsModel = ScreenTimeSelectAppsModel()
+        @State private var selectAppsModel = ScreenTimeSelectAppsModel()
     #endif
     @Query private var allEntries: [DailyEntry]
 
     private var localEntryCount: Int { allEntries.count }
 
     #if os(iOS)
-    @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
-    @State private var filter = DeviceActivityFilter(
-        segment: .daily(
-            during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
-        ),
-        users: .all,
-        devices: .init([.iPhone, .iPad])
-    )
+        @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
+        @State private var filter = DeviceActivityFilter(
+            segment: .daily(
+                during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
+            ),
+            users: .all,
+            devices: .init([.iPhone, .iPad])
+        )
     #endif
 
     @AppStorage("reminderEnabled") private var reminderEnabled = true
@@ -104,26 +104,26 @@ struct ProfileView: View {
                 }
 
                 #if os(iOS)
-                Section("Screen Time") {
-                    DeviceActivityReport(context, filter: filter)
-                        .frame(height: 60)
-                        .onChange(of: scenePhase) { _, newPhase in
-                            if newPhase == .active {
-                                filter = DeviceActivityFilter(
-                                    segment: .daily(
-                                        during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
-                                    ),
-                                    users: .all,
-                                    devices: .init([.iPhone, .iPad])
-                                )
+                    Section("Screen Time") {
+                        DeviceActivityReport(context, filter: filter)
+                            .frame(height: 60)
+                            .onChange(of: scenePhase) { _, newPhase in
+                                if newPhase == .active {
+                                    filter = DeviceActivityFilter(
+                                        segment: .daily(
+                                            during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
+                                        ),
+                                        users: .all,
+                                        devices: .init([.iPhone, .iPad])
+                                    )
+                                }
                             }
-                        }
 
-                    NavigationLink("Select Apps to Monitor") {
-                        ScreenTimeSelectAppsContentView(model: selectAppsModel)
+                        NavigationLink("Select Apps to Monitor") {
+                            ScreenTimeSelectAppsContentView(model: selectAppsModel)
+                        }
                     }
-                }
-                .listRowBackground(Color.cardSurface)
+                    .listRowBackground(Color.cardSurface)
                 #endif
 
                 Section("Reminders") {
@@ -179,14 +179,14 @@ struct ProfileView: View {
                 .listRowBackground(Color.cardSurface)
 
                 #if DEBUG
-                Section("Developer") {
-                    NavigationLink {
-                        DevToolsView()
-                    } label: {
-                        Label("Developer Tools", systemImage: "hammer.fill")
+                    Section("Developer") {
+                        NavigationLink {
+                            DevToolsView()
+                        } label: {
+                            Label("Developer Tools", systemImage: "hammer.fill")
+                        }
                     }
-                }
-                .listRowBackground(Color.cardSurface)
+                    .listRowBackground(Color.cardSurface)
                 #endif
 
                 Section("About") {
@@ -228,7 +228,7 @@ struct ProfileView: View {
 
     private static let weekdayShortNames = [
         1: "Sun", 2: "Mon", 3: "Tue", 4: "Wed",
-        5: "Thu", 6: "Fri", 7: "Sat"
+        5: "Thu", 6: "Fri", 7: "Sat",
     ]
 
     private var weeklyDigestStatusText: String {

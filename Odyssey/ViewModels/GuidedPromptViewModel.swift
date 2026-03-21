@@ -1,6 +1,6 @@
-import SwiftUI
-import SwiftData
 import os
+import SwiftData
+import SwiftUI
 
 private let guidedPromptLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "GuidedPrompt")
 
@@ -62,7 +62,8 @@ final class GuidedPromptViewModel {
 
     func goToNext() {
         guard let currentIndex = PromptStep.allCases.firstIndex(of: currentStep),
-              currentIndex + 1 < PromptStep.allCases.count else {
+              currentIndex + 1 < PromptStep.allCases.count
+        else {
             submit()
             return
         }

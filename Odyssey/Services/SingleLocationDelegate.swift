@@ -19,7 +19,7 @@ final class SingleLocationDelegate: NSObject, CLLocationManagerDelegate {
         continuation = nil
     }
 
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+    func locationManager(_: CLLocationManager, didFailWithError error: Error) {
         continuation?.resume(throwing: error)
         continuation = nil
     }

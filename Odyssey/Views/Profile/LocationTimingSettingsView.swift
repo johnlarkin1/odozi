@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct LocationTimingSettingsView: View {
     @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
@@ -23,7 +23,7 @@ struct LocationTimingSettingsView: View {
                 locationCaptureMinute = comps.minute ?? 0
                 updateSwiftData()
                 #if os(iOS)
-                SnapshotScheduler.scheduleSnapshotTask()
+                    SnapshotScheduler.scheduleSnapshotTask()
                 #endif
             }
         )
@@ -37,8 +37,8 @@ struct LocationTimingSettingsView: View {
                         locationCaptureModeRaw = mode.rawValue
                         updateSwiftData()
                         #if os(iOS)
-                SnapshotScheduler.scheduleSnapshotTask()
-                #endif
+                            SnapshotScheduler.scheduleSnapshotTask()
+                        #endif
                     } label: {
                         HStack {
                             VStack(alignment: .leading, spacing: 2) {

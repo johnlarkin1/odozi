@@ -92,7 +92,8 @@ struct JournalCalendarView: View {
     private func daysInMonth() -> [Date?] {
         let calendar = Calendar.current
         guard let range = calendar.range(of: .day, in: .month, for: displayedMonth),
-              let firstDay = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth)) else {
+              let firstDay = calendar.date(from: calendar.dateComponents([.year, .month], from: displayedMonth))
+        else {
             return []
         }
         let firstWeekday = calendar.component(.weekday, from: firstDay) - 1

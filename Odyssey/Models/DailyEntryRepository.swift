@@ -1,5 +1,5 @@
-import SwiftData
 import Foundation
+import SwiftData
 
 @MainActor
 struct DailyEntryRepository {

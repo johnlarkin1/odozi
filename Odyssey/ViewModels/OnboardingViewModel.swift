@@ -1,8 +1,8 @@
-import SwiftUI
 import CoreLocation
+import SwiftUI
 #if os(iOS)
-import FamilyControls
-import DeviceActivity
+    import DeviceActivity
+    import FamilyControls
 #endif
 import os
 
@@ -78,55 +78,55 @@ final class OnboardingViewModel {
 
     func requestHealthKitAccess() {
         #if os(iOS)
-        guard HealthKitService.isAvailable else {
-            goToNext()
-            return
-        }
-        Task {
-            let service = HealthKitService()
-            try? await service.requestAuthorization()
-            await MainActor.run { goToNext() }
-        }
+            guard HealthKitService.isAvailable else {
+                goToNext()
+                return
+            }
+            Task {
+                let service = HealthKitService()
+                try? await service.requestAuthorization()
+                await MainActor.run { goToNext() }
+            }
         #else
-        goToNext()
+            goToNext()
         #endif
     }
 
     func requestScreenTimeAccess() {
         #if os(iOS) && !targetEnvironment(simulator)
-        let authorizationCenter = AuthorizationCenter.shared
-        Task {
-            do {
-                try await authorizationCenter.requestAuthorization(for: .individual)
-                logger.info("Screen Time API access granted.")
-                setupDeviceActivityMonitoring()
-            } catch {
-                logger.error("Screen Time API access error: \(error)")
+            let authorizationCenter = AuthorizationCenter.shared
+            Task {
+                do {
+                    try await authorizationCenter.requestAuthorization(for: .individual)
+                    logger.info("Screen Time API access granted.")
+                    setupDeviceActivityMonitoring()
+                } catch {
+                    logger.error("Screen Time API access error: \(error)")
+                }
+                await MainActor.run { goToNext() }
             }
-            await MainActor.run { goToNext() }
-        }
         #else
-        goToNext()
+            goToNext()
         #endif
     }
 
     #if os(iOS)
-    private func setupDeviceActivityMonitoring() {
-        let schedule = DeviceActivitySchedule(
-            intervalStart: DateComponents(hour: 0, minute: 0, second: 0),
-            intervalEnd: DateComponents(hour: 23, minute: 59, second: 59),
-            repeats: true
-        )
-
-        let center = DeviceActivityCenter()
-        do {
-            try center.startMonitoring(
-                DeviceActivityName("Odyssey"),
-                during: schedule
+        private func setupDeviceActivityMonitoring() {
+            let schedule = DeviceActivitySchedule(
+                intervalStart: DateComponents(hour: 0, minute: 0, second: 0),
+                intervalEnd: DateComponents(hour: 23, minute: 59, second: 59),
+                repeats: true
             )
-        } catch {
-            logger.error("Device activity monitoring setup failed: \(error)")
+
+            let center = DeviceActivityCenter()
+            do {
+                try center.startMonitoring(
+                    DeviceActivityName("Odyssey"),
+                    during: schedule
+                )
+            } catch {
+                logger.error("Device activity monitoring setup failed: \(error)")
+            }
         }
-    }
     #endif
 }

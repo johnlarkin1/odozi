@@ -7,11 +7,11 @@ extension DailyEntry {
 
     var moodLabel: String {
         switch feeling {
-        case 1...2: return "Low"
-        case 3...4: return "Below Avg"
-        case 5...6: return "Neutral"
-        case 7...8: return "Good"
-        case 9...10: return "Great"
+        case 1 ... 2: return "Low"
+        case 3 ... 4: return "Below Avg"
+        case 5 ... 6: return "Neutral"
+        case 7 ... 8: return "Good"
+        case 9 ... 10: return "Great"
         default: return "Neutral"
         }
     }

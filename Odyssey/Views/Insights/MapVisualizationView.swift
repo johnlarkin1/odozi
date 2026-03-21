@@ -1,6 +1,6 @@
-import SwiftUI
-import SwiftData
 import MapKit
+import SwiftData
+import SwiftUI
 
 struct MapVisualizationView: View {
     let entries: [DailyEntry]
@@ -71,32 +71,32 @@ struct MapVisualizationView: View {
         }
         .navigationTitle("My Map")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
-        .onAppear {
-            if locationViewModel == nil {
-                locationViewModel = DailyEntryViewModel(modelContext: modelContext)
-            }
-        }
-        .toolbar {
-            ToolbarItem(placement: .topBarTrailing) {
-                Button {
-                    Task {
-                        isUpdatingLocation = true
-                        defer { isUpdatingLocation = false }
-                        try? await locationViewModel?.updateLocation()
-                    }
-                } label: {
-                    if isUpdatingLocation {
-                        ProgressView()
-                            .controlSize(.mini)
-                    } else {
-                        Image(systemName: "location.fill")
-                    }
+            .onAppear {
+                if locationViewModel == nil {
+                    locationViewModel = DailyEntryViewModel(modelContext: modelContext)
                 }
-                .disabled(isUpdatingLocation)
             }
-        }
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        Task {
+                            isUpdatingLocation = true
+                            defer { isUpdatingLocation = false }
+                            try? await locationViewModel?.updateLocation()
+                        }
+                    } label: {
+                        if isUpdatingLocation {
+                            ProgressView()
+                                .controlSize(.mini)
+                        } else {
+                            Image(systemName: "location.fill")
+                        }
+                    }
+                    .disabled(isUpdatingLocation)
+                }
+            }
     }
 
     private var locatedEntries: [DailyEntry] {

@@ -1,5 +1,5 @@
-import Foundation
 import CryptoKit
+import Foundation
 
 enum EncryptionError: Error {
     case encryptionFailed

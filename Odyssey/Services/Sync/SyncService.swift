@@ -35,7 +35,8 @@ final class SyncService {
         let descriptor = FetchDescriptor(predicate: predicate)
 
         guard let entries = try? modelContext.fetch(descriptor),
-              !entries.isEmpty else {
+              !entries.isEmpty
+        else {
             pendingCount = 0
             return
         }
@@ -46,7 +47,7 @@ final class SyncService {
         // Process in batches
         for batchStart in stride(from: 0, to: entries.count, by: batchSize) {
             let batchEnd = min(batchStart + batchSize, entries.count)
-            let batch = Array(entries[batchStart..<batchEnd])
+            let batch = Array(entries[batchStart ..< batchEnd])
 
             do {
                 let uploadEntries = try await encryptBatch(batch)
@@ -200,14 +201,14 @@ final class SyncService {
                         nil
                     }
 
-                    let encrypted = SyncUploadEntry(
+                    let encrypted = try SyncUploadEntry(
                         entryDate: snapshot.entryDate,
-                        journalEntry: snapshot.journalEntry.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.journalEntry),
-                        gratitude: snapshot.gratitude.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.gratitude),
-                        win: snapshot.win.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.win),
-                        tension: snapshot.tension.isEmpty ? nil : try await encryptionSvc.encrypt(snapshot.tension),
+                        journalEntry: snapshot.journalEntry.isEmpty ? nil : await encryptionSvc.encrypt(snapshot.journalEntry),
+                        gratitude: snapshot.gratitude.isEmpty ? nil : await encryptionSvc.encrypt(snapshot.gratitude),
+                        win: snapshot.win.isEmpty ? nil : await encryptionSvc.encrypt(snapshot.win),
+                        tension: snapshot.tension.isEmpty ? nil : await encryptionSvc.encrypt(snapshot.tension),
                         singleWordFeeling: snapshot.singleWordFeeling.isEmpty
-                            ? nil : try await encryptionSvc.encrypt(snapshot.singleWordFeeling),
+                            ? nil : await encryptionSvc.encrypt(snapshot.singleWordFeeling),
                         latitude: encryptedLat,
                         longitude: encryptedLon,
                         city: encryptedCity,
@@ -619,11 +620,11 @@ final class SyncService {
         if local == remote { return local }
 
         // Prefer non-nil over nil
-        if local == nil && remote != nil {
+        if local == nil, remote != nil {
             conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local nil)")
             return remote
         }
-        if local != nil && remote == nil {
+        if local != nil, remote == nil {
             conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote nil)")
             return local
         }
@@ -651,22 +652,23 @@ final class SyncService {
         let remoteHasLocation = remote.latitude != nil
 
         // Both have no location or identical coordinates — no conflict
-        if !localHasLocation && !remoteHasLocation { return }
-        if localEntry.latitude == remote.latitude &&
-            localEntry.longitude == remote.longitude &&
-            localEntry.city == remote.city &&
-            localEntry.state == remote.state &&
-            localEntry.country == remote.country {
+        if !localHasLocation, !remoteHasLocation { return }
+        if localEntry.latitude == remote.latitude,
+           localEntry.longitude == remote.longitude,
+           localEntry.city == remote.city,
+           localEntry.state == remote.state,
+           localEntry.country == remote.country
+        {
             return
         }
 
         // Prefer the side with location data
-        if !localHasLocation && remoteHasLocation {
+        if !localHasLocation, remoteHasLocation {
             conflictLogger.info("[\(entryDate)] location: remote wins (local has no location)")
             applyRemoteLocation(remote, to: localEntry)
             return
         }
-        if localHasLocation && !remoteHasLocation {
+        if localHasLocation, !remoteHasLocation {
             conflictLogger.info("[\(entryDate)] location: local wins (remote has no location)")
             return
         }

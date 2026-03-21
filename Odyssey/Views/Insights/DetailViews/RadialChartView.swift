@@ -13,7 +13,7 @@ struct RadialChartView: View {
 
             Canvas { context, _ in
                 // Reference rings
-                for i in 1...ringCount {
+                for i in 1 ... ringCount {
                     let r = radius * Double(i) / Double(ringCount)
                     let ringRect = CGRect(
                         x: center.x - r,

@@ -5,8 +5,8 @@
 //  Created by John Larkin on 1/8/24.
 //
 
-import Foundation
 import FamilyControls
+import Foundation
 import Observation
 
 @Observable
@@ -29,7 +29,8 @@ class ScreenTimeSelectAppsModel {
     private func loadSelection() {
         let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
         if let data = defaults?.data(forKey: Self.defaultsKey),
-           let decoded = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) {
+           let decoded = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data)
+        {
             activitySelection = decoded
         }
     }

@@ -1,5 +1,5 @@
-import SwiftUI
 import DeviceActivity
+import SwiftUI
 
 struct ScreenTimeDataExtractor: View {
     @Environment(\.scenePhase) private var scenePhase

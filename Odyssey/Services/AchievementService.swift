@@ -1,6 +1,6 @@
 import Foundation
-import SwiftData
 import os
+import SwiftData
 
 @MainActor
 final class AchievementService {

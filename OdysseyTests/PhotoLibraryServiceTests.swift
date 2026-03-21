@@ -1,9 +1,8 @@
-import XCTest
-import Photos
 @testable import Odyssey
+import Photos
+import XCTest
 
 final class PhotoLibraryServiceTests: XCTestCase {
-
     /// Test that PhotoLibraryService requests read-only access, not read-write
     /// The app only reads photos from the library, never writes or modifies them
     /// Requesting unnecessary .readWrite permission is considered over-permission and can trigger

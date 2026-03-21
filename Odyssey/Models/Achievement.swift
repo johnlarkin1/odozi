@@ -29,10 +29,10 @@ final class Achievement {
         self.id = id
         self.category = category
         self.title = title
-        self.achievementDescription = description
+        achievementDescription = description
         self.iconName = iconName
-        self.unlockedDate = nil
-        self.isNew = false
+        unlockedDate = nil
+        isNew = false
         self.sortOrder = sortOrder
         self.tier = tier
     }

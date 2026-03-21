@@ -1,8 +1,7 @@
-import XCTest
 @testable import Odyssey
+import XCTest
 
 final class PromptModelsTests: XCTestCase {
-
     // MARK: - PromptStep
 
     func testPromptStepAllCasesCount() {

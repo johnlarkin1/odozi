@@ -1,7 +1,7 @@
 import Foundation
-import SwiftUI
-import SwiftData
 import os
+import SwiftData
+import SwiftUI
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "WatchSync")
 
@@ -61,13 +61,13 @@ final class WatchSyncService {
         let formatter = ISO8601DateFormatter()
 
         for entry in entries {
-            let upload = SyncUploadEntry(
+            let upload = try SyncUploadEntry(
                 entryDate: formatter.string(from: entry.date),
-                journalEntry: entry.journalEntry.isEmpty ? nil : try await encryption.encrypt(entry.journalEntry),
-                gratitude: entry.gratitude.isEmpty ? nil : try await encryption.encrypt(entry.gratitude),
-                win: entry.win.isEmpty ? nil : try await encryption.encrypt(entry.win),
-                tension: entry.tension.isEmpty ? nil : try await encryption.encrypt(entry.tension),
-                singleWordFeeling: entry.singleWordFeeling.isEmpty ? nil : try await encryption.encrypt(entry.singleWordFeeling),
+                journalEntry: entry.journalEntry.isEmpty ? nil : await encryption.encrypt(entry.journalEntry),
+                gratitude: entry.gratitude.isEmpty ? nil : await encryption.encrypt(entry.gratitude),
+                win: entry.win.isEmpty ? nil : await encryption.encrypt(entry.win),
+                tension: entry.tension.isEmpty ? nil : await encryption.encrypt(entry.tension),
+                singleWordFeeling: entry.singleWordFeeling.isEmpty ? nil : await encryption.encrypt(entry.singleWordFeeling),
                 latitude: entry.latitude.map { try await encryption.encryptDouble($0) },
                 longitude: entry.longitude.map { try await encryption.encryptDouble($0) },
                 city: entry.city.map { try await encryption.encrypt($0) },
@@ -115,7 +115,7 @@ final class WatchSyncService {
         }
 
         // Prefer remote metric values if local is nil/zero
-        if entry.feeling == 5 && remote.feeling != 5 {
+        if entry.feeling == 5, remote.feeling != 5 {
             entry.feeling = remote.feeling
         }
         if entry.stepCount == nil {

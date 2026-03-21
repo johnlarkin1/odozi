@@ -1,5 +1,5 @@
-import SwiftUI
 import MapKit
+import SwiftUI
 
 struct JourneyGlobeView: View {
     let entries: [DailyEntry]

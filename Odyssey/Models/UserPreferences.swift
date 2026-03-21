@@ -33,7 +33,7 @@ final class UserPreferences {
         self.locationCaptureMode = locationCaptureMode.rawValue
         self.locationCaptureHour = locationCaptureHour
         self.locationCaptureMinute = locationCaptureMinute
-        self.createdAt = Date()
-        self.updatedAt = Date()
+        createdAt = Date()
+        updatedAt = Date()
     }
 }

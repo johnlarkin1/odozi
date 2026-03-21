@@ -1,8 +1,7 @@
-import XCTest
 @testable import Odyssey
+import XCTest
 
 final class SharedDefaultsWidgetTests: XCTestCase {
-
     override func setUp() {
         // Clear widget keys before each test
         let suite = SharedDefaults.suite

@@ -5,7 +5,7 @@ struct SmallMoodWidgetView: View {
     let entry: MoodWidgetEntry
 
     private let moodOptions: [(value: Int, label: String)] = [
-        (2, "Low"), (4, "Meh"), (5, "OK"), (7, "Good"), (9, "Great")
+        (2, "Low"), (4, "Meh"), (5, "OK"), (7, "Good"), (9, "Great"),
     ]
 
     var body: some View {

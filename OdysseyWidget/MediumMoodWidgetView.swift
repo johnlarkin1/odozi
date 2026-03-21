@@ -47,7 +47,7 @@ struct MediumMoodWidgetView: View {
             }
 
             HStack(spacing: 4) {
-                ForEach(1...10, id: \.self) { value in
+                ForEach(1 ... 10, id: \.self) { value in
                     Button(intent: LogMoodIntent(moodValue: value)) {
                         VStack(spacing: 2) {
                             RoundedRectangle(cornerRadius: 4)
@@ -124,7 +124,7 @@ struct MediumMoodWidgetView: View {
 
                 // Mini mood bar showing selected value
                 HStack(spacing: 2) {
-                    ForEach(1...10, id: \.self) { value in
+                    ForEach(1 ... 10, id: \.self) { value in
                         RoundedRectangle(cornerRadius: 2)
                             .fill(value == mood ? Color.moodGradient(for: value) : Color.white.opacity(0.1))
                             .frame(height: 6)

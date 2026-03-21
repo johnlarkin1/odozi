@@ -3,7 +3,7 @@ import SwiftUI
 struct JourneyDayDetailCard: View {
     let entry: DailyEntry
     #if os(iOS)
-    let autoThumbnails: [UIImage]
+        let autoThumbnails: [UIImage]
     #endif
     let isLoadingPhotos: Bool
     var onAttachPhoto: ((Data) -> Void)?
@@ -68,32 +68,32 @@ struct JourneyDayDetailCard: View {
             // Photo strip
             let attachedData = entry.attachedPhotoData ?? []
             #if os(iOS)
-            if !autoThumbnails.isEmpty || !attachedData.isEmpty {
-                JourneyPhotoStrip(
-                    autoThumbnails: autoThumbnails,
-                    attachedPhotoData: attachedData,
-                    isLoading: isLoadingPhotos,
-                    onAttachPhoto: onAttachPhoto,
-                    onRemoveAttached: onRemoveAttached
-                )
-            } else {
-                JourneyPhotoStrip(
-                    autoThumbnails: [],
-                    attachedPhotoData: [],
-                    isLoading: isLoadingPhotos,
-                    onAttachPhoto: onAttachPhoto,
-                    onRemoveAttached: onRemoveAttached
-                )
-            }
+                if !autoThumbnails.isEmpty || !attachedData.isEmpty {
+                    JourneyPhotoStrip(
+                        autoThumbnails: autoThumbnails,
+                        attachedPhotoData: attachedData,
+                        isLoading: isLoadingPhotos,
+                        onAttachPhoto: onAttachPhoto,
+                        onRemoveAttached: onRemoveAttached
+                    )
+                } else {
+                    JourneyPhotoStrip(
+                        autoThumbnails: [],
+                        attachedPhotoData: [],
+                        isLoading: isLoadingPhotos,
+                        onAttachPhoto: onAttachPhoto,
+                        onRemoveAttached: onRemoveAttached
+                    )
+                }
             #else
-            if !attachedData.isEmpty {
-                JourneyPhotoStrip(
-                    attachedPhotoData: attachedData,
-                    isLoading: isLoadingPhotos,
-                    onAttachPhoto: onAttachPhoto,
-                    onRemoveAttached: onRemoveAttached
-                )
-            }
+                if !attachedData.isEmpty {
+                    JourneyPhotoStrip(
+                        attachedPhotoData: attachedData,
+                        isLoading: isLoadingPhotos,
+                        onAttachPhoto: onAttachPhoto,
+                        onRemoveAttached: onRemoveAttached
+                    )
+                }
             #endif
         }
         .padding(16)

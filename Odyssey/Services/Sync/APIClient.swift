@@ -14,9 +14,9 @@ enum APIError: Error, LocalizedError {
             return "Session expired. Please sign in again."
         case .rateLimited:
             return "Too many requests. Please try again later."
-        case .serverError(let code):
+        case let .serverError(code):
             return "Server error (\(code)). Please try again."
-        case .networkError(let error):
+        case let .networkError(error):
             return "Network error: \(error.localizedDescription)"
         case .decodingError:
             return "Failed to process server response."
@@ -34,9 +34,9 @@ actor APIClient {
 
     init(baseURL: String = ServerConfiguration.baseURL ?? "") {
         self.baseURL = baseURL
-        self.session = URLSession.shared
-        self.encoder = JSONEncoder()
-        self.decoder = JSONDecoder()
+        session = URLSession.shared
+        encoder = JSONEncoder()
+        decoder = JSONDecoder()
     }
 
     func uploadEntries(_ payload: SyncUploadPayload, token: String) async throws -> SyncUploadResponse {
@@ -145,7 +145,7 @@ actor APIClient {
         guard let httpResponse = response as? HTTPURLResponse else { return }
 
         switch httpResponse.statusCode {
-        case 200..<300:
+        case 200 ..< 300:
             return
         case 401:
             throw APIError.unauthorized

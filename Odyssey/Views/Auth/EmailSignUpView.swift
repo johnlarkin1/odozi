@@ -1,5 +1,5 @@
-import SwiftUI
 import ClerkKit
+import SwiftUI
 
 struct EmailSignUpView: View {
     @Environment(AuthManager.self) private var authManager
@@ -52,7 +52,7 @@ struct EmailSignUpView: View {
         }
         .navigationTitle("Create Account")
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
     }
 

@@ -43,7 +43,7 @@ enum CorrelationService {
     /// Metric pairs that are trivially correlated and should be excluded.
     private static let trivialPairs: Set<Set<MetricDefinition>> = [
         [.steps, .walkingDistance],
-        [.screenTime, .pickups]
+        [.screenTime, .pickups],
     ]
 
     /// Finds the strongest correlation among all metric pairs.
@@ -51,8 +51,8 @@ enum CorrelationService {
         let metrics = MetricDefinition.allCases
         var best: CorrelationResult?
 
-        for i in 0..<metrics.count {
-            for j in (i + 1)..<metrics.count {
+        for i in 0 ..< metrics.count {
+            for j in (i + 1) ..< metrics.count {
                 if trivialPairs.contains([metrics[i], metrics[j]]) { continue }
                 guard let result = correlate(metrics[i], metrics[j], entries: entries) else { continue }
                 if let current = best {

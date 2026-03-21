@@ -14,7 +14,7 @@ enum SyncStatus: Equatable {
             return "Syncing..."
         case .synced:
             return "Synced"
-        case .error(let message):
+        case let .error(message):
             return message
         }
     }

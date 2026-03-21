@@ -3,7 +3,6 @@ import XCTest
 /// End-to-end walkthrough of the entire app: Today → Guided Prompt → Journal → Insights → Profile.
 @MainActor
 final class FullWalkthroughDemo: FeatureDemoBase {
-
     func testFullAppWalkthrough() throws {
         app.launch()
         pause(2)

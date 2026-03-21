@@ -15,11 +15,11 @@ struct GratitudePromptCard: View {
                 .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)
                 .padding(16)
-                #if os(macOS)
+            #if os(macOS)
                 .frame(minHeight: 200, maxHeight: .infinity)
-                #else
+            #else
                 .frame(minHeight: 150)
-                #endif
+            #endif
                 .background(
                     RoundedRectangle(cornerRadius: 16)
                         .fill(Color.cardSurface)

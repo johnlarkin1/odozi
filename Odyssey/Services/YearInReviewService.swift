@@ -41,7 +41,8 @@ final class YearInReviewService {
     func generate(for year: Int) -> YearInReviewData {
         let calendar = Calendar.current
         guard let startOfYear = calendar.date(from: DateComponents(year: year, month: 1, day: 1)),
-              let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31)) else {
+              let endOfYear = calendar.date(from: DateComponents(year: year, month: 12, day: 31))
+        else {
             return YearInReviewData.empty(year: year)
         }
 
@@ -65,7 +66,7 @@ final class YearInReviewService {
             let month = calendar.component(.month, from: entry.date)
             monthMoods[month, default: []].append(entry.feeling)
         }
-        let moodByMonth = (1...12).compactMap { month -> (String, Double)? in
+        let moodByMonth = (1 ... 12).compactMap { month -> (String, Double)? in
             guard let date = calendar.date(from: DateComponents(year: year, month: month)) else { return nil }
             let label = monthFormatter.string(from: date)
             let moods = monthMoods[month] ?? []

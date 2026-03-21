@@ -43,7 +43,7 @@ struct ReviewGratitudeCard: View {
             }
         }
         .onAppear {
-            for i in 0..<min(5, gratitudes.count) {
+            for i in 0 ..< min(5, gratitudes.count) {
                 withAnimation(.easeOut(duration: 0.5).delay(Double(i) * 0.3)) {
                     visibleCount = i + 1
                 }

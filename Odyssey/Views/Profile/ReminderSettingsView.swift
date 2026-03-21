@@ -1,5 +1,5 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 struct ReminderSettingsView: View {
     @AppStorage("reminderEnabled") private var reminderEnabled = true

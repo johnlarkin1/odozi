@@ -1,5 +1,5 @@
-import UserNotifications
 import os
+import UserNotifications
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Notifications")
 

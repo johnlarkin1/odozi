@@ -37,7 +37,7 @@ enum AchievementConditions {
     }
 
     static func hasStepMaster(entries: [DailyEntry]) -> Bool {
-        entries.contains { ($0.stepCount ?? 0) >= 10_000 }
+        entries.contains { ($0.stepCount ?? 0) >= 10000 }
     }
 
     static func hasEntryAtHour(entries: [DailyEntry], before hour: Int) -> Bool {
@@ -226,13 +226,13 @@ enum AchievementRegistry {
             condition: { entries, _ in
                 entries.contains { entry in
                     entry.hasUserSubmitted &&
-                    !entry.singleWordFeeling.isEmpty &&
-                    !entry.gratitude.isEmpty &&
-                    !entry.win.isEmpty &&
-                    !entry.tension.isEmpty &&
-                    !entry.journalEntry.isEmpty &&
-                    entry.sleepQuality > 0 &&
-                    entry.feeling > 0
+                        !entry.singleWordFeeling.isEmpty &&
+                        !entry.gratitude.isEmpty &&
+                        !entry.win.isEmpty &&
+                        !entry.tension.isEmpty &&
+                        !entry.journalEntry.isEmpty &&
+                        entry.sleepQuality > 0 &&
+                        entry.feeling > 0
                 }
             }
         ),
@@ -268,7 +268,7 @@ enum AchievementRegistry {
             description: "You have written a novel about your life",
             iconName: "books.vertical.fill",
             sortOrder: 5, tier: 1,
-            condition: { entries, _ in entries.totalJournalWordCount >= 10_000 }
+            condition: { entries, _ in entries.totalJournalWordCount >= 10000 }
         ),
         .init(
             id: "war_and_peace", category: "depth",
@@ -276,7 +276,7 @@ enum AchievementRegistry {
             description: "An epic chronicle of your inner world",
             iconName: "text.book.closed.fill",
             sortOrder: 6, tier: 2,
-            condition: { entries, _ in entries.totalJournalWordCount >= 50_000 }
+            condition: { entries, _ in entries.totalJournalWordCount >= 50000 }
         ),
     ]
 

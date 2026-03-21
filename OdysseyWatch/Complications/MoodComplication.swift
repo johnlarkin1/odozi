@@ -1,18 +1,18 @@
-import WidgetKit
-import SwiftUI
 import SwiftData
+import SwiftUI
+import WidgetKit
 
 struct MoodTimelineProvider: TimelineProvider {
-    func placeholder(in context: Context) -> MoodTimelineEntry {
+    func placeholder(in _: Context) -> MoodTimelineEntry {
         .placeholder
     }
 
-    func getSnapshot(in context: Context, completion: @escaping (MoodTimelineEntry) -> Void) {
+    func getSnapshot(in _: Context, completion: @escaping (MoodTimelineEntry) -> Void) {
         let entry = fetchCurrentEntry() ?? .empty
         completion(entry)
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<MoodTimelineEntry>) -> Void) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<MoodTimelineEntry>) -> Void) {
         let entry = fetchCurrentEntry() ?? .empty
 
         // Refresh at midnight so the complication updates for the new day
@@ -32,7 +32,8 @@ struct MoodTimelineProvider: TimelineProvider {
         descriptor.fetchLimit = 1
 
         guard let dailyEntry = try? context.fetch(descriptor).first,
-              dailyEntry.hasUserSubmitted else {
+              dailyEntry.hasUserSubmitted
+        else {
             return .empty
         }
 

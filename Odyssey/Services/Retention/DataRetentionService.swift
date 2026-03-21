@@ -1,6 +1,6 @@
 import Foundation
-import SwiftData
 import os
+import SwiftData
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DataRetention")
 
@@ -21,7 +21,8 @@ enum DataRetentionService {
         // Cooldown: if user dismissed less than 30 days ago, don't prompt again
         if let dismissedAt = UserDefaults.standard.object(forKey: dismissedAtKey) as? Date,
            let cooldownEnd = Calendar.current.date(byAdding: .day, value: cooldownDays, to: dismissedAt),
-           Date() < cooldownEnd {
+           Date() < cooldownEnd
+        {
             return 0
         }
 
@@ -51,7 +52,8 @@ enum DataRetentionService {
         let descriptor = FetchDescriptor(predicate: predicate)
 
         guard let oldEntries = try? context.fetch(descriptor),
-              !oldEntries.isEmpty else {
+              !oldEntries.isEmpty
+        else {
             return
         }
 

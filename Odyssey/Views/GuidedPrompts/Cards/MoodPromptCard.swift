@@ -17,7 +17,7 @@ struct MoodPromptCard: View {
 
                 VStack(spacing: 8) {
                     HStack(spacing: 6) {
-                        ForEach(1...10, id: \.self) { value in
+                        ForEach(1 ... 10, id: \.self) { value in
                             Button {
                                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                                     feeling = value

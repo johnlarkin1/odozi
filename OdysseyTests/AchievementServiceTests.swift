@@ -1,10 +1,9 @@
-import XCTest
-import SwiftData
 @testable import Odyssey
+import SwiftData
+import XCTest
 
 @MainActor
 final class AchievementServiceTests: XCTestCase {
-
     private var container: ModelContainer!
     private var context: ModelContext!
 
@@ -117,7 +116,7 @@ final class AchievementServiceTests: XCTestCase {
 
         var entries: [DailyEntry] = []
         // 7-day streak ending 20 days ago
-        for i in 0..<7 {
+        for i in 0 ..< 7 {
             let date = calendar.date(byAdding: .day, value: -(20 + i), to: today)!
             let entry = DailyEntry(date: date)
             entry.journalEntry = "Old streak day \(i)"
@@ -216,7 +215,7 @@ final class AchievementServiceTests: XCTestCase {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         var entries: [DailyEntry] = []
-        for i in 0..<6 {
+        for i in 0 ..< 6 {
             let date = calendar.date(byAdding: .day, value: -i, to: today)!
             let entry = DailyEntry(date: date)
             entry.journalEntry = "Entry \(i)"
@@ -307,7 +306,7 @@ final class AchievementServiceTests: XCTestCase {
         entry.feeling = 7
         entry.singleWordFeeling = "happy"
         entry.gratitude = "family"
-        entry.win = ""  // Missing win
+        entry.win = "" // Missing win
         entry.tension = "work deadline"
         entry.journalEntry = "Today was great"
         entry.sleepQuality = 8
@@ -326,7 +325,7 @@ final class AchievementServiceTests: XCTestCase {
 
         var entries: [DailyEntry] = []
         // 5 entries × 200 words each = 1000
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             let entry = DailyEntry()
             entry.journalEntry = String(repeating: "word ", count: 200)
             entry.hasUserSubmitted = true
@@ -452,7 +451,7 @@ final class AchievementServiceTests: XCTestCase {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         var entries: [DailyEntry] = []
-        for i in 0..<7 {
+        for i in 0 ..< 7 {
             let date = calendar.date(byAdding: .day, value: -i, to: today)!
             let entry = DailyEntry(date: date)
             entry.drinks = 0
@@ -475,10 +474,10 @@ final class AchievementServiceTests: XCTestCase {
         let calendar = Calendar.current
         let today = calendar.startOfDay(for: Date())
         var entries: [DailyEntry] = []
-        for i in 0..<7 {
+        for i in 0 ..< 7 {
             let date = calendar.date(byAdding: .day, value: -i, to: today)!
             let entry = DailyEntry(date: date)
-            entry.drinks = (i == 3) ? 2 : 0  // Drink on day 3 breaks streak
+            entry.drinks = (i == 3) ? 2 : 0 // Drink on day 3 breaks streak
             entry.journalEntry = "Day \(i)"
             entry.hasUserSubmitted = true
             context.insert(entry)
@@ -496,7 +495,7 @@ final class AchievementServiceTests: XCTestCase {
         service.seedIfNeeded()
 
         let entry = DailyEntry()
-        entry.stepCount = 10_000
+        entry.stepCount = 10000
         entry.journalEntry = "Active day"
         entry.hasUserSubmitted = true
         context.insert(entry)
@@ -512,7 +511,7 @@ final class AchievementServiceTests: XCTestCase {
         service.seedIfNeeded()
 
         let entry = DailyEntry()
-        entry.stepCount = 9_999
+        entry.stepCount = 9999
         entry.journalEntry = "Almost"
         entry.hasUserSubmitted = true
         context.insert(entry)
@@ -580,7 +579,7 @@ final class AchievementServiceTests: XCTestCase {
         service.seedIfNeeded()
 
         var entries: [DailyEntry] = []
-        for i in 0..<30 {
+        for i in 0 ..< 30 {
             let entry = DailyEntry()
             entry.gratitude = "Grateful for thing \(i)"
             entry.journalEntry = "Day \(i)"
@@ -601,7 +600,7 @@ final class AchievementServiceTests: XCTestCase {
 
         var entries: [DailyEntry] = []
         // 30 entries but only 5 unique gratitude texts
-        for i in 0..<30 {
+        for i in 0 ..< 30 {
             let entry = DailyEntry()
             entry.gratitude = "Same thing \(i % 5)"
             entry.journalEntry = "Day \(i)"
@@ -728,7 +727,7 @@ final class AchievementServiceTests: XCTestCase {
 
         // Verify sorted by tier descending
         guard unlocked.count >= 2 else { return }
-        for i in 0..<(unlocked.count - 1) {
+        for i in 0 ..< (unlocked.count - 1) {
             XCTAssertGreaterThanOrEqual(unlocked[i].tier, unlocked[i + 1].tier)
         }
     }
@@ -820,13 +819,13 @@ final class AchievementServiceTests: XCTestCase {
 
         var entries: [DailyEntry] = []
         // 5-day streak
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             let entry = DailyEntry(date: calendar.date(byAdding: .day, value: -i, to: today)!)
             entry.journalEntry = "Day \(i)"
             entries.append(entry)
         }
         // Gap, then 3-day streak
-        for i in 7..<10 {
+        for i in 7 ..< 10 {
             let entry = DailyEntry(date: calendar.date(byAdding: .day, value: -i, to: today)!)
             entry.journalEntry = "Day \(i)"
             entries.append(entry)
@@ -851,7 +850,7 @@ final class AchievementServiceTests: XCTestCase {
         let today = calendar.startOfDay(for: Date())
 
         var entries: [DailyEntry] = []
-        for i in 0..<5 {
+        for i in 0 ..< 5 {
             let date = calendar.date(byAdding: .day, value: -i, to: today)!
             let entry = DailyEntry(date: date)
             if i == 2 {
@@ -952,7 +951,7 @@ final class AchievementServiceTests: XCTestCase {
         entry2.feelingColorHex = "#00FF00"
 
         let entry3 = DailyEntry()
-        entry3.feelingColorHex = "#FFFFFF"  // Default, should be excluded
+        entry3.feelingColorHex = "#FFFFFF" // Default, should be excluded
 
         XCTAssertEqual([entry1, entry2, entry3].uniqueFeelingColorCount, 2)
     }
@@ -962,13 +961,13 @@ final class AchievementServiceTests: XCTestCase {
         entry1.gratitude = "sunshine"
 
         let entry2 = DailyEntry()
-        entry2.gratitude = "sunshine"  // Duplicate
+        entry2.gratitude = "sunshine" // Duplicate
 
         let entry3 = DailyEntry()
         entry3.gratitude = "family"
 
         let entry4 = DailyEntry()
-        entry4.gratitude = ""  // Empty, should be excluded
+        entry4.gratitude = "" // Empty, should be excluded
 
         XCTAssertEqual([entry1, entry2, entry3, entry4].uniqueGratitudeCount, 2)
     }
@@ -1015,7 +1014,7 @@ final class AchievementServiceTests: XCTestCase {
         let today = calendar.startOfDay(for: Date())
         var entries: [DailyEntry] = []
 
-        for i in 0..<count {
+        for i in 0 ..< count {
             let date = calendar.date(byAdding: .day, value: -i, to: today)!
             let entry = DailyEntry(date: date)
             entry.journalEntry = "Day \(i)"

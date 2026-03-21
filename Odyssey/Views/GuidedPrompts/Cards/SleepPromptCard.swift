@@ -6,7 +6,7 @@ struct SleepPromptCard: View {
     private let sleepLabels: [(value: Int, label: String)] = [
         (1, "Terrible"), (2, "Very Poor"), (3, "Poor"), (4, "Below Avg"),
         (5, "Average"), (6, "Decent"), (7, "Good"), (8, "Great"),
-        (9, "Excellent"), (10, "Perfect")
+        (9, "Excellent"), (10, "Perfect"),
     ]
 
     var body: some View {
@@ -23,7 +23,7 @@ struct SleepPromptCard: View {
 
                 VStack(spacing: 8) {
                     HStack(spacing: 6) {
-                        ForEach(1...10, id: \.self) { value in
+                        ForEach(1 ... 10, id: \.self) { value in
                             Button {
                                 withAnimation(.spring(response: 0.4, dampingFraction: 0.7)) {
                                     sleepQuality = value

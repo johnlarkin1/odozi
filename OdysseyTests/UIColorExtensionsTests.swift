@@ -1,8 +1,7 @@
-import XCTest
 @testable import Odyssey
+import XCTest
 
 final class UIColorExtensionsTests: XCTestCase {
-
     // MARK: - toHexString
 
     func testRedToHex() {

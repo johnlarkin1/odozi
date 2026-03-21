@@ -1,6 +1,6 @@
-import SwiftUI
-import SwiftData
 import os
+import SwiftData
+import SwiftUI
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DailyEntry")
 
@@ -105,7 +105,7 @@ final class DailyEntryViewModel {
     }
 
     func fetchWeekEntries() -> [DailyEntry?] {
-        (0..<7).reversed().map { fetchEntry(for: Date().daysAgo($0)) }
+        (0 ..< 7).reversed().map { fetchEntry(for: Date().daysAgo($0)) }
     }
 
     func updateLocation() async throws {

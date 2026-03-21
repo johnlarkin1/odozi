@@ -18,7 +18,7 @@ struct WeekPulseView: View {
             }
 
             HStack(spacing: 0) {
-                ForEach(0..<7, id: \.self) { index in
+                ForEach(0 ..< 7, id: \.self) { index in
                     let date = Date().daysAgo(6 - index)
                     let entry = weekEntries[index]
                     let isToday = index == 6

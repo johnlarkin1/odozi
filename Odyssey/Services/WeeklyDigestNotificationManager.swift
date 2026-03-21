@@ -1,6 +1,6 @@
-import UserNotifications
-import SwiftData
 import os
+import SwiftData
+import UserNotifications
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "WeeklyDigest")
 

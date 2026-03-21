@@ -2,17 +2,17 @@ import SwiftUI
 
 extension Color {
     // Design tokens
-    static let accentAmber = Color(red: 0.96, green: 0.65, blue: 0.14)     // #F5A623
-    static let accentTeal = Color(red: 0.18, green: 0.77, blue: 0.71)      // #2EC4B6
-    static let successGreen = Color(red: 0.30, green: 0.69, blue: 0.31)    // #4CAF50
-    static let coralRed = Color(red: 0.90, green: 0.45, blue: 0.45)        // E57373
+    static let accentAmber = Color(red: 0.96, green: 0.65, blue: 0.14) // #F5A623
+    static let accentTeal = Color(red: 0.18, green: 0.77, blue: 0.71) // #2EC4B6
+    static let successGreen = Color(red: 0.30, green: 0.69, blue: 0.31) // #4CAF50
+    static let coralRed = Color(red: 0.90, green: 0.45, blue: 0.45) // E57373
     static let cardSurface = Color(red: 0.11, green: 0.11, blue: 0.12)
 
     // Cosmic tokens
-    static let cosmicPurple = Color(red: 0.55, green: 0.36, blue: 0.96)     // #8C5CF5
-    static let nebulaPink = Color(red: 0.91, green: 0.42, blue: 0.68)       // #E86BAD
-    static let starWhite = Color(red: 0.93, green: 0.94, blue: 0.98)        // #EDF0FA
-    static let deepSpaceBlue = Color(red: 0.05, green: 0.05, blue: 0.12)    // #0D0D1F
+    static let cosmicPurple = Color(red: 0.55, green: 0.36, blue: 0.96) // #8C5CF5
+    static let nebulaPink = Color(red: 0.91, green: 0.42, blue: 0.68) // #E86BAD
+    static let starWhite = Color(red: 0.93, green: 0.94, blue: 0.98) // #EDF0FA
+    static let deepSpaceBlue = Color(red: 0.05, green: 0.05, blue: 0.12) // #0D0D1F
 
     static func moodGradient(for value: Int) -> Color {
         let t = Double(max(1, min(10, value)) - 1) / 9.0

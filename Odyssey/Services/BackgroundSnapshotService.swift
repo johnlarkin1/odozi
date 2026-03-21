@@ -1,6 +1,6 @@
-import SwiftData
 import Foundation
 import os
+import SwiftData
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundSnapshot")
 

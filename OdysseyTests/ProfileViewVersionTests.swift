@@ -1,9 +1,8 @@
-import XCTest
-import SwiftUI
 @testable import Odyssey
+import SwiftUI
+import XCTest
 
 final class ProfileViewVersionTests: XCTestCase {
-
     /// Test that the version string displayed in ProfileView comes from the Bundle version
     /// and not a hardcoded string
     func testProfileViewDisplaysBundleVersion() {

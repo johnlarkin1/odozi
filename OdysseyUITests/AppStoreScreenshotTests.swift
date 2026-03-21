@@ -2,7 +2,6 @@ import XCTest
 
 @MainActor
 final class AppStoreScreenshotTests: XCTestCase {
-
     let app = XCUIApplication()
 
     override func setUpWithError() throws {
@@ -120,7 +119,7 @@ final class AppStoreScreenshotTests: XCTestCase {
         // Tap sparkles toolbar button to open Year in Review
         let navBarButtons = app.navigationBars.buttons
         // The sparkles button is the trailing toolbar item
-        for i in 0..<navBarButtons.count {
+        for i in 0 ..< navBarButtons.count {
             let btn = navBarButtons.element(boundBy: i)
             if btn.label != "Insights" && btn.label != "Back" {
                 btn.tap()

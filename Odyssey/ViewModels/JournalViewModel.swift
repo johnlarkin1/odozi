@@ -1,11 +1,11 @@
-import SwiftUI
 import SwiftData
+import SwiftUI
 
 @MainActor
 @Observable
 final class JournalViewModel {
     var allEntries: [DailyEntry] = []
-    var selectedDate: Date = Date()
+    var selectedDate: Date = .init()
 
     private let modelContext: ModelContext
 

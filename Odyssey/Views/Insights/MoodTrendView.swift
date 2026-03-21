@@ -1,5 +1,5 @@
-import SwiftUI
 import Charts
+import SwiftUI
 
 struct MoodTrendView: View {
     let entries: [DailyEntry]
@@ -108,7 +108,7 @@ struct MoodTrendView: View {
                         }
                     }
                 }
-                .chartYScale(domain: 0...10)
+                .chartYScale(domain: 0 ... 10)
                 .frame(height: 300)
                 .padding(.horizontal, 16)
 

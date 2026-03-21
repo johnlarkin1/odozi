@@ -3,7 +3,6 @@ import XCTest
 /// Demo of the Insights dashboard: sparkline cards, map, word cloud.
 @MainActor
 final class InsightsDashboardDemo: FeatureDemoBase {
-
     func testInsightsDashboardDemo() throws {
         app.launch()
         pause(1)
@@ -12,7 +11,7 @@ final class InsightsDashboardDemo: FeatureDemoBase {
         pause(3)
 
         // Slowly scroll through all insight cards
-        for _ in 0..<3 {
+        for _ in 0 ..< 3 {
             app.swipeUp()
             pause(2)
         }
@@ -29,7 +28,7 @@ final class InsightsDashboardDemo: FeatureDemoBase {
         ).firstMatch
         if wait(for: mapCard) {
             mapCard.tap()
-            pause(4)  // Map tiles loading
+            pause(4) // Map tiles loading
             if app.navigationBars.buttons["Insights"].exists {
                 app.navigationBars.buttons["Insights"].tap()
                 pause(1)
