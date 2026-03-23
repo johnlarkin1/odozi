@@ -16,8 +16,10 @@
   --font-mono: var(--font-geist-mono), ui-monospace, monospace;
 }
 
-html {
+html,
+body {
   scroll-behavior: smooth;
+  overflow-x: clip;
 }
 
 body {
