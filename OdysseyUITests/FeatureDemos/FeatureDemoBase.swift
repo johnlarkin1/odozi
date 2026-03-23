@@ -52,7 +52,7 @@ class FeatureDemoBase: XCTestCase {
     }
 
     /// Walk through all guided prompt steps, filling in sample data.
-    /// Ends with the submit action (CompletionCard will appear as fullScreenCover).
+    /// Submits and dismisses the CompletionCard before returning.
     func walkThroughGuidedPrompt() {
         // Step 1: Mood — tap a mood option
         let moodButtons = app.buttons.matching(
@@ -64,8 +64,8 @@ class FeatureDemoBase: XCTestCase {
         }
         advancePrompt()
 
-        // Steps 2-7: Interact briefly with each, then advance
-        for step in 2 ... 7 {
+        // Steps 2-8: Interact briefly with each, then advance
+        for step in 2 ... 8 {
             pause(1.5)
             let textFields = app.textViews.allElementsBoundByIndex + app.textFields.allElementsBoundByIndex
             if let field = textFields.first, field.exists {
@@ -88,6 +88,13 @@ class FeatureDemoBase: XCTestCase {
             advancePrompt()
             pause(2)
         }
+
+        // Dismiss completion card
+        let doneButton = app.buttons["Done"]
+        if wait(for: doneButton) {
+            doneButton.tap()
+            pause(0.5)
+        }
     }
 
     /// Submit a quick entry without pausing for video. Useful as setup
@@ -105,7 +112,7 @@ class FeatureDemoBase: XCTestCase {
         }
 
         // Skip through all steps
-        for _ in 1 ... 7 {
+        for _ in 1 ... 8 {
             advancePrompt()
             pause(0.3)
         }
