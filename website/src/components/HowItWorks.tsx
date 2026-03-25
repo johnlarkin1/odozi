@@ -1,33 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-
-const steps = [
-  {
-    number: "1",
-    title: "Set Sail",
-    description: "Open Odyssey and tap today's check-in to begin charting your course.",
-    color: "text-accent-amber",
-    bg: "bg-accent-amber/10",
-    border: "border-accent-amber/30",
-  },
-  {
-    number: "2",
-    title: "Chart Your Course",
-    description: "Navigate 8 gentle prompts — mood, gratitude, wins, tensions. Each one skippable.",
-    color: "text-cosmic-purple",
-    bg: "bg-cosmic-purple/10",
-    border: "border-cosmic-purple/30",
-  },
-  {
-    number: "3",
-    title: "Navigate by Stars",
-    description: "Over days and weeks, constellations of insight emerge from your journey.",
-    color: "text-accent-teal",
-    bg: "bg-accent-teal/10",
-    border: "border-accent-teal/30",
-  },
-];
+import { howItWorks } from "@/content";
 
 export function HowItWorks() {
   return (
@@ -41,11 +15,11 @@ export function HowItWorks() {
           className="text-center"
         >
           <h2 className="text-4xl font-bold sm:text-5xl">
-            How it{" "}
-            <span className="text-accent-teal">works.</span>
+            {howItWorks.heading}{" "}
+            <span className="text-accent-teal">{howItWorks.headingAccent}</span>
           </h2>
           <p className="mx-auto mt-5 max-w-xl text-lg text-star-white/60">
-            Less than two minutes a day. No account needed.
+            {howItWorks.subtitle}
           </p>
         </motion.div>
 
@@ -54,7 +28,7 @@ export function HowItWorks() {
           <div className="absolute left-0 right-0 top-14 hidden h-px bg-gradient-to-r from-accent-amber/40 via-cosmic-purple/40 to-accent-teal/40 md:block" />
 
           <div className="grid gap-10 md:grid-cols-3">
-            {steps.map((step, i) => (
+            {howItWorks.steps.map((step, i) => (
               <motion.div
                 key={step.number}
                 initial={{ opacity: 0, y: 20 }}

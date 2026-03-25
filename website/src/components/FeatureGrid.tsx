@@ -23,51 +23,32 @@ import {
   MapIcon,
   Link2Icon,
 } from "./Icons";
+import { howItWorks, whatYouTrack, whatYouGetBack, screenshots } from "@/content";
 
-const journalingSteps = [
-  { icon: <SmileIcon className="text-accent-amber" />, title: "Mood", description: "Rate how you're feeling on a simple scale" },
-  { icon: <PaletteIcon className="text-accent-amber" />, title: "Feeling", description: "Pick a word and color that match your emotion" },
-  { icon: <MoonIcon className="text-accent-amber" />, title: "Sleep", description: "Log how well you slept last night" },
-  { icon: <HeartIcon className="text-accent-amber" />, title: "Gratitude", description: "Name something you're grateful for" },
-  { icon: <TrophyIcon className="text-accent-amber" />, title: "Win", description: "Celebrate a small or big win today" },
-  { icon: <CloudLightningIcon className="text-accent-amber" />, title: "Tension", description: "Acknowledge what's weighing on you" },
-  { icon: <PenLineIcon className="text-accent-amber" />, title: "Journal", description: "Free-write whatever's on your mind" },
-  { icon: <WineIcon className="text-accent-amber" />, title: "Drinks", description: "Track your alcohol consumption" },
+const promptIcons = [
+  <SmileIcon key="smile" className="text-accent-amber" />,
+  <PaletteIcon key="palette" className="text-accent-amber" />,
+  <MoonIcon key="moon" className="text-accent-amber" />,
+  <HeartIcon key="heart" className="text-accent-amber" />,
+  <TrophyIcon key="trophy" className="text-accent-amber" />,
+  <CloudLightningIcon key="cloud" className="text-accent-amber" />,
+  <PenLineIcon key="pen" className="text-accent-amber" />,
+  <WineIcon key="wine" className="text-accent-amber" />,
 ];
 
-const passiveCapture = [
-  {
-    icon: <MapPinIcon className="text-accent-teal" />,
-    title: "Location",
-    description: "A single GPS snapshot, reverse-geocoded to city and state. No continuous tracking.",
-  },
-  {
-    icon: <ActivityIcon className="text-accent-teal" />,
-    title: "Health",
-    description: "Steps, walking distance, and sleep analysis from HealthKit — with your permission.",
-  },
-  {
-    icon: <SmartphoneIcon className="text-accent-teal" />,
-    title: "Screen Time",
-    description: "Total screen time and pickups via the DeviceActivity framework.",
-  },
+const backgroundIcons = [
+  <MapPinIcon key="map-pin" className="text-accent-teal" />,
+  <ActivityIcon key="activity" className="text-accent-teal" />,
+  <SmartphoneIcon key="smartphone" className="text-accent-teal" />,
 ];
 
-const insightsList = [
-  { icon: <TrendingUpIcon className="text-cosmic-purple" />, title: "Mood Trends", description: "Charts that show how your mood changes over weeks and months" },
-  { icon: <CloudIcon className="text-cosmic-purple" />, title: "Word Cloud", description: "Your most-used journal words, beautifully visualized" },
-  { icon: <FlameIcon className="text-cosmic-purple" />, title: "Streaks", description: "Build consistency with daily journaling streaks" },
-  { icon: <MapIcon className="text-cosmic-purple" />, title: "Journey Map", description: "Color-coded mood pins on a map of where you've been" },
-  { icon: <Link2Icon className="text-cosmic-purple" />, title: "Correlations", description: "See connections between sleep, steps, screen time, and mood" },
-];
-
-const screenshots = [
-  { src: "/screenshots/today-tab.png", label: "Today", alt: "Today tab with daily greeting and health stats" },
-  { src: "/screenshots/guided-journaling.png", label: "Journaling", alt: "Guided journaling flow with mood check-in" },
-  { src: "/screenshots/insights-dashboard.png", label: "Insights", alt: "Insights dashboard with mood trends and streaks" },
-  { src: "/screenshots/map-visualization.png", label: "Map", alt: "Journey map with color-coded mood pins" },
-  { src: "/screenshots/word-cloud.png", label: "Word Cloud", alt: "Word cloud of most-used journal words" },
-  { src: "/screenshots/year-in-review.png", label: "Year in Review", alt: "Spotify Wrapped-style year in review" },
+const insightsIcons = [
+  <TrendingUpIcon key="trending" className="text-cosmic-purple" />,
+  <CloudIcon key="cloud" className="text-cosmic-purple" />,
+  <FlameIcon key="flame" className="text-cosmic-purple" />,
+  <MapIcon key="map" className="text-cosmic-purple" />,
+  <Link2Icon key="link" className="text-cosmic-purple" />,
+  <FlameIcon key="yir" className="text-nebula-pink" />,
 ];
 
 export function ScreenshotCarousel() {
@@ -187,11 +168,12 @@ export function ScreenshotCarousel() {
   );
 }
 
-export function GuidedJournalingSection() {
+export function WhatYouTrackSection() {
   return (
     <section id="features" className="relative px-6 py-28">
       <SectionStars />
       <div className="mx-auto max-w-6xl">
+        {/* How it works */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -200,48 +182,92 @@ export function GuidedJournalingSection() {
           className="text-center"
         >
           <h2 className="text-4xl font-bold sm:text-5xl">
-            Eight gentle prompts.{" "}
-            <span className="text-accent-amber">One daily voyage.</span>
+            {howItWorks.heading}{" "}
+            <span className="text-accent-teal">{howItWorks.headingAccent}</span>
           </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-star-white/60">
-            Odyssey guides you through a short daily check-in. Every step is skippable — no pressure, just presence.
+          <p className="mx-auto mt-5 max-w-xl text-lg text-star-white/60">
+            {howItWorks.subtitle}
           </p>
         </motion.div>
 
+        <div className="relative mt-16">
+          {/* Connecting line — desktop only */}
+          <div className="absolute left-0 right-0 top-14 hidden h-px bg-gradient-to-r from-accent-amber/40 via-cosmic-purple/40 to-accent-teal/40 md:block" />
+
+          <div className="grid gap-10 md:grid-cols-3">
+            {howItWorks.steps.map((step, i) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.5, delay: i * 0.15 }}
+                className="relative flex flex-col items-center text-center"
+              >
+                <div
+                  className={`flex h-14 w-14 items-center justify-center rounded-full border-2 ${step.border} ${step.bg}`}
+                >
+                  <span className={`text-xl font-bold ${step.color}`}>{step.number}</span>
+                </div>
+                <h3 className="mt-6 text-xl font-semibold text-star-white">{step.title}</h3>
+                <p className="mt-3 text-base text-star-white/60">{step.description}</p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
+        {/* What you track */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="mt-24 text-center"
+        >
+          <h2 className="text-4xl font-bold sm:text-5xl">
+            {whatYouTrack.heading}{" "}
+            <span className="text-accent-amber">{whatYouTrack.headingAccent}</span>
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-lg text-star-white/60">
+            {whatYouTrack.subtitle}
+          </p>
+        </motion.div>
+
+        {/* Prompts grid */}
         <div className="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-          {journalingSteps.map((step, i) => (
-            <FeatureCard key={step.title} {...step} delay={i * 0.05} />
+          {whatYouTrack.prompts.map((step, i) => (
+            <FeatureCard
+              key={step.title}
+              icon={promptIcons[i]}
+              title={step.title}
+              description={step.description}
+              delay={i * 0.05}
+            />
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
 
-export function PassiveCaptureSection() {
-  return (
-    <section className="relative px-6 py-28">
-      <SectionStars />
-      <div className="mx-auto max-w-6xl">
+        {/* Background data sub-section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center"
+          className="mt-16 text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
-            While you journal,{" "}
-            <span className="text-accent-teal">Odyssey reads the stars.</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-star-white/60">
-            Background data capture charts the waters around you — no extra effort required.
+          <p className="text-sm font-medium uppercase tracking-widest text-accent-teal/80">
+            {whatYouTrack.backgroundLabel}
           </p>
         </motion.div>
 
-        <div className="mt-14 grid gap-6 sm:grid-cols-3">
-          {passiveCapture.map((item, i) => (
-            <FeatureCard key={item.title} {...item} delay={i * 0.1} />
+        <div className="mt-6 grid gap-6 sm:grid-cols-3">
+          {whatYouTrack.backgroundItems.map((item, i) => (
+            <FeatureCard
+              key={item.title}
+              icon={backgroundIcons[i]}
+              title={item.title}
+              description={item.description}
+              delay={i * 0.1}
+            />
           ))}
         </div>
       </div>
@@ -249,7 +275,7 @@ export function PassiveCaptureSection() {
   );
 }
 
-export function InsightsSection() {
+export function WhatYouGetBackSection() {
   return (
     <section className="relative px-6 py-28">
       <SectionStars />
@@ -262,43 +288,25 @@ export function InsightsSection() {
           className="text-center"
         >
           <h2 className="text-4xl font-bold sm:text-5xl">
-            Constellations{" "}
-            <span className="text-cosmic-purple">emerge.</span>
+            {whatYouGetBack.heading}{" "}
+            <span className="text-cosmic-purple">{whatYouGetBack.headingAccent}</span>
           </h2>
           <p className="mx-auto mt-5 max-w-2xl text-lg text-star-white/60">
-            Like stars forming patterns in the night sky, Odyssey reveals connections between your mood, habits, and the world around you.
+            {whatYouGetBack.subtitle}
           </p>
         </motion.div>
 
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {insightsList.map((item, i) => (
-            <FeatureCard key={item.title} {...item} delay={i * 0.08} />
+          {whatYouGetBack.items.map((item, i) => (
+            <FeatureCard
+              key={item.title}
+              icon={insightsIcons[i]}
+              title={item.title}
+              description={item.description}
+              delay={i * 0.08}
+            />
           ))}
         </div>
-      </div>
-    </section>
-  );
-}
-
-export function YearInReviewSection() {
-  return (
-    <section className="relative px-6 py-28">
-      <div className="mx-auto max-w-4xl text-center">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6 }}
-        >
-          <h2 className="text-4xl font-bold sm:text-5xl">
-            Your year.{" "}
-            <span className="text-nebula-pink">Wrapped.</span>
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-lg text-star-white/60">
-            A Spotify Wrapped-style captain&apos;s log of your year — moods, streaks,
-            top feelings, and more, beautifully charted into shareable cards.
-          </p>
-        </motion.div>
       </div>
     </section>
   );
