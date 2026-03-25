@@ -4,6 +4,8 @@ import WatchKit
 
 struct QuickCheckInView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(WatchSyncService.self) private var syncService
+    @Environment(WatchAuthManager.self) private var authManager
     @State private var step: CheckInStep = .mood
     @State private var moodScore: Double = 5
     @State private var selectedFeeling: String = ""
@@ -49,6 +51,11 @@ struct QuickCheckInView: View {
         entry.needsSync = true
         entry.updatedAt = Date()
         try? modelContext.save()
+
+        // Trigger sync immediately after saving
+        Task {
+            await syncService.syncPendingEntries(modelContext: modelContext, authManager: authManager)
+        }
     }
 
     private func moodColorHex(for value: Int) -> String {

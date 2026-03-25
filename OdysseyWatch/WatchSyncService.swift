@@ -114,8 +114,8 @@ final class WatchSyncService {
             entry.singleWordFeeling = try await encryption.decrypt(feeling)
         }
 
-        // Prefer remote metric values if local is nil/zero
-        if entry.feeling == 5, remote.feeling != 5 {
+        // Prefer remote metric values if local has no user submission
+        if !entry.hasUserSubmitted, remote.feeling != 0 {
             entry.feeling = remote.feeling
         }
         if entry.stepCount == nil {
