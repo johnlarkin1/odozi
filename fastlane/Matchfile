@@ -4,7 +4,9 @@ type("appstore")
 app_identifier([
   "com.johnlarkin.Odyssey",
   "com.johnlarkin.Odyssey.OdysseyDeviceActivityMonitor",
-  "com.johnlarkin.Odyssey.OdysseyDeviceActivityReport"
+  "com.johnlarkin.Odyssey.OdysseyDeviceActivityReport",
+  "com.johnlarkin.Odyssey.OdysseyWidget",
+  "com.johnlarkin.Odyssey.OdysseyWatch"
 ])
 team_id("P3Q6VLD666")
 keychain_name(ENV["MATCH_KEYCHAIN_NAME"] || "login")
