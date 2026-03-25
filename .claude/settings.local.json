@@ -29,7 +29,9 @@
       "Bash(make build:*)",
       "mcp__plugin_github_github__issue_write",
       "Bash(git diff:*)",
-      "Bash(git fetch:*)"
+      "Bash(git fetch:*)",
+      "Bash(find /Users/johnlarkin/Documents/coding/odyssey/code/odyssey -type f \\\\\\(-name Gemfile* -o -name .github -o -name *.md \\\\\\))",
+      "Bash(grep -r PrivacyInfo /Users/johnlarkin/Documents/coding/odyssey/code/odyssey --include=*.pbxproj --include=*.swift)"
     ]
   }
 }
