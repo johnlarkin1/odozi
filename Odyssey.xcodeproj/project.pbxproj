@@ -167,6 +167,7 @@
 		6C2A75E33587A55A135F5728 /* OnboardingCompletionCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D23E1B8 /* OnboardingCompletionCard.swift */; };
 		6C2A75E33587A55A135F6729 /* AccountCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2AC4D607E8E30E341D24E2B9 /* AccountCard.swift */; };
 		6C64645FB7764D87A5889C47 /* WeeklyDigestServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */; };
+		AA22334455667788AABB0001 /* SleepScoreServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA22334455667788AABB0002 /* SleepScoreServiceTests.swift */; };
 		6C8DC5973DC4574CDAEEAC80 /* BackgroundSnapshotService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A90B323B0F5900D138A2D16 /* BackgroundSnapshotService.swift */; };
 		6D76935102ADDCD5E05976D1 /* WeekPulseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0006F6F6F6F6F6F6F6F6F6 /* WeekPulseView.swift */; };
 		6D92F9C7577182199C2F92E3 /* StreaksAchievementsDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 801680621A14AEF3730F85FB /* StreaksAchievementsDemo.swift */; };
@@ -697,6 +698,7 @@
 		D4E5F6A7B8C9D0E1F2A3B4C5 /* JourneyGlobeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyGlobeView.swift; sourceTree = "<group>"; };
 		D5988BAF118243F29DCA9AE4 /* NavigationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationState.swift; sourceTree = "<group>"; };
 		D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestServiceTests.swift; sourceTree = "<group>"; };
+		AA22334455667788AABB0002 /* SleepScoreServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepScoreServiceTests.swift; sourceTree = "<group>"; };
 		D792DCB82D915378585A99FF /* PlatformColor.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PlatformColor.swift; sourceTree = "<group>"; };
 		D7FEAD6B34E60BBD0CE7B976 /* PromptModelsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PromptModelsTests.swift; sourceTree = "<group>"; };
 		D9190F56F1CE3A8E94118F97 /* SparklineCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SparklineCard.swift; sourceTree = "<group>"; };
@@ -1125,6 +1127,7 @@
 			isa = PBXGroup;
 			children = (
 				D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */,
+				AA22334455667788AABB0002 /* SleepScoreServiceTests.swift */,
 				5FAFBC1F2B49E1A80018504E /* OdysseyTests.swift */,
 				2F4C94785483837CD4EF05E2 /* DateExtensionsTests.swift */,
 				ED5EB7B9A9760675936EC1E2 /* UIColorExtensionsTests.swift */,
@@ -1910,6 +1913,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6C64645FB7764D87A5889C47 /* WeeklyDigestServiceTests.swift in Sources */,
+				AA22334455667788AABB0001 /* SleepScoreServiceTests.swift in Sources */,
 				5FAFBC202B49E1A80018504E /* OdysseyTests.swift in Sources */,
 				95EB6E8CC567FDF5FD761EDE /* DateExtensionsTests.swift in Sources */,
 				B39E094A6DDC821E43378EF8 /* UIColorExtensionsTests.swift in Sources */,

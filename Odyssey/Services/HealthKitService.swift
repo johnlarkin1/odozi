@@ -65,12 +65,12 @@ actor HealthKitService {
     }
 
     func fetchSleepHours(for date: Date) async throws -> Double? {
-        try await fetchSleepStages(for: date).totalHours
+        try await fetchSleepStages(for: date)?.totalHours
     }
 
-    func fetchSleepStages(for date: Date) async throws -> SleepStageData {
+    func fetchSleepStages(for date: Date) async throws -> SleepStageData? {
         guard let interval = sleepInterval(for: date) else {
-            return SleepStageData(totalHours: nil, remHours: nil, deepHours: nil, coreHours: nil, awakeMinutes: nil, sleepOnset: nil, wakeTime: nil, interruptionCount: 0)
+            return nil
         }
         let type = HKCategoryType(.sleepAnalysis)
         let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
@@ -107,13 +107,12 @@ actor HealthKitService {
         }
 
         // Compute per-stage durations (merge overlapping intervals per stage)
-        let coreSeconds = mergedDuration(from: coreSamples)
+        let coreSeconds = mergedDuration(from: coreSamples) + mergedDuration(from: unspecifiedSamples)
         let deepSeconds = mergedDuration(from: deepSamples)
         let remSeconds = mergedDuration(from: remSamples)
-        let unspecifiedSeconds = mergedDuration(from: unspecifiedSamples)
         let awakeSeconds = mergedDuration(from: awakeSamples)
 
-        let totalSeconds = coreSeconds + deepSeconds + remSeconds + unspecifiedSeconds
+        let totalSeconds = coreSeconds + deepSeconds + remSeconds
 
         // Determine sleep onset (earliest asleep sample) and wake time (latest asleep sample end)
         let allAsleepSamples = (coreSamples + deepSamples + remSamples + unspecifiedSamples)

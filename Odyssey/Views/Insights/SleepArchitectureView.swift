@@ -112,12 +112,7 @@ struct SleepScoreCard: View {
     }
 
     private func scoreColor(_ score: Int) -> Color {
-        switch score {
-        case 0...40: return .coralRed
-        case 41...60: return .accentAmber
-        case 61...80: return .successGreen
-        default: return .accentTeal
-        }
+        SleepScoreService.color(for: score)
     }
 }
 
@@ -343,18 +338,25 @@ struct SleepArchitectureDetailView: View {
     private var averageStages: [(label: String, hours: Double, color: Color)] {
         let entries = entriesWithStages
         guard !entries.isEmpty else { return [] }
-        let count = Double(entries.count)
+
+        let coreValues = entries.compactMap(\.sleepCoreHours)
+        let deepValues = entries.compactMap(\.sleepDeepHours)
+        let remValues = entries.compactMap(\.sleepREMHours)
+        let awakeValues = entries.compactMap(\.sleepAwakeMinutes)
 
         var stages: [(label: String, hours: Double, color: Color)] = []
-        let avgCore = entries.compactMap(\.sleepCoreHours).reduce(0, +) / count
-        let avgDeep = entries.compactMap(\.sleepDeepHours).reduce(0, +) / count
-        let avgREM = entries.compactMap(\.sleepREMHours).reduce(0, +) / count
-        let avgAwake = entries.compactMap(\.sleepAwakeMinutes).reduce(0, +) / count / 60.0
-
-        if avgCore > 0 { stages.append(("Core", avgCore, .accentAmber)) }
-        if avgDeep > 0 { stages.append(("Deep", avgDeep, .accentTeal)) }
-        if avgREM > 0 { stages.append(("REM", avgREM, .cosmicPurple)) }
-        if avgAwake > 0 { stages.append(("Awake", avgAwake, .coralRed)) }
+        if !coreValues.isEmpty {
+            stages.append(("Core", coreValues.reduce(0, +) / Double(coreValues.count), .accentAmber))
+        }
+        if !deepValues.isEmpty {
+            stages.append(("Deep", deepValues.reduce(0, +) / Double(deepValues.count), .accentTeal))
+        }
+        if !remValues.isEmpty {
+            stages.append(("REM", remValues.reduce(0, +) / Double(remValues.count), .cosmicPurple))
+        }
+        if !awakeValues.isEmpty {
+            stages.append(("Awake", awakeValues.reduce(0, +) / Double(awakeValues.count) / 60.0, .coralRed))
+        }
 
         return stages
     }
@@ -445,20 +447,10 @@ struct SleepArchitectureDetailView: View {
     // MARK: - Helpers
 
     private func scoreLabel(_ score: Int) -> String {
-        switch score {
-        case 0...40: return "Low"
-        case 41...60: return "Fair"
-        case 61...80: return "Good"
-        default: return "Excellent"
-        }
+        SleepScoreService.label(for: score)
     }
 
     private func scoreColor(_ score: Int) -> Color {
-        switch score {
-        case 0...40: return .coralRed
-        case 41...60: return .accentAmber
-        case 61...80: return .successGreen
-        default: return .accentTeal
-        }
+        SleepScoreService.color(for: score)
     }
 }

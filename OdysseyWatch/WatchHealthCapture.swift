@@ -41,14 +41,15 @@ struct WatchHealthCapture {
             if let walkingDistance = try await distance {
                 entry.walkingDistanceMeters = walkingDistance
             }
-            let sleep = try await sleepStages
-            if let totalHours = sleep.totalHours { entry.sleepHours = totalHours }
-            if let rem = sleep.remHours { entry.sleepREMHours = rem }
-            if let deep = sleep.deepHours { entry.sleepDeepHours = deep }
-            if let core = sleep.coreHours { entry.sleepCoreHours = core }
-            if let awake = sleep.awakeMinutes { entry.sleepAwakeMinutes = awake }
-            if let onset = sleep.sleepOnset { entry.sleepOnset = onset }
-            entry.sleepInterruptionCount = sleep.interruptionCount
+            if let sleep = try await sleepStages {
+                if let totalHours = sleep.totalHours { entry.sleepHours = totalHours }
+                if let rem = sleep.remHours { entry.sleepREMHours = rem }
+                if let deep = sleep.deepHours { entry.sleepDeepHours = deep }
+                if let core = sleep.coreHours { entry.sleepCoreHours = core }
+                if let awake = sleep.awakeMinutes { entry.sleepAwakeMinutes = awake }
+                if let onset = sleep.sleepOnset { entry.sleepOnset = onset }
+                entry.sleepInterruptionCount = sleep.interruptionCount
+            }
 
             // Sleep score is computed by the main app during background snapshot
             // (requires SleepScoreService which lives in the Odyssey target)

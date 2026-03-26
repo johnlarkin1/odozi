@@ -75,12 +75,7 @@ extension DailyEntry {
 
     var sleepScoreLabel: String? {
         guard let score = sleepScore else { return nil }
-        switch score {
-        case 0...40: return "Low"
-        case 41...60: return "Fair"
-        case 61...80: return "Good"
-        default: return "Excellent"
-        }
+        return SleepScoreService.label(for: score)
     }
 
     var hasPromptData: Bool {

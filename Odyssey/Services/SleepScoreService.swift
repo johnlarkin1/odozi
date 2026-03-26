@@ -1,19 +1,31 @@
 import Foundation
+import SwiftUI
 
 enum SleepScoreService {
     struct SleepScore {
-        let total: Int
+        var total: Int { min(100, durationPoints + consistencyPoints + interruptionPoints) }
         let durationPoints: Int
         let consistencyPoints: Int
         let interruptionPoints: Int
 
-        var label: String {
-            switch total {
-            case 0...40: return "Low"
-            case 41...60: return "Fair"
-            case 61...80: return "Good"
-            default: return "Excellent"
-            }
+        var label: String { SleepScoreService.label(for: total) }
+    }
+
+    static func label(for score: Int) -> String {
+        switch score {
+        case 0...40: return "Low"
+        case 41...60: return "Fair"
+        case 61...80: return "Good"
+        default: return "Excellent"
+        }
+    }
+
+    static func color(for score: Int) -> Color {
+        switch score {
+        case 0...40: return .coralRed
+        case 41...60: return .accentAmber
+        case 61...80: return .successGreen
+        default: return .accentTeal
         }
     }
 
@@ -37,10 +49,7 @@ enum SleepScoreService {
             awakeMinutes: entry.sleepAwakeMinutes ?? 0
         )
 
-        let total = min(100, durationPts + consistencyPts + interruptionPts)
-
         return SleepScore(
-            total: total,
             durationPoints: durationPts,
             consistencyPoints: consistencyPts,
             interruptionPoints: interruptionPts
@@ -76,8 +85,7 @@ enum SleepScoreService {
         // Collect onset times (time-of-day in minutes since midnight, adjusted for overnight)
         var onsetMinutes: [Double] = []
 
-        let allEntries = recentEntries + (currentOnset != nil ? [] : [])
-        for entry in allEntries {
+        for entry in recentEntries {
             if let onset = entry.sleepOnset {
                 onsetMinutes.append(timeOfDayMinutes(from: onset))
             }

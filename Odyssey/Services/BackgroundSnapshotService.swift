@@ -72,11 +72,29 @@ actor BackgroundSnapshotService {
             return (nil, nil, nil)
         }
 
-        async let steps = try? healthKitService.fetchSteps(for: date)
-        async let distance = try? healthKitService.fetchWalkingDistance(for: date)
-        async let sleep = try? healthKitService.fetchSleepStages(for: date)
+        var steps: Int?
+        var distance: Double?
+        var sleep: SleepStageData?
 
-        return await(steps, distance, sleep)
+        do {
+            steps = try await healthKitService.fetchSteps(for: date)
+        } catch {
+            logger.error("Steps fetch failed: \(error)")
+        }
+
+        do {
+            distance = try await healthKitService.fetchWalkingDistance(for: date)
+        } catch {
+            logger.error("Walking distance fetch failed: \(error)")
+        }
+
+        do {
+            sleep = try await healthKitService.fetchSleepStages(for: date)
+        } catch {
+            logger.error("Sleep stages fetch failed: \(error)")
+        }
+
+        return (steps, distance, sleep)
     }
 
     private func readScreenTimeFromDefaults() -> (seconds: Double, pickups: Int)? {
@@ -119,9 +137,8 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
                 predicate: #Predicate { $0.date >= thirteenDaysAgo && $0.date < entryDate },
                 sortBy: [SortDescriptor(\.date, order: .reverse)]
             )
-            if let recentEntries = try? context.fetch(recentDescriptor) {
-                entry.sleepScore = SleepScoreService.computeScore(for: entry, recentEntries: recentEntries)?.total
-            }
+            let recentEntries = try context.fetch(recentDescriptor)
+            entry.sleepScore = SleepScoreService.computeScore(for: entry, recentEntries: recentEntries)?.total
         }
 
         // Apply Screen Time data
