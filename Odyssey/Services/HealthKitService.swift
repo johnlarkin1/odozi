@@ -1,5 +1,16 @@
 import HealthKit
 
+struct SleepStageData: Sendable {
+    let totalHours: Double?
+    let remHours: Double?
+    let deepHours: Double?
+    let coreHours: Double?
+    let awakeMinutes: Double?
+    let sleepOnset: Date?
+    let wakeTime: Date?
+    let interruptionCount: Int
+}
+
 actor HealthKitService {
     private let store = HKHealthStore()
 
@@ -54,7 +65,13 @@ actor HealthKitService {
     }
 
     func fetchSleepHours(for date: Date) async throws -> Double? {
-        guard let interval = sleepInterval(for: date) else { return nil }
+        try await fetchSleepStages(for: date)?.totalHours
+    }
+
+    func fetchSleepStages(for date: Date) async throws -> SleepStageData? {
+        guard let interval = sleepInterval(for: date) else {
+            return nil
+        }
         let type = HKCategoryType(.sleepAnalysis)
         let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
 
@@ -65,29 +82,85 @@ actor HealthKitService {
 
         let samples = try await sampleDescriptor.result(for: store)
 
-        // Filter to asleep states only (not inBed)
-        let asleepValues: Set<Int> = [
-            HKCategoryValueSleepAnalysis.asleepCore.rawValue,
-            HKCategoryValueSleepAnalysis.asleepDeep.rawValue,
-            HKCategoryValueSleepAnalysis.asleepREM.rawValue,
-            HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue
-        ]
+        // Bucket samples by sleep stage
+        var coreSamples: [HKCategorySample] = []
+        var deepSamples: [HKCategorySample] = []
+        var remSamples: [HKCategorySample] = []
+        var unspecifiedSamples: [HKCategorySample] = []
+        var awakeSamples: [HKCategorySample] = []
 
-        // Merge overlapping intervals to avoid double-counting across sources (Watch + iPhone)
-        let sortedSamples = samples
-            .filter { asleepValues.contains($0.value) }
+        for sample in samples {
+            switch sample.value {
+            case HKCategoryValueSleepAnalysis.asleepCore.rawValue:
+                coreSamples.append(sample)
+            case HKCategoryValueSleepAnalysis.asleepDeep.rawValue:
+                deepSamples.append(sample)
+            case HKCategoryValueSleepAnalysis.asleepREM.rawValue:
+                remSamples.append(sample)
+            case HKCategoryValueSleepAnalysis.asleepUnspecified.rawValue:
+                unspecifiedSamples.append(sample)
+            case HKCategoryValueSleepAnalysis.awake.rawValue:
+                awakeSamples.append(sample)
+            default:
+                break // Skip inBed and unknown values
+            }
+        }
+
+        // Compute per-stage durations (merge overlapping intervals per stage)
+        let coreSeconds = mergedDuration(from: coreSamples) + mergedDuration(from: unspecifiedSamples)
+        let deepSeconds = mergedDuration(from: deepSamples)
+        let remSeconds = mergedDuration(from: remSamples)
+        let awakeSeconds = mergedDuration(from: awakeSamples)
+
+        let totalSeconds = coreSeconds + deepSeconds + remSeconds
+
+        // Determine sleep onset (earliest asleep sample) and wake time (latest asleep sample end)
+        let allAsleepSamples = (coreSamples + deepSamples + remSamples + unspecifiedSamples)
             .sorted { $0.startDate < $1.startDate }
+        let sleepOnset = allAsleepSamples.first?.startDate
+        let wakeTime = allAsleepSamples.map(\.endDate).max()
 
-        var mergedSeconds: TimeInterval = 0
+        // Count awake interruptions: distinct awake intervals that fall between sleep onset and wake time
+        let interruptionCount: Int
+        if let onset = sleepOnset, let wake = wakeTime {
+            interruptionCount = awakeSamples
+                .filter { $0.startDate >= onset && $0.endDate <= wake }
+                .sorted { $0.startDate < $1.startDate }
+                .reduce(into: (count: 0, lastEnd: Date.distantPast)) { state, sample in
+                    if sample.startDate > state.lastEnd {
+                        state.count += 1
+                    }
+                    state.lastEnd = max(state.lastEnd, sample.endDate)
+                }.count
+        } else {
+            interruptionCount = 0
+        }
+
+        return SleepStageData(
+            totalHours: totalSeconds > 0 ? totalSeconds / 3600.0 : nil,
+            remHours: remSeconds > 0 ? remSeconds / 3600.0 : nil,
+            deepHours: deepSeconds > 0 ? deepSeconds / 3600.0 : nil,
+            coreHours: coreSeconds > 0 ? coreSeconds / 3600.0 : nil,
+            awakeMinutes: awakeSeconds > 0 ? awakeSeconds / 60.0 : nil,
+            sleepOnset: sleepOnset,
+            wakeTime: wakeTime,
+            interruptionCount: interruptionCount
+        )
+    }
+
+    /// Merges overlapping intervals and returns total duration in seconds.
+    private func mergedDuration(from samples: [HKCategorySample]) -> TimeInterval {
+        let sorted = samples.sorted { $0.startDate < $1.startDate }
+        var totalSeconds: TimeInterval = 0
         var currentStart: Date?
         var currentEnd: Date?
 
-        for sample in sortedSamples {
+        for sample in sorted {
             if let start = currentStart, let end = currentEnd {
                 if sample.startDate <= end {
                     currentEnd = max(end, sample.endDate)
                 } else {
-                    mergedSeconds += end.timeIntervalSince(start)
+                    totalSeconds += end.timeIntervalSince(start)
                     currentStart = sample.startDate
                     currentEnd = sample.endDate
                 }
@@ -97,10 +170,9 @@ actor HealthKitService {
             }
         }
         if let start = currentStart, let end = currentEnd {
-            mergedSeconds += end.timeIntervalSince(start)
+            totalSeconds += end.timeIntervalSince(start)
         }
-
-        return mergedSeconds > 0 ? mergedSeconds / 3600.0 : nil
+        return totalSeconds
     }
 
     private func dayInterval(for date: Date) -> DateInterval? {

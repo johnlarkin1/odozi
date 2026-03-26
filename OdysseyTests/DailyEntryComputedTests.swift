@@ -125,4 +125,63 @@ final class DailyEntryComputedTests: XCTestCase {
         XCTAssertEqual(components[1], 0.0, accuracy: 0.01)
         XCTAssertEqual(components[2], 0.0, accuracy: 0.01)
     }
+
+    // MARK: - hasSleepStageData
+
+    func testHasSleepStageDataFalseWhenAllNil() {
+        let entry = DailyEntry()
+        XCTAssertFalse(entry.hasSleepStageData)
+    }
+
+    func testHasSleepStageDataTrueWithREMOnly() {
+        let entry = DailyEntry(sleepREMHours: 1.5)
+        XCTAssertTrue(entry.hasSleepStageData)
+    }
+
+    func testHasSleepStageDataTrueWithDeepOnly() {
+        let entry = DailyEntry(sleepDeepHours: 1.0)
+        XCTAssertTrue(entry.hasSleepStageData)
+    }
+
+    func testHasSleepStageDataTrueWithCoreOnly() {
+        let entry = DailyEntry(sleepCoreHours: 3.0)
+        XCTAssertTrue(entry.hasSleepStageData)
+    }
+
+    // MARK: - sleepStageBreakdown
+
+    func testSleepStageBreakdownOrdering() {
+        let entry = DailyEntry(sleepREMHours: 1.5, sleepDeepHours: 1.0, sleepCoreHours: 3.0, sleepAwakeMinutes: 30.0)
+        let labels = entry.sleepStageBreakdown.map(\.label)
+        XCTAssertEqual(labels, ["Core", "Deep", "REM", "Awake"])
+    }
+
+    func testSleepStageBreakdownExcludesNilStages() {
+        let entry = DailyEntry(sleepDeepHours: 1.0)
+        let labels = entry.sleepStageBreakdown.map(\.label)
+        XCTAssertEqual(labels, ["Deep"])
+    }
+
+    func testSleepStageBreakdownAwakeConvertsMinutesToHours() {
+        let entry = DailyEntry(sleepCoreHours: 3.0, sleepAwakeMinutes: 90.0)
+        let awakeStage = entry.sleepStageBreakdown.first(where: { $0.label == "Awake" })
+        XCTAssertNotNil(awakeStage)
+        XCTAssertEqual(awakeStage!.hours, 1.5, accuracy: 0.01)
+    }
+
+    // MARK: - sleepScoreLabel
+
+    func testSleepScoreLabelNilWhenNoScore() {
+        let entry = DailyEntry()
+        XCTAssertNil(entry.sleepScoreLabel)
+    }
+
+    func testSleepScoreLabelBoundaries() {
+        XCTAssertEqual(DailyEntry(sleepScore: 40).sleepScoreLabel, "Low")
+        XCTAssertEqual(DailyEntry(sleepScore: 41).sleepScoreLabel, "Fair")
+        XCTAssertEqual(DailyEntry(sleepScore: 60).sleepScoreLabel, "Fair")
+        XCTAssertEqual(DailyEntry(sleepScore: 61).sleepScoreLabel, "Good")
+        XCTAssertEqual(DailyEntry(sleepScore: 80).sleepScoreLabel, "Good")
+        XCTAssertEqual(DailyEntry(sleepScore: 81).sleepScoreLabel, "Excellent")
+    }
 }

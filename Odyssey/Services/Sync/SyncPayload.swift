@@ -23,6 +23,13 @@ struct SyncUploadEntry: Codable {
     let stepCount: Int?
     let walkingDistanceMeters: Double?
     let sleepHours: Double?
+    let sleepREMHours: Double?
+    let sleepDeepHours: Double?
+    let sleepCoreHours: Double?
+    let sleepAwakeMinutes: Double?
+    let sleepOnset: String?
+    let sleepInterruptionCount: Int?
+    let sleepScore: Int?
     let screenTimeSeconds: Double?
     let pickups: Int?
 
@@ -67,6 +74,13 @@ struct SyncDownloadEntry: Codable {
     let stepCount: Int?
     let walkingDistanceMeters: Double?
     let sleepHours: Double?
+    let sleepREMHours: Double?
+    let sleepDeepHours: Double?
+    let sleepCoreHours: Double?
+    let sleepAwakeMinutes: Double?
+    let sleepOnset: String?
+    let sleepInterruptionCount: Int?
+    let sleepScore: Int?
     let screenTimeSeconds: Double?
     let pickups: Int?
 

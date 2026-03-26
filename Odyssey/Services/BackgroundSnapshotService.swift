@@ -13,6 +13,12 @@ struct SnapshotData: Sendable {
     let stepCount: Int?
     let walkingDistanceMeters: Double?
     let sleepHours: Double?
+    let sleepREMHours: Double?
+    let sleepDeepHours: Double?
+    let sleepCoreHours: Double?
+    let sleepAwakeMinutes: Double?
+    let sleepOnset: Date?
+    let sleepInterruptionCount: Int?
     let screenTimeSeconds: Double?
     let pickups: Int?
 }
@@ -40,7 +46,13 @@ actor BackgroundSnapshotService {
             country: location?.country,
             stepCount: health.steps,
             walkingDistanceMeters: health.distance,
-            sleepHours: health.sleep,
+            sleepHours: health.sleep?.totalHours,
+            sleepREMHours: health.sleep?.remHours,
+            sleepDeepHours: health.sleep?.deepHours,
+            sleepCoreHours: health.sleep?.coreHours,
+            sleepAwakeMinutes: health.sleep?.awakeMinutes,
+            sleepOnset: health.sleep?.sleepOnset,
+            sleepInterruptionCount: health.sleep?.interruptionCount,
             screenTimeSeconds: screenTimeResult?.seconds,
             pickups: screenTimeResult?.pickups
         )
@@ -55,16 +67,34 @@ actor BackgroundSnapshotService {
         }
     }
 
-    private func captureHealthData(for date: Date) async -> (steps: Int?, distance: Double?, sleep: Double?) {
+    private func captureHealthData(for date: Date) async -> (steps: Int?, distance: Double?, sleep: SleepStageData?) {
         guard HealthKitService.isAvailable else {
             return (nil, nil, nil)
         }
 
-        async let steps = try? healthKitService.fetchSteps(for: date)
-        async let distance = try? healthKitService.fetchWalkingDistance(for: date)
-        async let sleep = try? healthKitService.fetchSleepHours(for: date)
+        var steps: Int?
+        var distance: Double?
+        var sleep: SleepStageData?
 
-        return await(steps, distance, sleep)
+        do {
+            steps = try await healthKitService.fetchSteps(for: date)
+        } catch {
+            logger.error("Steps fetch failed: \(error)")
+        }
+
+        do {
+            distance = try await healthKitService.fetchWalkingDistance(for: date)
+        } catch {
+            logger.error("Walking distance fetch failed: \(error)")
+        }
+
+        do {
+            sleep = try await healthKitService.fetchSleepStages(for: date)
+        } catch {
+            logger.error("Sleep stages fetch failed: \(error)")
+        }
+
+        return (steps, distance, sleep)
     }
 
     private func readScreenTimeFromDefaults() -> (seconds: Double, pickups: Int)? {
@@ -91,6 +121,25 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
         if let steps = data.stepCount { entry.stepCount = steps }
         if let distance = data.walkingDistanceMeters { entry.walkingDistanceMeters = distance }
         if let sleep = data.sleepHours { entry.sleepHours = sleep }
+        if let rem = data.sleepREMHours { entry.sleepREMHours = rem }
+        if let deep = data.sleepDeepHours { entry.sleepDeepHours = deep }
+        if let core = data.sleepCoreHours { entry.sleepCoreHours = core }
+        if let awake = data.sleepAwakeMinutes { entry.sleepAwakeMinutes = awake }
+        if let onset = data.sleepOnset { entry.sleepOnset = onset }
+        if let interruptions = data.sleepInterruptionCount { entry.sleepInterruptionCount = interruptions }
+
+        // Compute sleep score using recent entries for bedtime consistency
+        if data.sleepHours != nil {
+            let calendar = Calendar.current
+            let entryDate = entry.date
+            let thirteenDaysAgo = calendar.date(byAdding: .day, value: -13, to: entryDate) ?? entryDate
+            let recentDescriptor = FetchDescriptor<DailyEntry>(
+                predicate: #Predicate { $0.date >= thirteenDaysAgo && $0.date < entryDate },
+                sortBy: [SortDescriptor(\.date, order: .reverse)]
+            )
+            let recentEntries = try context.fetch(recentDescriptor)
+            entry.sleepScore = SleepScoreService.computeScore(for: entry, recentEntries: recentEntries)?.total
+        }
 
         // Apply Screen Time data
         if let seconds = data.screenTimeSeconds { entry.screenTimeSeconds = seconds }

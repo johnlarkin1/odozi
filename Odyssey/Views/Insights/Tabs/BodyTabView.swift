@@ -49,6 +49,20 @@ struct BodyTabView: View {
                 }
                 .adaptiveHorizontalPadding()
 
+                // Sleep Architecture Section
+                AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
+                    NavigationLink(destination: SleepArchitectureDetailView(viewModel: viewModel)) {
+                        SleepArchitectureCard(viewModel: viewModel)
+                    }
+                    .buttonStyle(.plain)
+
+                    NavigationLink(destination: SleepArchitectureDetailView(viewModel: viewModel)) {
+                        SleepScoreCard(viewModel: viewModel)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .adaptiveHorizontalPadding()
+
                 Spacer(minLength: 32)
             }
             .padding(.top, 8)

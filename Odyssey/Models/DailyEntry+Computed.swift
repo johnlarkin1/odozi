@@ -60,6 +60,24 @@ extension DailyEntry {
         return String(format: "%.1f mi", miles)
     }
 
+    var hasSleepStageData: Bool {
+        sleepREMHours != nil || sleepDeepHours != nil || sleepCoreHours != nil
+    }
+
+    var sleepStageBreakdown: [(label: String, hours: Double, color: Color)] {
+        var stages: [(label: String, hours: Double, color: Color)] = []
+        if let core = sleepCoreHours { stages.append(("Core", core, .accentAmber)) }
+        if let deep = sleepDeepHours { stages.append(("Deep", deep, .accentTeal)) }
+        if let rem = sleepREMHours { stages.append(("REM", rem, .cosmicPurple)) }
+        if let awake = sleepAwakeMinutes { stages.append(("Awake", awake / 60.0, .coralRed)) }
+        return stages
+    }
+
+    var sleepScoreLabel: String? {
+        guard let score = sleepScore else { return nil }
+        return SleepScoreService.label(for: score)
+    }
+
     var hasPromptData: Bool {
         !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
     }
