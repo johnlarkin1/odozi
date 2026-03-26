@@ -62,7 +62,8 @@ export function WhyDownloadSection() {
           className="text-center"
         >
           <h2 className="text-3xl font-bold sm:text-4xl">
-            {whyDownload.heading}{" "}
+            {whyDownload.heading}
+            <br />
             <span className="text-accent-amber">{whyDownload.headingAccent}</span>
           </h2>
         </motion.div>
