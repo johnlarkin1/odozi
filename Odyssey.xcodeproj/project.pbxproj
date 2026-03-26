@@ -24,6 +24,8 @@
 		0A39BED997942A8688B01FB9 /* PlatformColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D792DCB82D915378585A99FF /* PlatformColor.swift */; };
 		0A6F8747810B221608206F50 /* GuidedPromptViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10C33226E46E079F8BB989E1 /* GuidedPromptViewModel.swift */; };
 		0B2B4F7EF6E15528D6D3F15D /* CrossPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF91790A7312437C2A5EB939 /* CrossPlatform.swift */; };
+		6007B1EB8390C936B1AD913B /* ExploreTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B365458DB38B1E68CC83CE5 /* ExploreTabView.swift */; };
+		8EBFA8172B7F83F92F5A2B7C /* ExploreTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4B365458DB38B1E68CC83CE5 /* ExploreTabView.swift */; };
 		0C75DEA53567E527F0537FBD /* JourneyExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* JourneyExplorerView.swift */; };
 		0D81EBC4802570808E8B12F6 /* FeelingPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3691ECF4B186BEFFB3E1D181 /* FeelingPickerView.swift */; };
 		0F21CBFC1793A2C01C5880D0 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E7870D5E38DE543E0ED2C /* SampleData.swift */; };
@@ -683,6 +685,7 @@
 		BBC6E83295929A28AAC6929A /* ReviewBestDayCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewBestDayCard.swift; sourceTree = "<group>"; };
 		C2DD8A18D7C6C4E7E6C3BD73 /* MoodIndicator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoodIndicator.swift; sourceTree = "<group>"; };
 		C39F1B6D1BC805FABFA2F980 /* FeatureDemoBase.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeatureDemoBase.swift; sourceTree = "<group>"; };
+		4B365458DB38B1E68CC83CE5 /* ExploreTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ExploreTabView.swift; sourceTree = "<group>"; };
 		C3D4E5F6A7B8C9D0E1F2A3B4 /* JourneyExplorerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyExplorerView.swift; sourceTree = "<group>"; };
 		C41BE663473A41E0AB6B05CA /* WeeklyDigestCardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestCardView.swift; sourceTree = "<group>"; };
 		C51BECC1B151111FA47F9F9C /* TodayGlanceView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayGlanceView.swift; sourceTree = "<group>"; };
@@ -1226,6 +1229,7 @@
 		8B9C0D1E2F3A4B5C6D7E8F9A /* Journey */ = {
 			isa = PBXGroup;
 			children = (
+				4B365458DB38B1E68CC83CE5 /* ExploreTabView.swift */,
 				C3D4E5F6A7B8C9D0E1F2A3B4 /* JourneyExplorerView.swift */,
 				D4E5F6A7B8C9D0E1F2A3B4C5 /* JourneyGlobeView.swift */,
 				E5F6A7B8C9D0E1F2A3B4C5D6 /* JourneyTimelineSlider.swift */,
@@ -1851,6 +1855,7 @@
 				F7CC992FA7FF57D5436CCFA9 /* Date+Extensions.swift in Sources */,
 				1A2B3C4D5E6F7A8B9C0D1E2F /* PhotoLibraryService.swift in Sources */,
 				2B3C4D5E6F7A8B9C0D1E2F3A /* JourneyExplorerViewModel.swift in Sources */,
+				8EBFA8172B7F83F92F5A2B7C /* ExploreTabView.swift in Sources */,
 				3C4D5E6F7A8B9C0D1E2F3A4B /* JourneyExplorerView.swift in Sources */,
 				4D5E6F7A8B9C0D1E2F3A4B5C /* JourneyGlobeView.swift in Sources */,
 				5E6F7A8B9C0D1E2F3A4B5C6D /* JourneyTimelineSlider.swift in Sources */,
@@ -2109,6 +2114,7 @@
 				33F319D3C26734D92E217860 /* Color+Extensions.swift in Sources */,
 				7B86FAC86C95CB5F589B5F4A /* Date+Extensions.swift in Sources */,
 				754904DE59F8EF9D83671DD7 /* JourneyExplorerViewModel.swift in Sources */,
+				6007B1EB8390C936B1AD913B /* ExploreTabView.swift in Sources */,
 				0C75DEA53567E527F0537FBD /* JourneyExplorerView.swift in Sources */,
 				F5568B38C7BDA1C3AAB5CDE4 /* JourneyGlobeView.swift in Sources */,
 				8DA23C4EA051CD468B050BB4 /* JourneyTimelineSlider.swift in Sources */,

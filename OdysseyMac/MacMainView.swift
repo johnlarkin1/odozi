@@ -4,6 +4,7 @@ import SwiftUI
 enum SidebarSection: String, CaseIterable, Identifiable {
     case today = "Today"
     case journal = "Journal"
+    case explore = "Explore"
     case insights = "Insights"
     case profile = "Profile"
 
@@ -13,6 +14,7 @@ enum SidebarSection: String, CaseIterable, Identifiable {
         switch self {
         case .today: "sun.max.fill"
         case .journal: "book.fill"
+        case .explore: "globe.desk.fill"
         case .insights: "chart.line.uptrend.xyaxis"
         case .profile: "person.crop.circle"
         }
@@ -22,6 +24,7 @@ enum SidebarSection: String, CaseIterable, Identifiable {
         switch self {
         case .today: "Daily"
         case .journal: "Library"
+        case .explore: "Explore"
         case .insights: "Analytics"
         case .profile: "Settings"
         }
@@ -29,7 +32,7 @@ enum SidebarSection: String, CaseIterable, Identifiable {
 
     /// Sections shown in the macOS sidebar (excludes Profile — settings go to Cmd+,)
     static var macCases: [SidebarSection] {
-        [.today, .journal, .insights]
+        [.today, .journal, .explore, .insights]
     }
 }
 
@@ -75,6 +78,10 @@ struct MacMainView: View {
                 sidebarRow(for: .journal)
             }
 
+            Section("Explore") {
+                sidebarRow(for: .explore)
+            }
+
             Section("Analytics") {
                 sidebarRow(for: .insights)
             }
@@ -95,6 +102,7 @@ struct MacMainView: View {
         switch section {
         case .today: .accentAmber
         case .journal: .accentTeal
+        case .explore: .accentTeal
         case .insights: .cosmicPurple
         case .profile: .secondary
         }
@@ -114,6 +122,8 @@ struct MacMainView: View {
             .help("Start a new journal entry (⌘N)")
         case .journal:
             EmptyView()
+        case .explore:
+            EmptyView()
         case .insights:
             EmptyView()
         case .profile:
@@ -130,6 +140,8 @@ struct MacMainView: View {
             TodayView()
         case .journal:
             JournalView()
+        case .explore:
+            ExploreTabView()
         case .insights:
             InsightsDashboardView()
         case .profile:

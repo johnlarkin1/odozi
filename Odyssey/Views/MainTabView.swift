@@ -19,6 +19,13 @@ struct MainTabView: View {
                     Text("Journal")
                 }
 
+            ExploreTabView()
+                .tag(NavigationState.Tab.explore)
+                .tabItem {
+                    Image(systemName: "globe.desk.fill")
+                    Text("Explore")
+                }
+
             InsightsDashboardView()
                 .tag(NavigationState.Tab.insights)
                 .tabItem {
