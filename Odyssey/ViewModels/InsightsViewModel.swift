@@ -7,9 +7,11 @@ final class InsightsViewModel {
     var entries: [DailyEntry] = [] {
         didSet { invalidateCache() }
     }
+
     var dateRange: DateRange = .month {
         didSet { invalidateCache() }
     }
+
     var achievementUnlockedCount: Int = 0
     var achievementTotalCount: Int = 0
 

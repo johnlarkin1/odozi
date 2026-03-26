@@ -108,13 +108,13 @@ struct TodayView: View {
                 }
             }
             #if os(macOS)
-                .sheet(isPresented: $showingGuidedFlow) {
-                    GuidedPromptFlowView()
-                        .frame(minWidth: 520, idealWidth: 650, maxWidth: 750,
-                               minHeight: 620, idealHeight: 750, maxHeight: 850)
-                }
+            .sheet(isPresented: $showingGuidedFlow) {
+                GuidedPromptFlowView()
+                    .frame(minWidth: 520, idealWidth: 650, maxWidth: 750,
+                           minHeight: 620, idealHeight: 750, maxHeight: 850)
+            }
             #else
-                .fullScreenCover(isPresented: $showingGuidedFlow) {
+            .fullScreenCover(isPresented: $showingGuidedFlow) {
                         GuidedPromptFlowView()
                     }
             #endif
