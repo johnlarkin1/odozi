@@ -33,12 +33,13 @@ export const whyDownload = {
 export const howItWorks = {
   heading: "How it",
   headingAccent: "works.",
-  subtitle: "Takes about two minutes. No account required!",
+  subtitle:
+    "Super simple click through. No account required! Your data either local on your device, or encrypted and stored in the cloud.",
   steps: [
     {
       number: "1",
       title: "Open the app",
-      description: "Tap today's check-in. That's it.",
+      description: "Tap today's check-in.",
       color: "text-accent-amber",
       bg: "bg-accent-amber/10",
       border: "border-accent-amber/30",
@@ -46,17 +47,16 @@ export const howItWorks = {
     {
       number: "2",
       title: "Answer a few prompts",
-      description:
-        "8 quick questions — mood, gratitude, wins, tensions. Skip any of them.",
+      description: "8 (or more) quick questions. Feel free to skip them.",
       color: "text-cosmic-purple",
       bg: "bg-cosmic-purple/10",
       border: "border-cosmic-purple/30",
     },
     {
       number: "3",
-      title: "Watch patterns form",
+      title: "On-device analysis",
       description:
-        "Over days and weeks, you start seeing connections you wouldn't have noticed. I automatically surface various correlations between trends and patterns in your data.",
+        "Years ago, [I noticed after self collecting some data](https://johnlarkin1.github.io/2021/year-in-review/#:~:text=I%20saw%20a%20very%20slightly%20%28albeit%20not%20statistically%20significant%29%20decrease%20in%20my%20happiness%20on%20days%20where%20my%20screen%20time%20and%20phone%20pickups%20were%20up), an inverse correlation between my screen time and my mood (shocker). This app is all about surfacing those invsible trends with data you provide.",
       color: "text-accent-teal",
       bg: "bg-accent-teal/10",
       border: "border-accent-teal/30",
@@ -71,7 +71,7 @@ export const whatYouTrack = {
   heading: "What you",
   headingAccent: "track.",
   subtitle:
-    "Eight skippable prompts plus background data. Answer what you want, skip what you don't.",
+    "I mean, TLDR is it's really whatever you want to track. The automatic tracking elements can be turned off shortly as well.",
   prompts: [
     { title: "Mood", description: "How are you feeling right now" },
     { title: "Feeling", description: "Pick a word and color for your emotion" },
@@ -131,7 +131,7 @@ export const whatYouGetBack = {
     {
       title: "Year in Review",
       description:
-        "Spotify Wrapped-style recap — moods, streaks, top feelings, turned into shareable cards",
+        "Spotify Wrapped-style recap - moods, streaks, top feelings, turned into shareable cards",
     },
   ],
 };
@@ -179,19 +179,19 @@ export const privacy = {
   heading: "Your data",
   headingAccent: "stays yours.",
   subtitle:
-    "Everything lives on your device. Optional cloud backup is end-to-end encrypted (AES-256-GCM). No tracking, no ads, no data sales.",
+    "I cannot emphasize this enough. I couldn't check this data if I tried.",
   cards: [
     {
       title: "On-Device",
-      desc: "All data stored locally by default",
+      desc: "All data stored locally by default. Only goes over the network if you make an account for redundancy and sync",
     },
     {
-      title: "E2E Encrypted",
-      desc: "Optional cloud backup only you can read",
+      title: "CloudKit Sync",
+      desc: "Optional sync powered by Apple's CloudKit. Basically, this app will have a dedicated CloudKit container, and each user gets their own dedicated database. Don't believe me? Well, [RTFM](https://developer.apple.com/library/archive/documentation/General/Conceptual/iCloudDesignGuide/DesigningforCloudKit/DesigningforCloudKit.html) (also [here](https://developer.apple.com/documentation/CloudKit/CKContainer/privateCloudDatabase)) or take it up with Apple.",
     },
     {
       title: "No Tracking",
-      desc: "Zero analytics, zero ads, zero data sharing",
+      desc: "Zero analytics (minus... this marketing website so I can see activations), zero ads, zero data sharing",
     },
   ],
 };

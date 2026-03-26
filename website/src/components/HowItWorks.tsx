@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { howItWorks } from "@/content";
+import { renderInlineMarkdown } from "@/lib/renderInlineMarkdown";
 
 export function HowItWorks() {
   return (
@@ -45,7 +46,7 @@ export function HowItWorks() {
                 </div>
 
                 <h3 className="mt-6 text-xl font-semibold text-star-white">{step.title}</h3>
-                <p className="mt-3 text-base text-star-white/60">{step.description}</p>
+                <p className="mt-3 text-base text-star-white/60">{renderInlineMarkdown(step.description)}</p>
               </motion.div>
             ))}
           </div>

@@ -48,7 +48,7 @@ export function HeroSection() {
     <section
       className="relative grid"
       style={{
-        height: "calc(100dvh - 57px)",
+        height: "calc(100dvh - 57px - 140px)",
         gridTemplateRows: "auto 1fr auto",
         overflowX: "clip",
         overflowY: "hidden",
@@ -61,7 +61,7 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7 }}
-        className="relative z-10 w-full px-6 pt-4 text-center sm:pt-8"
+        className="relative z-10 w-full px-6 pt-2 text-center sm:pt-4"
       >
         <h1 className="text-4xl font-bold leading-tight tracking-tight sm:text-7xl">
           <span className="bg-gradient-to-r from-accent-amber via-cosmic-purple to-accent-teal bg-clip-text text-transparent">
@@ -69,15 +69,15 @@ export function HeroSection() {
           </span>
         </h1>
 
-        <p className="mt-2 text-lg text-star-white/80 sm:mt-4 sm:text-2xl">
+        <p className="mt-1 text-lg text-star-white/80 sm:mt-2 sm:text-2xl">
           {hero.tagline}
         </p>
 
-        <p className="mx-auto mt-2 max-w-xl text-sm text-star-white/60 sm:mt-3 sm:text-base">
+        <p className="mx-auto mt-1 max-w-xl text-sm text-star-white/60 sm:mt-2 sm:text-base">
           {hero.subtitle}
         </p>
 
-        <div className="mt-4 flex flex-wrap items-center justify-center gap-3 sm:mt-6">
+        <div className="mt-3 flex flex-wrap items-center justify-center gap-3 sm:mt-4">
           <a
             href={APP_STORE_URL}
             target="_blank"
@@ -108,7 +108,7 @@ export function HeroSection() {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.7, delay: 0.25 }}
-        className="relative z-10 min-h-0 min-w-0 w-full pt-4 sm:pt-6"
+        className="relative z-10 min-h-0 min-w-0 w-full pt-2 sm:pt-3"
       >
         <div
           ref={scrollRef}
@@ -120,7 +120,7 @@ export function HeroSection() {
             <div
               key={shot.src}
               data-carousel-item
-              className="flex h-full flex-shrink-0 snap-center cursor-pointer items-center py-2"
+              className="flex h-full max-h-[55vh] flex-shrink-0 snap-center cursor-pointer items-center py-1"
               onClick={() => scrollToIndex(i)}
             >
               <div

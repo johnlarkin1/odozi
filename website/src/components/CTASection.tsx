@@ -3,6 +3,7 @@
 import { motion } from "framer-motion";
 import { AnchorIcon, ShieldIcon, BanIcon } from "./Icons";
 import { APP_STORE_URL, privacy, finalCTA } from "@/content";
+import { renderInlineMarkdown } from "@/lib/renderInlineMarkdown";
 
 const privacyIcons = [
   <AnchorIcon key="anchor" className="text-success-green" />,
@@ -40,7 +41,7 @@ export function PrivacySection() {
             <div key={item.title} className="rounded-2xl border border-white/10 bg-card-surface/50 p-7">
               <div>{privacyIcons[i]}</div>
               <p className="mt-4 text-lg font-semibold text-star-white">{item.title}</p>
-              <p className="mt-2 text-base text-star-white/60">{item.desc}</p>
+              <p className="mt-2 text-base text-star-white/60">{renderInlineMarkdown(item.desc)}</p>
             </div>
           ))}
         </motion.div>
