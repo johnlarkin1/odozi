@@ -30,6 +30,10 @@ struct OdysseyWatchApp: App {
                     .modelContainer(container)
                     .task {
                         sessionReceiver.activate(authManager: watchAuth)
+                        await watchSync.syncPendingEntries(
+                            modelContext: container.mainContext,
+                            authManager: watchAuth
+                        )
                     }
             } else {
                 Text("Unable to load data")

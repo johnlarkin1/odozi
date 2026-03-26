@@ -26,6 +26,7 @@
 		0B2B4F7EF6E15528D6D3F15D /* CrossPlatform.swift in Sources */ = {isa = PBXBuildFile; fileRef = CF91790A7312437C2A5EB939 /* CrossPlatform.swift */; };
 		0C75DEA53567E527F0537FBD /* JourneyExplorerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3D4E5F6A7B8C9D0E1F2A3B4 /* JourneyExplorerView.swift */; };
 		0D81EBC4802570808E8B12F6 /* FeelingPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3691ECF4B186BEFFB3E1D181 /* FeelingPickerView.swift */; };
+		PH01A2B3C4D5E6F7A8B90001 /* PhosphorIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = PH01A2B3C4D5E6F7A8B90002 /* PhosphorIcon.swift */; };
 		0F21CBFC1793A2C01C5880D0 /* SampleData.swift in Sources */ = {isa = PBXBuildFile; fileRef = 404E7870D5E38DE543E0ED2C /* SampleData.swift */; };
 		0F9B342D454A7EF5A78269C7 /* MacMainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CEB6A59374B91D8A0881333F /* MacMainView.swift */; };
 		AA11223344556677AABB0001 /* MacSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11223344556677AABB0002 /* MacSettingsView.swift */; };
@@ -532,6 +533,7 @@
 		2F4C94785483837CD4EF05E2 /* DateExtensionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateExtensionsTests.swift; sourceTree = "<group>"; };
 		2F4F63E9E25CA2B61E75C2CA /* AccessoryMoodWidgetView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccessoryMoodWidgetView.swift; sourceTree = "<group>"; };
 		3691ECF4B186BEFFB3E1D181 /* FeelingPickerView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeelingPickerView.swift; sourceTree = "<group>"; };
+		PH01A2B3C4D5E6F7A8B90002 /* PhosphorIcon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhosphorIcon.swift; sourceTree = "<group>"; };
 		36D032F82728817EC31D1363 /* OnboardingStep.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingStep.swift; sourceTree = "<group>"; };
 		376E839A270A1C14F40E4D57 /* OdysseyWidgetBundle.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OdysseyWidgetBundle.swift; sourceTree = "<group>"; };
 		37D880C69701FCCDA95E0151 /* EnhancedLineChartView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EnhancedLineChartView.swift; sourceTree = "<group>"; };
@@ -1407,6 +1409,7 @@
 				3691ECF4B186BEFFB3E1D181 /* FeelingPickerView.swift */,
 				DDBE680701DF0F2538DE164F /* MoodCrownView.swift */,
 				61554C981B82197A370428B9 /* OdysseyWatchApp.swift */,
+				PH01A2B3C4D5E6F7A8B90002 /* PhosphorIcon.swift */,
 				3A3757D9EEB15AF3843BBDFF /* QuickCheckInView.swift */,
 				C51BECC1B151111FA47F9F9C /* TodayGlanceView.swift */,
 				1918F05F0829D8429808CF26 /* WatchAuthManager.swift */,
@@ -1942,6 +1945,7 @@
 				9242721BCD19517BF9FFA743 /* CheckInConfirmationView.swift in Sources */,
 				0D81EBC4802570808E8B12F6 /* FeelingPickerView.swift in Sources */,
 				D6191E8C6F1956CC45755D12 /* MoodCrownView.swift in Sources */,
+				PH01A2B3C4D5E6F7A8B90001 /* PhosphorIcon.swift in Sources */,
 				826A271C6F923598EEECB162 /* OdysseyWatchApp.swift in Sources */,
 				C6D8F5E8DB4B9773D6D66C6E /* QuickCheckInView.swift in Sources */,
 				6619AC625E78E723E464A38A /* TodayGlanceView.swift in Sources */,

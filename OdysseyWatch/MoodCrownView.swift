@@ -4,10 +4,8 @@ struct MoodCrownView: View {
     @Binding var moodScore: Double
     var onConfirm: () -> Void
 
-    @State private var isFocused = false
-
     var body: some View {
-        VStack(spacing: 8) {
+        VStack(spacing: 6) {
             Text("How are you?")
                 .font(.headline)
 
@@ -25,13 +23,25 @@ struct MoodCrownView: View {
                     .foregroundStyle(.white)
             }
 
-            Text("/10")
+            Text(moodLabel)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(Color.moodGradient(for: Int(moodScore)))
 
-            Text("Turn Crown")
-                .font(.caption2)
-                .foregroundStyle(.tertiary)
+            Button {
+                onConfirm()
+            } label: {
+                HStack(spacing: 4) {
+                    Text("Next")
+                    PhosphorIcon.arrowRightFill.image
+                        .frame(width: 12, height: 12)
+                }
+                .font(.body.weight(.semibold))
+                .foregroundStyle(.white)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 8)
+                .background(Color.accentTeal, in: Capsule())
+            }
+            .buttonStyle(.plain)
         }
         .focusable()
         .digitalCrownRotation(
@@ -43,9 +53,22 @@ struct MoodCrownView: View {
             isContinuous: false,
             isHapticFeedbackEnabled: true
         )
-        .onTapGesture {
-            onConfirm()
-        }
         .containerBackground(.black.gradient, for: .tabView)
+    }
+
+    private var moodLabel: String {
+        switch Int(moodScore) {
+        case 1: return "Awful"
+        case 2: return "Very Bad"
+        case 3: return "Bad"
+        case 4: return "Below Avg"
+        case 5: return "Okay"
+        case 6: return "Decent"
+        case 7: return "Good"
+        case 8: return "Great"
+        case 9: return "Amazing"
+        case 10: return "Best Ever"
+        default: return "Okay"
+        }
     }
 }
