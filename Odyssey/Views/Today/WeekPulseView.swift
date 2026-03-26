@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WeekPulseView: View {
     let weekEntries: [DailyEntry?]
+    var onTapEntry: ((DailyEntry) -> Void)? = nil
     var animateIn: Bool = false
 
     @State private var dotsVisible = false
@@ -23,36 +24,18 @@ struct WeekPulseView: View {
                     let entry = weekEntries[index]
                     let isToday = index == 6
 
-                    VStack(spacing: 6) {
-                        ZStack {
-                            if let entry = entry {
-                                Circle()
-                                    .fill(Color.moodGradient(for: entry.feeling))
-                                    .frame(width: 32, height: 32)
-                            } else {
-                                Circle()
-                                    .strokeBorder(Color.white.opacity(0.1), lineWidth: 1.5)
-                                    .frame(width: 32, height: 32)
-                            }
-
-                            if isToday {
-                                Circle()
-                                    .strokeBorder(Color.accentAmber, lineWidth: 2)
-                                    .frame(width: 38, height: 38)
-                            }
+                    if let entry = entry, onTapEntry != nil {
+                        Button {
+                            onTapEntry?(entry)
+                        } label: {
+                            dayContent(entry: entry, isToday: isToday, index: index, date: date)
                         }
-                        .scaleEffect(dotsVisible ? 1 : 0)
-                        .animation(
-                            .spring(response: 0.4, dampingFraction: 0.7)
-                                .delay(Double(index) * 0.05),
-                            value: dotsVisible
-                        )
-
-                        Text(dayLetter(for: date))
-                            .font(.caption2)
-                            .foregroundStyle(isToday ? .white : .secondary)
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity)
+                    } else {
+                        dayContent(entry: entry, isToday: isToday, index: index, date: date)
+                            .frame(maxWidth: .infinity)
                     }
-                    .frame(maxWidth: .infinity)
                 }
             }
         }
@@ -67,6 +50,38 @@ struct WeekPulseView: View {
                     dotsVisible = true
                 }
             }
+        }
+    }
+
+    private func dayContent(entry: DailyEntry?, isToday: Bool, index: Int, date: Date) -> some View {
+        VStack(spacing: 6) {
+            ZStack {
+                if let entry = entry {
+                    Circle()
+                        .fill(Color.moodGradient(for: entry.feeling))
+                        .frame(width: 32, height: 32)
+                } else {
+                    Circle()
+                        .strokeBorder(Color.white.opacity(0.1), lineWidth: 1.5)
+                        .frame(width: 32, height: 32)
+                }
+
+                if isToday {
+                    Circle()
+                        .strokeBorder(Color.accentAmber, lineWidth: 2)
+                        .frame(width: 38, height: 38)
+                }
+            }
+            .scaleEffect(dotsVisible ? 1 : 0)
+            .animation(
+                .spring(response: 0.4, dampingFraction: 0.7)
+                    .delay(Double(index) * 0.05),
+                value: dotsVisible
+            )
+
+            Text(dayLetter(for: date))
+                .font(.caption2)
+                .foregroundStyle(isToday ? .white : .secondary)
         }
     }
 

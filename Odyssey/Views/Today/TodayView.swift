@@ -1,17 +1,24 @@
 import SwiftData
 import SwiftUI
 
+enum TodayDrillDown: Hashable {
+    case streak
+    case map
+}
+
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingGuidedFlow = false
     @State private var viewModel: DailyEntryViewModel?
+    @State private var insightsViewModel: InsightsViewModel?
+    @State private var navigationPath = NavigationPath()
     @State private var animateIn = false
     @State private var isUpdatingLocation = false
     @State private var todayEntry: DailyEntry?
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             ScrollView {
                 VStack(spacing: 24) {
                     // [A] Header
@@ -22,6 +29,7 @@ struct TodayView: View {
                         entry: todayEntry,
                         hasEntry: viewModel?.hasSubmittedData ?? false,
                         onBeginEntry: { showingGuidedFlow = true },
+                        onTapOrb: { navigationPath.append(MetricDefinition.mood) },
                         animateIn: animateIn
                     )
 
@@ -29,6 +37,7 @@ struct TodayView: View {
                     if let vm = viewModel {
                         WeekPulseView(
                             weekEntries: vm.fetchWeekEntries(),
+                            onTapEntry: { entry in navigationPath.append(entry) },
                             animateIn: animateIn
                         )
                         .padding(.horizontal, 16)
@@ -41,6 +50,14 @@ struct TodayView: View {
                         VitalsGridView(
                             entry: todayEntry,
                             streak: vm.currentStreak,
+                            onTapVital: { vital in
+                                switch vital {
+                                case .steps: navigationPath.append(MetricDefinition.steps)
+                                case .sleep: navigationPath.append(MetricDefinition.sleepHours)
+                                case .screenTime: navigationPath.append(MetricDefinition.screenTime)
+                                case .streak: navigationPath.append(TodayDrillDown.streak)
+                                }
+                            },
                             animateIn: animateIn
                         )
                         .padding(.horizontal, 16)
@@ -49,6 +66,11 @@ struct TodayView: View {
                     // [E] Reflection Peek
                     ReflectionPeekCard(
                         entry: todayEntry,
+                        onTap: {
+                            if let entry = todayEntry {
+                                navigationPath.append(entry)
+                            }
+                        },
                         animateIn: animateIn
                     )
                     .padding(.horizontal, 16)
@@ -61,6 +83,30 @@ struct TodayView: View {
                 backgroundGradient
             }
             .cosmicBackground()
+            .navigationDestination(for: MetricDefinition.self) { metric in
+                if let ivm = insightsViewModel {
+                    MetricDetailView(metric: metric, viewModel: ivm)
+                }
+            }
+            .navigationDestination(for: DailyEntry.self) { entry in
+                JournalEntryDetailView(entry: entry)
+            }
+            .navigationDestination(for: TodayDrillDown.self) { destination in
+                switch destination {
+                case .streak:
+                    if let ivm = insightsViewModel {
+                        StreakView(
+                            currentStreak: ivm.currentStreak,
+                            longestStreak: ivm.longestStreak,
+                            entries: ivm.entries
+                        )
+                    }
+                case .map:
+                    if let vm = viewModel {
+                        MapVisualizationView(entries: vm.fetchAllEntries())
+                    }
+                }
+            }
             #if os(macOS)
                 .sheet(isPresented: $showingGuidedFlow) {
                     GuidedPromptFlowView()
@@ -84,6 +130,7 @@ struct TodayView: View {
                                 try? await Task.sleep(for: .seconds(4))
                                 viewModel?.checkForTodayEntry()
                                 todayEntry = viewModel?.fetchTodayEntry()
+                                insightsViewModel?.loadEntries()
                             }
                         }
                     }
@@ -100,6 +147,7 @@ struct TodayView: View {
                         if !newValue {
                             viewModel?.checkForTodayEntry()
                             todayEntry = viewModel?.fetchTodayEntry()
+                            insightsViewModel?.loadEntries()
                         }
                     }
         }
@@ -109,6 +157,10 @@ struct TodayView: View {
             } else {
                 viewModel?.checkForTodayEntry()
             }
+            if insightsViewModel == nil {
+                insightsViewModel = InsightsViewModel(modelContext: modelContext)
+            }
+            insightsViewModel?.loadEntries()
             todayEntry = viewModel?.fetchTodayEntry()
             if !animateIn {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
@@ -146,45 +198,61 @@ struct TodayView: View {
 
     // MARK: - Location Capsule
 
+    @ViewBuilder
     private var locationCapsule: some View {
-        Button {
-            Task {
-                isUpdatingLocation = true
-                defer { isUpdatingLocation = false }
-                try? await viewModel?.updateLocation()
-                todayEntry = viewModel?.fetchTodayEntry()
+        if isUpdatingLocation {
+            capsuleLabel {
+                ProgressView()
+                    .controlSize(.mini)
+                    .tint(.secondary)
             }
-        } label: {
-            HStack(spacing: 4) {
-                if isUpdatingLocation {
-                    ProgressView()
-                        .controlSize(.mini)
-                        .tint(.secondary)
-                } else if let city = todayEntry?.city {
+        } else if todayEntry?.city != nil {
+            Button {
+                navigationPath.append(TodayDrillDown.map)
+            } label: {
+                capsuleLabel {
                     Image(systemName: "location.fill")
                         .font(.caption2)
-                    Text(city)
+                    Text(todayEntry?.city ?? "")
                         .font(.subheadline)
-                    Image(systemName: "arrow.clockwise")
+                    Image(systemName: "chevron.right")
                         .font(.caption2)
-                } else {
+                }
+            }
+            .accessibilityLabel(todayEntry?.city ?? "Location")
+            .accessibilityHint("Double tap to view your location map")
+        } else {
+            Button {
+                Task {
+                    isUpdatingLocation = true
+                    defer { isUpdatingLocation = false }
+                    try? await viewModel?.updateLocation()
+                    todayEntry = viewModel?.fetchTodayEntry()
+                }
+            } label: {
+                capsuleLabel {
                     Image(systemName: "location.fill")
                         .font(.caption2)
                     Text("Add location")
                         .font(.subheadline)
                 }
             }
-            .foregroundStyle(.secondary)
-            .padding(.horizontal, 8)
-            .padding(.vertical, 4)
-            .background(
-                Capsule()
-                    .fill(Color.white.opacity(0.08))
-            )
+            .accessibilityLabel("Add location")
+            .accessibilityHint("Double tap to capture your current location")
         }
-        .disabled(isUpdatingLocation)
-        .accessibilityLabel(isUpdatingLocation ? "Updating location" : (todayEntry?.city ?? "Add location"))
-        .accessibilityHint("Double tap to update your current location")
+    }
+
+    private func capsuleLabel<Content: View>(@ViewBuilder content: () -> Content) -> some View {
+        HStack(spacing: 4) {
+            content()
+        }
+        .foregroundStyle(.secondary)
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            Capsule()
+                .fill(Color.white.opacity(0.08))
+        )
     }
 
     // MARK: - Background
