@@ -35,7 +35,7 @@ export function PrivacySection() {
           {[
             { icon: <AnchorIcon className="text-success-green" />, title: "Anchored Locally", desc: "All data stored on your device by default" },
             { icon: <ShieldIcon className="text-success-green" />, title: "E2E Encrypted", desc: "Optional cloud backup that only you can read" },
-            { icon: <BanIcon className="text-success-green" />, title: "No Tracking", desc: "Zero analytics, zero ads, zero data sharing" },
+            { icon: <BanIcon className="text-success-green" />, title: "No Tracking", desc: "Zero analytics (minus this marketing site), zero ads, zero data sharing" },
           ].map((item) => (
             <div key={item.title} className="rounded-2xl border border-white/10 bg-card-surface/50 p-7">
               <div>{item.icon}</div>
