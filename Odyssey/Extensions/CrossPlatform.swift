@@ -49,9 +49,9 @@ extension View {
     /// Platform-aware horizontal padding: wider on macOS, standard on iOS.
     func adaptiveHorizontalPadding() -> some View {
         #if os(macOS)
-            self.padding(.horizontal, 24)
+            padding(.horizontal, 24)
         #else
-            self.padding(.horizontal, 16)
+            padding(.horizontal, 16)
         #endif
     }
 }

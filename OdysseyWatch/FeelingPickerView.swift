@@ -11,7 +11,7 @@ struct FeelingPickerView: View {
         (.starFill, "Excited", .successGreen),
         (.minusCircleFill, "Meh", .secondary),
         (.wavesFill, "Anxious", .coralRed.opacity(0.8)),
-        (.sunFill, "Hopeful", .accentAmber.opacity(0.8)),
+        (.sunFill, "Hopeful", .accentAmber.opacity(0.8))
     ]
 
     var body: some View {

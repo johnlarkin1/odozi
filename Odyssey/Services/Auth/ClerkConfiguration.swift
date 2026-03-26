@@ -6,7 +6,9 @@ enum ClerkConfiguration {
               !key.isEmpty,
               key != "$(CLERK_PUBLISHABLE_KEY)"
         else {
-            assertionFailure("CLERK_PUBLISHABLE_KEY not set — copy Odyssey.xcconfig.example to Odyssey.xcconfig and configure it")
+            #if DEBUG
+                print("⚠️ CLERK_PUBLISHABLE_KEY not set — copy Odyssey.xcconfig.example to Odyssey.xcconfig and configure it")
+            #endif
             return nil
         }
         return key
