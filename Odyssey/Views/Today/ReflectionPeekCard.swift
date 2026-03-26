@@ -2,38 +2,48 @@ import SwiftUI
 
 struct ReflectionPeekCard: View {
     let entry: DailyEntry?
+    var onTap: (() -> Void)? = nil
     var animateIn: Bool = false
 
     var body: some View {
         if let (icon, label, text, color) = reflectionContent {
-            HStack(spacing: 12) {
-                RoundedRectangle(cornerRadius: 2)
-                    .fill(color)
-                    .frame(width: 3)
+            Button {
+                onTap?()
+            } label: {
+                HStack(spacing: 12) {
+                    RoundedRectangle(cornerRadius: 2)
+                        .fill(color)
+                        .frame(width: 3)
 
-                VStack(alignment: .leading, spacing: 6) {
-                    HStack(spacing: 6) {
-                        Image(systemName: icon)
-                            .font(.caption)
-                            .foregroundStyle(color)
-                        Text(label)
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(color)
+                    VStack(alignment: .leading, spacing: 6) {
+                        HStack(spacing: 6) {
+                            Image(systemName: icon)
+                                .font(.caption)
+                                .foregroundStyle(color)
+                            Text(label)
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(color)
+                        }
+
+                        Text(text)
+                            .font(.subheadline)
+                            .foregroundStyle(.white.opacity(0.85))
+                            .lineLimit(2)
                     }
 
-                    Text(text)
-                        .font(.subheadline)
-                        .foregroundStyle(.white.opacity(0.85))
-                        .lineLimit(2)
-                }
+                    Spacer()
 
-                Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption2.weight(.semibold))
+                        .foregroundStyle(.secondary)
+                }
+                .padding(16)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.cardSurface)
+                )
             }
-            .padding(16)
-            .background(
-                RoundedRectangle(cornerRadius: 16)
-                    .fill(Color.cardSurface)
-            )
+            .buttonStyle(.plain)
             .opacity(animateIn ? 1 : 0)
             .offset(y: animateIn ? 0 : 12)
             .animation(.easeOut(duration: 0.4).delay(0.65), value: animateIn)

@@ -1,42 +1,55 @@
 import SwiftUI
 
+enum VitalType: Hashable {
+    case steps, sleep, screenTime, streak
+}
+
 struct VitalsGridView: View {
     let entry: DailyEntry?
     let streak: Int
+    var onTapVital: ((VitalType) -> Void)? = nil
     var animateIn: Bool = false
 
     @State private var cardsVisible = false
 
     var body: some View {
         AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
-            vitalCard(
-                icon: "figure.walk",
-                value: stepsValue,
-                label: "Steps",
-                color: .accentTeal,
-                index: 0
-            )
-            vitalCard(
-                icon: "moon.fill",
-                value: sleepValue,
-                label: "Sleep",
-                color: .accentTeal,
-                index: 1
-            )
-            vitalCard(
-                icon: "iphone",
-                value: screenTimeValue,
-                label: "Screen Time",
-                color: .coralRed,
-                index: 2
-            )
-            vitalCard(
-                icon: "flame.fill",
-                value: streak > 0 ? "\(streak)" : "--",
-                label: nextMilestoneLabel,
-                color: .accentAmber,
-                index: 3
-            )
+            vitalButton(.steps) {
+                vitalCard(
+                    icon: "figure.walk",
+                    value: stepsValue,
+                    label: "Steps",
+                    color: .accentTeal,
+                    index: 0
+                )
+            }
+            vitalButton(.sleep) {
+                vitalCard(
+                    icon: "moon.fill",
+                    value: sleepValue,
+                    label: "Sleep",
+                    color: .accentTeal,
+                    index: 1
+                )
+            }
+            vitalButton(.screenTime) {
+                vitalCard(
+                    icon: "iphone",
+                    value: screenTimeValue,
+                    label: "Screen Time",
+                    color: .coralRed,
+                    index: 2
+                )
+            }
+            vitalButton(.streak) {
+                vitalCard(
+                    icon: "flame.fill",
+                    value: streak > 0 ? "\(streak)" : "--",
+                    label: nextMilestoneLabel,
+                    color: .accentAmber,
+                    index: 3
+                )
+            }
         }
         .onChange(of: animateIn) { _, newValue in
             if newValue {
@@ -85,6 +98,15 @@ struct VitalsGridView: View {
             return String(format: "%.1fk", k)
         }
         return "\(n)"
+    }
+
+    private func vitalButton<Content: View>(_ type: VitalType, @ViewBuilder content: () -> Content) -> some View {
+        Button {
+            onTapVital?(type)
+        } label: {
+            content()
+        }
+        .buttonStyle(.plain)
     }
 
     private func vitalCard(icon: String, value: String, label: String, color: Color, index: Int) -> some View {

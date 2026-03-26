@@ -4,6 +4,7 @@ struct MoodOrbView: View {
     let entry: DailyEntry?
     let hasEntry: Bool
     let onBeginEntry: () -> Void
+    var onTapOrb: (() -> Void)? = nil
     var animateIn: Bool = false
 
     @State private var pulse = false
@@ -78,37 +79,42 @@ struct MoodOrbView: View {
         let moodColor = Color.moodGradient(for: entry.feeling)
 
         return VStack(spacing: 16) {
-            ZStack {
-                // Ambient glow
-                Circle()
-                    .fill(moodColor.opacity(0.08))
-                    .frame(width: 280, height: 280)
-                    .blur(radius: 100)
+            Button {
+                onTapOrb?()
+            } label: {
+                ZStack {
+                    // Ambient glow
+                    Circle()
+                        .fill(moodColor.opacity(0.08))
+                        .frame(width: 280, height: 280)
+                        .blur(radius: 100)
 
-                // Main orb
-                Circle()
-                    .fill(
-                        RadialGradient(
-                            colors: [moodColor, moodColor.opacity(0.15)],
-                            center: .center,
-                            startRadius: 10,
-                            endRadius: 90
+                    // Main orb
+                    Circle()
+                        .fill(
+                            RadialGradient(
+                                colors: [moodColor, moodColor.opacity(0.15)],
+                                center: .center,
+                                startRadius: 10,
+                                endRadius: 90
+                            )
                         )
-                    )
-                    .frame(width: 180, height: 180)
+                        .frame(width: 180, height: 180)
 
-                // Mood number
-                VStack(spacing: 2) {
-                    HStack(alignment: .firstTextBaseline, spacing: 2) {
-                        Text("\(entry.feeling)")
-                            .font(.system(size: 56, weight: .bold, design: .rounded))
-                            .foregroundStyle(.white)
-                        Text("/10")
-                            .font(.caption.weight(.medium))
-                            .foregroundStyle(.white.opacity(0.6))
+                    // Mood number
+                    VStack(spacing: 2) {
+                        HStack(alignment: .firstTextBaseline, spacing: 2) {
+                            Text("\(entry.feeling)")
+                                .font(.system(size: 56, weight: .bold, design: .rounded))
+                                .foregroundStyle(.white)
+                            Text("/10")
+                                .font(.caption.weight(.medium))
+                                .foregroundStyle(.white.opacity(0.6))
+                        }
                     }
                 }
             }
+            .buttonStyle(.plain)
             .scaleEffect(animateIn ? 1 : 0.5)
             .opacity(animateIn ? 1 : 0)
             .animation(.spring(response: 0.7, dampingFraction: 0.75).delay(0.15), value: animateIn)
