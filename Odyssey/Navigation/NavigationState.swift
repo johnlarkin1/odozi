@@ -10,6 +10,7 @@ final class NavigationState {
     enum Tab: Int {
         case today
         case journal
+        case explore
         case insights
         case profile
     }
