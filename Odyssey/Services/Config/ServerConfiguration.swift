@@ -6,7 +6,9 @@ enum ServerConfiguration {
               !url.isEmpty,
               url != "$(ODYSSEY_API_BASE_URL)"
         else {
-            assertionFailure("ODYSSEY_API_BASE_URL not set — copy Odyssey.xcconfig.example to Odyssey.xcconfig and configure it")
+            #if DEBUG
+                print("⚠️ ODYSSEY_API_BASE_URL not set — copy Odyssey.xcconfig.example to Odyssey.xcconfig and configure it")
+            #endif
             return nil
         }
         return url

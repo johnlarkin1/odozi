@@ -44,6 +44,7 @@ struct ReflectionPeekCard: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("View \(label)")
             .opacity(animateIn ? 1 : 0)
             .offset(y: animateIn ? 0 : 12)
             .animation(.easeOut(duration: 0.4).delay(0.65), value: animateIn)
