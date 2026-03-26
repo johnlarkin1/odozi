@@ -130,6 +130,13 @@ final class SyncService {
         let stepCount: Int?
         let walkingDistanceMeters: Double?
         let sleepHours: Double?
+        let sleepREMHours: Double?
+        let sleepDeepHours: Double?
+        let sleepCoreHours: Double?
+        let sleepAwakeMinutes: Double?
+        let sleepOnset: Date?
+        let sleepInterruptionCount: Int?
+        let sleepScore: Int?
         let screenTimeSeconds: Double?
         let pickups: Int?
         let createdAt: String
@@ -159,6 +166,13 @@ final class SyncService {
                 stepCount: entry.stepCount,
                 walkingDistanceMeters: entry.walkingDistanceMeters,
                 sleepHours: entry.sleepHours,
+                sleepREMHours: entry.sleepREMHours,
+                sleepDeepHours: entry.sleepDeepHours,
+                sleepCoreHours: entry.sleepCoreHours,
+                sleepAwakeMinutes: entry.sleepAwakeMinutes,
+                sleepOnset: entry.sleepOnset,
+                sleepInterruptionCount: entry.sleepInterruptionCount,
+                sleepScore: entry.sleepScore,
                 screenTimeSeconds: entry.screenTimeSeconds,
                 pickups: entry.pickups,
                 createdAt: Self.iso8601.string(from: entry.createdAt),
@@ -221,6 +235,13 @@ final class SyncService {
                         stepCount: snapshot.stepCount,
                         walkingDistanceMeters: snapshot.walkingDistanceMeters,
                         sleepHours: snapshot.sleepHours,
+                        sleepREMHours: snapshot.sleepREMHours,
+                        sleepDeepHours: snapshot.sleepDeepHours,
+                        sleepCoreHours: snapshot.sleepCoreHours,
+                        sleepAwakeMinutes: snapshot.sleepAwakeMinutes,
+                        sleepOnset: snapshot.sleepOnset.map { Self.iso8601.string(from: $0) },
+                        sleepInterruptionCount: snapshot.sleepInterruptionCount,
+                        sleepScore: snapshot.sleepScore,
                         screenTimeSeconds: snapshot.screenTimeSeconds,
                         pickups: snapshot.pickups,
                         createdAt: snapshot.createdAt,
@@ -263,6 +284,13 @@ final class SyncService {
         let stepCount: Int?
         let walkingDistanceMeters: Double?
         let sleepHours: Double?
+        let sleepREMHours: Double?
+        let sleepDeepHours: Double?
+        let sleepCoreHours: Double?
+        let sleepAwakeMinutes: Double?
+        let sleepOnset: Date?
+        let sleepInterruptionCount: Int?
+        let sleepScore: Int?
         let screenTimeSeconds: Double?
         let pickups: Int?
         let createdAt: Date?
@@ -359,6 +387,13 @@ final class SyncService {
             stepCount: download.stepCount,
             walkingDistanceMeters: download.walkingDistanceMeters,
             sleepHours: download.sleepHours,
+            sleepREMHours: download.sleepREMHours,
+            sleepDeepHours: download.sleepDeepHours,
+            sleepCoreHours: download.sleepCoreHours,
+            sleepAwakeMinutes: download.sleepAwakeMinutes,
+            sleepOnset: download.sleepOnset.flatMap { Self.iso8601.date(from: $0) },
+            sleepInterruptionCount: download.sleepInterruptionCount,
+            sleepScore: download.sleepScore,
             screenTimeSeconds: download.screenTimeSeconds,
             pickups: download.pickups,
             createdAt: Self.iso8601.date(from: download.createdAt),
@@ -385,6 +420,13 @@ final class SyncService {
         entry.stepCount = remote.stepCount
         entry.walkingDistanceMeters = remote.walkingDistanceMeters
         entry.sleepHours = remote.sleepHours
+        entry.sleepREMHours = remote.sleepREMHours
+        entry.sleepDeepHours = remote.sleepDeepHours
+        entry.sleepCoreHours = remote.sleepCoreHours
+        entry.sleepAwakeMinutes = remote.sleepAwakeMinutes
+        entry.sleepOnset = remote.sleepOnset
+        entry.sleepInterruptionCount = remote.sleepInterruptionCount
+        entry.sleepScore = remote.sleepScore
         entry.screenTimeSeconds = remote.screenTimeSeconds
         entry.pickups = remote.pickups
 
@@ -512,6 +554,41 @@ final class SyncService {
             local: local.sleepHours, remote: remote.sleepHours,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepHours", entryDate: entryDate
+        )
+        local.sleepREMHours = mergeOptionalField(
+            local: local.sleepREMHours, remote: remote.sleepREMHours,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepREMHours", entryDate: entryDate
+        )
+        local.sleepDeepHours = mergeOptionalField(
+            local: local.sleepDeepHours, remote: remote.sleepDeepHours,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepDeepHours", entryDate: entryDate
+        )
+        local.sleepCoreHours = mergeOptionalField(
+            local: local.sleepCoreHours, remote: remote.sleepCoreHours,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepCoreHours", entryDate: entryDate
+        )
+        local.sleepAwakeMinutes = mergeOptionalField(
+            local: local.sleepAwakeMinutes, remote: remote.sleepAwakeMinutes,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepAwakeMinutes", entryDate: entryDate
+        )
+        local.sleepOnset = mergeOptionalField(
+            local: local.sleepOnset, remote: remote.sleepOnset,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepOnset", entryDate: entryDate
+        )
+        local.sleepInterruptionCount = mergeOptionalField(
+            local: local.sleepInterruptionCount, remote: remote.sleepInterruptionCount,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepInterruptionCount", entryDate: entryDate
+        )
+        local.sleepScore = mergeOptionalField(
+            local: local.sleepScore, remote: remote.sleepScore,
+            localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
+            fieldName: "sleepScore", entryDate: entryDate
         )
         local.screenTimeSeconds = mergeOptionalField(
             local: local.screenTimeSeconds, remote: remote.screenTimeSeconds,

@@ -85,6 +85,41 @@ struct JournalEntryDetailView: View {
                             }
                         }
                         .padding(.horizontal, 16)
+
+                        // Sleep stage breakdown
+                        if entry.hasSleepStageData {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Text("Sleep Stages")
+                                        .font(.subheadline.weight(.medium))
+                                    Spacer()
+                                    if let hours = entry.sleepHours {
+                                        Text(String(format: "%.1fh total", hours))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                    if let score = entry.sleepScore, let label = entry.sleepScoreLabel {
+                                        Text("Score: \(score) (\(label))")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                SleepStageBar(stages: entry.sleepStageBreakdown)
+                                HStack(spacing: 8) {
+                                    ForEach(entry.sleepStageBreakdown, id: \.label) { stage in
+                                        HStack(spacing: 3) {
+                                            Circle()
+                                                .fill(stage.color)
+                                                .frame(width: 6, height: 6)
+                                            Text("\(stage.label) \(String(format: "%.1fh", stage.hours))")
+                                                .font(.caption2)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                        }
                     }
                 }
 

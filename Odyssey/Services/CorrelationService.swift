@@ -43,7 +43,19 @@ enum CorrelationService {
     /// Metric pairs that are trivially correlated and should be excluded.
     private static let trivialPairs: Set<Set<MetricDefinition>> = [
         [.steps, .walkingDistance],
-        [.screenTime, .pickups]
+        [.screenTime, .pickups],
+        // Sleep stages are structurally correlated with each other and totals
+        [.sleepHours, .sleepREM],
+        [.sleepHours, .sleepDeep],
+        [.sleepHours, .sleepCore],
+        [.sleepHours, .sleepScore],
+        [.sleepREM, .sleepDeep],
+        [.sleepREM, .sleepCore],
+        [.sleepDeep, .sleepCore],
+        [.sleepScore, .sleepREM],
+        [.sleepScore, .sleepDeep],
+        [.sleepScore, .sleepCore],
+        [.sleepScore, .sleepRating],
     ]
 
     /// Finds the strongest correlation among all metric pairs.

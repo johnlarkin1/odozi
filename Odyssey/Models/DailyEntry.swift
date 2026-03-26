@@ -39,6 +39,13 @@ final class DailyEntry {
     var stepCount: Int?
     var walkingDistanceMeters: Double?
     var sleepHours: Double?
+    var sleepREMHours: Double?
+    var sleepDeepHours: Double?
+    var sleepCoreHours: Double?
+    var sleepAwakeMinutes: Double?
+    var sleepOnset: Date?
+    var sleepInterruptionCount: Int?
+    var sleepScore: Int?
 
     // Background: Screen Time (optional)
     @Attribute(originalName: "screenTime")
@@ -79,6 +86,13 @@ final class DailyEntry {
         stepCount: Int? = nil,
         walkingDistanceMeters: Double? = nil,
         sleepHours: Double? = nil,
+        sleepREMHours: Double? = nil,
+        sleepDeepHours: Double? = nil,
+        sleepCoreHours: Double? = nil,
+        sleepAwakeMinutes: Double? = nil,
+        sleepOnset: Date? = nil,
+        sleepInterruptionCount: Int? = nil,
+        sleepScore: Int? = nil,
         screenTimeSeconds: Double? = nil,
         pickups: Int? = nil,
         lastSyncedAt: Date? = nil,
@@ -102,6 +116,13 @@ final class DailyEntry {
         self.stepCount = stepCount
         self.walkingDistanceMeters = walkingDistanceMeters
         self.sleepHours = sleepHours
+        self.sleepREMHours = sleepREMHours
+        self.sleepDeepHours = sleepDeepHours
+        self.sleepCoreHours = sleepCoreHours
+        self.sleepAwakeMinutes = sleepAwakeMinutes
+        self.sleepOnset = sleepOnset
+        self.sleepInterruptionCount = sleepInterruptionCount
+        self.sleepScore = sleepScore
         self.screenTimeSeconds = screenTimeSeconds
         self.pickups = pickups
         createdAt = Date()

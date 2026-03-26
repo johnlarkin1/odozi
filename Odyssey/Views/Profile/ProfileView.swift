@@ -261,7 +261,7 @@ struct ProfileView: View {
         let descriptor = FetchDescriptor<DailyEntry>(sortBy: [SortDescriptor(\.date)])
         guard let entries = try? modelContext.fetch(descriptor) else { return nil }
 
-        var csv = "Date,Feeling,Sleep Quality,Single Word Feeling,Journal Entry,Drinks,Win,Tension,Gratitude,Steps,Screen Time,City\n"
+        var csv = "Date,Feeling,Sleep Quality,Single Word Feeling,Journal Entry,Drinks,Win,Tension,Gratitude,Steps,Screen Time,City,Sleep Hours,Sleep REM Hours,Sleep Deep Hours,Sleep Core Hours,Sleep Awake Minutes,Sleep Score\n"
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
@@ -272,8 +272,15 @@ struct ProfileView: View {
             let escapedWin = entry.win.replacingOccurrences(of: "\"", with: "\"\"")
             let escapedTension = entry.tension.replacingOccurrences(of: "\"", with: "\"\"")
 
+            let sleepHoursStr = entry.sleepHours.map { String(format: "%.2f", $0) } ?? ""
+            let remStr = entry.sleepREMHours.map { String(format: "%.2f", $0) } ?? ""
+            let deepStr = entry.sleepDeepHours.map { String(format: "%.2f", $0) } ?? ""
+            let coreStr = entry.sleepCoreHours.map { String(format: "%.2f", $0) } ?? ""
+            let awakeStr = entry.sleepAwakeMinutes.map { String(format: "%.1f", $0) } ?? ""
+            let scoreStr = entry.sleepScore.map { "\($0)" } ?? ""
+
             let line =
-                "\(dateFormatter.string(from: entry.date)),\(entry.feeling),\(entry.sleepQuality),\(entry.singleWordFeeling),\"\(escapedJournal)\",\(entry.drinks),\"\(escapedWin)\",\"\(escapedTension)\",\"\(escapedGratitude)\",\(entry.stepCount ?? 0),\(entry.screenTimeFormatted),\(entry.city ?? "")"
+                "\(dateFormatter.string(from: entry.date)),\(entry.feeling),\(entry.sleepQuality),\(entry.singleWordFeeling),\"\(escapedJournal)\",\(entry.drinks),\"\(escapedWin)\",\"\(escapedTension)\",\"\(escapedGratitude)\",\(entry.stepCount ?? 0),\(entry.screenTimeFormatted),\(entry.city ?? ""),\(sleepHoursStr),\(remStr),\(deepStr),\(coreStr),\(awakeStr),\(scoreStr)"
             csv.append(line + "\n")
         }
 

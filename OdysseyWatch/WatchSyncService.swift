@@ -80,6 +80,13 @@ final class WatchSyncService {
                 stepCount: entry.stepCount,
                 walkingDistanceMeters: entry.walkingDistanceMeters,
                 sleepHours: entry.sleepHours,
+                sleepREMHours: entry.sleepREMHours,
+                sleepDeepHours: entry.sleepDeepHours,
+                sleepCoreHours: entry.sleepCoreHours,
+                sleepAwakeMinutes: entry.sleepAwakeMinutes,
+                sleepOnset: entry.sleepOnset.map { formatter.string(from: $0) },
+                sleepInterruptionCount: entry.sleepInterruptionCount,
+                sleepScore: entry.sleepScore,
                 screenTimeSeconds: entry.screenTimeSeconds,
                 pickups: entry.pickups,
                 createdAt: formatter.string(from: entry.createdAt),
@@ -124,6 +131,15 @@ final class WatchSyncService {
         if entry.sleepHours == nil {
             entry.sleepHours = remote.sleepHours
         }
+        if entry.sleepREMHours == nil { entry.sleepREMHours = remote.sleepREMHours }
+        if entry.sleepDeepHours == nil { entry.sleepDeepHours = remote.sleepDeepHours }
+        if entry.sleepCoreHours == nil { entry.sleepCoreHours = remote.sleepCoreHours }
+        if entry.sleepAwakeMinutes == nil { entry.sleepAwakeMinutes = remote.sleepAwakeMinutes }
+        if entry.sleepOnset == nil, let onsetStr = remote.sleepOnset {
+            entry.sleepOnset = formatter.date(from: onsetStr)
+        }
+        if entry.sleepInterruptionCount == nil { entry.sleepInterruptionCount = remote.sleepInterruptionCount }
+        if entry.sleepScore == nil { entry.sleepScore = remote.sleepScore }
 
         entry.lastSyncedAt = Date()
         entry.needsSync = false
