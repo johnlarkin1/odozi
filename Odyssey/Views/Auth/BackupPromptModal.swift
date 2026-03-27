@@ -4,7 +4,6 @@ struct BackupPromptModal: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(AuthManager.self) private var authManager
 
-    @State private var showSignUp = false
     @State private var showRecoveryKey = false
     @State private var recoveryKey = ""
     @State private var copied = false
@@ -13,13 +12,19 @@ struct BackupPromptModal: View {
         NavigationStack {
             if showRecoveryKey {
                 recoveryKeyView
-            } else if showSignUp {
-                signUpView
             } else {
                 valuePropositionView
             }
         }
         .environment(\.colorScheme, .dark)
+        .onChange(of: authManager.isSignedIn) { _, isSignedIn in
+            if isSignedIn {
+                Task {
+                    await generateRecoveryKey()
+                    showRecoveryKey = true
+                }
+            }
+        }
     }
 
     // MARK: - Value Proposition
@@ -56,14 +61,36 @@ struct BackupPromptModal: View {
 
             VStack(spacing: 12) {
                 Button {
-                    showSignUp = true
+                    Task {
+                        do {
+                            try await authManager.signUp(strategy: .apple)
+                        } catch is CancellationError {
+                            // User cancelled
+                        } catch {
+                            authManager.error = error.localizedDescription
+                        }
+                    }
                 } label: {
-                    Text("Create Free Account")
-                        .font(.headline)
-                        .foregroundStyle(.black)
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 14)
-                        .background(Color.accentAmber, in: RoundedRectangle(cornerRadius: 12))
+                    HStack(spacing: 8) {
+                        Image(systemName: "apple.logo")
+                        Text("Enable iCloud Backup")
+                    }
+                    .font(.headline)
+                    .foregroundStyle(.black)
+                    .frame(maxWidth: .infinity)
+                    .padding(.vertical, 14)
+                    .background(Color.accentAmber, in: RoundedRectangle(cornerRadius: 12))
+                }
+
+                if authManager.isLoading {
+                    ProgressView()
+                }
+
+                if let error = authManager.error {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(Color.coralRed)
+                        .padding(.horizontal)
                 }
 
                 Button("Maybe Later") {
@@ -82,111 +109,6 @@ struct BackupPromptModal: View {
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .foregroundStyle(.secondary)
-                }
-            }
-        }
-    }
-
-    // MARK: - Sign Up
-
-    private var signUpView: some View {
-        VStack(spacing: 24) {
-            Spacer()
-
-            Text("Create Account")
-                .font(.title2)
-                .fontWeight(.bold)
-
-            VStack(spacing: 12) {
-                signInButton(
-                    icon: "apple.logo",
-                    title: "Continue with Apple",
-                    action: {
-                        Task {
-                            do {
-                                try await authManager.signUp(strategy: .apple)
-                            } catch is CancellationError {
-                                // User cancelled OAuth sheet
-                            } catch {
-                                authManager.error = error.localizedDescription
-                            }
-                        }
-                    }
-                )
-
-                signInButton(
-                    icon: "globe",
-                    title: "Continue with Google",
-                    action: {
-                        Task {
-                            do {
-                                try await authManager.signUp(strategy: .google)
-                            } catch is CancellationError {
-                                // User cancelled OAuth sheet
-                            } catch {
-                                authManager.error = error.localizedDescription
-                            }
-                        }
-                    }
-                )
-
-                signInButton(
-                    icon: "cat.fill",
-                    title: "Continue with GitHub",
-                    action: {
-                        Task {
-                            do {
-                                try await authManager.signUp(strategy: .github)
-                            } catch is CancellationError {
-                                // User cancelled OAuth sheet
-                            } catch {
-                                authManager.error = error.localizedDescription
-                            }
-                        }
-                    }
-                )
-
-                NavigationLink {
-                    EmailSignUpView()
-                        .environment(authManager)
-                } label: {
-                    HStack(spacing: 12) {
-                        Image(systemName: "envelope.fill")
-                            .frame(width: 20)
-                        Text("Sign up with Email")
-                            .fontWeight(.medium)
-                    }
-                    .frame(maxWidth: .infinity)
-                    .padding(.vertical, 14)
-                    .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 12))
-                }
-            }
-            .padding(.horizontal, 24)
-
-            Spacer()
-
-            if authManager.isLoading {
-                ProgressView()
-            }
-
-            if let error = authManager.error {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(Color.coralRed)
-                    .padding(.horizontal)
-            }
-
-            Button("Back") {
-                showSignUp = false
-            }
-            .foregroundStyle(.secondary)
-            .padding(.bottom, 32)
-        }
-        .onChange(of: authManager.isSignedIn) { _, isSignedIn in
-            if isSignedIn {
-                Task {
-                    await generateRecoveryKey()
-                    showRecoveryKey = true
                 }
             }
         }
@@ -267,20 +189,6 @@ struct BackupPromptModal: View {
             Text(text)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-        }
-    }
-
-    private func signInButton(icon: String, title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .frame(width: 20)
-                Text(title)
-                    .fontWeight(.medium)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 12))
         }
     }
 

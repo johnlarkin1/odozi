@@ -1,84 +1,45 @@
 import SwiftUI
 
 struct AccountCard: View {
-    let onCreateAccount: () -> Void
-    let onKeepLocal: () -> Void
+    let onEnableBackup: () -> Void
+    let onSkip: () -> Void
 
     var body: some View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: "iphone.gen3")
+            Image(systemName: "icloud.fill")
                 .font(.system(size: 56))
                 .foregroundStyle(Color.accentTeal)
 
             VStack(spacing: 12) {
-                Text("Your Data, Your Choice")
+                Text("Back Up Your Journal?")
                     .font(.title.bold())
                     .fontDesign(.rounded)
                     .foregroundStyle(.white)
 
-                Text("Your journal lives on this device. Nothing leaves your phone unless you choose otherwise.")
+                Text("Your entries are always stored on this device. Enable iCloud backup to keep them safe across devices.")
                     .font(.body)
                     .foregroundStyle(.secondary)
                     .multilineTextAlignment(.center)
                     .padding(.horizontal, 8)
             }
 
-            // Comparison card
-            VStack(spacing: 0) {
-                // Keep It Local section
-                VStack(alignment: .leading, spacing: 12) {
-                    Label {
-                        Text("Keep It Local")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                    } icon: {
-                        Image(systemName: "checkmark.shield.fill")
-                            .foregroundStyle(Color.successGreen)
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        bulletPoint("Private by default")
-                        bulletPoint("No account needed")
-                        bulletPoint("Uses phone storage (entries are small)")
-                    }
-                }
-                .padding(16)
-
-                Divider()
-                    .background(.secondary.opacity(0.3))
-
-                // Cloud Backup section
-                VStack(alignment: .leading, spacing: 12) {
-                    Label {
-                        Text("Cloud Backup")
-                            .font(.headline)
-                            .foregroundStyle(.white)
-                    } icon: {
-                        Image(systemName: "cloud.fill")
-                            .foregroundStyle(Color.accentTeal)
-                    }
-
-                    VStack(alignment: .leading, spacing: 8) {
-                        bulletPoint("Never lose entries if you lose or switch phones")
-                        bulletPoint("End-to-end encrypted — only you can read them")
-                        bulletPoint("Restore seamlessly to any device")
-                        bulletPoint("Free forever")
-                    }
-                }
-                .padding(16)
+            VStack(alignment: .leading, spacing: 12) {
+                featureRow(icon: "lock.shield.fill", text: "Encrypted with your Apple ID")
+                featureRow(icon: "arrow.triangle.2.circlepath", text: "Sync across your devices")
+                featureRow(icon: "externaldrive.fill.badge.checkmark", text: "Never lose your entries")
+                featureRow(icon: "dollarsign.circle", text: "Free with iCloud")
             }
+            .padding(20)
             .background(Color.cardSurface)
             .clipShape(RoundedRectangle(cornerRadius: 16))
-            .padding(.horizontal, 4)
 
             Spacer()
 
-            // Two equal buttons
             VStack(spacing: 12) {
-                Button(action: onCreateAccount) {
-                    Text("Create Free Account")
+                Button(action: onEnableBackup) {
+                    Text("Enable iCloud Backup")
                         .font(.headline)
                         .foregroundStyle(.white)
                         .frame(maxWidth: .infinity)
@@ -87,17 +48,17 @@ struct AccountCard: View {
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
 
-                Button(action: onKeepLocal) {
-                    Text("Keep It Local")
+                Button(action: onSkip) {
+                    Text("Not Now")
                         .font(.headline)
-                        .foregroundStyle(.white)
+                        .foregroundStyle(.secondary)
                         .frame(maxWidth: .infinity)
                         .padding(.vertical, 16)
                         .background(Color.cardSurface)
                         .clipShape(RoundedRectangle(cornerRadius: 16))
                         .overlay(
                             RoundedRectangle(cornerRadius: 16)
-                                .strokeBorder(.secondary.opacity(0.3), lineWidth: 1)
+                                .strokeBorder(.white.opacity(0.1), lineWidth: 1)
                         )
                 }
             }
@@ -107,13 +68,16 @@ struct AccountCard: View {
         .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
-    private func bulletPoint(_ text: String) -> some View {
-        HStack(alignment: .top, spacing: 8) {
-            Text("•")
-                .foregroundStyle(.secondary)
+    private func featureRow(icon: String, text: String) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.body)
+                .foregroundStyle(Color.accentTeal)
+                .frame(width: 24)
             Text(text)
                 .font(.subheadline)
-                .foregroundStyle(.secondary)
+                .foregroundStyle(.white.opacity(0.8))
+            Spacer()
         }
     }
 }

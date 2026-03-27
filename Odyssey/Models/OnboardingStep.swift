@@ -13,12 +13,12 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .welcome: "Welcome to Odyssey"
-        case .location: "Your Daily Map"
+        case .welcome: "Your Odyssey Begins"
+        case .location: "Location"
         case .health: "Health Insights"
         case .screenTime: "Screen Time"
         case .notifications: "Daily Reminders"
-        case .account: "Your Data, Your Choice"
+        case .account: "Back Up Your Journal?"
         case .completion: "You're All Set"
         }
     }
@@ -26,9 +26,9 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .welcome:
-            "Track your mental wellness journey with daily reflections, health data, and beautiful visualizations."
+            "A space for daily reflection. Track how you feel, where you've been, and where you're going."
         case .location:
-            "Odyssey captures your location once daily to build a personal map of your journey. Your data stays on your device."
+            "Capture your location once daily to build a personal map of your journey."
         case .health:
             "Connect Apple Health to automatically track your steps, walking distance, and sleep alongside your journal entries."
         case .screenTime:
@@ -36,7 +36,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .notifications:
             "A gentle nudge to reflect on your day. Choose when works best for you."
         case .account:
-            "Your journal lives on this device. Nothing leaves your phone unless you choose otherwise."
+            "Your entries are always stored on this device. Enable iCloud backup to keep them safe across devices."
         case .completion:
             "Your odyssey begins now"
         }
@@ -49,7 +49,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .health: "heart.fill"
         case .screenTime: "hourglass"
         case .notifications: "bell.fill"
-        case .account: "iphone.gen3"
+        case .account: "icloud.fill"
         case .completion: "checkmark.circle.fill"
         }
     }
