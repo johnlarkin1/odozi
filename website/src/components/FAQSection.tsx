@@ -2,39 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-
-const faqs = [
-  {
-    question: "Is Odyssey free?",
-    answer:
-      "Yes. Odyssey is completely free to download and use. There are no subscriptions, no in-app purchases, and no ads.",
-  },
-  {
-    question: "Where is my data stored?",
-    answer:
-      "All your journal entries are stored locally on your device using SwiftData. If you enable the optional cloud backup, your data is end-to-end encrypted (AES-256-GCM) — meaning only you can read it.",
-  },
-  {
-    question: "How long does a daily check-in take?",
-    answer:
-      "About 1–2 minutes. There are 8 gentle prompts, and every single one is skippable. You can write as much or as little as you like.",
-  },
-  {
-    question: "Do I need an account?",
-    answer:
-      "No. Odyssey works fully without an account. You only need one if you want to enable cloud backup, and you can sign in with Apple or Google — no email/password required.",
-  },
-  {
-    question: "Is there an Android version?",
-    answer:
-      "Not yet. Odyssey is currently iOS-only (iPhone, iOS 17+). An Android version isn't on the immediate roadmap, but it's something we'd love to explore in the future.",
-  },
-  {
-    question: "Can I export my data?",
-    answer:
-      "Yes. You can export all your entries as a CSV file at any time from the Profile tab. Your data is yours.",
-  },
-];
+import { faqs } from "@/content";
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);

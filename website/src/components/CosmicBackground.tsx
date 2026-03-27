@@ -24,25 +24,6 @@ export function CosmicBackground() {
         <div className="star" style={{ top: "28%", left: "18%", animationDelay: "3.4s" }} />
       </div>
 
-      {/* Horizon wave — subtle ocean hint at the bottom */}
-      <svg
-        className="absolute bottom-0 left-0 w-full opacity-[0.06]"
-        viewBox="0 0 1440 120"
-        preserveAspectRatio="none"
-        fill="none"
-      >
-        <path
-          d="M0 60C240 20 480 100 720 60C960 20 1200 100 1440 60V120H0Z"
-          fill="url(#wave-gradient)"
-        />
-        <defs>
-          <linearGradient id="wave-gradient" x1="0" y1="0" x2="1440" y2="0" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#8C5CF5" />
-            <stop offset="50%" stopColor="#2EC4B6" />
-            <stop offset="100%" stopColor="#8C5CF5" />
-          </linearGradient>
-        </defs>
-      </svg>
     </div>
   );
 }

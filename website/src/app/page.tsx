@@ -1,10 +1,8 @@
 import { HeroSection } from "@/components/HeroSection";
-import { HowItWorks } from "@/components/HowItWorks";
+import { WhyDownloadSection } from "@/components/WhyDownloadSection";
 import {
-  GuidedJournalingSection,
-  PassiveCaptureSection,
-  InsightsSection,
-  YearInReviewSection,
+  WhatYouTrackSection,
+  WhatYouGetBackSection,
 } from "@/components/FeatureGrid";
 import { PrivacySection, FinalCTASection } from "@/components/CTASection";
 import { FAQSection } from "@/components/FAQSection";
@@ -14,14 +12,12 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <HowItWorks />
-      <WaveDivider />
-      <GuidedJournalingSection />
-      <PassiveCaptureSection />
-      <WaveDivider />
-      <InsightsSection />
-      <YearInReviewSection />
-      <WaveDivider />
+      <WaveDivider variant={2} overlap />
+      <WhyDownloadSection />
+      <WaveDivider variant={0} />
+      <WhatYouTrackSection />
+      <WaveDivider variant={1} />
+      <WhatYouGetBackSection />
       <PrivacySection />
       <FAQSection />
       <FinalCTASection />

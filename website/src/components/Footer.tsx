@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-
-const APP_STORE_URL = "https://apps.apple.com/app/odyssey-journal/id6743597741";
+import { APP_STORE_URL, GITHUB_URL, footer } from "@/content";
 
 export function Footer() {
   return (
@@ -20,10 +19,10 @@ export function Footer() {
               <p className="text-lg font-bold text-star-white">Odyssey</p>
             </div>
             <p className="mt-2 text-sm text-star-white/60">
-              Your daily journey inward.
+              {footer.tagline}
             </p>
             <p className="mt-3 text-xs text-star-white/40">
-              Made with care in NYC.
+              {footer.madeIn}
             </p>
           </div>
 
@@ -38,6 +37,9 @@ export function Footer() {
             <Link href="/#faq" className="text-star-white/60 transition hover:text-accent-teal">
               FAQ
             </Link>
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="text-star-white/60 transition hover:text-accent-teal">
+              GitHub
+            </a>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">

@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Odyssey - Your Daily Journey",
+  title: "Odyssey",
   description:
     "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.",
   metadataBase: new URL("https://odozi.app"),
@@ -24,7 +24,7 @@ export const metadata: Metadata = {
     canonical: "/",
   },
   openGraph: {
-    title: "Odyssey - Your Daily Journey",
+    title: "Odyssey",
     description:
       "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.",
     url: "https://odozi.app",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Odyssey - Your Daily Journey",
+    title: "Odyssey",
     description:
       "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.",
     images: [{ url: "/og-image.gif", width: 1200, height: 630 }],

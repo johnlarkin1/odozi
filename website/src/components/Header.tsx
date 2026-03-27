@@ -3,8 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
-
-const APP_STORE_URL = "https://apps.apple.com/app/odyssey-journal/id6743597741";
+import { APP_STORE_URL } from "@/content";
 
 function LogoMark() {
   return (
@@ -39,12 +38,6 @@ export function Header() {
           <Link href="/#faq" className="text-sm text-star-white/70 transition hover:text-accent-teal">
             FAQ
           </Link>
-          <Link href="/privacy" className="text-sm text-star-white/70 transition hover:text-accent-teal">
-            Privacy
-          </Link>
-          <Link href="/terms" className="text-sm text-star-white/70 transition hover:text-accent-teal">
-            Terms
-          </Link>
           <a
             href={APP_STORE_URL}
             target="_blank"
@@ -76,12 +69,6 @@ export function Header() {
             </Link>
             <Link href="/#faq" onClick={() => setMobileOpen(false)} className="text-star-white/70">
               FAQ
-            </Link>
-            <Link href="/privacy" onClick={() => setMobileOpen(false)} className="text-star-white/70">
-              Privacy
-            </Link>
-            <Link href="/terms" onClick={() => setMobileOpen(false)} className="text-star-white/70">
-              Terms
             </Link>
             <a
               href={APP_STORE_URL}
