@@ -21,7 +21,7 @@
 				<string>odyssey</string>
 			</array>
 			<key>CFBundleURLName</key>
-			<string>com.johnlarkin.Odyssey.clerk-callback</string>
+			<string>com.johnlarkin.Odyssey.deeplink</string>
 		</dict>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
@@ -43,7 +43,5 @@
 	</dict>
 	<key>OdysseyAPIBaseURL</key>
 	<string>$(ODYSSEY_API_BASE_URL)</string>
-	<key>ClerkPublishableKey</key>
-	<string>$(CLERK_PUBLISHABLE_KEY)</string>
 </dict>
 </plist>

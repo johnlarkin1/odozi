@@ -1,4 +1,3 @@
-import ClerkKit
 import os
 import SwiftData
 import SwiftUI
@@ -19,12 +18,6 @@ struct OdysseyMacApp: App {
     let containerError: Error?
 
     init() {
-        if let key = ClerkConfiguration.publishableKey,
-           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil {
-            Clerk.configure(publishableKey: key)
-            AuthManager.clerkConfigured = true
-        }
-
         do {
             let c = try DataContainer.create()
             container = c

@@ -65,7 +65,6 @@ final class OnboardingViewModel {
     // MARK: - Account
 
     func beginAccountCreation() {
-        // TODO: Present sign-up sheet via AuthManager when Clerk SDK is integrated
         goToNext()
     }
 

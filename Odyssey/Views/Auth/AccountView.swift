@@ -6,9 +6,6 @@ struct AccountView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
-    @State private var showRecoveryKey = false
-    @State private var recoveryKey = ""
-    @State private var copied = false
     @State private var showDeleteConfirmation = false
     @State private var showSignOutConfirmation = false
     @State private var showDeleteError = false
@@ -38,12 +35,27 @@ struct AccountView: View {
                 }
             }
 
-            Section("Recovery") {
-                Button("Show Recovery Key") {
-                    Task {
-                        await generateRecoveryKey()
-                        showRecoveryKey = true
+            Section("Account") {
+                if let user = authManager.user {
+                    HStack(spacing: 12) {
+                        Image(systemName: "person.crop.circle.fill")
+                            .font(.title2)
+                            .foregroundStyle(Color.accentTeal)
+                        VStack(alignment: .leading) {
+                            Text(user.displayName)
+                                .font(.subheadline)
+                                .fontWeight(.medium)
+                            if let email = user.email {
+                                Text(email)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
                     }
+
+                    Label("Signed in with Apple", systemImage: "apple.logo")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
                 }
             }
 
@@ -95,61 +107,5 @@ struct AccountView: View {
             } message: {
                 Text(deleteErrorMessage)
             }
-            .sheet(isPresented: $showRecoveryKey) {
-                NavigationStack {
-                    VStack(spacing: 16) {
-                        Image(systemName: "key.fill")
-                            .font(.system(size: 48))
-                            .foregroundStyle(Color.accentAmber)
-                            .padding(.top, 32)
-
-                        Text("Recovery Key")
-                            .font(.title2)
-                            .fontWeight(.bold)
-
-                        Text(recoveryKey)
-                            .font(.system(.caption, design: .monospaced))
-                            .padding()
-                            .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 8))
-                            .padding(.horizontal, 24)
-
-                        Button {
-                            #if os(iOS)
-                                UIPasteboard.general.setItems(
-                                    [[UIPasteboard.typeAutomatic: recoveryKey]],
-                                    options: [.expirationDate: Date().addingTimeInterval(60)]
-                                )
-                            #else
-                                NSPasteboard.general.clearContents()
-                                NSPasteboard.general.setString(recoveryKey, forType: .string)
-                            #endif
-                            copied = true
-                            Task {
-                                try? await Task.sleep(for: .seconds(3))
-                                copied = false
-                            }
-                        } label: {
-                            Label(copied ? "Copied! (expires in 60s)" : "Copy to Clipboard", systemImage: "doc.on.doc")
-                        }
-
-                        Spacer()
-                    }
-                    .toolbar {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            Button("Done") {
-                                showRecoveryKey = false
-                            }
-                        }
-                    }
-                }
-                .environment(\.colorScheme, .dark)
-            }
-    }
-
-    private func generateRecoveryKey() async {
-        let encryptionService = EncryptionService()
-        if let key = try? await encryptionService.getOrCreateKey() {
-            recoveryKey = RecoveryKeyGenerator.exportAsBase64(key: key)
-        }
     }
 }

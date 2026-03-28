@@ -168,7 +168,6 @@ platform :ios do
     xcconfig_path = "../Odyssey.xcconfig"
     unless File.exist?(xcconfig_path)
       File.write(xcconfig_path, <<~XCCONFIG)
-        CLERK_PUBLISHABLE_KEY = #{ENV["CLERK_PUBLISHABLE_KEY"] || ""}
         ODYSSEY_API_BASE_URL = #{ENV["ODYSSEY_API_BASE_URL"] || ""}
       XCCONFIG
     end
