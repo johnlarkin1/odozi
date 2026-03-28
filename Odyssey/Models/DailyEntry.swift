@@ -7,6 +7,18 @@ extension Notification.Name {
     static let openGuidedPrompt = Notification.Name("openGuidedPrompt")
 }
 
+struct WorkoutSummary: Codable, Sendable, Identifiable {
+    var id: UUID = UUID()
+    let activityType: UInt            // HKWorkoutActivityType.rawValue
+    let activityName: String          // Human-readable name (e.g., "Running")
+    let durationSeconds: Double
+    let totalCalories: Double?        // kcal
+    let totalDistanceMeters: Double?
+    let averageHeartRate: Double?     // bpm during workout
+    let startDate: Date
+    let endDate: Date
+}
+
 @Model
 final class DailyEntry {
     // Note: #Unique requires iOS 18+. Uniqueness on `date` is enforced in application code
@@ -46,6 +58,14 @@ final class DailyEntry {
     var sleepOnset: Date?
     var sleepInterruptionCount: Int?
     var sleepScore: Int?
+
+    // Background: Workouts & Heart Rate (optional)
+    var workoutDataJSON: Data?
+    var workoutCount: Int?
+    var totalWorkoutMinutes: Double?
+    var workoutIntensityScore: Int?
+    var restingHeartRate: Double?
+    var averageHeartRate: Double?
 
     // Background: Screen Time (optional)
     @Attribute(originalName: "screenTime")
@@ -93,6 +113,12 @@ final class DailyEntry {
         sleepOnset: Date? = nil,
         sleepInterruptionCount: Int? = nil,
         sleepScore: Int? = nil,
+        workoutDataJSON: Data? = nil,
+        workoutCount: Int? = nil,
+        totalWorkoutMinutes: Double? = nil,
+        workoutIntensityScore: Int? = nil,
+        restingHeartRate: Double? = nil,
+        averageHeartRate: Double? = nil,
         screenTimeSeconds: Double? = nil,
         pickups: Int? = nil,
         lastSyncedAt: Date? = nil,
@@ -123,6 +149,12 @@ final class DailyEntry {
         self.sleepOnset = sleepOnset
         self.sleepInterruptionCount = sleepInterruptionCount
         self.sleepScore = sleepScore
+        self.workoutDataJSON = workoutDataJSON
+        self.workoutCount = workoutCount
+        self.totalWorkoutMinutes = totalWorkoutMinutes
+        self.workoutIntensityScore = workoutIntensityScore
+        self.restingHeartRate = restingHeartRate
+        self.averageHeartRate = averageHeartRate
         self.screenTimeSeconds = screenTimeSeconds
         self.pickups = pickups
         createdAt = Date()

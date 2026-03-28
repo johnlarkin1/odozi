@@ -49,6 +49,40 @@ struct BodyTabView: View {
                 }
                 .adaptiveHorizontalPadding()
 
+                // Fitness Section
+                AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
+                    NavigationLink(destination: MetricDetailView(metric: .workoutMinutes, viewModel: viewModel)) {
+                        SparklineCard(
+                            metric: .workoutMinutes,
+                            value: MetricDefinition.workoutMinutes.formatValue(viewModel.averageWorkoutMinutes),
+                            data: viewModel.sparklineData(for: .workoutMinutes),
+                            trend: viewModel.trend(for: .workoutMinutes)
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    NavigationLink(destination: MetricDetailView(metric: .workoutIntensity, viewModel: viewModel)) {
+                        SparklineCard(
+                            metric: .workoutIntensity,
+                            value: MetricDefinition.workoutIntensity.formatValue(viewModel.averageWorkoutIntensity),
+                            data: viewModel.sparklineData(for: .workoutIntensity),
+                            trend: viewModel.trend(for: .workoutIntensity)
+                        )
+                    }
+                    .buttonStyle(.plain)
+
+                    NavigationLink(destination: MetricDetailView(metric: .restingHeartRate, viewModel: viewModel)) {
+                        SparklineCard(
+                            metric: .restingHeartRate,
+                            value: MetricDefinition.restingHeartRate.formatValue(viewModel.averageRestingHeartRate),
+                            data: viewModel.sparklineData(for: .restingHeartRate),
+                            trend: viewModel.trend(for: .restingHeartRate)
+                        )
+                    }
+                    .buttonStyle(.plain)
+                }
+                .adaptiveHorizontalPadding()
+
                 // Sleep Architecture Section
                 AdaptiveGrid(minColumnWidth: 160, spacing: 12) {
                     NavigationLink(destination: SleepArchitectureDetailView(viewModel: viewModel)) {

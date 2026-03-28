@@ -11,6 +11,8 @@ struct HealthPermissionCard: View {
             VStack(spacing: 16) {
                 featureRow(icon: "figure.walk", text: "Daily steps and walking distance")
                 featureRow(icon: "bed.double.fill", text: "Sleep duration tracking")
+                featureRow(icon: "figure.run", text: "Workout sessions and exercise data")
+                featureRow(icon: "heart.fill", text: "Heart rate and resting heart rate")
                 featureRow(icon: "eye.slash.fill", text: "Read-only access — Odyssey never writes health data")
             }
             .padding(.horizontal, 8)

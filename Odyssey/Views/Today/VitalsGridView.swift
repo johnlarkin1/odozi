@@ -1,7 +1,7 @@
 import SwiftUI
 
 enum VitalType: Hashable {
-    case steps, sleep, screenTime, streak
+    case steps, sleep, workout, screenTime, streak
 }
 
 struct VitalsGridView: View {
@@ -32,13 +32,22 @@ struct VitalsGridView: View {
                     index: 1
                 )
             }
+            vitalButton(.workout) {
+                vitalCard(
+                    icon: "figure.run",
+                    value: workoutValue,
+                    label: workoutLabel,
+                    color: .successGreen,
+                    index: 2
+                )
+            }
             vitalButton(.screenTime) {
                 vitalCard(
                     icon: "iphone",
                     value: screenTimeValue,
                     label: "Screen Time",
                     color: .coralRed,
-                    index: 2
+                    index: 3
                 )
             }
             vitalButton(.streak) {
@@ -47,7 +56,7 @@ struct VitalsGridView: View {
                     value: streak > 0 ? "\(streak)" : "--",
                     label: nextMilestoneLabel,
                     color: .accentAmber,
-                    index: 3
+                    index: 4
                 )
             }
         }
@@ -72,6 +81,16 @@ struct VitalsGridView: View {
             return String(format: "%.1fh", hours)
         }
         return "--"
+    }
+
+    private var workoutValue: String {
+        guard let entry = entry, entry.didWorkout else { return "--" }
+        return entry.primaryWorkoutLabel
+    }
+
+    private var workoutLabel: String {
+        guard let entry = entry, entry.didWorkout else { return "Workout" }
+        return entry.primaryWorkoutType
     }
 
     private var screenTimeValue: String {

@@ -25,7 +25,7 @@
 		</dict>
 	</array>
 	<key>NSHealthShareUsageDescription</key>
-	<string>Odyssey reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.</string>
+	<string>Odyssey reads your step count, walking distance, sleep data, workout sessions, and heart rate to enrich your daily journal entries with health and fitness insights.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Odyssey does not write any health data, but this permission is required by the HealthKit framework.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
