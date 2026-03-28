@@ -4,7 +4,7 @@ CONFIG_DEBUG = Debug
 CONFIG_RELEASE = Release
 
 # Default destination — override with: make build DESTINATION='platform=iOS,name=MyiPhone'
-DESTINATION ?= platform=iOS Simulator,name=iPhone 16
+DESTINATION ?= platform=iOS Simulator,name=iPhone 17 Pro
 
 # Backend server
 SERVER_DIR = odyssey-server
