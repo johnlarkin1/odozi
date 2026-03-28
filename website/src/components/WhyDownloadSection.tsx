@@ -15,7 +15,7 @@ export function WhyDownloadSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-3xl font-bold sm:text-4xl">
+          <h2 className="font-heading text-3xl font-bold sm:text-4xl">
             {whyDownload.heading}
             <br />
             <span className="text-accent-amber">{whyDownload.headingAccent}</span>
