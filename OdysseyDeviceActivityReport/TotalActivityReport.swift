@@ -30,6 +30,7 @@ struct TotalActivityReport: DeviceActivityReportScene {
         }
 
         // Write to shared defaults so main app can read
+        // Keys must match SharedDefaults.screenTimeSecondsKey / .pickupsKey / .screenTimeLastUpdatedKey
         let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
         defaults?.set(totalDuration, forKey: "screenTimeSeconds")
         defaults?.set(totalPickups, forKey: "pickups")

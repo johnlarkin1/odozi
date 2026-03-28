@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { PostHogProvider } from "@/components/PostHogProvider";
+import { MotionConfigProvider } from "@/components/MotionConfigProvider";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -90,9 +91,11 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} font-sans antialiased bg-deep-space text-star-white`}
       >
         <PostHogProvider>
-          <Header />
-          <main>{children}</main>
-          <Footer />
+          <MotionConfigProvider>
+            <Header />
+            <main>{children}</main>
+            <Footer />
+          </MotionConfigProvider>
         </PostHogProvider>
       </body>
     </html>

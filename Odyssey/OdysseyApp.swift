@@ -190,21 +190,26 @@ struct OdysseyApp: App {
 
         // Screen Time extension writes async to SharedDefaults — poll until available
         Task {
-            let maxAttempts = 10
-            for _ in 1 ... maxAttempts {
-                try? await Task.sleep(for: .milliseconds(500))
-                if let screenTime = SharedDefaults.getScreenTime() {
-                    let repository = DailyEntryRepository(context: context)
-                    if let entry = try? repository.fetchOrCreateToday() {
+            do {
+                let maxAttempts = 10
+                for _ in 1 ... maxAttempts {
+                    try await Task.sleep(for: .milliseconds(500))
+                    if let screenTime = SharedDefaults.getScreenTime() {
+                        let repository = DailyEntryRepository(context: context)
+                        let entry = try repository.fetchOrCreateToday()
                         entry.screenTimeSeconds = screenTime.seconds
                         entry.pickups = screenTime.pickups
-                        try? context.save()
+                        try context.save()
                         NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
+                        return
                     }
-                    return
                 }
+                logger.warning("Screen time data not available after polling")
+            } catch is CancellationError {
+                // Task cancelled (e.g. app backgrounded) — expected, no action needed
+            } catch {
+                logger.error("Failed to save screen time: \(error)")
             }
-            logger.warning("Screen time data not available after polling")
         }
 
         NotificationService.rescheduleIfNeeded()

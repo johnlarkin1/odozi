@@ -154,7 +154,7 @@ export function ScreenshotCarousel() {
             <button
               key={shot.src}
               onClick={() => scrollToIndex(i)}
-              className={`rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+              className={`min-h-11 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                 activeIndex === i
                   ? "bg-white/15 text-star-white"
                   : "text-star-white/40 hover:text-star-white/60"

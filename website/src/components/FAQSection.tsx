@@ -12,6 +12,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
     <div className="border-b border-white/10">
       <button
         onClick={() => { setIsOpen(!isOpen); trackEvent("faq_toggled", { question, is_open: !isOpen }); }}
+        aria-expanded={isOpen}
         className="flex min-h-11 w-full items-center justify-between py-6 text-left"
       >
         <span className="pr-4 text-lg font-medium text-star-white">{question}</span>

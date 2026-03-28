@@ -8,7 +8,8 @@ enum SharedDefaults {
 
     static var suite: UserDefaults {
         guard let defaults = UserDefaults(suiteName: suiteName) else {
-            logger.warning("App Group UserDefaults unavailable, falling back to .standard")
+            assertionFailure("App Group '\(suiteName)' unavailable — check entitlements")
+            logger.fault("App Group UserDefaults unavailable, falling back to .standard")
             return .standard
         }
         return defaults
