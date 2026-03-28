@@ -109,41 +109,10 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
     do {
         let entry = try repository.fetchOrCreateToday()
 
-        // Apply location data (only if not already set, to preserve manual refreshes)
-        if entry.latitude == nil, let lat = data.latitude { entry.latitude = lat }
-        if entry.longitude == nil, let lon = data.longitude { entry.longitude = lon }
-        if entry.city == nil, let city = data.city { entry.city = city }
-        if entry.state == nil, let state = data.state { entry.state = state }
-        if entry.country == nil, let country = data.country { entry.country = country }
-        if entry.locationCapturedAt == nil, data.latitude != nil { entry.locationCapturedAt = Date() }
-
-        // Apply HealthKit data
-        if let steps = data.stepCount { entry.stepCount = steps }
-        if let distance = data.walkingDistanceMeters { entry.walkingDistanceMeters = distance }
-        if let sleep = data.sleepHours { entry.sleepHours = sleep }
-        if let rem = data.sleepREMHours { entry.sleepREMHours = rem }
-        if let deep = data.sleepDeepHours { entry.sleepDeepHours = deep }
-        if let core = data.sleepCoreHours { entry.sleepCoreHours = core }
-        if let awake = data.sleepAwakeMinutes { entry.sleepAwakeMinutes = awake }
-        if let onset = data.sleepOnset { entry.sleepOnset = onset }
-        if let interruptions = data.sleepInterruptionCount { entry.sleepInterruptionCount = interruptions }
-
-        // Compute sleep score using recent entries for bedtime consistency
-        if data.sleepHours != nil {
-            let calendar = Calendar.current
-            let entryDate = entry.date
-            let thirteenDaysAgo = calendar.date(byAdding: .day, value: -13, to: entryDate) ?? entryDate
-            let recentDescriptor = FetchDescriptor<DailyEntry>(
-                predicate: #Predicate { $0.date >= thirteenDaysAgo && $0.date < entryDate },
-                sortBy: [SortDescriptor(\.date, order: .reverse)]
-            )
-            let recentEntries = try context.fetch(recentDescriptor)
-            entry.sleepScore = SleepScoreService.computeScore(for: entry, recentEntries: recentEntries)?.total
-        }
-
-        // Apply Screen Time data
-        if let seconds = data.screenTimeSeconds { entry.screenTimeSeconds = seconds }
-        if let pickups = data.pickups { entry.pickups = pickups }
+        applyLocationData(from: data, to: entry)
+        applyHealthKitData(from: data, to: entry)
+        try applySleepScore(for: entry, data: data, context: context)
+        applyScreenTimeData(from: data, to: entry)
 
         entry.updatedAt = Date()
         entry.needsSync = true
@@ -152,4 +121,43 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
     } catch {
         logger.error("Failed to save snapshot: \(error)")
     }
+}
+
+private func applyLocationData(from data: SnapshotData, to entry: DailyEntry) {
+    if entry.latitude == nil, let lat = data.latitude { entry.latitude = lat }
+    if entry.longitude == nil, let lon = data.longitude { entry.longitude = lon }
+    if entry.city == nil, let city = data.city { entry.city = city }
+    if entry.state == nil, let state = data.state { entry.state = state }
+    if entry.country == nil, let country = data.country { entry.country = country }
+    if entry.locationCapturedAt == nil, data.latitude != nil { entry.locationCapturedAt = Date() }
+}
+
+private func applyHealthKitData(from data: SnapshotData, to entry: DailyEntry) {
+    if let steps = data.stepCount { entry.stepCount = steps }
+    if let distance = data.walkingDistanceMeters { entry.walkingDistanceMeters = distance }
+    if let sleep = data.sleepHours { entry.sleepHours = sleep }
+    if let rem = data.sleepREMHours { entry.sleepREMHours = rem }
+    if let deep = data.sleepDeepHours { entry.sleepDeepHours = deep }
+    if let core = data.sleepCoreHours { entry.sleepCoreHours = core }
+    if let awake = data.sleepAwakeMinutes { entry.sleepAwakeMinutes = awake }
+    if let onset = data.sleepOnset { entry.sleepOnset = onset }
+    if let interruptions = data.sleepInterruptionCount { entry.sleepInterruptionCount = interruptions }
+}
+
+private func applySleepScore(for entry: DailyEntry, data: SnapshotData, context: ModelContext) throws {
+    guard data.sleepHours != nil else { return }
+    let calendar = Calendar.current
+    let entryDate = entry.date
+    let thirteenDaysAgo = calendar.date(byAdding: .day, value: -13, to: entryDate) ?? entryDate
+    let recentDescriptor = FetchDescriptor<DailyEntry>(
+        predicate: #Predicate { $0.date >= thirteenDaysAgo && $0.date < entryDate },
+        sortBy: [SortDescriptor(\.date, order: .reverse)]
+    )
+    let recentEntries = try context.fetch(recentDescriptor)
+    entry.sleepScore = SleepScoreService.computeScore(for: entry, recentEntries: recentEntries)?.total
+}
+
+private func applyScreenTimeData(from data: SnapshotData, to entry: DailyEntry) {
+    if let seconds = data.screenTimeSeconds { entry.screenTimeSeconds = seconds }
+    if let pickups = data.pickups { entry.pickups = pickups }
 }

@@ -13,7 +13,7 @@ import SwiftUI
     ///   12s → week       (WeekSummaryView)
     ///   16s → confirmation (CheckInConfirmationView)
     struct WatchScreenshotView: View {
-        static let viewDuration: UInt64 = 4_000_000_000  // 4 seconds in nanoseconds
+        static let viewDuration: UInt64 = 4_000_000_000 // 4 seconds in nanoseconds
         static let allViews = ["today", "checkin", "feeling", "week", "confirmation"]
 
         @State private var currentIndex = 0

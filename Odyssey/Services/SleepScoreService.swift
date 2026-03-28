@@ -13,18 +13,18 @@ enum SleepScoreService {
 
     static func label(for score: Int) -> String {
         switch score {
-        case 0...40: return "Low"
-        case 41...60: return "Fair"
-        case 61...80: return "Good"
+        case 0 ... 40: return "Low"
+        case 41 ... 60: return "Fair"
+        case 61 ... 80: return "Good"
         default: return "Excellent"
         }
     }
 
     static func color(for score: Int) -> Color {
         switch score {
-        case 0...40: return .coralRed
-        case 41...60: return .accentAmber
-        case 61...80: return .successGreen
+        case 0 ... 40: return .coralRed
+        case 41 ... 60: return .accentAmber
+        case 61 ... 80: return .successGreen
         default: return .accentTeal
         }
     }
@@ -122,9 +122,9 @@ enum SleepScoreService {
 
         // Adjust for overnight: treat hours 18-23 as negative offsets from midnight
         if hour >= 18 {
-            return totalMinutes - 1440.0  // e.g., 23:00 → -60
+            return totalMinutes - 1440.0 // e.g., 23:00 → -60
         }
-        return totalMinutes  // e.g., 01:00 → 60
+        return totalMinutes // e.g., 01:00 → 60
     }
 
     // MARK: - Interruptions (20 pts)

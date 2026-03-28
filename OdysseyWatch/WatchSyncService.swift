@@ -104,7 +104,14 @@ final class WatchSyncService {
         let repo = DailyEntryRepository(context: modelContext)
         let entry = try repo.fetchOrCreate(for: date)
 
-        // Field-level merge: prefer non-empty values
+        try await mergeTextFields(from: remote, to: entry)
+        mergeMetricFields(from: remote, to: entry, formatter: formatter)
+
+        entry.lastSyncedAt = Date()
+        entry.needsSync = false
+    }
+
+    private func mergeTextFields(from remote: SyncDownloadEntry, to entry: DailyEntry) async throws {
         if let journal = remote.journalEntry, entry.journalEntry.isEmpty {
             entry.journalEntry = try await encryption.decrypt(journal)
         }
@@ -120,17 +127,14 @@ final class WatchSyncService {
         if let feeling = remote.singleWordFeeling, entry.singleWordFeeling.isEmpty {
             entry.singleWordFeeling = try await encryption.decrypt(feeling)
         }
+    }
 
-        // Prefer remote metric values if local has no user submission
+    private func mergeMetricFields(from remote: SyncDownloadEntry, to entry: DailyEntry, formatter: ISO8601DateFormatter) {
         if !entry.hasUserSubmitted, remote.feeling != 0 {
             entry.feeling = remote.feeling
         }
-        if entry.stepCount == nil {
-            entry.stepCount = remote.stepCount
-        }
-        if entry.sleepHours == nil {
-            entry.sleepHours = remote.sleepHours
-        }
+        if entry.stepCount == nil { entry.stepCount = remote.stepCount }
+        if entry.sleepHours == nil { entry.sleepHours = remote.sleepHours }
         if entry.sleepREMHours == nil { entry.sleepREMHours = remote.sleepREMHours }
         if entry.sleepDeepHours == nil { entry.sleepDeepHours = remote.sleepDeepHours }
         if entry.sleepCoreHours == nil { entry.sleepCoreHours = remote.sleepCoreHours }
@@ -140,8 +144,5 @@ final class WatchSyncService {
         }
         if entry.sleepInterruptionCount == nil { entry.sleepInterruptionCount = remote.sleepInterruptionCount }
         if entry.sleepScore == nil { entry.sleepScore = remote.sleepScore }
-
-        entry.lastSyncedAt = Date()
-        entry.needsSync = false
     }
 }

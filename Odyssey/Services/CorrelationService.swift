@@ -55,7 +55,7 @@ enum CorrelationService {
         [.sleepScore, .sleepREM],
         [.sleepScore, .sleepDeep],
         [.sleepScore, .sleepCore],
-        [.sleepScore, .sleepRating],
+        [.sleepScore, .sleepRating]
     ]
 
     /// Finds the strongest correlation among all metric pairs.

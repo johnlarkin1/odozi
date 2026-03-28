@@ -168,11 +168,9 @@ final class AuthManager {
         isSignedIn = false
         user = nil
 
-        do { try KeychainService.deleteAppleUserID() }
-        catch { logger.error("Failed to delete Apple user ID during sign-out: \(error)") }
+        do { try KeychainService.deleteAppleUserID() } catch { logger.error("Failed to delete Apple user ID during sign-out: \(error)") }
 
-        do { try KeychainService.deleteAuthToken() }
-        catch { logger.error("Failed to delete auth token during sign-out: \(error)") }
+        do { try KeychainService.deleteAuthToken() } catch { logger.error("Failed to delete auth token during sign-out: \(error)") }
 
         // TODO: Move name/email to Keychain so they survive reinstall (Apple only sends these once)
         UserDefaults.standard.removeObject(forKey: Self.userEmailKey)

@@ -401,7 +401,7 @@ struct SleepArchitectureDetailView: View {
             .chartForegroundStyleScale([
                 "Core": Color.accentAmber,
                 "Deep": Color.accentTeal,
-                "REM": Color.cosmicPurple,
+                "REM": Color.cosmicPurple
             ])
             .chartYAxisLabel("Hours")
             .frame(height: 220)
@@ -418,7 +418,7 @@ struct SleepArchitectureDetailView: View {
             ("Avg REM", .sleepREM),
             ("Avg Deep", .sleepDeep),
             ("Avg Core", .sleepCore),
-            ("Avg Score", .sleepScore),
+            ("Avg Score", .sleepScore)
         ]
 
         LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 12) {

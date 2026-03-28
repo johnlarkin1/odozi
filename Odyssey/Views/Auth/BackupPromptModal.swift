@@ -99,9 +99,13 @@ struct BackupPromptModal: View {
                 .fontWeight(.medium)
                 .foregroundStyle(Color.accentTeal)
 
-            Text("Odyssey syncs through iCloud, which requires an Apple account. This keeps your journal data within Apple's secure ecosystem -- no third-party servers involved.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            Text(
+                "Odyssey syncs through iCloud, which requires an Apple account. "
+                    + "This keeps your journal data within Apple's secure ecosystem "
+                    + "-- no third-party servers involved."
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
         }
         .padding(12)
         .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 10))

@@ -2,7 +2,7 @@ import SwiftUI
 
 struct WeekPulseView: View {
     let weekEntries: [DailyEntry?]
-    var onTapEntry: ((DailyEntry) -> Void)? = nil
+    var onTapEntry: ((DailyEntry) -> Void)?
     var animateIn: Bool = false
 
     @State private var dotsVisible = false

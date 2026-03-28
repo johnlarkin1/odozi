@@ -2,7 +2,6 @@
 import XCTest
 
 final class SleepScoreServiceTests: XCTestCase {
-
     // MARK: - Duration Points (50 max)
 
     func testDurationZeroHours() {
