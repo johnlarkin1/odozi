@@ -3,7 +3,6 @@ import SwiftUI
 
 struct ScreenTimeDataExtractor: View {
     @Environment(\.scenePhase) private var scenePhase
-    @State private var context: DeviceActivityReport.Context = .init(rawValue: "Total Activity")
     @State private var filter = DeviceActivityFilter(
         segment: .daily(
             during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
@@ -11,15 +10,17 @@ struct ScreenTimeDataExtractor: View {
         users: .all,
         devices: .init([.iPhone, .iPad])
     )
+    @State private var refreshID = UUID()
 
     var body: some View {
-        // Hidden zero-size view that triggers data extraction
-        DeviceActivityReport(context, filter: filter)
-            .frame(width: 0, height: 0)
-            .opacity(0)
+        DeviceActivityReport(.init(rawValue: "Total Activity"), filter: filter)
+            .id(refreshID)
+            .frame(width: 1, height: 1)
+            .clipped()
+            .allowsHitTesting(false)
+            .accessibilityHidden(true)
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
-                    // Refresh filter with today's date interval to avoid stale data after midnight
                     filter = DeviceActivityFilter(
                         segment: .daily(
                             during: Calendar.current.dateInterval(of: .day, for: .now) ?? DateInterval()
@@ -27,6 +28,7 @@ struct ScreenTimeDataExtractor: View {
                         users: .all,
                         devices: .init([.iPhone, .iPad])
                     )
+                    refreshID = UUID()
                 }
             }
     }

@@ -8,7 +8,8 @@ enum SharedDefaults {
 
     static var suite: UserDefaults {
         guard let defaults = UserDefaults(suiteName: suiteName) else {
-            logger.warning("App Group UserDefaults unavailable, falling back to .standard")
+            assertionFailure("App Group '\(suiteName)' unavailable — check entitlements")
+            logger.fault("App Group UserDefaults unavailable, falling back to .standard")
             return .standard
         }
         return defaults
@@ -26,6 +27,7 @@ enum SharedDefaults {
     }
 
     static func getScreenTime() -> (seconds: Double, pickups: Int)? {
+        suite.synchronize() // Force cross-process read from disk
         let lastUpdated = suite.double(forKey: screenTimeLastUpdatedKey)
         guard lastUpdated > 0 else { return nil }
 

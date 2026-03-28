@@ -126,12 +126,9 @@ struct TodayView: View {
                     }
                     .onChange(of: scenePhase) { _, newPhase in
                         if newPhase == .active {
-                            Task {
-                                try? await Task.sleep(for: .seconds(4))
-                                viewModel?.checkForTodayEntry()
-                                todayEntry = viewModel?.fetchTodayEntry()
-                                insightsViewModel?.loadEntries()
-                            }
+                            viewModel?.checkForTodayEntry()
+                            todayEntry = viewModel?.fetchTodayEntry()
+                            insightsViewModel?.loadEntries()
                         }
                     }
             #if os(iOS)
