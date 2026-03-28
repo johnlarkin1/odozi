@@ -46,7 +46,7 @@ function Lightbox({
       {/* Close button */}
       <button
         onClick={onClose}
-        className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-2 text-star-white/80 transition hover:bg-white/20 hover:text-star-white"
+        className="absolute right-4 top-4 z-10 rounded-full bg-white/10 p-3 text-star-white/80 transition hover:bg-white/20 hover:text-star-white"
         aria-label="Close lightbox"
       >
         <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
@@ -276,7 +276,7 @@ export function HeroSection() {
             <button
               key={shot.src}
               onClick={() => scrollToIndex(i)}
-              className={`rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
+              className={`min-h-11 rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
                 activeIndex === i
                   ? "bg-white/15 text-star-white"
                   : "text-star-white/40 hover:text-star-white/60"
