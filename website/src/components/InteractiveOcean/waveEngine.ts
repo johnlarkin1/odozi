@@ -3,9 +3,9 @@ import {
   type BoatState,
   type MouseState,
   WAVE_LAYERS,
+  SUBTLE_WAVE_LAYERS,
   COLORS,
   BOAT_WIDTH,
-  BOAT_SPEED,
   BOAT_ACCEL_LERP,
   TILT_LERP,
   MAX_TILT,
@@ -105,6 +105,7 @@ function drawWaveBand(
   opacity: number,
   phaseOffset: number,
   mouse: MouseState | null,
+  layers: WaveLayer[] = WAVE_LAYERS,
 ) {
   ctx.save();
   ctx.globalAlpha = opacity;
@@ -116,7 +117,7 @@ function drawWaveBand(
     const waveY =
       baselineY +
       verticalOffset +
-      getWaveHeightWithMouse(x, time, width, mouse, WAVE_LAYERS, phaseOffset);
+      getWaveHeightWithMouse(x, time, width, mouse, layers, phaseOffset);
     ctx.lineTo(x, waveY);
   }
 
@@ -133,6 +134,7 @@ function drawFoam(
   baselineY: number,
   phaseOffset: number,
   mouse: MouseState | null,
+  layers: WaveLayer[] = WAVE_LAYERS,
 ) {
   ctx.save();
 
@@ -149,9 +151,9 @@ function drawFoam(
     if (foamNoise < 0.3) continue;
 
     const waveY =
-      baselineY + getWaveHeightWithMouse(x, time, width, mouse, WAVE_LAYERS, phaseOffset);
+      baselineY + getWaveHeightWithMouse(x, time, width, mouse, layers, phaseOffset);
     const nextWaveY =
-      baselineY + getWaveHeightWithMouse(x + 3, time, width, mouse, WAVE_LAYERS, phaseOffset);
+      baselineY + getWaveHeightWithMouse(x + 3, time, width, mouse, layers, phaseOffset);
 
     ctx.globalAlpha = Math.min(foamNoise * 0.5, 0.35);
     ctx.beginPath();
@@ -164,7 +166,7 @@ function drawFoam(
   ctx.fillStyle = "white";
   for (let x = 10; x < width; x += 60 + Math.sin(x * 0.1) * 20) {
     const waveY =
-      baselineY + getWaveHeightWithMouse(x, time, width, mouse, WAVE_LAYERS, phaseOffset);
+      baselineY + getWaveHeightWithMouse(x, time, width, mouse, layers, phaseOffset);
     const bubbleNoise = Math.sin(x * 0.03 + time * 1.5);
     if (bubbleNoise < 0.2) continue;
 
@@ -233,26 +235,38 @@ export function renderOcean(
   height: number,
   phaseOffset: number,
   mouse: MouseState | null,
+  subtle: boolean = false,
 ) {
   ctx.clearRect(0, 0, width, height);
 
-  const baselineY = height * 0.45;
+  if (subtle) {
+    // Subtle mode: different wave shape, slower, softer — pure rolling swells
+    const baselineY = height * 0.5;
 
-  // Back wave
-  drawWaveBand(ctx, time, width, height, baselineY, -8, COLORS.cosmicPurple, 0.08, phaseOffset, mouse);
+    drawWaveBand(ctx, time, width, height, baselineY, -5, COLORS.cosmicPurple, 0.05, phaseOffset, mouse, SUBTLE_WAVE_LAYERS);
+    drawWaveBand(ctx, time, width, height, baselineY, -2, COLORS.accentTeal, 0.06, phaseOffset + 0.8, mouse, SUBTLE_WAVE_LAYERS);
+    drawWaveBand(ctx, time, width, height, baselineY, 0, COLORS.accentTeal, 0.10, phaseOffset, mouse, SUBTLE_WAVE_LAYERS);
 
-  // Mid wave
-  drawWaveBand(ctx, time, width, height, baselineY, -3, COLORS.cosmicPurple, 0.06, phaseOffset + 0.5, mouse);
-  drawWaveBand(ctx, time, width, height, baselineY, -3, COLORS.accentTeal, 0.08, phaseOffset + 0.5, mouse);
+    drawFoam(ctx, time, width, baselineY, phaseOffset, mouse, SUBTLE_WAVE_LAYERS);
+  } else {
+    const baselineY = height * 0.45;
 
-  // Front wave
-  drawWaveBand(ctx, time, width, height, baselineY, 0, COLORS.accentTeal, 0.18, phaseOffset, mouse);
+    // Back wave
+    drawWaveBand(ctx, time, width, height, baselineY, -8, COLORS.cosmicPurple, 0.08, phaseOffset, mouse);
 
-  // Foam
-  drawFoam(ctx, time, width, baselineY, phaseOffset, mouse);
+    // Mid wave
+    drawWaveBand(ctx, time, width, height, baselineY, -3, COLORS.cosmicPurple, 0.06, phaseOffset + 0.5, mouse);
+    drawWaveBand(ctx, time, width, height, baselineY, -3, COLORS.accentTeal, 0.08, phaseOffset + 0.5, mouse);
 
-  // Mouse ripple glow
-  drawMouseRipple(ctx, mouse, time);
+    // Front wave
+    drawWaveBand(ctx, time, width, height, baselineY, 0, COLORS.accentTeal, 0.18, phaseOffset, mouse);
+
+    // Foam
+    drawFoam(ctx, time, width, baselineY, phaseOffset, mouse);
+
+    // Mouse ripple glow
+    drawMouseRipple(ctx, mouse, time);
+  }
 }
 
 // ── Boat rendering ─────────────────────────────────────────

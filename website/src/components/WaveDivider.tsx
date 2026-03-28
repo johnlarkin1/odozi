@@ -1,23 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useSyncExternalStore } from "react";
 import { InteractiveOcean } from "./InteractiveOcean";
+
+const subscribe = () => () => {};
+const getCanvasSupport = () => typeof HTMLCanvasElement !== "undefined";
+const getServerSnapshot = () => false;
 
 export function WaveDivider({
   variant = 0,
   overlap = false,
+  interactive = true,
 }: {
   variant?: number;
   overlap?: boolean;
+  interactive?: boolean;
 }) {
-  const [canUseCanvas, setCanUseCanvas] = useState(false);
-
-  useEffect(() => {
-    setCanUseCanvas(typeof HTMLCanvasElement !== "undefined");
-  }, []);
+  const canUseCanvas = useSyncExternalStore(subscribe, getCanvasSupport, getServerSnapshot);
 
   if (!canUseCanvas) return <StaticWaveDivider />;
-  return <InteractiveOcean variant={variant} overlap={overlap} />;
+  return <InteractiveOcean variant={variant} overlap={overlap} interactive={interactive} />;
 }
 
 /** Static SVG fallback for SSR and no-canvas environments */

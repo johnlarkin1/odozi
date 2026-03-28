@@ -83,11 +83,11 @@ function Lightbox({
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
         transition={{ duration: 0.2 }}
-        className="relative max-h-[90vh] max-w-[90vw] sm:max-w-[440px]"
+        className="relative max-w-[90vw] sm:max-w-[440px]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="overflow-hidden rounded-[36px] border-2 border-white/15 bg-card-surface/80 p-2 shadow-2xl sm:rounded-[44px] sm:p-3">
-          <div className="relative overflow-hidden rounded-[28px] sm:rounded-[36px]" style={{ aspectRatio: "9 / 19.5" }}>
+          <div className="relative mx-auto max-h-[75vh] overflow-hidden rounded-[28px] sm:max-h-[80vh] sm:rounded-[36px]" style={{ aspectRatio: "9 / 19.5" }}>
             <Image
               src={shot.src}
               alt={shot.alt}

@@ -12,11 +12,11 @@ export default function Home() {
   return (
     <>
       <HeroSection />
-      <WaveDivider variant={2} overlap />
+      <WaveDivider variant={2} overlap interactive />
       <WhyDownloadSection />
-      <WaveDivider variant={0} />
+      <WaveDivider variant={0} interactive={false} />
       <WhatYouTrackSection />
-      <WaveDivider variant={1} />
+      <WaveDivider variant={1} interactive={false} />
       <WhatYouGetBackSection />
       <PrivacySection />
       <FAQSection />
