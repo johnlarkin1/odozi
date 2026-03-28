@@ -1,6 +1,9 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { APP_STORE_URL, GITHUB_URL, footer } from "@/content";
+import { trackEvent } from "@/lib/analytics";
 
 export function Footer() {
   return (
@@ -28,23 +31,23 @@ export function Footer() {
 
           <div className="flex flex-col gap-2 text-sm">
             <p className="font-semibold text-star-white">Links</p>
-            <Link href="/privacy" className="text-star-white/60 transition hover:text-accent-teal">
+            <Link href="/privacy" onClick={() => trackEvent("cta_clicked", { label: "privacy_policy", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               Privacy Policy
             </Link>
-            <Link href="/terms" className="text-star-white/60 transition hover:text-accent-teal">
+            <Link href="/terms" onClick={() => trackEvent("cta_clicked", { label: "terms_of_service", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               Terms of Service
             </Link>
-            <Link href="/#faq" className="text-star-white/60 transition hover:text-accent-teal">
+            <Link href="/#faq" onClick={() => trackEvent("cta_clicked", { label: "faq", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               FAQ
             </Link>
-            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" className="text-star-white/60 transition hover:text-accent-teal">
+            <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("cta_clicked", { label: "github", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               GitHub
             </a>
           </div>
 
           <div className="flex flex-col gap-2 text-sm">
             <p className="font-semibold text-star-white">Contact</p>
-            <a href="mailto:john@odozi.app" className="text-star-white/60 transition hover:text-accent-teal">
+            <a href="mailto:john@odozi.app" onClick={() => trackEvent("cta_clicked", { label: "email_contact", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               john@odozi.app
             </a>
           </div>
@@ -55,6 +58,7 @@ export function Footer() {
               href={APP_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent("cta_clicked", { label: "app_store", location: "footer" })}
               className="inline-flex w-fit items-center gap-2 rounded-lg border border-white/10 px-3 py-2 text-xs text-star-white/70 transition hover:border-white/20 hover:text-star-white"
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">

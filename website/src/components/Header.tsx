@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { APP_STORE_URL } from "@/content";
+import { trackEvent } from "@/lib/analytics";
 
 function LogoMark() {
   return (
@@ -32,16 +33,17 @@ export function Header() {
 
         {/* Desktop nav */}
         <div className="hidden items-center gap-8 md:flex">
-          <Link href="/#features" className="text-sm text-star-white/70 transition hover:text-accent-teal">
+          <Link href="/#features" onClick={() => trackEvent("nav_clicked", { label: "Features", destination: "/#features" })} className="text-sm text-star-white/70 transition hover:text-accent-teal">
             Features
           </Link>
-          <Link href="/#faq" className="text-sm text-star-white/70 transition hover:text-accent-teal">
+          <Link href="/#faq" onClick={() => trackEvent("nav_clicked", { label: "FAQ", destination: "/#faq" })} className="text-sm text-star-white/70 transition hover:text-accent-teal">
             FAQ
           </Link>
           <a
             href={APP_STORE_URL}
             target="_blank"
             rel="noopener noreferrer"
+            onClick={() => trackEvent("cta_clicked", { label: "app_store", location: "header" })}
             className="rounded-full bg-star-white px-4 py-2 text-sm font-semibold text-deep-space transition hover:bg-star-white/90"
           >
             Download
@@ -64,16 +66,17 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-white/10 bg-deep-space px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            <Link href="/#features" onClick={() => setMobileOpen(false)} className="text-star-white/70">
+            <Link href="/#features" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "Features", destination: "/#features" }); }} className="text-star-white/70">
               Features
             </Link>
-            <Link href="/#faq" onClick={() => setMobileOpen(false)} className="text-star-white/70">
+            <Link href="/#faq" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "FAQ", destination: "/#faq" }); }} className="text-star-white/70">
               FAQ
             </Link>
             <a
               href={APP_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent("cta_clicked", { label: "app_store", location: "header" })}
               className="rounded-full bg-star-white px-4 py-2 text-center text-sm font-semibold text-deep-space"
             >
               Download

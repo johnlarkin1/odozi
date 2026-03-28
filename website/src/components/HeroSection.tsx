@@ -5,6 +5,7 @@ import { useRef, useState, useCallback, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { CosmicBackground } from "./CosmicBackground";
 import { APP_STORE_URL, GITHUB_URL, hero, screenshots } from "@/content";
+import { trackEvent } from "@/lib/analytics";
 
 function Lightbox({
   index,
@@ -148,6 +149,7 @@ export function HeroSection() {
 
   const handleItemClick = useCallback((index: number) => {
     if (index === activeIndex) {
+      trackEvent("screenshot_viewed", { index, label: screenshots[index].label, action: "lightbox_open" });
       setLightboxIndex(index);
     } else {
       scrollToIndex(index);
@@ -201,6 +203,7 @@ export function HeroSection() {
               href={APP_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent("cta_clicked", { label: "app_store", location: "hero" })}
               className="inline-flex items-center gap-2 rounded-full bg-star-white px-5 py-2.5 text-sm font-semibold text-deep-space transition hover:bg-star-white/90 sm:px-6 sm:py-3 sm:text-base"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
@@ -212,6 +215,7 @@ export function HeroSection() {
               href={GITHUB_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent("cta_clicked", { label: "github", location: "hero" })}
               className="inline-flex items-center gap-2 rounded-full bg-star-white px-5 py-2.5 text-sm font-semibold text-deep-space transition hover:bg-star-white/90 sm:px-6 sm:py-3 sm:text-base"
             >
               <svg className="h-5 w-5" viewBox="0 0 24 24" fill="currentColor">
