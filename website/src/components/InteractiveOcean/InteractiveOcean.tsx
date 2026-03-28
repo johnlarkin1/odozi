@@ -8,11 +8,20 @@ interface InteractiveOceanProps {
   overlap?: boolean;
 }
 
+function useIsTouchDevice() {
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    setIsTouch("ontouchstart" in window || navigator.maxTouchPoints > 0);
+  }, []);
+  return isTouch;
+}
+
 export function InteractiveOcean({ variant = 0, overlap = false }: InteractiveOceanProps) {
   const phaseOffset = variant * 2.5;
   const [showHint, setShowHint] = useState(false);
   const hintTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
   const hintObserverRef = useRef<IntersectionObserver>(undefined);
+  const isTouch = useIsTouchDevice();
 
   const hideHint = useCallback(() => {
     setShowHint(false);
@@ -26,6 +35,8 @@ export function InteractiveOcean({ variant = 0, overlap = false }: InteractiveOc
     handleKeyUp,
     handleMouseMove,
     handleMouseLeave,
+    handleTouchMove,
+    handleTouchEnd,
   } = useOceanSimulation({
     phaseOffset,
     onFirstInteraction: hideHint,
@@ -70,6 +81,8 @@ export function InteractiveOcean({ variant = 0, overlap = false }: InteractiveOc
       onKeyUp={handleKeyUp}
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <canvas
         ref={canvasRef}
@@ -86,7 +99,7 @@ export function InteractiveOcean({ variant = 0, overlap = false }: InteractiveOc
           transition-opacity duration-700
           ${showHint ? "opacity-100" : "opacity-0"}`}
       >
-        Move your mouse over the waves
+        {isTouch ? "Tap and drag across the waves" : "Move your mouse over the waves"}
       </span>
     </div>
   );

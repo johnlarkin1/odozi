@@ -55,6 +55,20 @@ body {
   display: none;
 }
 
+/* Reduced motion: disable animations for users who prefer it */
+@media (prefers-reduced-motion: reduce) {
+  .star,
+  .star-bright {
+    animation: none;
+    opacity: 0.4;
+  }
+
+  * {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
 /* Prose overrides for legal pages */
 .prose {
   --tw-prose-body: var(--color-star-white);

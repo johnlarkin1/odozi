@@ -158,6 +158,27 @@ export function useOceanSimulation({
     mouseRef.current.active = false;
   }, []);
 
+  // Touch handlers
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const container = containerRef.current;
+    if (!container) return;
+    const touch = e.touches[0];
+    const rect = container.getBoundingClientRect();
+    mouseRef.current.x = touch.clientX - rect.left;
+    mouseRef.current.y = touch.clientY - rect.top;
+    mouseRef.current.active = true;
+    mouseRef.current.lastMoveTime = timeRef.current;
+
+    if (!hasInteractedRef.current) {
+      hasInteractedRef.current = true;
+      onFirstInteractionRef.current?.();
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    mouseRef.current.active = false;
+  }, []);
+
   // Setup: canvas sizing, intersection observer, resize observer
   useEffect(() => {
     setupCanvas();
@@ -200,5 +221,7 @@ export function useOceanSimulation({
     handleKeyUp,
     handleMouseMove,
     handleMouseLeave,
+    handleTouchMove,
+    handleTouchEnd,
   };
 }

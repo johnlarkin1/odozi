@@ -53,7 +53,7 @@ export function Header() {
         {/* Mobile hamburger */}
         <button
           onClick={() => setMobileOpen(!mobileOpen)}
-          className="flex flex-col gap-1.5 md:hidden"
+          className="flex min-h-11 min-w-11 flex-col items-center justify-center gap-1.5 md:hidden"
           aria-label="Toggle menu"
         >
           <span className={`block h-0.5 w-6 bg-star-white transition ${mobileOpen ? "translate-y-2 rotate-45" : ""}`} />
@@ -66,10 +66,10 @@ export function Header() {
       {mobileOpen && (
         <div className="border-t border-white/10 bg-deep-space px-6 py-4 md:hidden">
           <div className="flex flex-col gap-4">
-            <Link href="/#features" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "Features", destination: "/#features" }); }} className="text-star-white/70">
+            <Link href="/#features" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "Features", destination: "/#features" }); }} className="py-2 text-star-white/70">
               Features
             </Link>
-            <Link href="/#faq" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "FAQ", destination: "/#faq" }); }} className="text-star-white/70">
+            <Link href="/#faq" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "FAQ", destination: "/#faq" }); }} className="py-2 text-star-white/70">
               FAQ
             </Link>
             <a

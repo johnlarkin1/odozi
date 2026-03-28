@@ -117,7 +117,7 @@ export function ScreenshotCarousel() {
         <div
           ref={scrollRef}
           onScroll={handleScroll}
-          className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-[calc(50vw-160px)] pb-4 sm:px-[calc(50vw-190px)] scrollbar-hide"
+          className="flex snap-x snap-mandatory gap-6 overflow-x-auto px-[calc(50vw-140px)] pb-4 sm:px-[calc(50vw-190px)] scrollbar-hide"
           style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
         >
           {screenshots.map((shot, i) => (
@@ -128,7 +128,7 @@ export function ScreenshotCarousel() {
               onClick={() => scrollToIndex(i)}
             >
               <div
-                className={`h-[640px] w-[320px] rounded-[44px] border-2 p-3 shadow-2xl backdrop-blur-sm transition-all duration-300 sm:h-[740px] sm:w-[370px] ${
+                className={`h-[560px] w-[280px] rounded-[44px] border-2 p-3 shadow-2xl backdrop-blur-sm transition-all duration-300 sm:h-[640px] sm:w-[320px] ${
                   activeIndex === i
                     ? "border-white/20 bg-card-surface/60 scale-100"
                     : "border-white/5 bg-card-surface/30 scale-95 opacity-60"
