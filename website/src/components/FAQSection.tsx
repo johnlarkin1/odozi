@@ -53,7 +53,7 @@ export function FAQSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             Frequently asked{" "}
             <span className="text-accent-amber">questions.</span>
           </h2>

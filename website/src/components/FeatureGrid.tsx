@@ -96,7 +96,7 @@ export function ScreenshotCarousel() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             See it in{" "}
             <span className="text-accent-teal">action.</span>
           </h2>
@@ -182,7 +182,7 @@ export function WhatYouTrackSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             {howItWorks.heading}{" "}
             <span className="text-accent-teal">{howItWorks.headingAccent}</span>
           </h2>
@@ -225,7 +225,7 @@ export function WhatYouTrackSection() {
           transition={{ duration: 0.6 }}
           className="mt-24 text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             {whatYouTrack.heading}{" "}
             <span className="text-accent-amber">{whatYouTrack.headingAccent}</span>
           </h2>
@@ -288,7 +288,7 @@ export function WhatYouGetBackSection() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             {whatYouGetBack.heading}{" "}
             <span className="text-cosmic-purple">{whatYouGetBack.headingAccent}</span>
           </h2>

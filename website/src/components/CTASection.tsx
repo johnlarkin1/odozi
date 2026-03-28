@@ -22,7 +22,7 @@ export function PrivacySection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             {privacy.heading}{" "}
             <span className="text-success-green">{privacy.headingAccent}</span>
           </h2>
@@ -87,7 +87,7 @@ export function FinalCTASection() {
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
         >
-          <h2 className="text-3xl font-bold sm:text-5xl md:text-6xl">
+          <h2 className="font-heading text-3xl font-bold sm:text-5xl md:text-6xl">
             {finalCTA.heading}{" "}
             <span className="bg-gradient-to-r from-accent-amber via-cosmic-purple to-accent-teal bg-clip-text text-transparent">
               {finalCTA.headingAccent}

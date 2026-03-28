@@ -15,7 +15,7 @@ export function HowItWorks() {
           transition={{ duration: 0.6 }}
           className="text-center"
         >
-          <h2 className="text-4xl font-bold sm:text-5xl">
+          <h2 className="font-heading text-4xl font-bold sm:text-5xl">
             {howItWorks.heading}{" "}
             <span className="text-accent-teal">{howItWorks.headingAccent}</span>
           </h2>
