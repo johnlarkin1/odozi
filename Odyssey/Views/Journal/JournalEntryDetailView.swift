@@ -67,6 +67,7 @@ struct JournalEntryDetailView: View {
                 }
 
                 // Background data
+                // swiftlint:disable:next line_length
                 if entry.stepCount != nil || entry.screenTimeSeconds != nil || entry.latitude != nil || entry.didWorkout || entry.hasSleepStageData {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Background Data")
@@ -172,8 +173,7 @@ struct JournalEntryDetailView: View {
                             set: { newValue in
                                 if newValue && entry.mapThumbnailData == nil {
                                     if let firstPhoto = entry.attachedPhotoData?.first,
-                                       let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
-                                    {
+                                       let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto) {
                                         entry.mapThumbnailData = thumbnail
                                     } else {
                                         return

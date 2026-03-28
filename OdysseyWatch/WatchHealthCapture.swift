@@ -17,6 +17,7 @@ struct WatchHealthCapture {
         }
     }
 
+    // swiftlint:disable:next cyclomatic_complexity
     func captureHealthData() async {
         let today = Date()
         let repo = DailyEntryRepository(context: modelContext)

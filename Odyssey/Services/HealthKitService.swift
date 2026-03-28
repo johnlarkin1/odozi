@@ -248,6 +248,7 @@ actor HealthKitService {
 
     // MARK: - Workout Helpers
 
+    // swiftlint:disable:next cyclomatic_complexity
     static func workoutActivityName(_ type: HKWorkoutActivityType) -> String {
         switch type {
         case .running: return "Running"

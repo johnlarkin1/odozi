@@ -152,7 +152,10 @@ actor BackgroundSnapshotService {
             logger.error("Average heart rate fetch failed: \(error)")
         }
 
-        return HealthData(steps: steps, distance: distance, sleep: sleep, workouts: workouts, restingHeartRate: restingHR, averageHeartRate: averageHR)
+        return HealthData(
+            steps: steps, distance: distance, sleep: sleep,
+            workouts: workouts, restingHeartRate: restingHR, averageHeartRate: averageHR
+        )
     }
 
     private func readScreenTimeFromDefaults() -> (seconds: Double, pickups: Int)? {
