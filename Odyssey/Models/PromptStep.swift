@@ -16,7 +16,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .mood: return "How are you feeling?"
-        case .feeling: return "One word to describe today"
+        case .feeling: return "Capture your vibe"
         case .sleep: return "How did you sleep?"
         case .gratitude: return "What are you grateful for?"
         case .win: return "What's your win today?"
@@ -30,7 +30,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .mood: return "Rate your overall mood"
-        case .feeling: return "Pick a word and a color"
+        case .feeling: return "Pick a word to describe today"
         case .sleep: return "Rate last night's sleep"
         case .gratitude: return "Something big or small"
         case .win: return "Celebrate an accomplishment"

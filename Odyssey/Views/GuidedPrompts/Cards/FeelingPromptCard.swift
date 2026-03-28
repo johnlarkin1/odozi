@@ -20,20 +20,6 @@ struct FeelingPromptCard: View {
             subtitle: PromptStep.feeling.subtitle
         ) {
             VStack(spacing: 24) {
-                TextField("One word...", text: $word)
-                    .font(.title2.bold())
-                    .fontDesign(.rounded)
-                    .multilineTextAlignment(.center)
-                    .textFieldStyle(.plain)
-                    .foregroundStyle(Color(hex: colorHex))
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.cardSurface)
-                    )
-                    .accessibilityLabel("Feeling word")
-                    .accessibilityHint("Enter a single word describing how you feel")
-
                 Text("Pick a color that fits")
                     .font(.subheadline)
                     .foregroundStyle(.secondary)
@@ -82,6 +68,20 @@ struct FeelingPromptCard: View {
                         .accessibilityValue(colorHex == option.hex ? "Selected" : "Not selected")
                     }
                 }
+
+                TextField("One word...", text: $word)
+                    .font(.title2.bold())
+                    .fontDesign(.rounded)
+                    .multilineTextAlignment(.center)
+                    .textFieldStyle(.plain)
+                    .foregroundStyle(Color(hex: colorHex))
+                    .padding()
+                    .background(
+                        RoundedRectangle(cornerRadius: 16)
+                            .fill(Color.cardSurface)
+                    )
+                    .accessibilityLabel("Feeling word")
+                    .accessibilityHint("Enter a single word describing how you feel")
             }
         }
     }
