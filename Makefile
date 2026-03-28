@@ -28,7 +28,7 @@ setup-simulator: ## Download iOS platform and create iPhone 16 simulator
 run: ## Build and run iOS app + Rust backend (Ctrl+C stops both)
 	@trap 'echo "\nStopping backend..."; kill $$SERVER_PID 2>/dev/null; exit 0' INT TERM; \
 	lsof -ti :$(SERVER_PORT) | xargs kill 2>/dev/null; sleep 0.5; \
-	xcrun simctl boot "iPhone 16" 2>/dev/null || true; \
+	xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true; \
 	open -a Simulator; \
 	echo "Starting backend server on port $(SERVER_PORT)..."; \
 	(cd $(SERVER_DIR) && cargo run) & \
@@ -55,17 +55,17 @@ run: ## Build and run iOS app + Rust backend (Ctrl+C stops both)
 	wait $$SERVER_PID
 
 run-app: ## Build and run iOS app only (uses Odyssey.xcconfig URL)
-	xcrun simctl boot "iPhone 16" 2>/dev/null || true
+	xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true
 	open -a Simulator
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' -derivedDataPath build build
 	xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Odyssey.app
 	xcrun simctl launch booted com.johnlarkin.Odyssey
 
 preview: ## Launch app in simulator with 30 days of seeded sample data
-	xcrun simctl boot "iPhone 16 Pro Max" 2>/dev/null || true
+	xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true
 	open -a Simulator
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) \
-		-destination 'platform=iOS Simulator,name=iPhone 16 Pro Max' -derivedDataPath build -quiet build
+		-destination '$(DESTINATION)' -derivedDataPath build -quiet build
 	xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Odyssey.app
 	xcrun simctl terminate booted com.johnlarkin.Odyssey 2>/dev/null || true
 	SIMCTL_CHILD_SCREENSHOT_MODE=1 xcrun simctl launch booted com.johnlarkin.Odyssey
