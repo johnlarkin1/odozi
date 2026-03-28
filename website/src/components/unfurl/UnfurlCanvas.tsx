@@ -25,7 +25,7 @@ const PARTICLE_COLORS = [
 ];
 
 // Boat travel: sails slowly left-to-right across the full canvas over ~12 seconds
-const BOAT_CYCLE_DURATION = 20;
+const BOAT_CYCLE_DURATION = 6;
 
 interface Star {
   x: number;

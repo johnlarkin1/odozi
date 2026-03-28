@@ -30,6 +30,7 @@ const UNFURLS_DIR = path.join(__dirname, "..", "public", "unfurls");
 
 const INPUTS = {
   mov: path.join(UNFURLS_DIR, "main_input.mov"),
+  movFast: path.join(UNFURLS_DIR, "main_input_fast.mov"),
   png: path.join(UNFURLS_DIR, "main_input.png"),
 };
 
@@ -42,12 +43,13 @@ const OUTPUTS = {
 };
 
 const PALETTE_PATH = "/tmp/odyssey-unfurl-palette.png";
+const SDR_INTERMEDIATE = "/tmp/odyssey-unfurl-sdr.mp4";
 
-function runFfmpeg(args, label) {
+function run(cmd, args, label) {
   console.log(`\n--- ${label} ---`);
-  console.log(`  $ ffmpeg ${args.join(" ")}\n`);
+  console.log(`  $ ${cmd} ${args.join(" ")}\n`);
   try {
-    execFileSync("ffmpeg", args, { stdio: "inherit" });
+    execFileSync(cmd, args, { stdio: "inherit" });
     console.log(`  Done.`);
   } catch (e) {
     console.error(`  FAILED: ${e.message}`);
@@ -55,11 +57,22 @@ function runFfmpeg(args, label) {
   }
 }
 
+function runFfmpeg(args, label) {
+  run("ffmpeg", args, label);
+}
+
 function checkPrerequisites() {
   try {
     execFileSync("ffmpeg", ["-version"], { stdio: "pipe" });
   } catch {
     console.error("Error: ffmpeg is not installed. Run: brew install ffmpeg");
+    process.exit(1);
+  }
+
+  try {
+    execFileSync("which", ["avconvert"], { stdio: "pipe" });
+  } catch {
+    console.error("Error: avconvert not found. This script requires macOS.");
     process.exit(1);
   }
 
@@ -79,39 +92,59 @@ function generateFromMov() {
     return;
   }
 
-  // MOV -> MP4 (h.264, yuv420p, faststart for web streaming)
-  runFfmpeg(
-    [
-      "-y", "-i", INPUTS.mov,
-      "-c:v", "libx264", "-preset", "medium", "-crf", "23",
-      "-pix_fmt", "yuv420p", "-movflags", "+faststart",
-      "-vf", "scale=1200:630:flags=lanczos", "-an", OUTPUTS.mp4,
-    ],
-    "MOV -> MP4",
+  // Saturation boost (1.4) + slight contrast bump (1.05) recovers vibrancy
+  // lost in the HDR→SDR conversion. Applied to both MP4 and GIF.
+  const colorBoost = "eq=saturation=1.4:contrast=1.05";
+
+  // MP4: HDR→SDR via avconvert, then color-boost. Uses main_input.mov.
+  run("avconvert",
+    ["--source", INPUTS.mov, "--output", SDR_INTERMEDIATE, "--preset", "Preset1920x1080", "--replace"],
+    "MOV -> SDR intermediate (avconvert)",
   );
 
-  // MOV -> GIF (two-pass: palette generation, then dithered GIF)
   runFfmpeg(
     [
-      "-y", "-i", INPUTS.mov,
-      "-vf", "fps=15,scale=1200:630:flags=lanczos,palettegen=stats_mode=diff",
+      "-y", "-i", SDR_INTERMEDIATE,
+      "-c:v", "libx264", "-preset", "slow", "-crf", "18",
+      "-pix_fmt", "yuv420p", "-movflags", "+faststart",
+      "-vf", `${colorBoost},scale=1200:630:flags=lanczos`,
+      "-an", OUTPUTS.mp4,
+    ],
+    "SDR -> MP4 (color-boosted)",
+  );
+
+  // GIF: Uses main_input_fast.mov (shorter, faster boat) for smaller file size.
+  const gifSource = fs.existsSync(INPUTS.movFast) ? INPUTS.movFast : INPUTS.mov;
+  const gifSourceName = path.basename(gifSource);
+  console.log(`\n  GIF source: ${gifSourceName}`);
+
+  const SDR_GIF_INTERMEDIATE = "/tmp/odyssey-unfurl-sdr-gif.mp4";
+  run("avconvert",
+    ["--source", gifSource, "--output", SDR_GIF_INTERMEDIATE, "--preset", "Preset1920x1080", "--replace"],
+    `${gifSourceName} -> SDR intermediate (avconvert)`,
+  );
+
+  runFfmpeg(
+    [
+      "-y", "-i", SDR_GIF_INTERMEDIATE,
+      "-vf", `${colorBoost},fps=24,scale=1200:630:flags=lanczos,palettegen=max_colors=256:stats_mode=diff`,
       PALETTE_PATH,
     ],
-    "GIF Pass 1: Generate palette",
+    "GIF Pass 1: Generate palette (color-boosted)",
   );
 
   runFfmpeg(
     [
-      "-y", "-i", INPUTS.mov, "-i", PALETTE_PATH,
-      "-lavfi", "fps=15,scale=1200:630:flags=lanczos[x];[x][1:v]paletteuse=dither=bayer:bayer_scale=5:diff_mode=rectangle",
+      "-y", "-i", SDR_GIF_INTERMEDIATE, "-i", PALETTE_PATH,
+      "-lavfi", `${colorBoost},fps=24,scale=1200:630:flags=lanczos[x];[x][1:v]paletteuse=dither=sierra2_4a:diff_mode=rectangle`,
       OUTPUTS.gif,
     ],
     "GIF Pass 2: Apply palette",
   );
 
-  // Clean up palette
-  if (fs.existsSync(PALETTE_PATH)) {
-    fs.unlinkSync(PALETTE_PATH);
+  // Clean up intermediates
+  for (const f of [PALETTE_PATH, SDR_INTERMEDIATE, SDR_GIF_INTERMEDIATE]) {
+    if (fs.existsSync(f)) fs.unlinkSync(f);
   }
 }
 
