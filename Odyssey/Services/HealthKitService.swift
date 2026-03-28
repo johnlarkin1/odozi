@@ -248,55 +248,27 @@ actor HealthKitService {
 
     // MARK: - Workout Helpers
 
+    // Unmapped types default to "Workout" with base intensity score 5
+    private static let activityNameMap: [HKWorkoutActivityType: String] = [
+        .running: "Running", .cycling: "Cycling", .walking: "Walking",
+        .hiking: "Hiking", .swimming: "Swimming", .yoga: "Yoga",
+        .traditionalStrengthTraining: "Strength", .functionalStrengthTraining: "Functional Strength",
+        .highIntensityIntervalTraining: "HIIT", .dance: "Dance", .cooldown: "Cooldown",
+        .coreTraining: "Core Training", .elliptical: "Elliptical", .rowing: "Rowing",
+        .stairClimbing: "Stair Climbing", .pilates: "Pilates", .basketball: "Basketball",
+        .soccer: "Soccer", .tennis: "Tennis", .martialArts: "Martial Arts",
+        .crossTraining: "Cross Training", .mixedCardio: "Cardio", .climbing: "Climbing",
+        .boxing: "Boxing", .kickboxing: "Kickboxing", .jumpRope: "Jump Rope",
+        .golf: "Golf", .surfingSports: "Surfing", .snowSports: "Snow Sports",
+        .skatingSports: "Skating", .paddleSports: "Paddle Sports", .badminton: "Badminton",
+        .volleyball: "Volleyball", .hockey: "Hockey", .tableTennis: "Table Tennis",
+        .handball: "Handball", .lacrosse: "Lacrosse", .rugby: "Rugby",
+        .wrestling: "Wrestling", .cricket: "Cricket", .gymnastics: "Gymnastics",
+        .fencing: "Fencing", .archery: "Archery", .fishing: "Fishing"
+    ]
+
     static func workoutActivityName(_ type: HKWorkoutActivityType) -> String {
-        switch type {
-        case .running: return "Running"
-        case .cycling: return "Cycling"
-        case .walking: return "Walking"
-        case .hiking: return "Hiking"
-        case .swimming: return "Swimming"
-        case .yoga: return "Yoga"
-        case .traditionalStrengthTraining: return "Strength"
-        case .functionalStrengthTraining: return "Functional Strength"
-        case .highIntensityIntervalTraining: return "HIIT"
-        case .dance: return "Dance"
-        case .cooldown: return "Cooldown"
-        case .coreTraining: return "Core Training"
-        case .elliptical: return "Elliptical"
-        case .rowing: return "Rowing"
-        case .stairClimbing: return "Stair Climbing"
-        case .pilates: return "Pilates"
-        case .basketball: return "Basketball"
-        case .soccer: return "Soccer"
-        case .tennis: return "Tennis"
-        case .martialArts: return "Martial Arts"
-        case .crossTraining: return "Cross Training"
-        case .mixedCardio: return "Cardio"
-        case .climbing: return "Climbing"
-        case .boxing: return "Boxing"
-        case .kickboxing: return "Kickboxing"
-        case .jumpRope: return "Jump Rope"
-        case .golf: return "Golf"
-        case .surfingSports: return "Surfing"
-        case .snowSports: return "Snow Sports"
-        case .skatingSports: return "Skating"
-        case .paddleSports: return "Paddle Sports"
-        case .badminton: return "Badminton"
-        case .volleyball: return "Volleyball"
-        case .hockey: return "Hockey"
-        case .tableTennis: return "Table Tennis"
-        case .handball: return "Handball"
-        case .lacrosse: return "Lacrosse"
-        case .rugby: return "Rugby"
-        case .wrestling: return "Wrestling"
-        case .cricket: return "Cricket"
-        case .gymnastics: return "Gymnastics"
-        case .fencing: return "Fencing"
-        case .archery: return "Archery"
-        case .fishing: return "Fishing"
-        // Unmapped types default to "Workout" with base intensity score 5
-        default: return "Workout"
-        }
+        activityNameMap[type] ?? "Workout"
     }
 
     static func computeIntensityScore(for workouts: [WorkoutSummary]) -> Int? {

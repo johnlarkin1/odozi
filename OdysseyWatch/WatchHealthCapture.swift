@@ -35,69 +35,10 @@ struct WatchHealthCapture {
             async let avgHRResult = healthKit.fetchAverageHeartRate(for: today)
             async let restingHRResult = healthKit.fetchRestingHeartRate(for: today)
 
-            do {
-                if let stepCount = try await stepsResult {
-                    entry.stepCount = stepCount
-                }
-            } catch {
-                logger.error("Steps fetch failed on Watch: \(error)")
-            }
-
-            do {
-                if let walkingDistance = try await distanceResult {
-                    entry.walkingDistanceMeters = walkingDistance
-                }
-            } catch {
-                logger.error("Walking distance fetch failed on Watch: \(error)")
-            }
-
-            do {
-                if let sleep = try await sleepResult {
-                    if let totalHours = sleep.totalHours { entry.sleepHours = totalHours }
-                    if let rem = sleep.remHours { entry.sleepREMHours = rem }
-                    if let deep = sleep.deepHours { entry.sleepDeepHours = deep }
-                    if let core = sleep.coreHours { entry.sleepCoreHours = core }
-                    if let awake = sleep.awakeMinutes { entry.sleepAwakeMinutes = awake }
-                    if let onset = sleep.sleepOnset { entry.sleepOnset = onset }
-                    entry.sleepInterruptionCount = sleep.interruptionCount
-                }
-            } catch {
-                logger.error("Sleep stages fetch failed on Watch: \(error)")
-            }
-
-            // Workout data — only set summary fields if encoding succeeds
-            do {
-                let workouts = try await workoutsResult
-                if !workouts.isEmpty {
-                    let encoded = try JSONEncoder().encode(workouts)
-                    entry.workoutDataJSON = encoded
-                    entry.workoutCount = workouts.count
-                    entry.totalWorkoutMinutes = workouts.reduce(0) { $0 + $1.durationSeconds } / 60.0
-                    entry.workoutIntensityScore = HealthKitService.computeIntensityScore(for: workouts)
-                }
-            } catch {
-                logger.error("Workout fetch/encode failed on Watch: \(error)")
-            }
-
-            // Heart rate (now available on all platforms)
-            do {
-                if let avgHR = try await avgHRResult {
-                    entry.averageHeartRate = avgHR
-                }
-            } catch {
-                logger.error("Average heart rate fetch failed on Watch: \(error)")
-            }
-
-            do {
-                if let restingHR = try await restingHRResult {
-                    entry.restingHeartRate = restingHR
-                }
-            } catch {
-                logger.error("Resting heart rate fetch failed on Watch: \(error)")
-            }
-
-            // Sleep score is computed by the main app during background snapshot
-            // (requires SleepScoreService which lives in the Odyssey target)
+            applyBasicMetrics(stepsResult: try await stepsResult, distanceResult: try await distanceResult, to: entry)
+            applySleepData(try await sleepResult, to: entry)
+            applyWorkoutData(try await workoutsResult, to: entry)
+            applyHeartRateData(avgHR: try await avgHRResult, restingHR: try await restingHRResult, to: entry)
 
             entry.updatedAt = Date()
             entry.needsSync = true
@@ -110,5 +51,39 @@ struct WatchHealthCapture {
         } catch {
             logger.error("Failed to capture health data: \(error)")
         }
+    }
+
+    private func applyBasicMetrics(stepsResult: Int?, distanceResult: Double?, to entry: DailyEntry) {
+        if let stepCount = stepsResult { entry.stepCount = stepCount }
+        if let distance = distanceResult { entry.walkingDistanceMeters = distance }
+    }
+
+    private func applySleepData(_ sleep: SleepStageData?, to entry: DailyEntry) {
+        guard let sleep else { return }
+        if let totalHours = sleep.totalHours { entry.sleepHours = totalHours }
+        if let rem = sleep.remHours { entry.sleepREMHours = rem }
+        if let deep = sleep.deepHours { entry.sleepDeepHours = deep }
+        if let core = sleep.coreHours { entry.sleepCoreHours = core }
+        if let awake = sleep.awakeMinutes { entry.sleepAwakeMinutes = awake }
+        if let onset = sleep.sleepOnset { entry.sleepOnset = onset }
+        entry.sleepInterruptionCount = sleep.interruptionCount
+    }
+
+    private func applyWorkoutData(_ workouts: [WorkoutSummary], to entry: DailyEntry) {
+        guard !workouts.isEmpty else { return }
+        do {
+            let encoded = try JSONEncoder().encode(workouts)
+            entry.workoutDataJSON = encoded
+            entry.workoutCount = workouts.count
+            entry.totalWorkoutMinutes = workouts.reduce(0) { $0 + $1.durationSeconds } / 60.0
+            entry.workoutIntensityScore = HealthKitService.computeIntensityScore(for: workouts)
+        } catch {
+            logger.error("Workout encode failed on Watch: \(error)")
+        }
+    }
+
+    private func applyHeartRateData(avgHR: Double?, restingHR: Double?, to entry: DailyEntry) {
+        if let avgHR { entry.averageHeartRate = avgHR }
+        if let restingHR { entry.restingHeartRate = restingHR }
     }
 }
