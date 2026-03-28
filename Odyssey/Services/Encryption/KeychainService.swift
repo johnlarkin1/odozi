@@ -16,6 +16,9 @@ enum KeychainService {
     private static let authService = "com.johnlarkin.Odyssey.auth"
     private static let authAccount = "session-token"
 
+    private static let appleUserService = "com.johnlarkin.Odyssey.auth"
+    private static let appleUserAccount = "apple-user-id"
+
     static func storeKey(_ key: SymmetricKey) throws {
         let keyData = key.withUnsafeBytes { Data($0) }
 
@@ -144,6 +147,77 @@ enum KeychainService {
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrService as String: authService,
             kSecAttrAccount as String: authAccount,
+            kSecAttrSynchronizable as String: false
+        ]
+
+        let status = SecItemDelete(query as CFDictionary)
+        guard status == errSecSuccess || status == errSecItemNotFound else {
+            throw KeychainError.deleteFailed(status)
+        }
+    }
+
+    // MARK: - Apple User ID
+
+    static func storeAppleUserID(_ userID: String) throws {
+        guard let data = userID.data(using: .utf8) else {
+            throw KeychainError.unexpectedData
+        }
+
+        let deleteQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: appleUserService,
+            kSecAttrAccount as String: appleUserAccount
+        ]
+        SecItemDelete(deleteQuery as CFDictionary)
+
+        let addQuery: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: appleUserService,
+            kSecAttrAccount as String: appleUserAccount,
+            kSecValueData as String: data,
+            kSecAttrAccessible as String: kSecAttrAccessibleAfterFirstUnlock,
+            kSecAttrSynchronizable as String: false
+        ]
+
+        let status = SecItemAdd(addQuery as CFDictionary, nil)
+        guard status == errSecSuccess else {
+            throw KeychainError.storeFailed(status)
+        }
+    }
+
+    static func retrieveAppleUserID() throws -> String? {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: appleUserService,
+            kSecAttrAccount as String: appleUserAccount,
+            kSecReturnData as String: true,
+            kSecMatchLimit as String: kSecMatchLimitOne,
+            kSecAttrSynchronizable as String: false
+        ]
+
+        var result: AnyObject?
+        let status = SecItemCopyMatching(query as CFDictionary, &result)
+
+        switch status {
+        case errSecSuccess:
+            guard let data = result as? Data,
+                  let userID = String(data: data, encoding: .utf8)
+            else {
+                throw KeychainError.unexpectedData
+            }
+            return userID
+        case errSecItemNotFound:
+            return nil
+        default:
+            throw KeychainError.readFailed(status)
+        }
+    }
+
+    static func deleteAppleUserID() throws {
+        let query: [String: Any] = [
+            kSecClass as String: kSecClassGenericPassword,
+            kSecAttrService as String: appleUserService,
+            kSecAttrAccount as String: appleUserAccount,
             kSecAttrSynchronizable as String: false
         ]
 

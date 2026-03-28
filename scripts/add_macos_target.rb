@@ -139,9 +139,9 @@ puts "Added #{resource_count} resource files to OdysseyMac target"
 # ── 7. Add SPM package dependencies to macOS target ─────────────────
 # Find existing package product dependencies from iOS target
 ios_target.package_product_dependencies.each do |dep|
-  # Only add Lottie and ClerkKit (needed for auth)
+  # Only add Lottie
   name = dep.product_name
-  next unless ['Lottie', 'ClerkKit'].include?(name)
+  next unless ['Lottie'].include?(name)
 
   new_dep = project.new(Xcodeproj::Project::Object::XCSwiftPackageProductDependency)
   new_dep.product_name = dep.product_name

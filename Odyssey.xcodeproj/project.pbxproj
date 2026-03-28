@@ -151,7 +151,7 @@
 		5FAFBC2C2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC2B2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift */; };
 		5FAFBC482B49F70B0018504E /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC472B49F70B0018504E /* LottieView.swift */; };
 		5FC58CD194D220AFA863E3D8 /* JournalEntryDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2602055E4D1CCA4D9E95B851 /* JournalEntryDetailView.swift */; };
-		5FF8E9E02F54E7A3007B9C1A /* ClerkKit in Frameworks */ = {isa = PBXBuildFile; productRef = 5FF8E9E12F54E7A3007B9C1A /* ClerkKit */; };
+
 		6161F007F72174F7CD6C42C8 /* PlatformColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = D792DCB82D915378585A99FF /* PlatformColor.swift */; };
 		61A069149CC6DEB6E87BDE4A /* ReviewSleepCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6CE8ACA4DCC1F853372C093F /* ReviewSleepCard.swift */; };
 		628BB21533427C183BE0B2B0 /* WorldTabView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15B45EE50A54AB86B561FC94 /* WorldTabView.swift */; };
@@ -198,7 +198,7 @@
 		7B7FAA3C77723C2F5D1B157B /* SparklineChartView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A1883D282BC55BA2A57C49C /* SparklineChartView.swift */; };
 		7B86FAC86C95CB5F589B5F4A /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0CF1B775171B8B1088908791 /* Date+Extensions.swift */; };
 		7E7BFBD321743C0728495ED7 /* ColorExtensionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C0E95C6B6F0BA8DBC36F9A /* ColorExtensionsTests.swift */; };
-		7F8B571934E32A0AEE8691C6 /* ClerkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */; };
+
 		801F40A23B5D3B1D08D42525 /* CosmicBackground.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB91A4750C1D38249F734256 /* CosmicBackground.swift */; };
 		80A6444D30E6CBF18397514F /* AccessoryMoodWidgetView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2F4F63E9E25CA2B61E75C2CA /* AccessoryMoodWidgetView.swift */; };
 		810A712C2173CF58306F65FC /* WatchAuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1918F05F0829D8429808CF26 /* WatchAuthManager.swift */; };
@@ -279,7 +279,7 @@
 		BB02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift */; };
 		BB03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift */; };
 		BB04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift */; };
-		BB05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */; };
+
 		BB06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift */; };
 		BB07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift */; };
 		BB08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */; };
@@ -292,7 +292,7 @@
 		BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */; };
 		BB15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */; };
 		BB16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift */; };
-		BB16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */; };
+
 		BB7CE12E77673D9BA711ADA5 /* JournalCalendarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E9B705FB6F2CC3B61A28E077 /* JournalCalendarView.swift */; };
 		BD906E4887AFC93D0DEE93A2 /* AchievementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FD9D3DFC558B342DB2DB00 /* AchievementService.swift */; };
 		BE2DD7FA48B4EC56CF8A25CC /* ServerConfiguration.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift */; };
@@ -317,7 +317,7 @@
 		C93D3471B1ADC857CD5D4A62 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9DDD89CA1E7712FAFBD47F85 /* Foundation.framework */; };
 		CA582EF0550D60C1E7725250 /* ReviewClosingCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 277D46908C15A1028CE2AA83 /* ReviewClosingCard.swift */; };
 		CA5EC237DFA24A80B7D448AB /* WeeklyDigestNotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 685B2DC6078E46DB92E61C54 /* WeeklyDigestNotificationManager.swift */; };
-		CB5E4C3D0D8C79DCE6845D88 /* EmailSignUpView.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */; };
+
 		CC00000000000000000000A2 /* LocationCaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* LocationCaptureMode.swift */; };
 		CC01A2B3C4D5E6F7A8B9C0D1 /* KeychainService.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA01B2C3D4E5F6A7B8C9D0E1 /* KeychainService.swift */; };
 		CC07A8B9C0D1E2F3A4B5C6D7 /* SyncPayload.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift */; };
@@ -656,7 +656,7 @@
 		AA03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecoveryKeyGenerator.swift; sourceTree = "<group>"; };
 		AA04A4B4C4D4E4F404040404 /* DailyEntry+Streak.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "DailyEntry+Streak.swift"; sourceTree = "<group>"; };
 		AA04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthManager.swift; sourceTree = "<group>"; };
-		AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClerkConfiguration.swift; sourceTree = "<group>"; };
+
 		AA06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncService.swift; sourceTree = "<group>"; };
 		AA07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncPayload.swift; sourceTree = "<group>"; };
 		AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClient.swift; sourceTree = "<group>"; };
@@ -669,7 +669,7 @@
 		AA14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncStatusBanner.swift; sourceTree = "<group>"; };
 		AA15C6D7E8F9A0B1C2D3E4F5 /* EncryptionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EncryptionServiceTests.swift; sourceTree = "<group>"; };
 		AA16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ServerConfiguration.swift; sourceTree = "<group>"; };
-		AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignUpView.swift; sourceTree = "<group>"; };
+
 		AB39F4882AFBB1FD07ED44CB /* MoodWidgetProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MoodWidgetProvider.swift; sourceTree = "<group>"; };
 		ADA0855F12557962C12FD4FF /* YearInReviewView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = YearInReviewView.swift; sourceTree = "<group>"; };
 		AF44E24756450498E15BBCA3 /* SingleLocationDelegate.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SingleLocationDelegate.swift; sourceTree = "<group>"; };
@@ -785,7 +785,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				5FF8E9E02F54E7A3007B9C1A /* ClerkKit in Frameworks */,
 				5F96AA732B49FD6600999B84 /* Lottie in Frameworks */,
 				DD5D9E4B98511AF942D08EC9 /* HealthKit.framework in Frameworks */,
 				196EDC5E0A4A1F5E3D4824BF /* SwiftData.framework in Frameworks */,
@@ -1299,7 +1298,6 @@
 			isa = PBXGroup;
 			children = (
 				AA04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift */,
-				AA05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -1330,7 +1328,6 @@
 				AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */,
 				AA12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift */,
 				AA13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift */,
-				AA16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift */,
 			);
 			path = Auth;
 			sourceTree = "<group>";
@@ -1509,7 +1506,6 @@
 			);
 			name = Odyssey;
 			packageProductDependencies = (
-				5FF8E9E12F54E7A3007B9C1A /* ClerkKit */,
 				5F96AA722B49FD6600999B84 /* Lottie */,
 			);
 			productName = Odyssey;
@@ -1583,7 +1579,6 @@
 			);
 			name = OdysseyMac;
 			packageProductDependencies = (
-				C52FF8A0D5582BB57EB44A32 /* ClerkKit */,
 				61B10ECEAC92CE19137803BC /* Lottie */,
 			);
 			productName = OdysseyMac;
@@ -1647,7 +1642,6 @@
 			mainGroup = 5FAFBBFD2B49E1A60018504E;
 			packageReferences = (
 				5F96AA712B49FD6600999B84 /* XCRemoteSwiftPackageReference "lottie-spm" */,
-				5FF8E9DF2F54E7A3007B9C1A /* XCRemoteSwiftPackageReference "clerk-ios" */,
 			);
 			productRefGroup = 5FAFBC072B49E1A60018504E /* Products */;
 			projectDirPath = "";
@@ -1773,7 +1767,6 @@
 				BB02B3C4D5E6F7A8B9C0D1E2 /* EncryptionService.swift in Sources */,
 				BB03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift in Sources */,
 				BB04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift in Sources */,
-				BB05B6C7D8E9F0A1B2C3D4E5 /* ClerkConfiguration.swift in Sources */,
 				BB06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift in Sources */,
 				BB07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift in Sources */,
 				BB08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift in Sources */,
@@ -1783,7 +1776,6 @@
 				BB11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift in Sources */,
 				BB12F3A4B5C6D7E8F9A0B1C2 /* SignInView.swift in Sources */,
 				BB13A4B5C6D7E8F9A0B1C2D3 /* AccountView.swift in Sources */,
-				BB16D7E8F9A0B1C2D3E4F5A6 /* EmailSignUpView.swift in Sources */,
 				BB14B5C6D7E8F9A0B1C2D3E4 /* SyncStatusBanner.swift in Sources */,
 				BB16C7D8E9F0A1B2C3D4E5F6 /* ServerConfiguration.swift in Sources */,
 				F9FFBCC60597E2412FA6220C /* DailyEntry+Computed.swift in Sources */,
@@ -2043,7 +2035,6 @@
 				77E13EA7FD8DA11E18389214 /* EncryptionService.swift in Sources */,
 				C8D757840E060E4D9E2F35A3 /* RecoveryKeyGenerator.swift in Sources */,
 				85577F73E4CCBC5BA13AD086 /* AuthManager.swift in Sources */,
-				7F8B571934E32A0AEE8691C6 /* ClerkConfiguration.swift in Sources */,
 				E65B5F37F45BA347E4B5002C /* SyncService.swift in Sources */,
 				C545FBD0534F6EAC5B6A1BB9 /* SyncPayload.swift in Sources */,
 				7549871EE7CD0A15CDCC4F3D /* APIClient.swift in Sources */,
@@ -2052,7 +2043,6 @@
 				4EE5CD05CC5E05669C26E8E7 /* BackupPromptModal.swift in Sources */,
 				A75D1061D48325FF78FB31E4 /* SignInView.swift in Sources */,
 				B938F7B93EDA917D6A92885A /* AccountView.swift in Sources */,
-				CB5E4C3D0D8C79DCE6845D88 /* EmailSignUpView.swift in Sources */,
 				631486A20D0BDCFCE1DBE47D /* SyncStatusBanner.swift in Sources */,
 				BE2DD7FA48B4EC56CF8A25CC /* ServerConfiguration.swift in Sources */,
 				E3D8C6BE7C5499AAEB6F5055 /* DailyEntry+Computed.swift in Sources */,
@@ -2856,14 +2846,6 @@
 				minimumVersion = 4.0.0;
 			};
 		};
-		5FF8E9DF2F54E7A3007B9C1A /* XCRemoteSwiftPackageReference "clerk-ios" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/clerk/clerk-ios";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.3;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2872,20 +2854,10 @@
 			package = 5F96AA712B49FD6600999B84 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
 		};
-		5FF8E9E12F54E7A3007B9C1A /* ClerkKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5FF8E9DF2F54E7A3007B9C1A /* XCRemoteSwiftPackageReference "clerk-ios" */;
-			productName = ClerkKit;
-		};
 		61B10ECEAC92CE19137803BC /* Lottie */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 5F96AA712B49FD6600999B84 /* XCRemoteSwiftPackageReference "lottie-spm" */;
 			productName = Lottie;
-		};
-		C52FF8A0D5582BB57EB44A32 /* ClerkKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = 5FF8E9DF2F54E7A3007B9C1A /* XCRemoteSwiftPackageReference "clerk-ios" */;
-			productName = ClerkKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

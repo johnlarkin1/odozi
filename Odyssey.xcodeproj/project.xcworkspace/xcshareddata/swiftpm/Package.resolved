@@ -1,15 +1,6 @@
 {
-  "originHash" : "a8eeec277c7868a0df7b2132e97243b29e77fc83d5ebe065bd49838f28808e25",
+  "originHash" : "6b3386dc9ff1f3a74f1534de9c41d47137eae0901cfe819ed442f1b241549359",
   "pins" : [
-    {
-      "identity" : "clerk-ios",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/clerk/clerk-ios",
-      "state" : {
-        "revision" : "53b7ba1a98f196aaa67f8b66b92280fc873faa3d",
-        "version" : "1.0.3"
-      }
-    },
     {
       "identity" : "lottie-spm",
       "kind" : "remoteSourceControl",
@@ -17,24 +8,6 @@
       "state" : {
         "revision" : "69faaefa7721fba9e434a52c16adf4329c9084db",
         "version" : "4.6.0"
-      }
-    },
-    {
-      "identity" : "nuke",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kean/Nuke.git",
-      "state" : {
-        "revision" : "83e19143355b02e9261edb2323b3e1e93287ebb9",
-        "version" : "12.9.0"
-      }
-    },
-    {
-      "identity" : "phonenumberkit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/marmelroy/PhoneNumberKit",
-      "state" : {
-        "revision" : "ad20aba8db84a6ba373abfcffe38b1c8e6f8258b",
-        "version" : "4.2.7"
       }
     }
   ],

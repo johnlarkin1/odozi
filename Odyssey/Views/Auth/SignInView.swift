@@ -1,3 +1,4 @@
+import AuthenticationServices
 import SwiftUI
 
 struct SignInView: View {
@@ -8,48 +9,34 @@ struct SignInView: View {
         VStack(spacing: 24) {
             Spacer()
 
-            Image(systemName: "person.circle.fill")
+            Image(systemName: "icloud.fill")
                 .font(.system(size: 64))
                 .foregroundStyle(Color.accentTeal)
 
-            Text("Sign In")
-                .font(.title2)
-                .fontWeight(.bold)
-
             VStack(spacing: 12) {
-                signInButton(
-                    icon: "apple.logo",
-                    title: "Continue with Apple",
-                    action: {
-                        Task {
-                            do {
-                                try await authManager.signIn(strategy: .apple)
-                            } catch is CancellationError {
-                                // User cancelled OAuth sheet
-                            } catch {
-                                authManager.error = error.localizedDescription
-                            }
-                        }
-                    }
-                )
+                Text("Sign In")
+                    .font(.title2)
+                    .fontWeight(.bold)
 
-                signInButton(
-                    icon: "globe",
-                    title: "Continue with Google",
-                    action: {
-                        Task {
-                            do {
-                                try await authManager.signIn(strategy: .google)
-                            } catch is CancellationError {
-                                // User cancelled OAuth sheet
-                            } catch {
-                                authManager.error = error.localizedDescription
-                            }
-                        }
-                    }
-                )
+                Text("Odyssey uses iCloud to keep your journal entries safe and synced across your devices. Sign in with Apple is the simplest, most secure way to protect your data -- no extra accounts or passwords needed.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+                    .multilineTextAlignment(.center)
+                    .padding(.horizontal)
             }
+
+            SignInWithAppleButton(.signIn) { request in
+                request.requestedScopes = [.fullName, .email]
+            } onCompletion: { result in
+                Task {
+                    await authManager.handleSignInResult(result)
+                }
+            }
+            .signInWithAppleButtonStyle(.white)
+            .frame(height: 50)
             .padding(.horizontal, 24)
+
+            whyAppleOnlySection
 
             if authManager.isLoading {
                 ProgressView()
@@ -75,17 +62,19 @@ struct SignInView: View {
             }
     }
 
-    private func signInButton(icon: String, title: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            HStack(spacing: 12) {
-                Image(systemName: icon)
-                    .frame(width: 20)
-                Text(title)
-                    .fontWeight(.medium)
-            }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 12))
+    private var whyAppleOnlySection: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("Why Apple only?", systemImage: "info.circle")
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundStyle(Color.accentTeal)
+
+            Text("Odyssey syncs through iCloud, which requires an Apple account. This keeps your journal data within Apple's secure ecosystem -- no third-party servers involved.")
+                .font(.caption2)
+                .foregroundStyle(.secondary)
         }
+        .padding(12)
+        .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 10))
+        .padding(.horizontal, 24)
     }
 }

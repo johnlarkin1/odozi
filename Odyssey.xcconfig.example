@@ -2,4 +2,3 @@
 // Odyssey.xcconfig is gitignored and will not be committed
 
 ODYSSEY_API_BASE_URL = https:/$()/api.odozi.app
-CLERK_PUBLISHABLE_KEY = pk_test_REPLACE_ME

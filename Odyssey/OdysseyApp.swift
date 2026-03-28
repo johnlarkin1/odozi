@@ -1,4 +1,3 @@
-import ClerkKit
 import os
 import SwiftData
 import SwiftUI
@@ -29,13 +28,6 @@ struct OdysseyApp: App {
     }
 
     init() {
-        if let key = ClerkConfiguration.publishableKey,
-           ProcessInfo.processInfo.environment["XCTestConfigurationFilePath"] == nil,
-           !Self.isScreenshotMode {
-            Clerk.configure(publishableKey: key)
-            AuthManager.clerkConfigured = true
-        }
-
         do {
             #if DEBUG
                 let c = if Self.isScreenshotMode {
