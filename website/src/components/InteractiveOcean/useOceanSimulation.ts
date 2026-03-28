@@ -10,189 +10,163 @@ import { type BoatState, type MouseState, BOAT_SPEED } from "./types";
 
 interface UseOceanSimulationOptions {
   phaseOffset: number;
+  interactive?: boolean;
   onFirstInteraction?: () => void;
+}
+
+/** Mutable state bag read by the animation loop — lives outside React's render cycle */
+interface SimulationState {
+  phaseOffset: number;
+  interactive: boolean;
+  onFirstInteraction?: () => void;
+  canvas: HTMLCanvasElement | null;
+  container: HTMLDivElement | null;
+  animFrame: number;
+  time: number;
+  lastFrame: number;
+  boat: BoatState | null;
+  keys: { left: boolean; right: boolean };
+  mouse: MouseState;
+  hasInteracted: boolean;
+}
+
+function createSimulationState(): SimulationState {
+  return {
+    phaseOffset: 0,
+    interactive: true,
+    onFirstInteraction: undefined,
+    canvas: null,
+    container: null,
+    animFrame: 0,
+    time: 0,
+    lastFrame: 0,
+    boat: null,
+    keys: { left: false, right: false },
+    mouse: { x: 0, y: 0, active: false, lastMoveTime: 0 },
+    hasInteracted: false,
+  };
+}
+
+function setupCanvas(state: SimulationState) {
+  const { canvas, container } = state;
+  if (!canvas || !container) return;
+
+  const rect = container.getBoundingClientRect();
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+  canvas.width = rect.width * dpr;
+  canvas.height = rect.height * dpr;
+  canvas.style.width = `${rect.width}px`;
+  canvas.style.height = `${rect.height}px`;
+
+  const ctx = canvas.getContext("2d");
+  if (ctx) {
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+
+  if (state.interactive) {
+    if (!state.boat) {
+      state.boat = createBoatState(rect.width);
+    } else {
+      state.boat.x = Math.min(state.boat.x, rect.width - 20);
+    }
+  }
+}
+
+function tick(state: SimulationState, timestamp: number) {
+  const { canvas } = state;
+  if (!canvas) return;
+
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return;
+
+  if (state.lastFrame === 0) state.lastFrame = timestamp;
+  const dt = Math.min((timestamp - state.lastFrame) / 1000, 0.05);
+  state.lastFrame = timestamp;
+  state.time += dt;
+
+  const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  const width = canvas.width / dpr;
+  const height = canvas.height / dpr;
+  const time = state.time;
+  const { interactive: isInteractive, phaseOffset } = state;
+
+  const activeMouse = isInteractive && state.mouse.active ? state.mouse : null;
+
+  // Update boat (only when interactive)
+  const boat = isInteractive ? state.boat : null;
+  if (boat) {
+    const hasKeyboardInput = state.keys.left || state.keys.right;
+    if (hasKeyboardInput) {
+      boat.targetVx = state.keys.left ? -BOAT_SPEED : BOAT_SPEED;
+    }
+    updateBoat(boat, time, width, height, dt, phaseOffset, activeMouse, hasKeyboardInput);
+  }
+
+  // Render
+  ctx.save();
+  ctx.clearRect(0, 0, width, height);
+  renderOcean(ctx, time, width, height, phaseOffset, activeMouse, !isInteractive);
+
+  if (boat) {
+    renderWake(ctx, boat);
+    renderBoat(ctx, boat, time);
+  }
+
+  ctx.restore();
+
+  state.animFrame = requestAnimationFrame((ts) => tick(state, ts));
+}
+
+function startLoop(state: SimulationState) {
+  if (state.animFrame) return;
+  state.lastFrame = 0;
+  state.animFrame = requestAnimationFrame((ts) => tick(state, ts));
+}
+
+function stopLoop(state: SimulationState) {
+  if (state.animFrame) {
+    cancelAnimationFrame(state.animFrame);
+    state.animFrame = 0;
+  }
 }
 
 export function useOceanSimulation({
   phaseOffset,
+  interactive = true,
   onFirstInteraction,
 }: UseOceanSimulationOptions) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
-  const animFrameRef = useRef<number>(0);
-  const timeRef = useRef(0);
-  const lastFrameRef = useRef(0);
-  const isVisibleRef = useRef(false);
-  const boatRef = useRef<BoatState | null>(null);
-  const keysRef = useRef({ left: false, right: false });
-  const mouseRef = useRef<MouseState>({ x: 0, y: 0, active: false, lastMoveTime: 0 });
-  const hasInteractedRef = useRef(false);
-  const onFirstInteractionRef = useRef(onFirstInteraction);
-  onFirstInteractionRef.current = onFirstInteraction;
+  const stateRef = useRef<SimulationState>(undefined);
+  if (stateRef.current === undefined) {
+    stateRef.current = createSimulationState();
+  }
 
-  const setupCanvas = useCallback(() => {
-    const canvas = canvasRef.current;
-    const container = containerRef.current;
-    if (!canvas || !container) return;
-
-    const rect = container.getBoundingClientRect();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
-
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    canvas.style.width = `${rect.width}px`;
-    canvas.style.height = `${rect.height}px`;
-
-    const ctx = canvas.getContext("2d");
-    if (ctx) {
-      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    }
-
-    if (!boatRef.current) {
-      boatRef.current = createBoatState(rect.width);
-    } else {
-      boatRef.current.x = Math.min(boatRef.current.x, rect.width - 20);
-    }
-  }, []);
-
-  const tick = useCallback(
-    (timestamp: number) => {
-      const canvas = canvasRef.current;
-      if (!canvas) return;
-
-      const ctx = canvas.getContext("2d");
-      if (!ctx) return;
-
-      if (lastFrameRef.current === 0) lastFrameRef.current = timestamp;
-      const dt = Math.min((timestamp - lastFrameRef.current) / 1000, 0.05);
-      lastFrameRef.current = timestamp;
-      timeRef.current += dt;
-
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
-      const width = canvas.width / dpr;
-      const height = canvas.height / dpr;
-      const time = timeRef.current;
-
-      const mouse = mouseRef.current;
-      const activeMouse = mouse.active ? mouse : null;
-
-      // Update boat
-      const boat = boatRef.current;
-      if (boat) {
-        const hasKeyboardInput = keysRef.current.left || keysRef.current.right;
-        if (hasKeyboardInput) {
-          boat.targetVx = keysRef.current.left
-            ? -BOAT_SPEED
-            : BOAT_SPEED;
-        }
-        updateBoat(boat, time, width, height, dt, phaseOffset, activeMouse, hasKeyboardInput);
-      }
-
-      // Render
-      ctx.save();
-      ctx.clearRect(0, 0, width, height);
-
-      renderOcean(ctx, time, width, height, phaseOffset, activeMouse);
-
-      if (boat) {
-        renderWake(ctx, boat);
-        renderBoat(ctx, boat, time);
-      }
-
-      ctx.restore();
-
-      animFrameRef.current = requestAnimationFrame(tick);
-    },
-    [phaseOffset],
-  );
-
-  const startLoop = useCallback(() => {
-    if (animFrameRef.current) return;
-    lastFrameRef.current = 0;
-    animFrameRef.current = requestAnimationFrame(tick);
-  }, [tick]);
-
-  const stopLoop = useCallback(() => {
-    if (animFrameRef.current) {
-      cancelAnimationFrame(animFrameRef.current);
-      animFrameRef.current = 0;
-    }
-  }, []);
-
-  // Keyboard handlers
-  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
-      e.preventDefault();
-      if (e.key === "ArrowLeft") keysRef.current.left = true;
-      if (e.key === "ArrowRight") keysRef.current.right = true;
-
-      if (!hasInteractedRef.current) {
-        hasInteractedRef.current = true;
-        onFirstInteractionRef.current?.();
-      }
-    }
-  }, []);
-
-  const handleKeyUp = useCallback((e: React.KeyboardEvent) => {
-    if (e.key === "ArrowLeft") keysRef.current.left = false;
-    if (e.key === "ArrowRight") keysRef.current.right = false;
-  }, []);
-
-  // Mouse handlers
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    const container = containerRef.current;
-    if (!container) return;
-    const rect = container.getBoundingClientRect();
-    mouseRef.current.x = e.clientX - rect.left;
-    mouseRef.current.y = e.clientY - rect.top;
-    mouseRef.current.active = true;
-    mouseRef.current.lastMoveTime = timeRef.current;
-
-    if (!hasInteractedRef.current) {
-      hasInteractedRef.current = true;
-      onFirstInteractionRef.current?.();
-    }
-  }, []);
-
-  const handleMouseLeave = useCallback(() => {
-    mouseRef.current.active = false;
-  }, []);
-
-  // Touch handlers
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    const container = containerRef.current;
-    if (!container) return;
-    const touch = e.touches[0];
-    const rect = container.getBoundingClientRect();
-    mouseRef.current.x = touch.clientX - rect.left;
-    mouseRef.current.y = touch.clientY - rect.top;
-    mouseRef.current.active = true;
-    mouseRef.current.lastMoveTime = timeRef.current;
-
-    if (!hasInteractedRef.current) {
-      hasInteractedRef.current = true;
-      onFirstInteractionRef.current?.();
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback(() => {
-    mouseRef.current.active = false;
-  }, []);
+  // Sync props into the mutable state bag via effect (React Compiler safe)
+  useEffect(() => {
+    const s = stateRef.current!;
+    s.phaseOffset = phaseOffset;
+    s.interactive = interactive;
+    s.onFirstInteraction = onFirstInteraction;
+  }, [phaseOffset, interactive, onFirstInteraction]);
 
   // Setup: canvas sizing, intersection observer, resize observer
   useEffect(() => {
-    setupCanvas();
+    const s = stateRef.current!;
+    s.canvas = canvasRef.current;
+    s.container = containerRef.current;
+    setupCanvas(s);
 
-    const container = containerRef.current;
+    const container = s.container;
     if (!container) return;
 
     const io = new IntersectionObserver(
       ([entry]) => {
-        isVisibleRef.current = entry.isIntersecting;
         if (entry.isIntersecting) {
-          startLoop();
+          startLoop(s);
         } else {
-          stopLoop();
+          stopLoop(s);
         }
       },
       { threshold: 0 },
@@ -202,17 +176,81 @@ export function useOceanSimulation({
     let resizeTimeout: ReturnType<typeof setTimeout>;
     const ro = new ResizeObserver(() => {
       clearTimeout(resizeTimeout);
-      resizeTimeout = setTimeout(setupCanvas, 100);
+      resizeTimeout = setTimeout(() => setupCanvas(s), 100);
     });
     ro.observe(container);
 
     return () => {
-      stopLoop();
+      stopLoop(s);
       io.disconnect();
       ro.disconnect();
       clearTimeout(resizeTimeout);
     };
-  }, [setupCanvas, startLoop, stopLoop]);
+  }, []);
+
+  // Keyboard handlers
+  const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
+    const s = stateRef.current!;
+    if (e.key === "ArrowLeft" || e.key === "ArrowRight") {
+      e.preventDefault();
+      if (e.key === "ArrowLeft") s.keys.left = true;
+      if (e.key === "ArrowRight") s.keys.right = true;
+
+      if (!s.hasInteracted) {
+        s.hasInteracted = true;
+        s.onFirstInteraction?.();
+      }
+    }
+  }, []);
+
+  const handleKeyUp = useCallback((e: React.KeyboardEvent) => {
+    const s = stateRef.current!;
+    if (e.key === "ArrowLeft") s.keys.left = false;
+    if (e.key === "ArrowRight") s.keys.right = false;
+  }, []);
+
+  // Mouse handlers
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    const s = stateRef.current!;
+    const container = s.container;
+    if (!container) return;
+    const rect = container.getBoundingClientRect();
+    s.mouse.x = e.clientX - rect.left;
+    s.mouse.y = e.clientY - rect.top;
+    s.mouse.active = true;
+    s.mouse.lastMoveTime = s.time;
+
+    if (!s.hasInteracted) {
+      s.hasInteracted = true;
+      s.onFirstInteraction?.();
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    stateRef.current!.mouse.active = false;
+  }, []);
+
+  // Touch handlers
+  const handleTouchMove = useCallback((e: React.TouchEvent) => {
+    const s = stateRef.current!;
+    const container = s.container;
+    if (!container) return;
+    const touch = e.touches[0];
+    const rect = container.getBoundingClientRect();
+    s.mouse.x = touch.clientX - rect.left;
+    s.mouse.y = touch.clientY - rect.top;
+    s.mouse.active = true;
+    s.mouse.lastMoveTime = s.time;
+
+    if (!s.hasInteracted) {
+      s.hasInteracted = true;
+      s.onFirstInteraction?.();
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback(() => {
+    stateRef.current!.mouse.active = false;
+  }, []);
 
   return {
     canvasRef,

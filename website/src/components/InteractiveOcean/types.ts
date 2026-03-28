@@ -57,6 +57,14 @@ export const WAVE_LAYERS: WaveLayer[] = [
   { amplitude: 1.5, frequency: 0.025, speed: 2.0, phase: 3.0 },
 ];
 
+/** Gentler, longer-wavelength swells for non-interactive dividers */
+export const SUBTLE_WAVE_LAYERS: WaveLayer[] = [
+  { amplitude: 10, frequency: 0.0018, speed: 0.25, phase: 0 },     // Long lazy swell
+  { amplitude: 7,  frequency: 0.003,  speed: 0.35, phase: 1.8 },   // Secondary swell
+  { amplitude: 3,  frequency: 0.007,  speed: 0.5,  phase: 3.6 },   // Gentle ripple
+  { amplitude: 1.5, frequency: 0.012, speed: 0.7,  phase: 5.0 },   // Fine surface detail
+];
+
 export const BOAT_WIDTH = 50;
 export const BOAT_HEIGHT = 55;
 export const BOAT_SPEED = 3;

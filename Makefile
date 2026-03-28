@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 17 Pro
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release build-mac build-watch test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots appstore appstore-iphone appstore-watch loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
+.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release build-mac build-watch test test-unit test-ui build-widget clean resolve lint lint-ios lint-website typecheck typecheck-website format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots appstore appstore-iphone appstore-watch loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -122,11 +122,64 @@ clean: ## Clean build artifacts
 resolve: ## Resolve Swift package dependencies
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -resolvePackageDependencies
 
-lint: ## Lint Swift source files with SwiftLint
-	swiftlint lint --strict
+# Terminal colors
+GREEN  := \033[0;32m
+RED    := \033[0;31m
+RESET  := \033[0m
+
+lint: ## Lint all (iOS + website) and type-check
+	@failed=0; \
+	$(MAKE) lint-ios || failed=1; \
+	$(MAKE) lint-website || failed=1; \
+	$(MAKE) typecheck-website || failed=1; \
+	if [ $$failed -eq 0 ]; then \
+		printf '$(GREEN)✓ All lint and type checks passed$(RESET)\n'; \
+	else \
+		printf '$(RED)✗ Lint/type checks failed$(RESET)\n'; \
+		exit 1; \
+	fi
+
+lint-ios: ## Lint Swift source files with SwiftLint
+	@if swiftlint lint --strict; then \
+		printf '$(GREEN)  ✓ lint-ios passed$(RESET)\n'; \
+	else \
+		printf '$(RED)  ✗ lint-ios failed$(RESET)\n'; \
+		exit 1; \
+	fi
+
+lint-website: ## Lint website TypeScript/React with ESLint
+	@if cd website && npm run lint --silent; then \
+		printf '$(GREEN)  ✓ lint-website passed$(RESET)\n'; \
+	else \
+		printf '$(RED)  ✗ lint-website failed$(RESET)\n'; \
+		exit 1; \
+	fi
+
+typecheck: ## Type-check all
+	@failed=0; \
+	$(MAKE) typecheck-website || failed=1; \
+	if [ $$failed -eq 0 ]; then \
+		printf '$(GREEN)✓ All type checks passed$(RESET)\n'; \
+	else \
+		printf '$(RED)✗ Type checks failed$(RESET)\n'; \
+		exit 1; \
+	fi
+
+typecheck-website: ## Type-check website with TypeScript
+	@if cd website && npm run typecheck --silent; then \
+		printf '$(GREEN)  ✓ typecheck-website passed$(RESET)\n'; \
+	else \
+		printf '$(RED)  ✗ typecheck-website failed$(RESET)\n'; \
+		exit 1; \
+	fi
 
 format: ## Format Swift source files with SwiftFormat
-	swiftformat .
+	@if swiftformat .; then \
+		printf '$(GREEN)✓ Format complete$(RESET)\n'; \
+	else \
+		printf '$(RED)✗ Format failed$(RESET)\n'; \
+		exit 1; \
+	fi
 
 fmt: format ## Alias for format
 
