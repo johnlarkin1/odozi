@@ -1,5 +1,6 @@
 @testable import Odyssey
 import Photos
+import UIKit
 import XCTest
 
 final class PhotoLibraryServiceTests: XCTestCase {
@@ -43,5 +44,58 @@ final class PhotoLibraryServiceTests: XCTestCase {
         XCTAssertFalse(methods.contains("save"), "Service should not have save methods")
         XCTAssertFalse(methods.contains("delete"), "Service should not have delete methods")
         XCTAssertFalse(methods.contains("write"), "Service should not have write methods")
+    }
+
+    // MARK: - generateMapThumbnail
+
+    func testGenerateMapThumbnailWithValidJPEG() {
+        // Create a small red 100x100 image as JPEG
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+        let jpegData = renderer.image { ctx in
+            UIColor.red.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+        }.jpegData(compressionQuality: 0.9)!
+
+        let thumbnail = PhotoLibraryService.generateMapThumbnail(from: jpegData)
+
+        XCTAssertNotNil(thumbnail, "Should produce a thumbnail from valid JPEG")
+        XCTAssertLessThan(thumbnail!.count, jpegData.count, "Thumbnail should be smaller than original")
+
+        // Verify the output is a valid image
+        let image = UIImage(data: thumbnail!)
+        XCTAssertNotNil(image)
+    }
+
+    func testGenerateMapThumbnailWithInvalidData() {
+        let corruptData = Data([0x00, 0x01, 0x02, 0x03])
+        let thumbnail = PhotoLibraryService.generateMapThumbnail(from: corruptData)
+        XCTAssertNil(thumbnail, "Should return nil for corrupt/invalid data")
+    }
+
+    func testGenerateMapThumbnailWithEmptyData() {
+        let thumbnail = PhotoLibraryService.generateMapThumbnail(from: Data())
+        XCTAssertNil(thumbnail, "Should return nil for empty data")
+    }
+
+    // MARK: - compressForStorage
+
+    func testCompressForStorageReducesLargeImage() {
+        // Create a large 2000x2000 image
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 2000, height: 2000))
+        let largeData = renderer.image { ctx in
+            UIColor.blue.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: 2000, height: 2000))
+        }.jpegData(compressionQuality: 1.0)!
+
+        let compressed = PhotoLibraryService.compressForStorage(data: largeData)
+
+        XCTAssertNotNil(compressed)
+        XCTAssertLessThan(compressed!.count, largeData.count, "Compressed data should be smaller")
+    }
+
+    func testCompressForStorageWithInvalidData() {
+        let corruptData = Data([0x00, 0x01, 0x02])
+        let result = PhotoLibraryService.compressForStorage(data: corruptData)
+        XCTAssertNil(result, "Should return nil for corrupt data")
     }
 }

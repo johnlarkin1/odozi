@@ -10,4 +10,5 @@ struct PromptResponses {
     var tension: String = ""
     var journalEntry: String = ""
     var drinks: Int = 0
+    var attachedPhotoData: Data? = nil
 }

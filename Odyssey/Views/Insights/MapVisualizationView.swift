@@ -1,6 +1,9 @@
 import MapKit
+import os
 import SwiftData
 import SwiftUI
+
+private let mapLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "MapVisualization")
 
 struct MapVisualizationView: View {
     let entries: [DailyEntry]
@@ -9,6 +12,7 @@ struct MapVisualizationView: View {
     @State private var position: MapCameraPosition = .automatic
     @State private var isUpdatingLocation = false
     @State private var locationViewModel: DailyEntryViewModel?
+    @State private var thumbnailCache: [Date: UIImage] = [:]
 
     var body: some View {
         VStack(spacing: 0) {
@@ -19,16 +23,23 @@ struct MapVisualizationView: View {
                             latitude: lat,
                             longitude: lng
                         )) {
-                            Circle()
-                                .fill(entry.moodGradientColor)
-                                .frame(width: 12, height: 12)
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
-                                )
-                                .accessibilityLabel(
-                                    "Entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")"
-                                )
+                            if entry.hasMapPhoto, let uiImage = thumbnailCache[entry.date] {
+                                PhotoMapPin(image: uiImage, moodColor: entry.moodGradientColor)
+                                    .accessibilityLabel(
+                                        "Photo entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")"
+                                    )
+                            } else {
+                                Circle()
+                                    .fill(entry.moodGradientColor)
+                                    .frame(width: 12, height: 12)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                                    )
+                                    .accessibilityLabel(
+                                        "Entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")"
+                                    )
+                            }
                         }
                     }
                 }
@@ -79,6 +90,10 @@ struct MapVisualizationView: View {
                 if locationViewModel == nil {
                     locationViewModel = DailyEntryViewModel(modelContext: modelContext)
                 }
+                buildThumbnailCache()
+            }
+            .onChange(of: entries.count) {
+                buildThumbnailCache()
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -111,5 +126,19 @@ struct MapVisualizationView: View {
 
     private var uniqueCountries: Set<String> {
         Set(locatedEntries.compactMap(\.country))
+    }
+
+    private func buildThumbnailCache() {
+        var cache: [Date: UIImage] = [:]
+        for entry in locatedEntries where entry.hasMapPhoto {
+            if let data = entry.mapThumbnailData {
+                if let image = UIImage(data: data) {
+                    cache[entry.date] = image
+                } else {
+                    mapLogger.warning("Failed to decode map thumbnail for entry on \(entry.date.shortFormatted)")
+                }
+            }
+        }
+        thumbnailCache = cache
     }
 }

@@ -100,6 +100,19 @@ final class GuidedPromptViewModel {
             entry.tension = responses.tension
             entry.journalEntry = responses.journalEntry
             entry.drinks = responses.drinks
+
+            if let photoData = responses.attachedPhotoData {
+                var existing = entry.attachedPhotoData ?? []
+                existing.append(photoData)
+                entry.attachedPhotoData = existing
+                if let thumbnail = PhotoLibraryService.generateMapThumbnail(from: photoData) {
+                    entry.mapThumbnailData = thumbnail
+                    entry.showOnPhotoMap = true
+                } else {
+                    guidedPromptLogger.error("Failed to generate map thumbnail from attached photo (\(photoData.count) bytes)")
+                }
+            }
+
             entry.hasUserSubmitted = true
             entry.updatedAt = Date()
             entry.needsSync = true

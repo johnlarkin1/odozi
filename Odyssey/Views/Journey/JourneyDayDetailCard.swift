@@ -35,6 +35,30 @@ struct JourneyDayDetailCard: View {
 
                 Spacer()
 
+                if entry.hasPhotos {
+                    Button {
+                        let newValue = !entry.showOnPhotoMap
+                        if newValue && entry.mapThumbnailData == nil {
+                            if let firstPhoto = entry.attachedPhotoData?.first,
+                               let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
+                            {
+                                entry.mapThumbnailData = thumbnail
+                            } else {
+                                return
+                            }
+                        }
+                        entry.showOnPhotoMap = newValue
+                        entry.updatedAt = Date()
+                        entry.needsSync = true
+                    } label: {
+                        Image(systemName: entry.showOnPhotoMap ? "mappin.circle.fill" : "mappin.circle")
+                            .font(.body)
+                            .foregroundStyle(entry.showOnPhotoMap ? Color.accentTeal : .secondary)
+                            .padding(8)
+                            .background(Circle().fill(Color.cardSurface))
+                    }
+                }
+
                 NavigationLink(destination: JournalEntryDetailView(entry: entry)) {
                     Image(systemName: "chevron.right")
                         .font(.caption.weight(.semibold))

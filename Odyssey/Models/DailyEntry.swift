@@ -55,6 +55,8 @@ final class DailyEntry {
     // Photos
     @Attribute(.externalStorage) var attachedPhotoData: [Data]?
     var autoPhotoIdentifiers: [String]?
+    var showOnPhotoMap: Bool = false
+    @Attribute(.externalStorage) var mapThumbnailData: Data?
 
     // User submission flag
     var hasUserSubmitted: Bool = false

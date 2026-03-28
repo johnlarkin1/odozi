@@ -8,6 +8,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
     case win
     case tension
     case journal
+    case photo
     case drinks
     case location
 
@@ -22,6 +23,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         case .win: return "What's your win today?"
         case .tension: return "Any tension or stress?"
         case .journal: return "Journal your thoughts"
+        case .photo: return "Add a Photo"
         case .drinks: return "How many drinks?"
         case .location: return "Your Location"
         }
@@ -36,6 +38,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         case .win: return "Celebrate an accomplishment"
         case .tension: return "Name it to tame it"
         case .journal: return "Free-write whatever's on your mind"
+        case .photo: return "Capture today's moment"
         case .drinks: return "Alcoholic drinks last night"
         case .location: return "Confirm or update where you are"
         }
@@ -50,6 +53,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         case .win: return "trophy.fill"
         case .tension: return "cloud.fill"
         case .journal: return "note.text"
+        case .photo: return "camera.fill"
         case .drinks: return "wineglass.fill"
         case .location: return "location.fill"
         }
@@ -64,6 +68,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         case .win: return .successGreen
         case .tension: return .coralRed
         case .journal: return .accentAmber
+        case .photo: return .cosmicPurple
         case .drinks: return .accentTeal
         case .location: return .accentTeal
         }

@@ -146,6 +146,11 @@ struct GuidedPromptFlowView: View {
                 get: { viewModel.responses.journalEntry },
                 set: { viewModel.responses.journalEntry = $0 }
             ))
+        case .photo:
+            PhotoPromptCard(photoData: Binding(
+                get: { viewModel.responses.attachedPhotoData },
+                set: { viewModel.responses.attachedPhotoData = $0 }
+            ))
         case .drinks:
             DrinksPromptCard(drinks: Binding(
                 get: { viewModel.responses.drinks },
