@@ -7,14 +7,33 @@
         @Environment(\.modelContext) private var modelContext
         @Query private var allEntries: [DailyEntry]
 
+        @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
+
         @State private var statusMessage: String?
         @State private var statusIsError = false
         @State private var showDigestPreview = false
         @State private var digestData: WeeklyDigestData?
         @State private var pendingNotificationCount: Int?
+        @State private var showOnboardingPreview = false
+        @State private var onboardingPreviewStep: OnboardingStep = .welcome
 
         var body: some View {
             List {
+                // MARK: - Onboarding
+
+                Section("Onboarding") {
+                    Button("Replay Full Onboarding") {
+                        hasCompletedOnboarding = false
+                        showStatus("Onboarding reset — restarting flow")
+                    }
+
+                    Button("Preview Onboarding Step…") {
+                        onboardingPreviewStep = .welcome
+                        showOnboardingPreview = true
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
+
                 // MARK: - Notifications
 
                 Section("Notifications") {
@@ -217,6 +236,9 @@
                     .environment(\.colorScheme, .dark)
                 }
             }
+            .fullScreenCover(isPresented: $showOnboardingPreview) {
+                OnboardingStepPreview(initialStep: onboardingPreviewStep)
+            }
         }
 
         // MARK: - Helpers
@@ -242,6 +264,73 @@
                 withAnimation {
                     statusMessage = nil
                 }
+            }
+        }
+    }
+
+    /// Full-screen preview that lets developers step through each onboarding card
+    /// with a picker to jump to any step directly.
+    struct OnboardingStepPreview: View {
+        let initialStep: OnboardingStep
+
+        @Environment(\.dismiss) private var dismiss
+        @Environment(AuthManager.self) private var authManager
+        @State private var viewModel = OnboardingViewModel()
+
+        var body: some View {
+            ZStack(alignment: .top) {
+                OnboardingFlowView(
+                    viewModel: viewModel,
+                    onComplete: { dismiss() }
+                )
+                .environment(authManager)
+
+                // Floating step picker
+                VStack(spacing: 0) {
+                    HStack {
+                        Button("Close") { dismiss() }
+                            .font(.body.weight(.medium))
+
+                        Spacer()
+
+                        Text("Step \(viewModel.currentStepIndex + 1)/\(viewModel.totalSteps)")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+                    .padding(.horizontal, 16)
+                    .padding(.top, 8)
+
+                    ScrollView(.horizontal, showsIndicators: false) {
+                        HStack(spacing: 8) {
+                            ForEach(OnboardingStep.allCases) { step in
+                                Button {
+                                    withAnimation(.easeInOut(duration: 0.3)) {
+                                        viewModel.currentStep = step
+                                    }
+                                } label: {
+                                    Text(step.title)
+                                        .font(.caption2.weight(.medium))
+                                        .padding(.horizontal, 10)
+                                        .padding(.vertical, 6)
+                                        .background(
+                                            viewModel.currentStep == step
+                                                ? step.iconColor
+                                                : Color.cardSurface
+                                        )
+                                        .foregroundStyle(.white)
+                                        .clipShape(Capsule())
+                                }
+                            }
+                        }
+                        .padding(.horizontal, 16)
+                        .padding(.vertical, 8)
+                    }
+                }
+                .background(.ultraThinMaterial.opacity(0.9))
+            }
+            .environment(\.colorScheme, .dark)
+            .onAppear {
+                viewModel.currentStep = initialStep
             }
         }
     }
