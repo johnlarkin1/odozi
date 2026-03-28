@@ -3,6 +3,7 @@ import SwiftUI
 
 struct InsightsDashboardView: View {
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: InsightsViewModel?
 
     var body: some View {
@@ -23,5 +24,18 @@ struct InsightsDashboardView: View {
             }
             viewModel?.loadEntries()
         }
+        .onChange(of: scenePhase) { _, newPhase in
+            if newPhase == .active {
+                Task {
+                    try? await Task.sleep(for: .seconds(4))
+                    viewModel?.loadEntries()
+                }
+            }
+        }
+        #if os(iOS)
+        .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
+            viewModel?.loadEntries()
+        }
+        #endif
     }
 }
