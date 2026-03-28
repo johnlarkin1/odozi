@@ -10,7 +10,7 @@ DESTINATION ?= platform=iOS Simulator,name=iPhone 17 Pro
 SERVER_DIR = odyssey-server
 SERVER_PORT ?= 8080
 
-.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release build-mac build-watch test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
+.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release build-mac build-watch test test-unit test-ui build-widget clean resolve lint format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots appstore appstore-iphone appstore-watch loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -187,6 +187,15 @@ match-force-local: ## Force-regenerate App Store profiles from local machine (lo
 
 screenshots: ## Capture App Store screenshots via Fastlane
 	bundle exec fastlane screenshots
+
+appstore: ## Generate all App Store assets (iPhone + Watch screenshots, metadata, gallery)
+	./scripts/appstore-assets.sh
+
+appstore-iphone: ## Generate iPhone App Store screenshots only
+	./scripts/appstore-assets.sh --iphone
+
+appstore-watch: ## Generate Apple Watch App Store screenshots only
+	./scripts/appstore-assets.sh --watch
 
 # --- Demo Recording ---
 

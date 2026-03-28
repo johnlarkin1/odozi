@@ -10,11 +10,21 @@ struct OdysseyWatchApp: App {
     @State private var watchSync = WatchSyncService()
     @State private var sessionReceiver = WatchSessionReceiver()
 
+    static let isScreenshotMode = ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] == "1"
+
     let container: ModelContainer?
 
     init() {
         do {
-            container = try DataContainer.create()
+            #if DEBUG
+                if Self.isScreenshotMode {
+                    container = try createWatchSeededContainer()
+                } else {
+                    container = try DataContainer.create()
+                }
+            #else
+                container = try DataContainer.create()
+            #endif
         } catch {
             logger.error("Failed to create ModelContainer: \(error)")
             container = nil
@@ -24,22 +34,36 @@ struct OdysseyWatchApp: App {
     var body: some Scene {
         WindowGroup {
             if let container {
-                WatchTabView()
-                    .environment(watchAuth)
-                    .environment(watchSync)
-                    .modelContainer(container)
-                    .task {
-                        sessionReceiver.activate(authManager: watchAuth)
-                        await watchSync.syncPendingEntries(
-                            modelContext: container.mainContext,
-                            authManager: watchAuth
-                        )
+                #if DEBUG
+                    if Self.isScreenshotMode {
+                        WatchScreenshotView()
+                            .modelContainer(container)
+                    } else {
+                        normalWatchView(container: container)
                     }
+                #else
+                    normalWatchView(container: container)
+                #endif
             } else {
                 Text("Unable to load data")
                     .foregroundStyle(.secondary)
             }
         }
+    }
+
+    @ViewBuilder
+    private func normalWatchView(container: ModelContainer) -> some View {
+        WatchTabView()
+            .environment(watchAuth)
+            .environment(watchSync)
+            .modelContainer(container)
+            .task {
+                sessionReceiver.activate(authManager: watchAuth)
+                await watchSync.syncPendingEntries(
+                    modelContext: container.mainContext,
+                    authManager: watchAuth
+                )
+            }
     }
 }
 
