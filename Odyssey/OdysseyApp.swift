@@ -188,19 +188,23 @@ struct OdysseyApp: App {
         let data = await service.captureSnapshot()
         applySnapshotData(data, to: context)
 
-        // Screen Time extension writes async to SharedDefaults — re-read after a delay
-        // to catch data that wasn't available on the initial read
+        // Screen Time extension writes async to SharedDefaults — poll until available
         Task {
-            try? await Task.sleep(for: .seconds(3))
-            if let screenTime = SharedDefaults.getScreenTime() {
-                let repository = DailyEntryRepository(context: context)
-                if let entry = try? repository.fetchOrCreateToday() {
-                    entry.screenTimeSeconds = screenTime.seconds
-                    entry.pickups = screenTime.pickups
-                    try? context.save()
-                    NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
+            let maxAttempts = 10
+            for _ in 1 ... maxAttempts {
+                try? await Task.sleep(for: .milliseconds(500))
+                if let screenTime = SharedDefaults.getScreenTime() {
+                    let repository = DailyEntryRepository(context: context)
+                    if let entry = try? repository.fetchOrCreateToday() {
+                        entry.screenTimeSeconds = screenTime.seconds
+                        entry.pickups = screenTime.pickups
+                        try? context.save()
+                        NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
+                    }
+                    return
                 }
             }
+            logger.warning("Screen time data not available after polling")
         }
 
         NotificationService.rescheduleIfNeeded()

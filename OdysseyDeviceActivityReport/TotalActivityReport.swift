@@ -34,6 +34,7 @@ struct TotalActivityReport: DeviceActivityReportScene {
         defaults?.set(totalDuration, forKey: "screenTimeSeconds")
         defaults?.set(totalPickups, forKey: "pickups")
         defaults?.set(Date().timeIntervalSince1970, forKey: "screenTimeLastUpdated")
+        defaults?.synchronize()
 
         return formatter.string(from: totalDuration) ?? "No activity data"
     }

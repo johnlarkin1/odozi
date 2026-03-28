@@ -26,6 +26,7 @@ enum SharedDefaults {
     }
 
     static func getScreenTime() -> (seconds: Double, pickups: Int)? {
+        suite.synchronize() // Force cross-process read from disk
         let lastUpdated = suite.double(forKey: screenTimeLastUpdatedKey)
         guard lastUpdated > 0 else { return nil }
 
