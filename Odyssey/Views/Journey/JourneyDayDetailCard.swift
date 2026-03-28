@@ -40,8 +40,7 @@ struct JourneyDayDetailCard: View {
                         let newValue = !entry.showOnPhotoMap
                         if newValue && entry.mapThumbnailData == nil {
                             if let firstPhoto = entry.attachedPhotoData?.first,
-                               let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
-                            {
+                               let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto) {
                                 entry.mapThumbnailData = thumbnail
                             } else {
                                 return
