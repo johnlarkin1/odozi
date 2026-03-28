@@ -1,5 +1,6 @@
 @testable import Odyssey
 import SwiftData
+import UIKit
 import XCTest
 
 @MainActor
@@ -68,8 +69,8 @@ final class GuidedPromptViewModelTests: XCTestCase {
 
     func testGoToNextFromLastStepSubmits() {
         let vm = GuidedPromptViewModel(modelContext: context)
-        // Navigate to last step
-        for _ in 0 ..< 8 {
+        // Navigate to last step (10 steps: mood, feeling, sleep, gratitude, win, tension, journal, photo, drinks, location)
+        for _ in 0 ..< 9 {
             vm.goToNext()
         }
         XCTAssertEqual(vm.currentStep, .location)
@@ -112,14 +113,14 @@ final class GuidedPromptViewModelTests: XCTestCase {
 
     func testTotalSteps() {
         let vm = GuidedPromptViewModel(modelContext: context)
-        XCTAssertEqual(vm.totalSteps, 9)
+        XCTAssertEqual(vm.totalSteps, 10)
     }
 
     func testProgress() {
         let vm = GuidedPromptViewModel(modelContext: context)
-        XCTAssertEqual(vm.progress, 0.0, accuracy: 0.001) // 0/9
+        XCTAssertEqual(vm.progress, 0.0, accuracy: 0.001) // 0/10
         vm.goToNext()
-        XCTAssertEqual(vm.progress, 1.0 / 9.0, accuracy: 0.001) // 1/9
+        XCTAssertEqual(vm.progress, 1.0 / 10.0, accuracy: 0.001) // 1/10
     }
 
     func testIsFirstStep() {
@@ -132,7 +133,7 @@ final class GuidedPromptViewModelTests: XCTestCase {
     func testIsLastStep() {
         let vm = GuidedPromptViewModel(modelContext: context)
         XCTAssertFalse(vm.isLastStep)
-        for _ in 0 ..< 8 {
+        for _ in 0 ..< 9 {
             vm.goToNext()
         }
         XCTAssertTrue(vm.isLastStep)
@@ -153,5 +154,39 @@ final class GuidedPromptViewModelTests: XCTestCase {
         XCTAssertEqual(entries.first?.feeling, 8)
         XCTAssertEqual(entries.first?.singleWordFeeling, "happy")
         XCTAssertEqual(entries.first?.gratitude, "sunshine")
+    }
+
+    func testSubmitWithPhotoSetsMapThumbnailAndFlag() throws {
+        let vm = GuidedPromptViewModel(modelContext: context)
+        // Create a valid JPEG for the photo
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100))
+        let jpegData = renderer.image { ctx in
+            UIColor.red.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+        }.jpegData(compressionQuality: 0.8)!
+
+        vm.responses.attachedPhotoData = jpegData
+        vm.submit()
+
+        let entries = try context.fetch(FetchDescriptor<DailyEntry>())
+        XCTAssertEqual(entries.count, 1)
+
+        let entry = entries.first!
+        XCTAssertNotNil(entry.attachedPhotoData)
+        XCTAssertEqual(entry.attachedPhotoData?.count, 1)
+        XCTAssertNotNil(entry.mapThumbnailData, "Thumbnail should be generated from valid photo")
+        XCTAssertTrue(entry.showOnPhotoMap, "showOnPhotoMap should be true when thumbnail succeeds")
+    }
+
+    func testSubmitWithoutPhotoLeavesPhotoFieldsAtDefaults() throws {
+        let vm = GuidedPromptViewModel(modelContext: context)
+        vm.responses.feeling = 7
+        vm.submit()
+
+        let entries = try context.fetch(FetchDescriptor<DailyEntry>())
+        let entry = entries.first!
+        XCTAssertNil(entry.attachedPhotoData)
+        XCTAssertNil(entry.mapThumbnailData)
+        XCTAssertFalse(entry.showOnPhotoMap)
     }
 }

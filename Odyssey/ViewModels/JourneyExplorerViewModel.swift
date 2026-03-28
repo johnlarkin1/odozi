@@ -122,9 +122,15 @@ final class JourneyExplorerViewModel {
         existing.append(jpegData)
         entry.attachedPhotoData = existing
         if entry.mapThumbnailData == nil {
-            entry.mapThumbnailData = PhotoLibraryService.generateMapThumbnail(from: jpegData)
+            if let thumbnail = PhotoLibraryService.generateMapThumbnail(from: jpegData) {
+                entry.mapThumbnailData = thumbnail
+                entry.showOnPhotoMap = true
+            }
+        } else {
+            entry.showOnPhotoMap = true
         }
         entry.updatedAt = Date()
+        entry.needsSync = true
     }
 
     func removeAttachedPhoto(at index: Int, from entry: DailyEntry) {

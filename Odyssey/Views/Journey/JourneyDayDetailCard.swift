@@ -37,13 +37,19 @@ struct JourneyDayDetailCard: View {
 
                 if entry.hasPhotos {
                     Button {
-                        entry.showOnPhotoMap.toggle()
-                        if entry.showOnPhotoMap && entry.mapThumbnailData == nil {
-                            if let firstPhoto = entry.attachedPhotoData?.first {
-                                entry.mapThumbnailData = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
+                        let newValue = !entry.showOnPhotoMap
+                        if newValue && entry.mapThumbnailData == nil {
+                            if let firstPhoto = entry.attachedPhotoData?.first,
+                               let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
+                            {
+                                entry.mapThumbnailData = thumbnail
+                            } else {
+                                return
                             }
                         }
+                        entry.showOnPhotoMap = newValue
                         entry.updatedAt = Date()
+                        entry.needsSync = true
                     } label: {
                         Image(systemName: entry.showOnPhotoMap ? "mappin.circle.fill" : "mappin.circle")
                             .font(.body)

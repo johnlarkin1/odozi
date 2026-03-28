@@ -1,5 +1,8 @@
+import os
 import Photos
 import UIKit
+
+private let photoLibraryLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "PhotoLibrary")
 
 actor PhotoLibraryService {
     static let shared = PhotoLibraryService()
@@ -63,11 +66,33 @@ actor PhotoLibraryService {
     }
 
     static func generateMapThumbnail(from jpegData: Data, size: CGFloat = 80) -> Data? {
-        guard let image = UIImage(data: jpegData) else { return nil }
+        guard let image = UIImage(data: jpegData) else {
+            photoLibraryLogger.warning("Failed to create UIImage from data (\(jpegData.count) bytes) for map thumbnail")
+            return nil
+        }
         let renderer = UIGraphicsImageRenderer(size: CGSize(width: size, height: size))
         let thumbnail = renderer.image { _ in
             image.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
         }
-        return thumbnail.jpegData(compressionQuality: 0.7)
+        guard let result = thumbnail.jpegData(compressionQuality: 0.7) else {
+            photoLibraryLogger.warning("Failed to compress thumbnail to JPEG")
+            return nil
+        }
+        return result
+    }
+
+    /// Compresses and resizes photo data for storage (max 1200px, 0.8 JPEG quality).
+    static func compressForStorage(data: Data, maxDimension: CGFloat = 1200) -> Data? {
+        guard let uiImage = UIImage(data: data) else {
+            photoLibraryLogger.warning("Failed to create UIImage for compression (\(data.count) bytes)")
+            return nil
+        }
+        let scale = min(maxDimension / uiImage.size.width, maxDimension / uiImage.size.height, 1.0)
+        let newSize = CGSize(width: uiImage.size.width * scale, height: uiImage.size.height * scale)
+        let renderer = UIGraphicsImageRenderer(size: newSize)
+        let compressed = renderer.image { _ in
+            uiImage.draw(in: CGRect(origin: .zero, size: newSize))
+        }
+        return compressed.jpegData(compressionQuality: 0.8)
     }
 }

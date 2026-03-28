@@ -132,13 +132,18 @@ struct JournalEntryDetailView: View {
                         Toggle("", isOn: Binding(
                             get: { entry.showOnPhotoMap },
                             set: { newValue in
-                                entry.showOnPhotoMap = newValue
                                 if newValue && entry.mapThumbnailData == nil {
-                                    if let firstPhoto = entry.attachedPhotoData?.first {
-                                        entry.mapThumbnailData = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
+                                    if let firstPhoto = entry.attachedPhotoData?.first,
+                                       let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
+                                    {
+                                        entry.mapThumbnailData = thumbnail
+                                    } else {
+                                        return
                                     }
                                 }
+                                entry.showOnPhotoMap = newValue
                                 entry.updatedAt = Date()
+                                entry.needsSync = true
                             }
                         ))
                         .labelsHidden()

@@ -68,7 +68,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         case .win: return .successGreen
         case .tension: return .coralRed
         case .journal: return .accentAmber
-        case .photo: return .purple
+        case .photo: return .cosmicPurple
         case .drinks: return .accentTeal
         case .location: return .accentTeal
         }

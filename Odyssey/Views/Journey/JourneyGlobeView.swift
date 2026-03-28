@@ -1,10 +1,15 @@
 import MapKit
+import os
 import SwiftUI
+
+private let globeLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "JourneyGlobe")
 
 struct JourneyGlobeView: View {
     let entries: [DailyEntry]
     @Binding var cameraPosition: MapCameraPosition
     var onEntryTapped: ((DailyEntry) -> Void)?
+
+    @State private var thumbnailCache: [Date: UIImage] = [:]
 
     var body: some View {
         Map(position: $cameraPosition) {
@@ -17,10 +22,7 @@ struct JourneyGlobeView: View {
                         Button {
                             onEntryTapped?(entry)
                         } label: {
-                            if entry.hasMapPhoto,
-                               let thumbData = entry.mapThumbnailData,
-                               let uiImage = UIImage(data: thumbData)
-                            {
+                            if entry.hasMapPhoto, let uiImage = thumbnailCache[entry.date] {
                                 PhotoMapPin(image: uiImage, moodColor: entry.moodGradientColor)
                             } else {
                                 Circle()
@@ -38,9 +40,25 @@ struct JourneyGlobeView: View {
             }
         }
         .mapStyle(.imagery(elevation: .realistic))
+        .onAppear { buildThumbnailCache() }
+        .onChange(of: entries.count) { buildThumbnailCache() }
     }
 
     private var locatedEntries: [DailyEntry] {
         entries.filter { $0.latitude != nil && $0.longitude != nil }
+    }
+
+    private func buildThumbnailCache() {
+        var cache: [Date: UIImage] = [:]
+        for entry in locatedEntries where entry.hasMapPhoto {
+            if let data = entry.mapThumbnailData {
+                if let image = UIImage(data: data) {
+                    cache[entry.date] = image
+                } else {
+                    globeLogger.warning("Failed to decode map thumbnail for entry on \(entry.date.shortFormatted)")
+                }
+            }
+        }
+        thumbnailCache = cache
     }
 }

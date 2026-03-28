@@ -176,6 +176,38 @@ final class DailyEntryComputedTests: XCTestCase {
         XCTAssertNil(entry.sleepScoreLabel)
     }
 
+    // MARK: - hasMapPhoto
+
+    func testHasMapPhotoTrueWhenEnabledAndThumbnailPresent() {
+        let entry = DailyEntry()
+        entry.showOnPhotoMap = true
+        entry.mapThumbnailData = Data([0xFF, 0xD8, 0xFF]) // minimal JPEG-like data
+        XCTAssertTrue(entry.hasMapPhoto)
+    }
+
+    func testHasMapPhotoFalseWhenDisabledWithThumbnail() {
+        let entry = DailyEntry()
+        entry.showOnPhotoMap = false
+        entry.mapThumbnailData = Data([0xFF, 0xD8, 0xFF])
+        XCTAssertFalse(entry.hasMapPhoto)
+    }
+
+    func testHasMapPhotoFalseWhenEnabledWithoutThumbnail() {
+        let entry = DailyEntry()
+        entry.showOnPhotoMap = true
+        entry.mapThumbnailData = nil
+        XCTAssertFalse(entry.hasMapPhoto)
+    }
+
+    func testHasMapPhotoFalseWhenBothDisabledAndNoThumbnail() {
+        let entry = DailyEntry()
+        entry.showOnPhotoMap = false
+        entry.mapThumbnailData = nil
+        XCTAssertFalse(entry.hasMapPhoto)
+    }
+
+    // MARK: - sleepScoreLabel
+
     func testSleepScoreLabelBoundaries() {
         XCTAssertEqual(DailyEntry(sleepScore: 40).sleepScoreLabel, "Low")
         XCTAssertEqual(DailyEntry(sleepScore: 41).sleepScoreLabel, "Fair")
