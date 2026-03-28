@@ -117,4 +117,7 @@ docs/MATCH_FASTLANE_INFO.md
 # Load test keys
 odyssey-server/loadtests/keys/*.pem
 
+# App Store generated assets
+appstore-assets/
+
 **/*__pycache*
