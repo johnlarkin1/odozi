@@ -81,18 +81,18 @@ extension DailyEntry {
     // MARK: - Workout
 
     var workouts: [WorkoutSummary] {
-        guard let data = workoutDataJSON,
-              let decoded = try? JSONDecoder().decode([WorkoutSummary].self, from: data) else {
+        guard let data = workoutDataJSON else { return [] }
+        do {
+            return try JSONDecoder().decode([WorkoutSummary].self, from: data)
+        } catch {
+            print("[DailyEntry] Failed to decode workoutDataJSON: \(error)")
             return []
         }
-        return decoded
     }
 
     var didWorkout: Bool {
-        (workoutCount ?? 0) > 0
+        workoutDataJSON != nil
     }
-
-    var hasWorkoutData: Bool { didWorkout }
 
     var primaryWorkout: WorkoutSummary? {
         workouts.max(by: { $0.durationSeconds < $1.durationSeconds })

@@ -272,6 +272,29 @@ actor HealthKitService {
         case .martialArts: return "Martial Arts"
         case .crossTraining: return "Cross Training"
         case .mixedCardio: return "Cardio"
+        case .climbing: return "Climbing"
+        case .boxing: return "Boxing"
+        case .kickboxing: return "Kickboxing"
+        case .jumpRope: return "Jump Rope"
+        case .golf: return "Golf"
+        case .surfingSports: return "Surfing"
+        case .snowSports: return "Snow Sports"
+        case .skatingSports: return "Skating"
+        case .paddleSports: return "Paddle Sports"
+        case .badminton: return "Badminton"
+        case .volleyball: return "Volleyball"
+        case .hockey: return "Hockey"
+        case .tableTennis: return "Table Tennis"
+        case .handball: return "Handball"
+        case .lacrosse: return "Lacrosse"
+        case .rugby: return "Rugby"
+        case .wrestling: return "Wrestling"
+        case .cricket: return "Cricket"
+        case .gymnastics: return "Gymnastics"
+        case .fencing: return "Fencing"
+        case .archery: return "Archery"
+        case .fishing: return "Fishing"
+        // Unmapped types default to "Workout" with base intensity score 5
         default: return "Workout"
         }
     }
@@ -280,12 +303,19 @@ actor HealthKitService {
         guard !workouts.isEmpty else { return nil }
 
         // Base score from workout type
+        // Unmapped activity names (i.e. "Workout") default to base score 5
         let typeScores: [String: Int] = [
             "Walking": 3, "Yoga": 3, "Pilates": 3, "Cooldown": 2,
             "Cycling": 5, "Swimming": 6, "Elliptical": 5, "Rowing": 6, "Dance": 5,
             "Running": 7, "Hiking": 6, "Strength": 6, "Functional Strength": 6,
             "Core Training": 5, "Stair Climbing": 6, "Cross Training": 7, "Cardio": 6,
-            "HIIT": 8, "Martial Arts": 7, "Basketball": 7, "Soccer": 7, "Tennis": 6
+            "HIIT": 8, "Martial Arts": 7, "Basketball": 7, "Soccer": 7, "Tennis": 6,
+            "Climbing": 7, "Boxing": 8, "Kickboxing": 8, "Jump Rope": 7,
+            "Golf": 3, "Surfing": 6, "Snow Sports": 6, "Skating": 5,
+            "Paddle Sports": 5, "Badminton": 5, "Volleyball": 5, "Hockey": 7,
+            "Table Tennis": 4, "Handball": 7, "Lacrosse": 7, "Rugby": 8,
+            "Wrestling": 8, "Cricket": 4, "Gymnastics": 6, "Fencing": 6,
+            "Archery": 2, "Fishing": 2
         ]
 
         let longestWorkout = workouts.max(by: { $0.durationSeconds < $1.durationSeconds })!

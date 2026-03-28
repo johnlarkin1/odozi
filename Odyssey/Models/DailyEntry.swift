@@ -8,7 +8,9 @@ extension Notification.Name {
 }
 
 struct WorkoutSummary: Codable, Sendable, Identifiable {
-    var id: UUID = UUID()
+    // Stable ID derived from content — survives re-capture without causing SwiftUI remounts
+    var id: String { "\(activityType)-\(startDate.timeIntervalSince1970)" }
+
     let activityType: UInt            // HKWorkoutActivityType.rawValue
     let activityName: String          // Human-readable name (e.g., "Running")
     let durationSeconds: Double
@@ -17,6 +19,11 @@ struct WorkoutSummary: Codable, Sendable, Identifiable {
     let averageHeartRate: Double?     // bpm during workout
     let startDate: Date
     let endDate: Date
+
+    enum CodingKeys: String, CodingKey {
+        case activityType, activityName, durationSeconds, totalCalories
+        case totalDistanceMeters, averageHeartRate, startDate, endDate
+    }
 }
 
 @Model

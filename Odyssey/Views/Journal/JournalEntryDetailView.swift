@@ -67,7 +67,7 @@ struct JournalEntryDetailView: View {
                 }
 
                 // Background data
-                if entry.stepCount != nil || entry.screenTimeSeconds != nil || entry.latitude != nil {
+                if entry.stepCount != nil || entry.screenTimeSeconds != nil || entry.latitude != nil || entry.didWorkout || entry.hasSleepStageData {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Background Data")
                             .font(.headline)
@@ -90,7 +90,7 @@ struct JournalEntryDetailView: View {
                         .padding(.horizontal, 16)
 
                         // Workout breakdown
-                        if entry.hasWorkoutData {
+                        if entry.didWorkout {
                             VStack(alignment: .leading, spacing: 6) {
                                 HStack {
                                     Text("Workouts")

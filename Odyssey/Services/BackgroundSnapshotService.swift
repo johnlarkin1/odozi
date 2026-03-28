@@ -44,11 +44,21 @@ actor BackgroundSnapshotService {
         let location = await locationResult
         let health = await healthResult
 
-        // Encode workout data
-        let workoutJSON = health.workouts.isEmpty ? nil : try? JSONEncoder().encode(health.workouts)
-        let workoutCount = health.workouts.isEmpty ? nil : health.workouts.count
-        let totalMinutes: Double? = health.workouts.isEmpty ? nil : health.workouts.reduce(0) { $0 + $1.durationSeconds } / 60.0
-        let intensityScore = HealthKitService.computeIntensityScore(for: health.workouts)
+        // Encode workout data — only compute summary fields if encoding succeeds
+        var workoutJSON: Data?
+        var workoutCount: Int?
+        var totalMinutes: Double?
+        var intensityScore: Int?
+        if !health.workouts.isEmpty {
+            do {
+                workoutJSON = try JSONEncoder().encode(health.workouts)
+                workoutCount = health.workouts.count
+                totalMinutes = health.workouts.reduce(0) { $0 + $1.durationSeconds } / 60.0
+                intensityScore = HealthKitService.computeIntensityScore(for: health.workouts)
+            } catch {
+                logger.error("Failed to encode workout data: \(error)")
+            }
+        }
 
         return SnapshotData(
             latitude: location?.latitude,
