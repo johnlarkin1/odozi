@@ -123,6 +123,32 @@ struct JournalEntryDetailView: View {
                     }
                 }
 
+                // Photo map toggle
+                if entry.hasPhotos {
+                    HStack {
+                        Label("Show on Photo Map", systemImage: "map.fill")
+                            .font(.subheadline)
+                        Spacer()
+                        Toggle("", isOn: Binding(
+                            get: { entry.showOnPhotoMap },
+                            set: { newValue in
+                                entry.showOnPhotoMap = newValue
+                                if newValue && entry.mapThumbnailData == nil {
+                                    if let firstPhoto = entry.attachedPhotoData?.first {
+                                        entry.mapThumbnailData = PhotoLibraryService.generateMapThumbnail(from: firstPhoto)
+                                    }
+                                }
+                                entry.updatedAt = Date()
+                            }
+                        ))
+                        .labelsHidden()
+                        .tint(.accentTeal)
+                    }
+                    .padding(16)
+                    .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardSurface))
+                    .padding(.horizontal, 16)
+                }
+
                 Spacer(minLength: 32)
             }
             .padding(.top, 16)

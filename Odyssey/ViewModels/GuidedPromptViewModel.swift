@@ -100,6 +100,15 @@ final class GuidedPromptViewModel {
             entry.tension = responses.tension
             entry.journalEntry = responses.journalEntry
             entry.drinks = responses.drinks
+
+            if let photoData = responses.attachedPhotoData {
+                var existing = entry.attachedPhotoData ?? []
+                existing.append(photoData)
+                entry.attachedPhotoData = existing
+                entry.mapThumbnailData = PhotoLibraryService.generateMapThumbnail(from: photoData)
+                entry.showOnPhotoMap = true
+            }
+
             entry.hasUserSubmitted = true
             entry.updatedAt = Date()
             entry.needsSync = true

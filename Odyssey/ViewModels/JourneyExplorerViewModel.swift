@@ -121,6 +121,9 @@ final class JourneyExplorerViewModel {
         var existing = entry.attachedPhotoData ?? []
         existing.append(jpegData)
         entry.attachedPhotoData = existing
+        if entry.mapThumbnailData == nil {
+            entry.mapThumbnailData = PhotoLibraryService.generateMapThumbnail(from: jpegData)
+        }
         entry.updatedAt = Date()
     }
 

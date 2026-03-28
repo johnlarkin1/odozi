@@ -87,4 +87,8 @@ extension DailyEntry {
         if let auto = autoPhotoIdentifiers, !auto.isEmpty { return true }
         return false
     }
+
+    var hasMapPhoto: Bool {
+        showOnPhotoMap && mapThumbnailData != nil
+    }
 }

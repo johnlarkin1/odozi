@@ -61,4 +61,13 @@ actor PhotoLibraryService {
         }
         return image.jpegData(compressionQuality: compressionQuality)
     }
+
+    static func generateMapThumbnail(from jpegData: Data, size: CGFloat = 80) -> Data? {
+        guard let image = UIImage(data: jpegData) else { return nil }
+        let renderer = UIGraphicsImageRenderer(size: CGSize(width: size, height: size))
+        let thumbnail = renderer.image { _ in
+            image.draw(in: CGRect(x: 0, y: 0, width: size, height: size))
+        }
+        return thumbnail.jpegData(compressionQuality: 0.7)
+    }
 }

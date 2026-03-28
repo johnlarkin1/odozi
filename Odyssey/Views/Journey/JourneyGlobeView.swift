@@ -17,14 +17,21 @@ struct JourneyGlobeView: View {
                         Button {
                             onEntryTapped?(entry)
                         } label: {
-                            Circle()
-                                .fill(entry.moodGradientColor)
-                                .frame(width: 14, height: 14)
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.6), lineWidth: 1.5)
-                                )
-                                .shadow(color: entry.moodGradientColor.opacity(0.5), radius: 4)
+                            if entry.hasMapPhoto,
+                               let thumbData = entry.mapThumbnailData,
+                               let uiImage = UIImage(data: thumbData)
+                            {
+                                PhotoMapPin(image: uiImage, moodColor: entry.moodGradientColor)
+                            } else {
+                                Circle()
+                                    .fill(entry.moodGradientColor)
+                                    .frame(width: 14, height: 14)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white.opacity(0.6), lineWidth: 1.5)
+                                    )
+                                    .shadow(color: entry.moodGradientColor.opacity(0.5), radius: 4)
+                            }
                         }
                     }
                 }

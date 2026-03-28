@@ -19,16 +19,26 @@ struct MapVisualizationView: View {
                             latitude: lat,
                             longitude: lng
                         )) {
-                            Circle()
-                                .fill(entry.moodGradientColor)
-                                .frame(width: 12, height: 12)
-                                .overlay(
-                                    Circle()
-                                        .stroke(Color.white.opacity(0.5), lineWidth: 1)
-                                )
-                                .accessibilityLabel(
-                                    "Entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")"
-                                )
+                            if entry.hasMapPhoto,
+                               let thumbData = entry.mapThumbnailData,
+                               let uiImage = UIImage(data: thumbData)
+                            {
+                                PhotoMapPin(image: uiImage, moodColor: entry.moodGradientColor)
+                                    .accessibilityLabel(
+                                        "Photo entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")"
+                                    )
+                            } else {
+                                Circle()
+                                    .fill(entry.moodGradientColor)
+                                    .frame(width: 12, height: 12)
+                                    .overlay(
+                                        Circle()
+                                            .stroke(Color.white.opacity(0.5), lineWidth: 1)
+                                    )
+                                    .accessibilityLabel(
+                                        "Entry on \(entry.date.shortFormatted), mood \(entry.feeling) out of 10\(entry.city.map { ", \($0)" } ?? "")"
+                                    )
+                            }
                         }
                     }
                 }
