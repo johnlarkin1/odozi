@@ -4,7 +4,7 @@ struct MoodOrbView: View {
     let entry: DailyEntry?
     let hasEntry: Bool
     let onBeginEntry: () -> Void
-    var onTapOrb: (() -> Void)? = nil
+    var onTapOrb: (() -> Void)?
     var animateIn: Bool = false
 
     @State private var pulse = false

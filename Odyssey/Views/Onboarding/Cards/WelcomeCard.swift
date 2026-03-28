@@ -52,7 +52,7 @@ struct WelcomeCard: View {
             }
             withAnimation(
                 .easeInOut(duration: 3.0)
-                .repeatForever(autoreverses: true)
+                    .repeatForever(autoreverses: true)
             ) {
                 floatOffset = -8
             }

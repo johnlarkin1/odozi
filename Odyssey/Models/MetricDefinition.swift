@@ -107,7 +107,8 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
 
     var availableChartModes: [ChartMode] {
         switch self {
-        case .mood, .sleepRating, .steps, .walkingDistance, .sleepHours, .sleepREM, .sleepDeep, .sleepCore, .sleepScore, .screenTime, .pickups:
+        case .mood, .sleepRating, .steps, .walkingDistance, .sleepHours, .sleepREM, .sleepDeep, .sleepCore, .sleepScore, .screenTime,
+             .pickups:
             return [.line, .radial, .scatter]
         case .drinks:
             return [.line, .scatter]

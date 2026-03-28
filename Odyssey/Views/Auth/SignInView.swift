@@ -18,11 +18,16 @@ struct SignInView: View {
                     .font(.title2)
                     .fontWeight(.bold)
 
-                Text("Odyssey uses iCloud to keep your journal entries safe and synced across your devices. Sign in with Apple is the simplest, most secure way to protect your data -- no extra accounts or passwords needed.")
-                    .font(.subheadline)
-                    .foregroundStyle(.secondary)
-                    .multilineTextAlignment(.center)
-                    .padding(.horizontal)
+                Text(
+                    "Odyssey uses iCloud to keep your journal entries safe and synced "
+                        + "across your devices. Sign in with Apple is the simplest, most "
+                        + "secure way to protect your data -- no extra accounts or "
+                        + "passwords needed."
+                )
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
             }
 
             SignInWithAppleButton(.signIn) { request in
@@ -69,9 +74,13 @@ struct SignInView: View {
                 .fontWeight(.medium)
                 .foregroundStyle(Color.accentTeal)
 
-            Text("Odyssey syncs through iCloud, which requires an Apple account. This keeps your journal data within Apple's secure ecosystem -- no third-party servers involved.")
-                .font(.caption2)
-                .foregroundStyle(.secondary)
+            Text(
+                "Odyssey syncs through iCloud, which requires an Apple account. "
+                    + "This keeps your journal data within Apple's secure ecosystem "
+                    + "-- no third-party servers involved."
+            )
+            .font(.caption2)
+            .foregroundStyle(.secondary)
         }
         .padding(12)
         .background(Color.cardSurface, in: RoundedRectangle(cornerRadius: 10))

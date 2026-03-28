@@ -7,7 +7,7 @@ enum VitalType: Hashable {
 struct VitalsGridView: View {
     let entry: DailyEntry?
     let streak: Int
-    var onTapVital: ((VitalType) -> Void)? = nil
+    var onTapVital: ((VitalType) -> Void)?
     var animateIn: Bool = false
 
     @State private var cardsVisible = false

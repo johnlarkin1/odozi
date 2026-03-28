@@ -58,7 +58,8 @@ struct WatchHealthCapture {
             entry.needsSync = true
             try modelContext.save()
 
-            logger.info("Health data captured: steps=\(entry.stepCount ?? 0), sleep=\(entry.sleepHours ?? 0), score=\(entry.sleepScore ?? 0)")
+            logger
+                .info("Health data captured: steps=\(entry.stepCount ?? 0), sleep=\(entry.sleepHours ?? 0), score=\(entry.sleepScore ?? 0)")
         } catch {
             logger.error("Failed to capture health data: \(error)")
         }

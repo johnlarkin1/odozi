@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ReflectionPeekCard: View {
     let entry: DailyEntry?
-    var onTap: (() -> Void)? = nil
+    var onTap: (() -> Void)?
     var animateIn: Bool = false
 
     var body: some View {

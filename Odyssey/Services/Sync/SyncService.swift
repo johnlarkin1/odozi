@@ -1,4 +1,5 @@
 // TODO: Replace with CloudKit sync
+// swiftlint:disable file_length
 import Foundation
 import os
 import SwiftData
@@ -7,6 +8,7 @@ private let conflictLogger = Logger(subsystem: "com.johnlarkin.Odyssey", categor
 
 @MainActor
 @Observable
+// swiftlint:disable:next type_body_length
 final class SyncService {
     var status: SyncStatus = .idle
     var lastSyncDate: Date?
@@ -144,6 +146,7 @@ final class SyncService {
         let updatedAt: String
     }
 
+    // swiftlint:disable:next function_body_length
     private func encryptBatch(_ entries: [DailyEntry]) async throws -> [SyncUploadEntry] {
         // Snapshot entry data on the main actor before entering the task group
         let snapshots: [EntrySnapshot] = entries.enumerated().map { index, entry in
@@ -476,7 +479,7 @@ final class SyncService {
     // MARK: - Field-Level Merge
 
     /// Performs field-level merge of a decrypted remote entry into an existing local entry.
-    private func mergeFields(
+    private func mergeFields( // swiftlint:disable:this function_body_length
         local: DailyEntry,
         remote: DecryptedRemoteEntry,
         localTimestamp: Date,

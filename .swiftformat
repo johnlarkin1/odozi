@@ -11,6 +11,9 @@
 # multi-line if/guard conditions, which conflicts with SwiftLint opening_brace
 --disable wrapMultilineStatementBraces
 
+# Enable redundantNilInit to match SwiftLint redundant_optional_initialization
+--enable redundantNilInit
+
 # Excluded paths (matches .swiftlint.yml)
 --exclude DerivedData,build,.build,.worktrees,Packages,.swiftpm,Odyssey.xcodeproj
 

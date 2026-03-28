@@ -261,7 +261,14 @@ struct ProfileView: View {
         let descriptor = FetchDescriptor<DailyEntry>(sortBy: [SortDescriptor(\.date)])
         guard let entries = try? modelContext.fetch(descriptor) else { return nil }
 
-        var csv = "Date,Feeling,Sleep Quality,Single Word Feeling,Journal Entry,Drinks,Win,Tension,Gratitude,Steps,Screen Time,City,Sleep Hours,Sleep REM Hours,Sleep Deep Hours,Sleep Core Hours,Sleep Awake Minutes,Sleep Score\n"
+        let headers = [
+            "Date", "Feeling", "Sleep Quality", "Single Word Feeling",
+            "Journal Entry", "Drinks", "Win", "Tension", "Gratitude",
+            "Steps", "Screen Time", "City", "Sleep Hours",
+            "Sleep REM Hours", "Sleep Deep Hours", "Sleep Core Hours",
+            "Sleep Awake Minutes", "Sleep Score"
+        ]
+        var csv = headers.joined(separator: ",") + "\n"
 
         let dateFormatter = DateFormatter()
         dateFormatter.dateStyle = .short
