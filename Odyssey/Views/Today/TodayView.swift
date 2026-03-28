@@ -138,6 +138,7 @@ struct TodayView: View {
                     .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
                         viewModel?.checkForTodayEntry()
                         todayEntry = viewModel?.fetchTodayEntry()
+                        insightsViewModel?.loadEntries()
                     }
             #endif
                     .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
