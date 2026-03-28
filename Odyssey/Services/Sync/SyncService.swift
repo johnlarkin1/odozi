@@ -54,7 +54,7 @@ final class SyncService {
                 let uploadEntries = try await encryptBatch(batch)
                 let payload = SyncUploadPayload(entries: uploadEntries)
 
-                guard let token = await authManager?.refreshTokenIfNeeded() else {
+                guard let token = await authManager?.getStoredToken() else {
                     status = .error("Not authenticated")
                     return
                 }
@@ -84,7 +84,7 @@ final class SyncService {
     func restoreFromCloud(modelContext: ModelContext, authManager: AuthManager) async {
         status = .syncing
 
-        guard let token = await authManager.refreshTokenIfNeeded() else {
+        guard let token = await authManager.getStoredToken() else {
             status = .error("Not authenticated")
             return
         }

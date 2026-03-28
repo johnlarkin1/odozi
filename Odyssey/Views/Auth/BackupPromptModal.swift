@@ -56,7 +56,19 @@ struct BackupPromptModal: View {
 
                 whyAppleOnlySection
 
-                .padding(.bottom, 32)
+                if authManager.isLoading {
+                    ProgressView()
+                }
+
+                if let error = authManager.error {
+                    Text(error)
+                        .font(.caption)
+                        .foregroundStyle(Color.coralRed)
+                        .padding(.horizontal)
+                }
+
+                Spacer()
+                    .frame(height: 32)
             }
             .navigationTitle("")
             .toolbar {
@@ -68,17 +80,6 @@ struct BackupPromptModal: View {
                             .foregroundStyle(.secondary)
                     }
                 }
-            }
-
-            if authManager.isLoading {
-                ProgressView()
-            }
-
-            if let error = authManager.error {
-                Text(error)
-                    .font(.caption)
-                    .foregroundStyle(Color.coralRed)
-                    .padding(.horizontal)
             }
         }
         .environment(\.colorScheme, .dark)

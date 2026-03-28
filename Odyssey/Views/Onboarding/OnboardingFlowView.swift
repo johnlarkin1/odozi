@@ -48,6 +48,11 @@ struct OnboardingFlowView: View {
             BackupPromptModal()
                 .environment(authManager)
         }
+        .onChange(of: authManager.isSignedIn) { _, isSignedIn in
+            if isSignedIn && viewModel.currentStep == .account {
+                viewModel.goToNext()
+            }
+        }
     }
 
     @ViewBuilder

@@ -58,6 +58,13 @@ final class AuthManager {
         isLoading = true
         defer { isLoading = false }
 
+        // Migration: clear orphaned Clerk auth tokens from before SIWA migration
+        if (try? KeychainService.retrieveAppleUserID()) == nil,
+           (try? KeychainService.retrieveAuthToken()) != nil {
+            try? KeychainService.deleteAuthToken()
+            logger.info("Cleared legacy Clerk auth token")
+        }
+
         guard let userIdentifier = try? KeychainService.retrieveAppleUserID() else {
             return
         }
@@ -73,14 +80,14 @@ final class AuthManager {
                 logger.info("Apple credential revoked or not found, clearing auth state")
                 await signOut()
             case .transferred:
-                logger.info("Apple credential transferred to new team")
-                isSignedIn = true
-                user = loadStoredUser(userIdentifier: userIdentifier)
+                logger.warning("Apple credential transferred to new team — forcing re-auth")
+                await signOut()
             @unknown default:
                 break
             }
         } catch {
             // Credential check failed (e.g., no network) — trust stored state
+            logger.warning("Credential state check failed, trusting stored state: \(error.localizedDescription)")
             isSignedIn = true
             user = loadStoredUser(userIdentifier: userIdentifier)
         }
@@ -113,7 +120,12 @@ final class AuthManager {
             // Store identity token if available (for server-side validation)
             if let tokenData = credential.identityToken,
                let token = String(data: tokenData, encoding: .utf8) {
-                try? KeychainService.storeAuthToken(token)
+                do {
+                    try KeychainService.storeAuthToken(token)
+                } catch {
+                    logger.error("Failed to store auth token in Keychain: \(error)")
+                    self.error = "Sign-in succeeded but sync token could not be saved. Sync may not work."
+                }
             }
 
             // Apple only sends name/email on first authorization — persist them
@@ -155,9 +167,14 @@ final class AuthManager {
 
         isSignedIn = false
         user = nil
-        try? KeychainService.deleteAppleUserID()
-        try? KeychainService.deleteAuthToken()
 
+        do { try KeychainService.deleteAppleUserID() }
+        catch { logger.error("Failed to delete Apple user ID during sign-out: \(error)") }
+
+        do { try KeychainService.deleteAuthToken() }
+        catch { logger.error("Failed to delete auth token during sign-out: \(error)") }
+
+        // TODO: Move name/email to Keychain so they survive reinstall (Apple only sends these once)
         UserDefaults.standard.removeObject(forKey: Self.userEmailKey)
         UserDefaults.standard.removeObject(forKey: Self.userGivenNameKey)
         UserDefaults.standard.removeObject(forKey: Self.userFamilyNameKey)
@@ -171,32 +188,33 @@ final class AuthManager {
         defer { isLoading = false }
 
         // TODO: Replace with CloudKit record deletion
-        if let token = try? KeychainService.retrieveAuthToken() {
-            do {
-                try await APIClient().deleteAccount(token: token)
-            } catch {
-                throw AuthError.serverError("Failed to delete account: \(error.localizedDescription)")
-            }
+        guard let token = try? KeychainService.retrieveAuthToken() else {
+            throw AuthError.serverError(
+                "Unable to delete server data: please sign in again and retry."
+            )
         }
 
-        // Clear local auth state
-        isSignedIn = false
-        user = nil
-        try? KeychainService.deleteAppleUserID()
-        try? KeychainService.deleteAuthToken()
+        do {
+            try await APIClient().deleteAccount(token: token)
+        } catch {
+            throw AuthError.serverError("Failed to delete account: \(error.localizedDescription)")
+        }
 
-        UserDefaults.standard.removeObject(forKey: Self.userEmailKey)
-        UserDefaults.standard.removeObject(forKey: Self.userGivenNameKey)
-        UserDefaults.standard.removeObject(forKey: Self.userFamilyNameKey)
+        // Only clear local state after server deletion succeeds
+        await signOut()
     }
 
     // MARK: - Token Access (for sync compatibility)
 
     @discardableResult
-    func refreshTokenIfNeeded() async -> String? {
-        // SIWA identity tokens are short-lived and cannot be refreshed client-side.
-        // Return the stored token for now; CloudKit sync will replace this.
-        return try? KeychainService.retrieveAuthToken()
+    func getStoredToken() async -> String? {
+        // SIWA identity tokens expire in ~10 minutes and cannot be refreshed client-side.
+        // TODO: Replace with CloudKit sync — this token may be stale.
+        let token = try? KeychainService.retrieveAuthToken()
+        if token != nil {
+            logger.debug("Returning stored SIWA token — may be expired")
+        }
+        return token
     }
 
     // MARK: - Helpers
