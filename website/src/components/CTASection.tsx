@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { AnchorIcon, ShieldIcon, BanIcon } from "./Icons";
 import { APP_STORE_URL, privacy, finalCTA } from "@/content";
 import { renderInlineMarkdown } from "@/lib/renderInlineMarkdown";
+import { trackEvent } from "@/lib/analytics";
 
 const privacyIcons = [
   <AnchorIcon key="anchor" className="text-success-green" />,
@@ -110,6 +111,7 @@ export function FinalCTASection() {
               href={APP_STORE_URL}
               target="_blank"
               rel="noopener noreferrer"
+              onClick={() => trackEvent("cta_clicked", { label: "app_store", location: "bottom_cta" })}
               className="inline-flex items-center gap-3 rounded-full bg-star-white px-10 py-5 text-xl font-semibold text-deep-space transition hover:bg-star-white/90"
             >
               <svg className="h-7 w-7" viewBox="0 0 24 24" fill="currentColor">

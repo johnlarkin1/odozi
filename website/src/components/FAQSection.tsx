@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { faqs } from "@/content";
+import { trackEvent } from "@/lib/analytics";
 
 function FAQItem({ question, answer }: { question: string; answer: string }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -10,7 +11,7 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   return (
     <div className="border-b border-white/10">
       <button
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={() => { setIsOpen(!isOpen); trackEvent("faq_toggled", { question, is_open: !isOpen }); }}
         className="flex w-full items-center justify-between py-6 text-left"
       >
         <span className="pr-4 text-lg font-medium text-star-white">{question}</span>
