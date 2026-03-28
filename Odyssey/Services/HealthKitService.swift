@@ -21,15 +21,15 @@ actor HealthKitService {
     func requestAuthorization() async throws {
         guard HealthKitService.isAvailable else { return }
 
-        var readTypes: Set<HKObjectType> = [
+        let readTypes: Set<HKObjectType> = [
             HKQuantityType(.stepCount),
             HKQuantityType(.distanceWalkingRunning),
-            HKCategoryType(.sleepAnalysis)
+            HKCategoryType(.sleepAnalysis),
+            HKQuantityType(.heartRate),
+            HKQuantityType(.restingHeartRate),
+            HKQuantityType(.activeEnergyBurned),
+            HKWorkoutType.workoutType()
         ]
-
-        #if os(watchOS)
-            readTypes.insert(HKQuantityType(.heartRate))
-        #endif
 
         try await store.requestAuthorization(toShare: [], read: readTypes)
     }
@@ -191,20 +191,152 @@ actor HealthKitService {
         return DateInterval(start: sleepStart, end: sleepEnd)
     }
 
-    #if os(watchOS)
-        func fetchAverageHeartRate(for date: Date) async throws -> Double? {
-            guard let interval = dayInterval(for: date) else { return nil }
-            let type = HKQuantityType(.heartRate)
-            let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+    func fetchAverageHeartRate(for date: Date) async throws -> Double? {
+        guard let interval = dayInterval(for: date) else { return nil }
+        let type = HKQuantityType(.heartRate)
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
 
-            let descriptor = HKStatisticsQueryDescriptor(
-                predicate: HKSamplePredicate.quantitySample(type: type, predicate: predicate),
-                options: .discreteAverage
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: HKSamplePredicate.quantitySample(type: type, predicate: predicate),
+            options: .discreteAverage
+        )
+
+        let result = try await descriptor.result(for: store)
+        guard let avg = result?.averageQuantity() else { return nil }
+        return avg.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+    }
+
+    func fetchRestingHeartRate(for date: Date) async throws -> Double? {
+        guard let interval = dayInterval(for: date) else { return nil }
+        let type = HKQuantityType(.restingHeartRate)
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+
+        let descriptor = HKStatisticsQueryDescriptor(
+            predicate: HKSamplePredicate.quantitySample(type: type, predicate: predicate),
+            options: .discreteAverage
+        )
+
+        let result = try await descriptor.result(for: store)
+        guard let avg = result?.averageQuantity() else { return nil }
+        return avg.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
+    }
+
+    func fetchWorkouts(for date: Date) async throws -> [WorkoutSummary] {
+        guard let interval = dayInterval(for: date) else { return [] }
+        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+
+        let descriptor = HKSampleQueryDescriptor(
+            predicates: [.workout(predicate)],
+            sortDescriptors: [SortDescriptor(\.startDate)]
+        )
+
+        let samples = try await descriptor.result(for: store)
+
+        return samples.map { workout in
+            WorkoutSummary(
+                activityType: workout.workoutActivityType.rawValue,
+                activityName: Self.workoutActivityName(workout.workoutActivityType),
+                durationSeconds: workout.duration,
+                totalCalories: workout.totalEnergyBurned?.doubleValue(for: .kilocalorie()),
+                totalDistanceMeters: workout.totalDistance?.doubleValue(for: .meter()),
+                averageHeartRate: nil,
+                startDate: workout.startDate,
+                endDate: workout.endDate
             )
-
-            let result = try await descriptor.result(for: store)
-            guard let avg = result?.averageQuantity() else { return nil }
-            return avg.doubleValue(for: HKUnit.count().unitDivided(by: .minute()))
         }
-    #endif
+    }
+
+    // MARK: - Workout Helpers
+
+    static func workoutActivityName(_ type: HKWorkoutActivityType) -> String {
+        switch type {
+        case .running: return "Running"
+        case .cycling: return "Cycling"
+        case .walking: return "Walking"
+        case .hiking: return "Hiking"
+        case .swimming: return "Swimming"
+        case .yoga: return "Yoga"
+        case .traditionalStrengthTraining: return "Strength"
+        case .functionalStrengthTraining: return "Functional Strength"
+        case .highIntensityIntervalTraining: return "HIIT"
+        case .dance: return "Dance"
+        case .cooldown: return "Cooldown"
+        case .coreTraining: return "Core Training"
+        case .elliptical: return "Elliptical"
+        case .rowing: return "Rowing"
+        case .stairClimbing: return "Stair Climbing"
+        case .pilates: return "Pilates"
+        case .basketball: return "Basketball"
+        case .soccer: return "Soccer"
+        case .tennis: return "Tennis"
+        case .martialArts: return "Martial Arts"
+        case .crossTraining: return "Cross Training"
+        case .mixedCardio: return "Cardio"
+        case .climbing: return "Climbing"
+        case .boxing: return "Boxing"
+        case .kickboxing: return "Kickboxing"
+        case .jumpRope: return "Jump Rope"
+        case .golf: return "Golf"
+        case .surfingSports: return "Surfing"
+        case .snowSports: return "Snow Sports"
+        case .skatingSports: return "Skating"
+        case .paddleSports: return "Paddle Sports"
+        case .badminton: return "Badminton"
+        case .volleyball: return "Volleyball"
+        case .hockey: return "Hockey"
+        case .tableTennis: return "Table Tennis"
+        case .handball: return "Handball"
+        case .lacrosse: return "Lacrosse"
+        case .rugby: return "Rugby"
+        case .wrestling: return "Wrestling"
+        case .cricket: return "Cricket"
+        case .gymnastics: return "Gymnastics"
+        case .fencing: return "Fencing"
+        case .archery: return "Archery"
+        case .fishing: return "Fishing"
+        // Unmapped types default to "Workout" with base intensity score 5
+        default: return "Workout"
+        }
+    }
+
+    static func computeIntensityScore(for workouts: [WorkoutSummary]) -> Int? {
+        guard !workouts.isEmpty else { return nil }
+
+        // Base score from workout type
+        // Unmapped activity names (i.e. "Workout") default to base score 5
+        let typeScores: [String: Int] = [
+            "Walking": 3, "Yoga": 3, "Pilates": 3, "Cooldown": 2,
+            "Cycling": 5, "Swimming": 6, "Elliptical": 5, "Rowing": 6, "Dance": 5,
+            "Running": 7, "Hiking": 6, "Strength": 6, "Functional Strength": 6,
+            "Core Training": 5, "Stair Climbing": 6, "Cross Training": 7, "Cardio": 6,
+            "HIIT": 8, "Martial Arts": 7, "Basketball": 7, "Soccer": 7, "Tennis": 6,
+            "Climbing": 7, "Boxing": 8, "Kickboxing": 8, "Jump Rope": 7,
+            "Golf": 3, "Surfing": 6, "Snow Sports": 6, "Skating": 5,
+            "Paddle Sports": 5, "Badminton": 5, "Volleyball": 5, "Hockey": 7,
+            "Table Tennis": 4, "Handball": 7, "Lacrosse": 7, "Rugby": 8,
+            "Wrestling": 8, "Cricket": 4, "Gymnastics": 6, "Fencing": 6,
+            "Archery": 2, "Fishing": 2
+        ]
+
+        let longestWorkout = workouts.max(by: { $0.durationSeconds < $1.durationSeconds })!
+        var score = typeScores[longestWorkout.activityName] ?? 5
+
+        // Duration modifier
+        let maxDurationMinutes = longestWorkout.durationSeconds / 60
+        if maxDurationMinutes > 75 {
+            score += 2
+        } else if maxDurationMinutes > 45 {
+            score += 1
+        }
+
+        // Calorie modifier
+        let totalCalories = workouts.compactMap(\.totalCalories).reduce(0, +)
+        if totalCalories > 700 {
+            score += 2
+        } else if totalCalories > 400 {
+            score += 1
+        }
+
+        return min(max(score, 1), 10)
+    }
 }

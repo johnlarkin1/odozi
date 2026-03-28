@@ -78,6 +78,57 @@ extension DailyEntry {
         return SleepScoreService.label(for: score)
     }
 
+    // MARK: - Workout
+
+    var workouts: [WorkoutSummary] {
+        guard let data = workoutDataJSON else { return [] }
+        do {
+            return try JSONDecoder().decode([WorkoutSummary].self, from: data)
+        } catch {
+            print("[DailyEntry] Failed to decode workoutDataJSON: \(error)")
+            return []
+        }
+    }
+
+    var didWorkout: Bool {
+        workoutDataJSON != nil
+    }
+
+    var primaryWorkout: WorkoutSummary? {
+        workouts.max(by: { $0.durationSeconds < $1.durationSeconds })
+    }
+
+    var primaryWorkoutLabel: String {
+        guard let workout = primaryWorkout else { return "--" }
+        let minutes = Int(workout.durationSeconds / 60)
+        return "\(minutes)m"
+    }
+
+    var primaryWorkoutType: String {
+        primaryWorkout?.activityName ?? "Workout"
+    }
+
+    var workoutIntensityLabel: String? {
+        guard let score = workoutIntensityScore else { return nil }
+        switch score {
+        case 1...3: return "Light"
+        case 4...5: return "Moderate"
+        case 6...7: return "Hard"
+        case 8...10: return "Intense"
+        default: return nil
+        }
+    }
+
+    var totalWorkoutFormatted: String {
+        guard let minutes = totalWorkoutMinutes else { return "N/A" }
+        let hrs = Int(minutes) / 60
+        let mins = Int(minutes) % 60
+        if hrs > 0 {
+            return "\(hrs)h \(mins)m"
+        }
+        return "\(mins)m"
+    }
+
     var hasPromptData: Bool {
         !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
     }

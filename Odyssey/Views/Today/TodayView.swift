@@ -54,6 +54,7 @@ struct TodayView: View {
                                 switch vital {
                                 case .steps: navigationPath.append(MetricDefinition.steps)
                                 case .sleep: navigationPath.append(MetricDefinition.sleepHours)
+                                case .workout: navigationPath.append(MetricDefinition.workoutMinutes)
                                 case .screenTime: navigationPath.append(MetricDefinition.screenTime)
                                 case .streak: navigationPath.append(TodayDrillDown.streak)
                                 }

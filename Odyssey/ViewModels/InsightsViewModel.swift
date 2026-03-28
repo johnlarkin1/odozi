@@ -110,6 +110,26 @@ final class InsightsViewModel {
         filteredEntries.reduce(0) { $0 + $1.drinks }
     }
 
+    // MARK: - Workout & Heart Rate Metrics
+
+    var averageWorkoutMinutes: Double {
+        let valid = filteredEntries.compactMap(\.totalWorkoutMinutes)
+        guard !valid.isEmpty else { return 0 }
+        return valid.reduce(0, +) / Double(valid.count)
+    }
+
+    var averageWorkoutIntensity: Double {
+        let valid = filteredEntries.compactMap(\.workoutIntensityScore)
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0, +)) / Double(valid.count)
+    }
+
+    var averageRestingHeartRate: Double {
+        let valid = filteredEntries.compactMap(\.restingHeartRate)
+        guard !valid.isEmpty else { return 0 }
+        return valid.reduce(0, +) / Double(valid.count)
+    }
+
     // MARK: - World Metrics
 
     var averageScreenTimeHours: Double {

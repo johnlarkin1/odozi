@@ -30,6 +30,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
     case sleepDeep
     case sleepCore
     case sleepScore
+    case workoutMinutes
+    case workoutIntensity
+    case restingHeartRate
 
     // World
     case screenTime
@@ -49,6 +52,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
         case .sleepDeep: return "Deep Sleep"
         case .sleepCore: return "Core Sleep"
         case .sleepScore: return "Sleep Score"
+        case .workoutMinutes: return "Workout"
+        case .workoutIntensity: return "Intensity"
+        case .restingHeartRate: return "Resting HR"
         case .screenTime: return "Screen Time"
         case .pickups: return "Pickups"
         }
@@ -66,6 +72,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
         case .sleepDeep: return "powersleep"
         case .sleepCore: return "moon.zzz.fill"
         case .sleepScore: return "gauge.with.needle.fill"
+        case .workoutMinutes: return "figure.run"
+        case .workoutIntensity: return "flame.fill"
+        case .restingHeartRate: return "heart.fill"
         case .screenTime: return "iphone"
         case .pickups: return "hand.tap.fill"
         }
@@ -83,6 +92,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
         case .sleepDeep: return .accentTeal
         case .sleepCore: return .accentAmber
         case .sleepScore: return .accentTeal
+        case .workoutMinutes: return .successGreen
+        case .workoutIntensity: return .coralRed
+        case .restingHeartRate: return .nebulaPink
         case .screenTime: return .nebulaPink
         case .pickups: return .accentAmber
         }
@@ -100,6 +112,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
         case .sleepDeep: return "hrs"
         case .sleepCore: return "hrs"
         case .sleepScore: return "/100"
+        case .workoutMinutes: return "min"
+        case .workoutIntensity: return "/10"
+        case .restingHeartRate: return "bpm"
         case .screenTime: return "hrs"
         case .pickups: return "pickups"
         }
@@ -107,8 +122,8 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
 
     var availableChartModes: [ChartMode] {
         switch self {
-        case .mood, .sleepRating, .steps, .walkingDistance, .sleepHours, .sleepREM, .sleepDeep, .sleepCore, .sleepScore, .screenTime,
-             .pickups:
+        case .mood, .sleepRating, .steps, .walkingDistance, .sleepHours, .sleepREM, .sleepDeep, .sleepCore, .sleepScore,
+             .workoutMinutes, .workoutIntensity, .restingHeartRate, .screenTime, .pickups:
             return [.line, .radial, .scatter]
         case .drinks:
             return [.line, .scatter]
@@ -128,6 +143,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
         case .sleepDeep: return entry.sleepDeepHours
         case .sleepCore: return entry.sleepCoreHours
         case .sleepScore: return entry.sleepScore.map { Double($0) }
+        case .workoutMinutes: return entry.totalWorkoutMinutes
+        case .workoutIntensity: return entry.workoutIntensityScore.map { Double($0) }
+        case .restingHeartRate: return entry.restingHeartRate
         case .screenTime:
             return entry.screenTimeSeconds.map { $0 / 3600.0 }
         case .pickups: return entry.pickups.map { Double($0) }
@@ -147,6 +165,12 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
         case .sleepHours, .sleepREM, .sleepDeep, .sleepCore:
             return String(format: "%.1f", value)
         case .sleepScore:
+            return "\(Int(value))"
+        case .workoutMinutes:
+            return "\(Int(value))"
+        case .workoutIntensity:
+            return String(format: "%.1f", value)
+        case .restingHeartRate:
             return "\(Int(value))"
         case .screenTime:
             return String(format: "%.1f", value)

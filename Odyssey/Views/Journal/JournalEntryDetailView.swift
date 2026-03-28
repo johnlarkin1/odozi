@@ -67,7 +67,7 @@ struct JournalEntryDetailView: View {
                 }
 
                 // Background data
-                if entry.stepCount != nil || entry.screenTimeSeconds != nil || entry.latitude != nil {
+                if entry.stepCount != nil || entry.screenTimeSeconds != nil || entry.latitude != nil || entry.didWorkout || entry.hasSleepStageData {
                     VStack(alignment: .leading, spacing: 12) {
                         Text("Background Data")
                             .font(.headline)
@@ -80,11 +80,49 @@ struct JournalEntryDetailView: View {
                             if entry.screenTimeSeconds != nil {
                                 miniStatCard(icon: "iphone", value: entry.screenTimeFormatted, label: "Screen Time")
                             }
+                            if entry.didWorkout {
+                                miniStatCard(icon: "figure.run", value: entry.totalWorkoutFormatted, label: entry.primaryWorkoutType)
+                            }
                             if entry.latitude != nil {
                                 miniStatCard(icon: "location.fill", value: entry.locationDisplay, label: "Location")
                             }
                         }
                         .padding(.horizontal, 16)
+
+                        // Workout breakdown
+                        if entry.didWorkout {
+                            VStack(alignment: .leading, spacing: 6) {
+                                HStack {
+                                    Text("Workouts")
+                                        .font(.subheadline.weight(.medium))
+                                    Spacer()
+                                    if let intensity = entry.workoutIntensityLabel {
+                                        Text("Intensity: \(intensity)")
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                    }
+                                }
+                                ForEach(entry.workouts) { workout in
+                                    HStack(spacing: 8) {
+                                        Image(systemName: "figure.run")
+                                            .foregroundStyle(Color.successGreen)
+                                            .frame(width: 16)
+                                        Text(workout.activityName)
+                                            .font(.caption.bold())
+                                        Spacer()
+                                        Text(formatWorkoutDuration(workout.durationSeconds))
+                                            .font(.caption)
+                                            .foregroundStyle(.secondary)
+                                        if let cal = workout.totalCalories {
+                                            Text("\(Int(cal)) kcal")
+                                                .font(.caption)
+                                                .foregroundStyle(.secondary)
+                                        }
+                                    }
+                                }
+                            }
+                            .padding(.horizontal, 16)
+                        }
 
                         // Sleep stage breakdown
                         if entry.hasSleepStageData {
@@ -193,6 +231,16 @@ struct JournalEntryDetailView: View {
         .padding(16)
         .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardSurface))
         .padding(.horizontal, 16)
+    }
+
+    private func formatWorkoutDuration(_ seconds: Double) -> String {
+        let mins = Int(seconds / 60)
+        let hrs = mins / 60
+        let remainMins = mins % 60
+        if hrs > 0 {
+            return "\(hrs)h \(remainMins)m"
+        }
+        return "\(mins)m"
     }
 
     private func miniStatCard(icon: String, value: String, label: String) -> some View {
