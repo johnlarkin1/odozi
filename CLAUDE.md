@@ -123,3 +123,4 @@ When building a new feature, follow this flow:
 - App Group `group.com.johnlarkin.Odyssey` shared across all 3 targets
 - HealthKit entitlement on main app target only
 - BGTaskScheduler identifiers: `com.odyssey.snapshot`, `com.odyssey.processing`
+- **Never use `withAnimation(.repeatForever())` in `.onAppear`** — this creates a permanent animation transaction that leaks to sibling views, causing unintended opacity/scale oscillations. Instead, use declarative `.animation(.repeatForever(), value: state)` on the specific views that should animate, and set the state without `withAnimation` in `.onAppear`.

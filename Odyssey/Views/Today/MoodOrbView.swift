@@ -28,17 +28,17 @@ struct MoodOrbView: View {
                     .foregroundStyle(Color.accentAmber.opacity(0.3))
                     .frame(width: 180, height: 180)
                     .scaleEffect(pulse ? 1.02 : 1.0)
+                    .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: pulse)
 
                 // Pulsing icon
                 Image(systemName: "sailboat")
                     .font(.system(size: 40))
                     .foregroundStyle(Color.accentAmber)
                     .opacity(pulse ? 0.8 : 0.4)
+                    .animation(.easeInOut(duration: 3).repeatForever(autoreverses: true), value: pulse)
             }
             .onAppear {
-                withAnimation(.easeInOut(duration: 3).repeatForever(autoreverses: true)) {
-                    pulse = true
-                }
+                pulse = true
             }
 
             VStack(spacing: 6) {
