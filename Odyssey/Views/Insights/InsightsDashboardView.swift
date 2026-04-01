@@ -36,6 +36,9 @@ struct InsightsDashboardView: View {
         .onReceive(NotificationCenter.default.publisher(for: .screenTimeDidUpdate)) { _ in
             viewModel?.loadEntries()
         }
+        .onReceive(NotificationCenter.default.publisher(for: .snapshotDidUpdate)) { _ in
+            viewModel?.loadEntries()
+        }
         #endif
     }
 }

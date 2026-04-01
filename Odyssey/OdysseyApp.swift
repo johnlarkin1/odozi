@@ -187,13 +187,17 @@ struct OdysseyApp: App {
         let service = BackgroundSnapshotService()
         let data = await service.captureSnapshot()
         applySnapshotData(data, to: context)
+        NotificationCenter.default.post(name: .snapshotDidUpdate, object: nil)
 
-        // Screen Time extension writes async to SharedDefaults — poll until available
+        // Screen Time extension writes async to SharedDefaults — poll until available.
+        // The DeviceActivity extension needs time to compute and write data,
+        // so we use a longer window with increasing delays.
         Task {
             do {
-                let maxAttempts = 10
-                for _ in 1 ... maxAttempts {
-                    try await Task.sleep(for: .milliseconds(500))
+                let delays: [Int] = [500, 500, 750, 750, 1000, 1000, 1000, 1500, 1500, 2000,
+                                     2000, 2000, 2500, 2500, 3000]
+                for delay in delays {
+                    try await Task.sleep(for: .milliseconds(delay))
                     if let screenTime = SharedDefaults.getScreenTime() {
                         let repository = DailyEntryRepository(context: context)
                         let entry = try repository.fetchOrCreateToday()

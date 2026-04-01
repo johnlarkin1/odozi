@@ -138,6 +138,11 @@ struct TodayView: View {
                         todayEntry = viewModel?.fetchTodayEntry()
                         insightsViewModel?.loadEntries()
                     }
+                    .onReceive(NotificationCenter.default.publisher(for: .snapshotDidUpdate)) { _ in
+                        viewModel?.checkForTodayEntry()
+                        todayEntry = viewModel?.fetchTodayEntry()
+                        insightsViewModel?.loadEntries()
+                    }
             #endif
                     .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
                         showingGuidedFlow = true
