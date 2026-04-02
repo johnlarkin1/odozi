@@ -10,16 +10,16 @@ const getServerSnapshot = () => false;
 export function WaveDivider({
   variant = 0,
   overlap = false,
-  interactive = true,
+  showBoat = false,
 }: {
   variant?: number;
   overlap?: boolean;
-  interactive?: boolean;
+  showBoat?: boolean;
 }) {
   const canUseCanvas = useSyncExternalStore(subscribe, getCanvasSupport, getServerSnapshot);
 
   if (!canUseCanvas) return <StaticWaveDivider />;
-  return <InteractiveOcean variant={variant} overlap={overlap} interactive={interactive} />;
+  return <InteractiveOcean variant={variant} overlap={overlap} showBoat={showBoat} />;
 }
 
 /** Static SVG fallback for SSR and no-canvas environments */

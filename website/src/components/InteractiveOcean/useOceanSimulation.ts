@@ -10,14 +10,16 @@ import { type BoatState, type MouseState, BOAT_SPEED } from "./types";
 
 interface UseOceanSimulationOptions {
   phaseOffset: number;
-  interactive?: boolean;
+  showBoat?: boolean;
+  subtle?: boolean;
   onFirstInteraction?: () => void;
 }
 
 /** Mutable state bag read by the animation loop — lives outside React's render cycle */
 interface SimulationState {
   phaseOffset: number;
-  interactive: boolean;
+  showBoat: boolean;
+  subtle: boolean;
   onFirstInteraction?: () => void;
   canvas: HTMLCanvasElement | null;
   container: HTMLDivElement | null;
@@ -33,7 +35,8 @@ interface SimulationState {
 function createSimulationState(): SimulationState {
   return {
     phaseOffset: 0,
-    interactive: true,
+    showBoat: false,
+    subtle: false,
     onFirstInteraction: undefined,
     canvas: null,
     container: null,
@@ -64,7 +67,7 @@ function setupCanvas(state: SimulationState) {
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
   }
 
-  if (state.interactive) {
+  if (state.showBoat) {
     if (!state.boat) {
       state.boat = createBoatState(rect.width);
     } else {
@@ -89,12 +92,17 @@ function tick(state: SimulationState, timestamp: number) {
   const width = canvas.width / dpr;
   const height = canvas.height / dpr;
   const time = state.time;
-  const { interactive: isInteractive, phaseOffset } = state;
+  const { showBoat, subtle, phaseOffset } = state;
 
-  const activeMouse = isInteractive && state.mouse.active ? state.mouse : null;
+  const activeMouse = state.mouse.active ? state.mouse : null;
 
-  // Update boat (only when interactive)
-  const boat = isInteractive ? state.boat : null;
+  // Lazily create boat if needed (props sync may arrive after initial setupCanvas)
+  if (showBoat && !state.boat) {
+    state.boat = createBoatState(width);
+  }
+
+  // Update boat (only when showBoat)
+  const boat = showBoat ? state.boat : null;
   if (boat) {
     const hasKeyboardInput = state.keys.left || state.keys.right;
     if (hasKeyboardInput) {
@@ -106,7 +114,7 @@ function tick(state: SimulationState, timestamp: number) {
   // Render
   ctx.save();
   ctx.clearRect(0, 0, width, height);
-  renderOcean(ctx, time, width, height, phaseOffset, activeMouse, !isInteractive);
+  renderOcean(ctx, time, width, height, phaseOffset, activeMouse, subtle);
 
   if (boat) {
     renderWake(ctx, boat);
@@ -133,7 +141,8 @@ function stopLoop(state: SimulationState) {
 
 export function useOceanSimulation({
   phaseOffset,
-  interactive = true,
+  showBoat = false,
+  subtle = false,
   onFirstInteraction,
 }: UseOceanSimulationOptions) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -147,9 +156,10 @@ export function useOceanSimulation({
   useEffect(() => {
     const s = stateRef.current!;
     s.phaseOffset = phaseOffset;
-    s.interactive = interactive;
+    s.showBoat = showBoat;
+    s.subtle = subtle;
     s.onFirstInteraction = onFirstInteraction;
-  }, [phaseOffset, interactive, onFirstInteraction]);
+  }, [phaseOffset, showBoat, subtle, onFirstInteraction]);
 
   // Setup: canvas sizing, intersection observer, resize observer
   useEffect(() => {

@@ -73,5 +73,5 @@ export const TILT_LERP = 0.1;
 export const MAX_TILT = (15 * Math.PI) / 180;
 export const MAX_WAKE_PARTICLES = 40;
 export const DRIFT_SPEED = 0.8; // autonomous drift speed
-export const MOUSE_RIPPLE_RADIUS = 200; // how far mouse ripple extends
-export const MOUSE_RIPPLE_STRENGTH = 25; // max displacement from mouse
+export const MOUSE_RIPPLE_RADIUS = 350; // how far mouse ripple extends
+export const MOUSE_RIPPLE_STRENGTH = 14; // max displacement from mouse
