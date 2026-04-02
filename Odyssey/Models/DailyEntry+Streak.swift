@@ -2,12 +2,26 @@ import Foundation
 
 extension Array where Element == DailyEntry {
     /// Computes the current streak of consecutive days with prompt data,
-    /// counting backwards from today.
+    /// counting backwards from today. If today's entry doesn't have prompt
+    /// data yet (user hasn't journaled today), counts from yesterday so the
+    /// streak doesn't appear broken mid-day.
     var currentStreak: Int {
         let sorted = self.sorted { $0.date > $1.date }
         let calendar = Calendar.current
+        let today = calendar.startOfDay(for: Date())
         var streak = 0
-        var expectedDate = calendar.startOfDay(for: Date())
+        var expectedDate = today
+
+        // Check if today's entry has prompt data
+        let todayHasPromptData = sorted.first(where: {
+            calendar.startOfDay(for: $0.date) == today
+        })?.hasPromptData ?? false
+
+        // If today isn't filled in yet, start counting from yesterday
+        if !todayHasPromptData {
+            guard let yesterday = calendar.date(byAdding: .day, value: -1, to: today) else { return 0 }
+            expectedDate = yesterday
+        }
 
         for entry in sorted {
             let entryDate = calendar.startOfDay(for: entry.date)
