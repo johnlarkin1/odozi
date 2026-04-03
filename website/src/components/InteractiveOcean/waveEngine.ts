@@ -54,21 +54,21 @@ export function getWaveHeightWithMouse(
     const dx = x - mouse.x;
     const dist = Math.abs(dx);
     if (dist < MOUSE_RIPPLE_RADIUS) {
-      // Smooth radial falloff with cubic ease
+      // Smooth radial falloff with quintic smootherstep (zero 1st & 2nd derivatives at boundary)
       const falloff = 1 - dist / MOUSE_RIPPLE_RADIUS;
-      const smoothFalloff = falloff * falloff * (3 - 2 * falloff); // smoothstep
+      const smoothFalloff = falloff * falloff * falloff * (falloff * (falloff * 6 - 15) + 10);
 
-      // Primary wave — large slow-moving swell
+      // Primary wave — broad slow-moving swell
       const primaryWave =
-        Math.sin(dist * 0.05 - time * 4) * MOUSE_RIPPLE_STRENGTH * smoothFalloff;
+        Math.sin(dist * 0.025 - time * 2.5) * MOUSE_RIPPLE_STRENGTH * smoothFalloff;
 
-      // Secondary ripple — faster, tighter waves on top
+      // Secondary ripple — gentler, wider waves on top
       const secondaryRipple =
-        Math.sin(dist * 0.12 - time * 8) * MOUSE_RIPPLE_STRENGTH * 0.35 * smoothFalloff;
+        Math.sin(dist * 0.06 - time * 4.5) * MOUSE_RIPPLE_STRENGTH * 0.25 * smoothFalloff;
 
       // Tertiary fine ripple
       const fineRipple =
-        Math.sin(dist * 0.25 - time * 12) * MOUSE_RIPPLE_STRENGTH * 0.15 * (smoothFalloff * smoothFalloff);
+        Math.sin(dist * 0.12 - time * 6) * MOUSE_RIPPLE_STRENGTH * 0.10 * (smoothFalloff * smoothFalloff);
 
       y += primaryWave + secondaryRipple + fineRipple;
     }
@@ -192,17 +192,20 @@ function drawMouseRipple(
   ctx: CanvasRenderingContext2D,
   mouse: MouseState | null,
   time: number,
+  intensity: number = 1.0,
 ) {
   if (!mouse?.active) return;
 
   ctx.save();
   // Subtle radial glow at mouse position
+  const glowAlpha1 = (0.14 * intensity).toFixed(3);
+  const glowAlpha2 = (0.08 * intensity).toFixed(3);
   const gradient = ctx.createRadialGradient(
     mouse.x, mouse.y, 0,
     mouse.x, mouse.y, MOUSE_RIPPLE_RADIUS * 0.6,
   );
-  gradient.addColorStop(0, "rgba(46, 196, 182, 0.14)");
-  gradient.addColorStop(0.4, "rgba(140, 92, 245, 0.08)");
+  gradient.addColorStop(0, `rgba(46, 196, 182, ${glowAlpha1})`);
+  gradient.addColorStop(0.4, `rgba(140, 92, 245, ${glowAlpha2})`);
   gradient.addColorStop(1, "rgba(0, 0, 0, 0)");
   ctx.fillStyle = gradient;
   ctx.fillRect(
@@ -215,9 +218,9 @@ function drawMouseRipple(
   // Concentric ripple rings — propagating outward
   ctx.strokeStyle = "rgba(255, 255, 255, 0.1)";
   ctx.lineWidth = 1.2;
-  for (let i = 0; i < 5; i++) {
-    const ringRadius = ((time * 50 + i * 30) % 140) + 8;
-    const alpha = 0.1 * (1 - ringRadius / 148);
+  for (let i = 0; i < 3; i++) {
+    const ringRadius = ((time * 50 + i * 50) % 160) + 8;
+    const alpha = 0.06 * intensity * (1 - ringRadius / 168);
     if (alpha <= 0) continue;
     ctx.globalAlpha = alpha;
     ctx.beginPath();
@@ -248,6 +251,9 @@ export function renderOcean(
     drawWaveBand(ctx, time, width, height, baselineY, 0, COLORS.accentTeal, 0.10, phaseOffset, mouse, SUBTLE_WAVE_LAYERS);
 
     drawFoam(ctx, time, width, baselineY, phaseOffset, mouse, SUBTLE_WAVE_LAYERS);
+
+    // Mouse ripple glow (muted for subtle dividers)
+    drawMouseRipple(ctx, mouse, time, 0.6);
   } else {
     const baselineY = height * 0.45;
 

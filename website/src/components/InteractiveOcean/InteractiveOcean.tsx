@@ -1,29 +1,21 @@
 "use client";
 
-import { useState, useEffect, useRef, useCallback, useSyncExternalStore } from "react";
+import { useSyncExternalStore } from "react";
 import { useOceanSimulation } from "./useOceanSimulation";
 
 interface InteractiveOceanProps {
   variant?: number;
   overlap?: boolean;
-  interactive?: boolean;
+  showBoat?: boolean;
 }
 
 const subscribeNoop = () => () => {};
 const getIsTouch = () => "ontouchstart" in window || navigator.maxTouchPoints > 0;
 const getIsTouchServer = () => false;
 
-export function InteractiveOcean({ variant = 0, overlap = false, interactive = true }: InteractiveOceanProps) {
+export function InteractiveOcean({ variant = 0, overlap = false, showBoat = false }: InteractiveOceanProps) {
   const phaseOffset = variant * 2.5;
-  const [showHint, setShowHint] = useState(false);
   const isTouch = useSyncExternalStore(subscribeNoop, getIsTouch, getIsTouchServer);
-  const hintTimerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
-  const hintObserverRef = useRef<IntersectionObserver>(undefined);
-
-  const hideHint = useCallback(() => {
-    setShowHint(false);
-    clearTimeout(hintTimerRef.current);
-  }, []);
 
   const {
     canvasRef,
@@ -36,55 +28,31 @@ export function InteractiveOcean({ variant = 0, overlap = false, interactive = t
     handleTouchEnd,
   } = useOceanSimulation({
     phaseOffset,
-    interactive,
-    onFirstInteraction: interactive ? hideHint : undefined,
+    showBoat,
+    subtle: !showBoat,
   });
-
-  // Show hint when component enters viewport, auto-hide after 3s (interactive only)
-  useEffect(() => {
-    if (!interactive) return;
-    const container = containerRef.current;
-    if (!container) return;
-
-    hintObserverRef.current = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setShowHint(true);
-          hintTimerRef.current = setTimeout(() => setShowHint(false), 3000);
-          hintObserverRef.current?.disconnect();
-        }
-      },
-      { threshold: 0.5 },
-    );
-    hintObserverRef.current.observe(container);
-
-    return () => {
-      hintObserverRef.current?.disconnect();
-      clearTimeout(hintTimerRef.current);
-    };
-  }, [containerRef, interactive]);
 
   return (
     <div
       ref={containerRef}
-      className={`relative w-full overflow-hidden ${interactive ? "outline-none cursor-default focus-visible:ring-2 focus-visible:ring-accent-teal/50 focus-visible:ring-offset-0" : "pointer-events-none"} ${overlap ? "z-20" : ""}`}
+      className={`relative w-full overflow-hidden cursor-default outline-none ${overlap ? "z-20" : ""}`}
       style={
         overlap
           ? { height: "180px", marginTop: "-40px", marginBottom: "-20px" }
-          : interactive
+          : showBoat
             ? { height: "180px", marginTop: "-20px", marginBottom: "-20px" }
             : { height: "120px", marginTop: "-16px", marginBottom: "-16px" }
       }
-      tabIndex={interactive ? 0 : undefined}
-      role={interactive ? "img" : "presentation"}
-      aria-label={interactive ? "Decorative animated ocean wave divider" : undefined}
-      aria-hidden={!interactive || undefined}
-      onKeyDown={interactive ? handleKeyDown : undefined}
-      onKeyUp={interactive ? handleKeyUp : undefined}
-      onMouseMove={interactive ? handleMouseMove : undefined}
-      onMouseLeave={interactive ? handleMouseLeave : undefined}
-      onTouchMove={interactive ? handleTouchMove : undefined}
-      onTouchEnd={interactive ? handleTouchEnd : undefined}
+      tabIndex={showBoat ? 0 : undefined}
+      role={showBoat ? "img" : "presentation"}
+      aria-label={showBoat ? "Decorative animated ocean wave divider" : undefined}
+      aria-hidden={!showBoat || undefined}
+      onKeyDown={showBoat ? handleKeyDown : undefined}
+      onKeyUp={showBoat ? handleKeyUp : undefined}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       <canvas
         ref={canvasRef}
@@ -92,17 +60,15 @@ export function InteractiveOcean({ variant = 0, overlap = false, interactive = t
         className="block w-full h-full"
       />
 
-      {/* Hint overlay (interactive only) */}
-      {interactive && (
+      {/* Persistent hint (boat divider only) */}
+      {showBoat && (
         <span
           aria-hidden="true"
-          className={`absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2
+          className="absolute left-1/2 bottom-[20%] -translate-x-1/2
             pointer-events-none select-none
-            text-xs text-star-white/60 tracking-wide
-            transition-opacity duration-700
-            ${showHint ? "opacity-100" : "opacity-0"}`}
+            text-xs text-star-white/40 tracking-wide"
         >
-          {isTouch ? "Tap and drag across the waves" : "Move your mouse over the waves"}
+          {isTouch ? "Tap and drag across the waves" : "Click here, then use your arrow keys to move the boat"}
         </span>
       )}
     </div>
