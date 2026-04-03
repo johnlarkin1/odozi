@@ -1,4 +1,7 @@
 import HealthKit
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "HealthKit")
 
 struct SleepStageData: Sendable {
     let totalHours: Double?
@@ -32,6 +35,7 @@ actor HealthKitService {
         ]
 
         try await store.requestAuthorization(toShare: [], read: readTypes)
+        logger.info("HealthKit authorization requested")
     }
 
     func fetchSteps(for date: Date) async throws -> Int? {
@@ -231,6 +235,7 @@ actor HealthKitService {
         )
 
         let samples = try await descriptor.result(for: store)
+        logger.info("Workouts for \(interval.start)–\(interval.end): \(samples.count) found")
 
         return samples.map { workout in
             WorkoutSummary(

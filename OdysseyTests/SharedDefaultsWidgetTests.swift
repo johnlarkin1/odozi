@@ -65,4 +65,70 @@ final class SharedDefaultsWidgetTests: XCTestCase {
             XCTAssertEqual(result?.value, value)
         }
     }
+
+    // MARK: - Screen Time
+
+    override class var defaultTestSuite: XCTestSuite {
+        // Include screen time cleanup in setUp/tearDown
+        super.defaultTestSuite
+    }
+
+    private func clearScreenTimeKeys() {
+        let suite = SharedDefaults.suite
+        suite.removeObject(forKey: SharedDefaults.screenTimeSecondsKey)
+        suite.removeObject(forKey: SharedDefaults.pickupsKey)
+        suite.removeObject(forKey: SharedDefaults.screenTimeLastUpdatedKey)
+    }
+
+    func testGetScreenTimeReturnsNilWhenNeverWritten() {
+        clearScreenTimeKeys()
+        let result = SharedDefaults.getScreenTime()
+        XCTAssertNil(result)
+    }
+
+    func testGetScreenTimeReturnsNilWhenStale() {
+        let suite = SharedDefaults.suite
+        suite.set(3600.0, forKey: SharedDefaults.screenTimeSecondsKey)
+        suite.set(10, forKey: SharedDefaults.pickupsKey)
+        let yesterday = Date().addingTimeInterval(-86400 * 2)
+        suite.set(yesterday.timeIntervalSince1970, forKey: SharedDefaults.screenTimeLastUpdatedKey)
+
+        let result = SharedDefaults.getScreenTime()
+        XCTAssertNil(result, "Should return nil for non-today timestamps")
+
+        clearScreenTimeKeys()
+    }
+
+    func testSetAndGetScreenTimeRoundTrips() {
+        clearScreenTimeKeys()
+        SharedDefaults.setScreenTime(seconds: 7200.0, pickups: 42)
+
+        let result = SharedDefaults.getScreenTime()
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result?.seconds, 7200.0)
+        XCTAssertEqual(result?.pickups, 42)
+
+        clearScreenTimeKeys()
+    }
+
+    func testGetScreenTimeReturnsTodaysData() {
+        clearScreenTimeKeys()
+        SharedDefaults.setScreenTime(seconds: 5400.0, pickups: 25)
+
+        let result = SharedDefaults.getScreenTime()
+        XCTAssertNotNil(result)
+        XCTAssertEqual(result?.seconds, 5400.0)
+        XCTAssertEqual(result?.pickups, 25)
+
+        clearScreenTimeKeys()
+    }
+
+    func testGetScreenTimeDebugInfoFormat() {
+        clearScreenTimeKeys()
+        let info = SharedDefaults.getScreenTimeDebugInfo()
+        XCTAssertTrue(info.contains("screenTime="))
+        XCTAssertTrue(info.contains("isToday="))
+
+        clearScreenTimeKeys()
+    }
 }

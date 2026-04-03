@@ -56,9 +56,13 @@ struct WeekPulseView: View {
     private func dayContent(entry: DailyEntry?, isToday: Bool, index: Int, date: Date) -> some View {
         VStack(spacing: 6) {
             ZStack {
-                if let entry = entry {
+                if let entry = entry, entry.hasUserSubmitted {
                     Circle()
                         .fill(Color.moodGradient(for: entry.feeling))
+                        .frame(width: 32, height: 32)
+                } else if entry != nil {
+                    Circle()
+                        .strokeBorder(Color.accentAmber, lineWidth: 2)
                         .frame(width: 32, height: 32)
                 } else {
                     Circle()

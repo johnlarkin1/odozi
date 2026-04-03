@@ -133,6 +133,12 @@ extension DailyEntry {
         !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
     }
 
+    var hasAutoData: Bool {
+        stepCount != nil || sleepHours != nil || screenTimeSeconds != nil ||
+        workoutDataJSON != nil || latitude != nil || restingHeartRate != nil ||
+        averageHeartRate != nil || walkingDistanceMeters != nil
+    }
+
     var hasPhotos: Bool {
         if let attached = attachedPhotoData, !attached.isEmpty { return true }
         if let auto = autoPhotoIdentifiers, !auto.isEmpty { return true }

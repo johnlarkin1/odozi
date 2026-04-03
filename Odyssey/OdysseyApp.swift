@@ -182,6 +182,12 @@ struct OdysseyApp: App {
         guard let container else { return }
         let context = container.mainContext
 
+        // Re-request HealthKit auth (idempotent) — covers users who denied then re-enabled in Settings
+        if HealthKitService.isAvailable {
+            let hk = HealthKitService()
+            try? await hk.requestAuthorization()
+        }
+
         // Always capture and apply snapshot — applySnapshotData only writes non-nil values
         // and uses fetchOrCreateToday(), so repeated calls are safe
         let service = BackgroundSnapshotService()
@@ -194,11 +200,13 @@ struct OdysseyApp: App {
         // so we use a longer window with increasing delays.
         Task {
             do {
+                logger.info("Screen time polling started: \(SharedDefaults.getScreenTimeDebugInfo())")
                 let delays: [Int] = [500, 500, 750, 750, 1000, 1000, 1000, 1500, 1500, 2000,
                                      2000, 2000, 2500, 2500, 3000]
-                for delay in delays {
+                for (index, delay) in delays.enumerated() {
                     try await Task.sleep(for: .milliseconds(delay))
                     if let screenTime = SharedDefaults.getScreenTime() {
+                        logger.info("Screen time found on poll \(index + 1): \(screenTime.seconds)s")
                         let repository = DailyEntryRepository(context: context)
                         let entry = try repository.fetchOrCreateToday()
                         entry.screenTimeSeconds = screenTime.seconds
@@ -208,7 +216,7 @@ struct OdysseyApp: App {
                         return
                     }
                 }
-                logger.warning("Screen time data not available after polling")
+                logger.warning("Screen time data not available after polling: \(SharedDefaults.getScreenTimeDebugInfo())")
             } catch is CancellationError {
                 // Task cancelled (e.g. app backgrounded) — expected, no action needed
             } catch {

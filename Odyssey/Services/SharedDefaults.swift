@@ -29,15 +29,31 @@ enum SharedDefaults {
     static func getScreenTime() -> (seconds: Double, pickups: Int)? {
         suite.synchronize() // Force cross-process read from disk
         let lastUpdated = suite.double(forKey: screenTimeLastUpdatedKey)
-        guard lastUpdated > 0 else { return nil }
+        guard lastUpdated > 0 else {
+            logger.debug("Screen time: no lastUpdated timestamp found")
+            return nil
+        }
 
         // Only return data updated today
         let updatedDate = Date(timeIntervalSince1970: lastUpdated)
-        guard Calendar.current.isDateInToday(updatedDate) else { return nil }
+        guard Calendar.current.isDateInToday(updatedDate) else {
+            logger.debug("Screen time: stale data from \(updatedDate)")
+            return nil
+        }
 
         let seconds = suite.double(forKey: screenTimeSecondsKey)
         let pickups = suite.integer(forKey: pickupsKey)
+        logger.debug("Screen time: \(seconds)s, \(pickups) pickups")
         return (seconds, pickups)
+    }
+
+    static func getScreenTimeDebugInfo() -> String {
+        let lastUpdated = suite.double(forKey: screenTimeLastUpdatedKey)
+        let seconds = suite.double(forKey: screenTimeSecondsKey)
+        let pickups = suite.integer(forKey: pickupsKey)
+        let updatedDate = lastUpdated > 0 ? "\(Date(timeIntervalSince1970: lastUpdated))" : "never"
+        let isToday = lastUpdated > 0 && Calendar.current.isDateInToday(Date(timeIntervalSince1970: lastUpdated))
+        return "screenTime=\(seconds)s pickups=\(pickups) updated=\(updatedDate) isToday=\(isToday)"
     }
 
     // Widget <-> App communication
