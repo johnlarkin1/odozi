@@ -68,7 +68,7 @@ final class SharedDefaultsWidgetTests: XCTestCase {
 
     // MARK: - Screen Time
 
-    override class var defaultTestSuite: XCTestSuite {
+    override static var defaultTestSuite: XCTestSuite {
         // Include screen time cleanup in setUp/tearDown
         super.defaultTestSuite
     }
