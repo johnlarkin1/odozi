@@ -505,286 +505,123 @@ final class SyncService {
         let entryDate = Self.dateOnly.string(from: local.date)
 
         // Text fields — prefer non-empty, then longer, then newer timestamp
-        local.journalEntry = mergeTextField(
+        local.journalEntry = SyncMergeStrategy.mergeTextField(
             local: local.journalEntry, remote: remote.journalEntry,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "journalEntry", entryDate: entryDate
         )
-        local.gratitude = mergeTextField(
+        local.gratitude = SyncMergeStrategy.mergeTextField(
             local: local.gratitude, remote: remote.gratitude,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "gratitude", entryDate: entryDate
         )
-        local.win = mergeTextField(
+        local.win = SyncMergeStrategy.mergeTextField(
             local: local.win, remote: remote.win,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "win", entryDate: entryDate
         )
-        local.tension = mergeTextField(
+        local.tension = SyncMergeStrategy.mergeTextField(
             local: local.tension, remote: remote.tension,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "tension", entryDate: entryDate
         )
-        local.singleWordFeeling = mergeTextField(
+        local.singleWordFeeling = SyncMergeStrategy.mergeTextField(
             local: local.singleWordFeeling, remote: remote.singleWordFeeling,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "singleWordFeeling", entryDate: entryDate
         )
-        local.feelingColorHex = mergeTextField(
+        local.feelingColorHex = SyncMergeStrategy.mergeTextField(
             local: local.feelingColorHex, remote: remote.feelingColorHex,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "feelingColorHex", entryDate: entryDate
         )
 
         // Numeric fields — prefer non-zero, then newer timestamp
-        local.feeling = mergeNumericField(
+        local.feeling = SyncMergeStrategy.mergeNumericField(
             local: local.feeling, remote: remote.feeling,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "feeling", entryDate: entryDate, defaultValue: 0
         )
-        local.sleepQuality = mergeNumericField(
+        local.sleepQuality = SyncMergeStrategy.mergeNumericField(
             local: local.sleepQuality, remote: remote.sleepQuality,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepQuality", entryDate: entryDate, defaultValue: 0
         )
-        local.drinks = mergeNumericField(
+        local.drinks = SyncMergeStrategy.mergeNumericField(
             local: local.drinks, remote: remote.drinks,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "drinks", entryDate: entryDate, defaultValue: 0
         )
 
         // Location fields — merge as a group
-        mergeLocationFields(
-            localEntry: local, remote: remote,
+        SyncMergeStrategy.mergeLocationFields(
+            localEntry: local,
+            remoteLatitude: remote.latitude, remoteLongitude: remote.longitude,
+            remoteCity: remote.city, remoteState: remote.state, remoteCountry: remote.country,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             entryDate: entryDate
         )
 
         // Optional fields — prefer non-nil, then newer timestamp
-        local.stepCount = mergeOptionalField(
+        local.stepCount = SyncMergeStrategy.mergeOptionalField(
             local: local.stepCount, remote: remote.stepCount,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "stepCount", entryDate: entryDate
         )
-        local.walkingDistanceMeters = mergeOptionalField(
+        local.walkingDistanceMeters = SyncMergeStrategy.mergeOptionalField(
             local: local.walkingDistanceMeters, remote: remote.walkingDistanceMeters,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "walkingDistanceMeters", entryDate: entryDate
         )
-        local.sleepHours = mergeOptionalField(
+        local.sleepHours = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepHours, remote: remote.sleepHours,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepHours", entryDate: entryDate
         )
-        local.sleepREMHours = mergeOptionalField(
+        local.sleepREMHours = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepREMHours, remote: remote.sleepREMHours,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepREMHours", entryDate: entryDate
         )
-        local.sleepDeepHours = mergeOptionalField(
+        local.sleepDeepHours = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepDeepHours, remote: remote.sleepDeepHours,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepDeepHours", entryDate: entryDate
         )
-        local.sleepCoreHours = mergeOptionalField(
+        local.sleepCoreHours = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepCoreHours, remote: remote.sleepCoreHours,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepCoreHours", entryDate: entryDate
         )
-        local.sleepAwakeMinutes = mergeOptionalField(
+        local.sleepAwakeMinutes = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepAwakeMinutes, remote: remote.sleepAwakeMinutes,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepAwakeMinutes", entryDate: entryDate
         )
-        local.sleepOnset = mergeOptionalField(
+        local.sleepOnset = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepOnset, remote: remote.sleepOnset,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepOnset", entryDate: entryDate
         )
-        local.sleepInterruptionCount = mergeOptionalField(
+        local.sleepInterruptionCount = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepInterruptionCount, remote: remote.sleepInterruptionCount,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepInterruptionCount", entryDate: entryDate
         )
-        local.sleepScore = mergeOptionalField(
+        local.sleepScore = SyncMergeStrategy.mergeOptionalField(
             local: local.sleepScore, remote: remote.sleepScore,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "sleepScore", entryDate: entryDate
         )
-        local.screenTimeSeconds = mergeOptionalField(
+        local.screenTimeSeconds = SyncMergeStrategy.mergeOptionalField(
             local: local.screenTimeSeconds, remote: remote.screenTimeSeconds,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "screenTimeSeconds", entryDate: entryDate
         )
-        local.pickups = mergeOptionalField(
+        local.pickups = SyncMergeStrategy.mergeOptionalField(
             local: local.pickups, remote: remote.pickups,
             localTimestamp: localTimestamp, remoteTimestamp: remoteTimestamp,
             fieldName: "pickups", entryDate: entryDate
         )
-    }
-
-    // MARK: - Merge Helpers
-
-    /// Merges a text field: prefer non-empty over empty, then longer text, then newer timestamp.
-    private func mergeTextField(
-        local: String,
-        remote: String,
-        localTimestamp: Date,
-        remoteTimestamp: Date,
-        fieldName: String,
-        entryDate: String
-    ) -> String {
-        // Both empty or identical — no conflict
-        if local == remote { return local }
-
-        let localEmpty = local.isEmpty
-        let remoteEmpty = remote.isEmpty
-
-        // Prefer non-empty over empty
-        if localEmpty && !remoteEmpty {
-            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local empty)")
-            return remote
-        }
-        if !localEmpty && remoteEmpty {
-            conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote empty)")
-            return local
-        }
-
-        // Both non-empty: prefer longer text (less data loss)
-        if local.count != remote.count {
-            if remote.count > local.count {
-                conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (longer text: \(remote.count) vs \(local.count))")
-                return remote
-            } else {
-                conflictLogger.info("[\(entryDate)] \(fieldName): local wins (longer text: \(local.count) vs \(remote.count))")
-                return local
-            }
-        }
-
-        // Equal length non-empty: timestamp breaks tie
-        if remoteTimestamp > localTimestamp {
-            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (newer timestamp, equal length)")
-            return remote
-        }
-        conflictLogger.info("[\(entryDate)] \(fieldName): local wins (newer or equal timestamp, equal length)")
-        return local
-    }
-
-    /// Merges a numeric field: prefer non-default over default, then newer timestamp.
-    private func mergeNumericField(
-        local: Int,
-        remote: Int,
-        localTimestamp: Date,
-        remoteTimestamp: Date,
-        fieldName: String,
-        entryDate: String,
-        defaultValue: Int
-    ) -> Int {
-        // Identical — no conflict
-        if local == remote { return local }
-
-        let localIsDefault = local == defaultValue
-        let remoteIsDefault = remote == defaultValue
-
-        // Prefer non-default over default
-        if localIsDefault && !remoteIsDefault {
-            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local is default \(defaultValue))")
-            return remote
-        }
-        if !localIsDefault && remoteIsDefault {
-            conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote is default \(defaultValue))")
-            return local
-        }
-
-        // Both non-default: timestamp breaks tie
-        if remoteTimestamp > localTimestamp {
-            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (newer timestamp, \(remote) vs \(local))")
-            return remote
-        }
-        conflictLogger.info("[\(entryDate)] \(fieldName): local wins (newer or equal timestamp, \(local) vs \(remote))")
-        return local
-    }
-
-    /// Merges an optional field: prefer non-nil over nil, then newer timestamp.
-    private func mergeOptionalField<T: Equatable>(
-        local: T?,
-        remote: T?,
-        localTimestamp: Date,
-        remoteTimestamp: Date,
-        fieldName: String,
-        entryDate: String
-    ) -> T? {
-        // Both nil or identical — no conflict
-        if local == remote { return local }
-
-        // Prefer non-nil over nil
-        if local == nil, remote != nil {
-            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (local nil)")
-            return remote
-        }
-        if local != nil, remote == nil {
-            conflictLogger.info("[\(entryDate)] \(fieldName): local wins (remote nil)")
-            return local
-        }
-
-        // Both non-nil but different: timestamp breaks tie
-        if remoteTimestamp > localTimestamp {
-            conflictLogger.info("[\(entryDate)] \(fieldName): remote wins (newer timestamp)")
-            return remote
-        }
-        conflictLogger.info("[\(entryDate)] \(fieldName): local wins (newer or equal timestamp)")
-        return local
-    }
-
-    /// Merges all 5 location fields as a group. If either side has a non-nil latitude
-    /// (indicating location data exists), prefer that side's complete location set.
-    /// Timestamp breaks ties when both have location data.
-    private func mergeLocationFields(
-        localEntry: DailyEntry,
-        remote: DecryptedRemoteEntry,
-        localTimestamp: Date,
-        remoteTimestamp: Date,
-        entryDate: String
-    ) {
-        let localHasLocation = localEntry.latitude != nil
-        let remoteHasLocation = remote.latitude != nil
-
-        // Both have no location or identical coordinates — no conflict
-        if !localHasLocation, !remoteHasLocation { return }
-        if localEntry.latitude == remote.latitude,
-           localEntry.longitude == remote.longitude,
-           localEntry.city == remote.city,
-           localEntry.state == remote.state,
-           localEntry.country == remote.country {
-            return
-        }
-
-        // Prefer the side with location data
-        if !localHasLocation, remoteHasLocation {
-            conflictLogger.info("[\(entryDate)] location: remote wins (local has no location)")
-            applyRemoteLocation(remote, to: localEntry)
-            return
-        }
-        if localHasLocation, !remoteHasLocation {
-            conflictLogger.info("[\(entryDate)] location: local wins (remote has no location)")
-            return
-        }
-
-        // Both have location data: timestamp breaks tie
-        if remoteTimestamp > localTimestamp {
-            conflictLogger.info("[\(entryDate)] location: remote wins (newer timestamp)")
-            applyRemoteLocation(remote, to: localEntry)
-        } else {
-            conflictLogger.info("[\(entryDate)] location: local wins (newer or equal timestamp)")
-        }
-    }
-
-    /// Applies all 5 location fields from a decrypted remote entry to a local entry.
-    private func applyRemoteLocation(_ remote: DecryptedRemoteEntry, to entry: DailyEntry) {
-        entry.latitude = remote.latitude
-        entry.longitude = remote.longitude
-        entry.city = remote.city
-        entry.state = remote.state
-        entry.country = remote.country
     }
 }

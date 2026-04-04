@@ -7,6 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		NEWTEST0001BUILD001 /* TestHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0001FILE0001 /* TestHelpers.swift */; };
+		NEWTEST0002BUILD002 /* CorrelationServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0002FILE0002 /* CorrelationServiceTests.swift */; };
+		NEWTEST0003BUILD003 /* TrendCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0003FILE0003 /* TrendCalculatorTests.swift */; };
+		NEWTEST0004BUILD004 /* DailyEntryRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0004FILE0004 /* DailyEntryRepositoryTests.swift */; };
+		NEWTEST0005BUILD005 /* JournalViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0005FILE0005 /* JournalViewModelTests.swift */; };
+		NEWTEST0006BUILD006 /* YearInReviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */; };
+		NEWTEST0007BUILD007 /* JourneyExplorerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */; };
+		NEWTEST0008BUILD008 /* DataRetentionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */; };
+		NEWTEST0009BUILD009 /* SyncMergeStrategyTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0009FILE0009 /* SyncMergeStrategyTests.swift */; };
+		NEWTEST0010BUILD010 /* APIClientTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0010FILE0010 /* APIClientTests.swift */; };
+		NEWSRC00001BUILDIOS /* SyncMergeStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWSRC00001FILE0001 /* SyncMergeStrategy.swift */; };
+		NEWSRC00001BUILDMAC /* SyncMergeStrategy.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWSRC00001FILE0001 /* SyncMergeStrategy.swift */; };
 		01ADAPT01GRID01IOS0000001 /* AdaptiveGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */; };
 		01ADAPT01GRID01MAC0000002 /* AdaptiveGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */; };
 		03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */; };
@@ -506,6 +518,17 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		NEWTEST0001FILE0001 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
+		NEWTEST0002FILE0002 /* CorrelationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationServiceTests.swift; sourceTree = "<group>"; };
+		NEWTEST0003FILE0003 /* TrendCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendCalculatorTests.swift; sourceTree = "<group>"; };
+		NEWTEST0004FILE0004 /* DailyEntryRepositoryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEntryRepositoryTests.swift; sourceTree = "<group>"; };
+		NEWTEST0005FILE0005 /* JournalViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalViewModelTests.swift; sourceTree = "<group>"; };
+		NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearInReviewViewModelTests.swift; sourceTree = "<group>"; };
+		NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyExplorerViewModelTests.swift; sourceTree = "<group>"; };
+		NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRetentionServiceTests.swift; sourceTree = "<group>"; };
+		NEWTEST0009FILE0009 /* SyncMergeStrategyTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMergeStrategyTests.swift; sourceTree = "<group>"; };
+		NEWTEST0010FILE0010 /* APIClientTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIClientTests.swift; sourceTree = "<group>"; };
+		NEWSRC00001FILE0001 /* SyncMergeStrategy.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SyncMergeStrategy.swift; sourceTree = "<group>"; };
 		01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AdaptiveGrid.swift; sourceTree = "<group>"; };
 		046380EAD84D6A25DCE661D6 /* DateRangePicker.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DateRangePicker.swift; sourceTree = "<group>"; };
 		04DD2513DE2308EC6DCBAA4C /* StreakView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StreakView.swift; sourceTree = "<group>"; };
@@ -1159,6 +1182,16 @@
 				D3F4701C9B4B5B7D8B94B3B5 /* WidgetDataAccessTests.swift */,
 				FF542CB95D8B38CD695E5F57 /* SharedDefaultsWidgetTests.swift */,
 				AABB00112233445500010002 /* HealthKitIntensityScoreTests.swift */,
+				NEWTEST0001FILE0001 /* TestHelpers.swift */,
+				NEWTEST0002FILE0002 /* CorrelationServiceTests.swift */,
+				NEWTEST0003FILE0003 /* TrendCalculatorTests.swift */,
+				NEWTEST0004FILE0004 /* DailyEntryRepositoryTests.swift */,
+				NEWTEST0005FILE0005 /* JournalViewModelTests.swift */,
+				NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */,
+				NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */,
+				NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */,
+				NEWTEST0009FILE0009 /* SyncMergeStrategyTests.swift */,
+				NEWTEST0010FILE0010 /* APIClientTests.swift */,
 			);
 			path = OdysseyTests;
 			sourceTree = "<group>";
@@ -1320,6 +1353,7 @@
 				AA08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift */,
 				AA09C0D1E2F3A4B5C6D7E8F9 /* SyncStatus.swift */,
 				EE0000000000000000000001 /* WatchConnectivityService.swift */,
+				NEWSRC00001FILE0001 /* SyncMergeStrategy.swift */,
 			);
 			path = Sync;
 			sourceTree = "<group>";
@@ -1779,6 +1813,7 @@
 				BB03B4C5D6E7F8A9B0C1D2E3 /* RecoveryKeyGenerator.swift in Sources */,
 				BB04B5C6D7E8F9A0B1C2D3E4 /* AuthManager.swift in Sources */,
 				BB06B7C8D9E0F1A2B3C4D5E6 /* SyncService.swift in Sources */,
+				NEWSRC00001BUILDIOS /* SyncMergeStrategy.swift in Sources */,
 				BB07B8C9D0E1F2A3B4C5D6E7 /* SyncPayload.swift in Sources */,
 				BB08B9C0D1E2F3A4B5C6D7E8 /* APIClient.swift in Sources */,
 				DD0000000000000000000001 /* WatchConnectivityService.swift in Sources */,
@@ -1945,6 +1980,16 @@
 				30521C15C7E1A17E147E1B9E /* WidgetDataAccessTests.swift in Sources */,
 				DDFBDFAA51A696FB3698FB0A /* SharedDefaultsWidgetTests.swift in Sources */,
 				AABB00112233445500010001 /* HealthKitIntensityScoreTests.swift in Sources */,
+				NEWTEST0001BUILD001 /* TestHelpers.swift in Sources */,
+				NEWTEST0002BUILD002 /* CorrelationServiceTests.swift in Sources */,
+				NEWTEST0003BUILD003 /* TrendCalculatorTests.swift in Sources */,
+				NEWTEST0004BUILD004 /* DailyEntryRepositoryTests.swift in Sources */,
+				NEWTEST0005BUILD005 /* JournalViewModelTests.swift in Sources */,
+				NEWTEST0006BUILD006 /* YearInReviewViewModelTests.swift in Sources */,
+				NEWTEST0007BUILD007 /* JourneyExplorerViewModelTests.swift in Sources */,
+				NEWTEST0008BUILD008 /* DataRetentionServiceTests.swift in Sources */,
+				NEWTEST0009BUILD009 /* SyncMergeStrategyTests.swift in Sources */,
+				NEWTEST0010BUILD010 /* APIClientTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2050,6 +2095,7 @@
 				C8D757840E060E4D9E2F35A3 /* RecoveryKeyGenerator.swift in Sources */,
 				85577F73E4CCBC5BA13AD086 /* AuthManager.swift in Sources */,
 				E65B5F37F45BA347E4B5002C /* SyncService.swift in Sources */,
+				NEWSRC00001BUILDMAC /* SyncMergeStrategy.swift in Sources */,
 				C545FBD0534F6EAC5B6A1BB9 /* SyncPayload.swift in Sources */,
 				7549871EE7CD0A15CDCC4F3D /* APIClient.swift in Sources */,
 				F02CAD3380DAC1F305FC4C33 /* SyncStatus.swift in Sources */,
