@@ -7,8 +7,9 @@
  *   brew install ffmpeg
  *
  * Inputs (place in public/unfurls/):
- *   main_input.mov  — 3-5 sec screen recording at 2400x1260 (Retina 2x)
- *   main_input.png  — static screenshot at 2400x1260
+ *   main_input_fast.mov — 3-5 sec screen recording at 2400x1260 (Retina 2x, preferred)
+ *   main_input.mov      — fallback if main_input_fast.mov not found
+ *   main_input.png      — static screenshot at 2400x1260
  *
  * Outputs (all 1200x630):
  *   main.mp4         — h.264, yuv420p, faststart (iMessage og:video)
@@ -82,24 +83,29 @@ function checkPrerequisites() {
 }
 
 function generateFromMov() {
-  if (!fs.existsSync(INPUTS.mov)) {
+  // Prefer main_input_fast.mov (shorter, smaller) for all video assets
+  const movSource = fs.existsSync(INPUTS.movFast) ? INPUTS.movFast : INPUTS.mov;
+  if (!fs.existsSync(movSource)) {
     console.log(
-      `Skipping video assets — ${path.basename(INPUTS.mov)} not found.`,
+      `Skipping video assets — neither ${path.basename(INPUTS.movFast)} nor ${path.basename(INPUTS.mov)} found.`,
     );
     console.log(
-      "  Record the canvas at localhost:3000/unfurl and save as main_input.mov",
+      "  Record the canvas at localhost:3000/unfurl and save as main_input_fast.mov",
     );
     return;
   }
+
+  const movSourceName = path.basename(movSource);
+  console.log(`\n  Video source: ${movSourceName}`);
 
   // Saturation boost (1.4) + slight contrast bump (1.05) recovers vibrancy
   // lost in the HDR→SDR conversion. Applied to both MP4 and GIF.
   const colorBoost = "eq=saturation=1.4:contrast=1.05";
 
-  // MP4: HDR→SDR via avconvert, then color-boost. Uses main_input.mov.
+  // MP4: HDR→SDR via avconvert, then color-boost.
   run("avconvert",
-    ["--source", INPUTS.mov, "--output", SDR_INTERMEDIATE, "--preset", "Preset1920x1080", "--replace"],
-    "MOV -> SDR intermediate (avconvert)",
+    ["--source", movSource, "--output", SDR_INTERMEDIATE, "--preset", "Preset1920x1080", "--replace"],
+    `${movSourceName} -> SDR intermediate (avconvert)`,
   );
 
   runFfmpeg(
@@ -112,21 +118,10 @@ function generateFromMov() {
     ],
     "SDR -> MP4 (color-boosted)",
   );
-
-  // GIF: Uses main_input_fast.mov (shorter, faster boat) for smaller file size.
-  const gifSource = fs.existsSync(INPUTS.movFast) ? INPUTS.movFast : INPUTS.mov;
-  const gifSourceName = path.basename(gifSource);
-  console.log(`\n  GIF source: ${gifSourceName}`);
-
-  const SDR_GIF_INTERMEDIATE = "/tmp/odyssey-unfurl-sdr-gif.mp4";
-  run("avconvert",
-    ["--source", gifSource, "--output", SDR_GIF_INTERMEDIATE, "--preset", "Preset1920x1080", "--replace"],
-    `${gifSourceName} -> SDR intermediate (avconvert)`,
-  );
-
+  // GIF: reuse the same SDR intermediate
   runFfmpeg(
     [
-      "-y", "-i", SDR_GIF_INTERMEDIATE,
+      "-y", "-i", SDR_INTERMEDIATE,
       "-vf", `${colorBoost},fps=24,scale=1200:630:flags=lanczos,palettegen=max_colors=256:stats_mode=diff`,
       PALETTE_PATH,
     ],
@@ -135,7 +130,7 @@ function generateFromMov() {
 
   runFfmpeg(
     [
-      "-y", "-i", SDR_GIF_INTERMEDIATE, "-i", PALETTE_PATH,
+      "-y", "-i", SDR_INTERMEDIATE, "-i", PALETTE_PATH,
       "-lavfi", `${colorBoost},fps=24,scale=1200:630:flags=lanczos[x];[x][1:v]paletteuse=dither=sierra2_4a:diff_mode=rectangle`,
       OUTPUTS.gif,
     ],
@@ -143,7 +138,7 @@ function generateFromMov() {
   );
 
   // Clean up intermediates
-  for (const f of [PALETTE_PATH, SDR_INTERMEDIATE, SDR_GIF_INTERMEDIATE]) {
+  for (const f of [PALETTE_PATH, SDR_INTERMEDIATE]) {
     if (fs.existsSync(f)) fs.unlinkSync(f);
   }
 }
