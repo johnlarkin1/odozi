@@ -4,6 +4,7 @@ import Foundation
 import os
 import SwiftData
 
+private let syncLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Sync")
 private let conflictLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "SyncConflict")
 
 @MainActor
@@ -37,9 +38,15 @@ final class SyncService {
         let predicate = #Predicate<DailyEntry> { $0.needsSync == true }
         let descriptor = FetchDescriptor(predicate: predicate)
 
-        guard let entries = try? modelContext.fetch(descriptor),
-              !entries.isEmpty
-        else {
+        let entries: [DailyEntry]
+        do {
+            entries = try modelContext.fetch(descriptor)
+        } catch {
+            syncLogger.error("Failed to fetch pending entries: \(error)")
+            status = .error("Failed to read pending entries")
+            return
+        }
+        guard !entries.isEmpty else {
             pendingCount = 0
             return
         }
@@ -69,7 +76,11 @@ final class SyncService {
                     entry.needsSync = false
                     entry.lastSyncedAt = syncedAt
                 }
-                try? modelContext.save()
+                do {
+                    try modelContext.save()
+                } catch {
+                    syncLogger.error("Failed to save after upload batch: \(error)")
+                }
                 pendingCount = max(0, pendingCount - batch.count)
             } catch {
                 status = .error(error.localizedDescription)
@@ -101,7 +112,13 @@ final class SyncService {
                 cursor = response.cursor
             } while cursor != nil
 
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+            } catch {
+                syncLogger.error("Failed to save after cloud restore: \(error)")
+                status = .error("Restore succeeded but failed to save locally")
+                return
+            }
             lastSyncDate = Date()
             status = .synced
         } catch {

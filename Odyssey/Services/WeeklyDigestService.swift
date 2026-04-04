@@ -28,7 +28,7 @@ struct WeeklyDigestData: Sendable {
 
     static func empty(endDate: Date) -> WeeklyDigestData {
         let calendar = Calendar.current
-        let start = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: endDate))!
+        let start = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: endDate)) ?? calendar.startOfDay(for: endDate)
         return WeeklyDigestData(
             weekStartDate: start,
             weekEndDate: endDate,
@@ -52,9 +52,9 @@ enum WeeklyDigestService {
     @MainActor
     static func computeDigest(context: ModelContext, endDate: Date = Date()) -> WeeklyDigestData {
         let calendar = Calendar.current
-        let endOfDay = calendar.startOfDay(for: calendar.date(byAdding: .day, value: 1, to: endDate)!)
-        let weekStart = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: endDate))!
-        let prevWeekStart = calendar.date(byAdding: .day, value: -7, to: weekStart)!
+        let endOfDay = calendar.startOfDay(for: calendar.date(byAdding: .day, value: 1, to: endDate) ?? endDate)
+        let weekStart = calendar.date(byAdding: .day, value: -6, to: calendar.startOfDay(for: endDate)) ?? calendar.startOfDay(for: endDate)
+        let prevWeekStart = calendar.date(byAdding: .day, value: -7, to: weekStart) ?? weekStart
 
         // Fetch current week entries
         let currentWeekEntries: [DailyEntry] = fetchEntries(context: context, from: weekStart, to: endOfDay)
@@ -78,7 +78,7 @@ enum WeeklyDigestService {
             .value.first
 
         // Streak — fetch recent entries (up to 365 days back) to avoid loading the full history
-        let streakCutoff = calendar.date(byAdding: .day, value: -365, to: calendar.startOfDay(for: endDate))!
+        let streakCutoff = calendar.date(byAdding: .day, value: -365, to: calendar.startOfDay(for: endDate)) ?? calendar.startOfDay(for: endDate)
         let streakDescriptor = FetchDescriptor<DailyEntry>(
             predicate: #Predicate<DailyEntry> { entry in
                 entry.date >= streakCutoff

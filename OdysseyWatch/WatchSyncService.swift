@@ -61,6 +61,32 @@ final class WatchSyncService {
         let formatter = ISO8601DateFormatter()
 
         for entry in entries {
+            let encryptedLat: String? = if let lat = entry.latitude {
+                try await encryption.encryptDouble(lat)
+            } else {
+                nil
+            }
+            let encryptedLon: String? = if let lon = entry.longitude {
+                try await encryption.encryptDouble(lon)
+            } else {
+                nil
+            }
+            let encryptedCity: String? = if let city = entry.city {
+                try await encryption.encrypt(city)
+            } else {
+                nil
+            }
+            let encryptedState: String? = if let state = entry.state {
+                try await encryption.encrypt(state)
+            } else {
+                nil
+            }
+            let encryptedCountry: String? = if let country = entry.country {
+                try await encryption.encrypt(country)
+            } else {
+                nil
+            }
+
             let upload = try SyncUploadEntry(
                 entryDate: formatter.string(from: entry.date),
                 journalEntry: entry.journalEntry.isEmpty ? nil : await encryption.encrypt(entry.journalEntry),
@@ -68,11 +94,11 @@ final class WatchSyncService {
                 win: entry.win.isEmpty ? nil : await encryption.encrypt(entry.win),
                 tension: entry.tension.isEmpty ? nil : await encryption.encrypt(entry.tension),
                 singleWordFeeling: entry.singleWordFeeling.isEmpty ? nil : await encryption.encrypt(entry.singleWordFeeling),
-                latitude: entry.latitude != nil ? await encryption.encryptDouble(entry.latitude!) : nil,
-                longitude: entry.longitude != nil ? await encryption.encryptDouble(entry.longitude!) : nil,
-                city: entry.city != nil ? await encryption.encrypt(entry.city!) : nil,
-                state: entry.state != nil ? await encryption.encrypt(entry.state!) : nil,
-                country: entry.country != nil ? await encryption.encrypt(entry.country!) : nil,
+                latitude: encryptedLat,
+                longitude: encryptedLon,
+                city: encryptedCity,
+                state: encryptedState,
+                country: encryptedCountry,
                 feeling: entry.feeling,
                 sleepQuality: entry.sleepQuality,
                 feelingColorHex: entry.feelingColorHex,
