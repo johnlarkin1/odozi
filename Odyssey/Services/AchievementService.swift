@@ -28,7 +28,11 @@ final class AchievementService {
             )
             modelContext.insert(achievement)
         }
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            logger.error("Failed to save seeded achievements: \(error)")
+        }
     }
 
     func evaluateAll(entries: [DailyEntry], latestEntry: DailyEntry?) -> [Achievement] {
@@ -53,7 +57,11 @@ final class AchievementService {
         }
 
         if !newlyUnlocked.isEmpty {
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+            } catch {
+                logger.error("Failed to save unlocked achievements: \(error)")
+            }
         }
 
         // Sort by tier descending so highest-tier is first
@@ -62,7 +70,11 @@ final class AchievementService {
 
     func markSeen(_ achievement: Achievement) {
         achievement.isNew = false
-        try? modelContext.save()
+        do {
+            try modelContext.save()
+        } catch {
+            logger.error("Failed to save achievement seen status: \(error)")
+        }
     }
 
     func markAllSeen() {
@@ -73,7 +85,11 @@ final class AchievementService {
             achievement.isNew = false
         }
         if !unseen.isEmpty {
-            try? modelContext.save()
+            do {
+                try modelContext.save()
+            } catch {
+                logger.error("Failed to save batch seen status: \(error)")
+            }
         }
     }
 

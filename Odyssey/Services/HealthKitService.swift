@@ -324,7 +324,7 @@ actor HealthKitService {
             "Archery": 2, "Fishing": 2
         ]
 
-        let longestWorkout = workouts.max(by: { $0.durationSeconds < $1.durationSeconds })!
+        guard let longestWorkout = workouts.max(by: { $0.durationSeconds < $1.durationSeconds }) else { return nil }
         var score = typeScores[longestWorkout.activityName] ?? 5
 
         // Duration modifier

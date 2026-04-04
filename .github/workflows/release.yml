@@ -21,8 +21,10 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  deploy:
-    runs-on: macos-15
+  determine-ref:
+    runs-on: ubuntu-latest
+    outputs:
+      ref: ${{ steps.tag.outputs.ref }}
     steps:
       - name: Determine tag
         id: tag
@@ -30,7 +32,6 @@ jobs:
           if [ -n "${{ inputs.tag }}" ]; then
             echo "ref=${{ inputs.tag }}" >> "$GITHUB_OUTPUT"
           else
-            # Fetch tags to find the latest (no local repo yet, so use HTTPS URL)
             git ls-remote --tags --sort=-v:refname "https://github.com/${{ github.repository }}.git" 'refs/tags/v*' | head -n 1 | awk '{print $2}' | sed 's|refs/tags/||' > /tmp/latest_tag
             TAG=$(cat /tmp/latest_tag)
             if [ -z "$TAG" ]; then
@@ -40,9 +41,63 @@ jobs:
             echo "ref=$TAG" >> "$GITHUB_OUTPUT"
           fi
 
+  test:
+    needs: determine-ref
+    runs-on: macos-15
+    steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ steps.tag.outputs.ref }}
+          ref: ${{ needs.determine-ref.outputs.ref }}
+
+      - name: Cache SPM packages
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/Library/Developer/Xcode/DerivedData/**/SourcePackages
+          key: spm-${{ runner.os }}-${{ hashFiles('Odyssey.xcodeproj/project.pbxproj') }}
+          restore-keys: spm-${{ runner.os }}-
+
+      - name: Create xcconfig
+        run: cp Odyssey.xcconfig.example Odyssey.xcconfig
+
+      - name: Resolve packages
+        run: make resolve
+
+      - name: Set up iOS Simulator
+        id: simulator
+        run: |
+          RUNTIME=$(xcrun simctl list runtimes -j | python3 -c "
+          import sys, json
+          rts = [r for r in json.loads(sys.stdin.read())['runtimes'] if 'iOS' in r['name'] and r['isAvailable']]
+          print(rts[-1]['identifier'])
+          ")
+          UDID=$(xcrun simctl list devices available -j | python3 -c "
+          import sys, json
+          data = json.loads(sys.stdin.read())
+          devs = data['devices'].get('$RUNTIME', [])
+          matches = [d['udid'] for d in devs if d['name'] == 'iPhone 16' and d['isAvailable']]
+          if matches:
+              print(matches[0])
+          " 2>/dev/null)
+          if [ -z "$UDID" ]; then
+            UDID=$(xcrun simctl create "iPhone 16" "com.apple.CoreSimulator.SimDeviceType.iPhone-16" "$RUNTIME")
+          fi
+          echo "udid=$UDID" >> "$GITHUB_OUTPUT"
+
+      - name: Run tests
+        run: |
+          xcodebuild -project Odyssey.xcodeproj -scheme Odyssey \
+            -destination 'platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}' \
+            -enableCodeCoverage YES \
+            test
+
+  deploy:
+    needs: [determine-ref, test]
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ needs.determine-ref.outputs.ref }}
           fetch-depth: 0
 
       - name: Set up Ruby
