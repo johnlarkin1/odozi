@@ -607,6 +607,7 @@ export function UnfurlCanvas() {
           Odyssey
         </h1>
         <p
+          className="font-heading"
           style={{
             marginTop: "4px",
             fontSize: "36px",
