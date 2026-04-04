@@ -78,7 +78,8 @@ enum WeeklyDigestService {
             .value.first
 
         // Streak — fetch recent entries (up to 365 days back) to avoid loading the full history
-        let streakCutoff = calendar.date(byAdding: .day, value: -365, to: calendar.startOfDay(for: endDate)) ?? calendar.startOfDay(for: endDate)
+        let startOfEnd = calendar.startOfDay(for: endDate)
+        let streakCutoff = calendar.date(byAdding: .day, value: -365, to: startOfEnd) ?? startOfEnd
         let streakDescriptor = FetchDescriptor<DailyEntry>(
             predicate: #Predicate<DailyEntry> { entry in
                 entry.date >= streakCutoff

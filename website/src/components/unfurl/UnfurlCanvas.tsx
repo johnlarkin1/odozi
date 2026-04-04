@@ -150,7 +150,7 @@ function drawStars(ctx: CanvasRenderingContext2D, stars: Star[], time: number) {
 }
 
 function drawOcean(ctx: CanvasRenderingContext2D, time: number) {
-  const baselineY = H * 0.56;
+  const baselineY = H * 0.62;
 
   // Deep ocean fill
   const waterGrad = ctx.createLinearGradient(0, baselineY - 20, 0, H);
@@ -221,7 +221,7 @@ function drawOcean(ctx: CanvasRenderingContext2D, time: number) {
 }
 
 function drawBoat(ctx: CanvasRenderingContext2D, time: number) {
-  const baselineY = H * 0.56;
+  const baselineY = H * 0.62;
 
   // Boat travels left-to-right over BOAT_CYCLE_DURATION seconds, then loops
   const cycleT = (time % BOAT_CYCLE_DURATION) / BOAT_CYCLE_DURATION;
@@ -595,7 +595,7 @@ export function UnfurlCanvas() {
           className="font-heading"
           style={{
             marginTop: `${H * 0.09}px`,
-            fontSize: "82px",
+            fontSize: "120px",
             fontWeight: 700,
             lineHeight: 1.1,
             background: `linear-gradient(to right, ${ACCENT_AMBER}, ${COSMIC_PURPLE}, ${ACCENT_TEAL})`,
@@ -607,10 +607,11 @@ export function UnfurlCanvas() {
           Odyssey
         </h1>
         <p
+          className="font-heading"
           style={{
             marginTop: "4px",
-            fontSize: "28px",
-            fontWeight: 300,
+            fontSize: "40px",
+            fontWeight: 400,
             color: "rgba(237, 240, 250, 0.7)",
           }}
         >
