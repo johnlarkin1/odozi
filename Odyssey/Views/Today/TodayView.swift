@@ -50,6 +50,7 @@ struct TodayView: View {
                         VitalsGridView(
                             entry: todayEntry,
                             streak: vm.currentStreak,
+                            screenTimeFallback: SharedDefaults.getScreenTime()?.seconds,
                             onTapVital: { vital in
                                 switch vital {
                                 case .steps: navigationPath.append(MetricDefinition.steps)
