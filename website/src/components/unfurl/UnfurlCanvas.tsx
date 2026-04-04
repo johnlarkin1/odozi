@@ -595,7 +595,7 @@ export function UnfurlCanvas() {
           className="font-heading"
           style={{
             marginTop: `${H * 0.09}px`,
-            fontSize: "104px",
+            fontSize: "120px",
             fontWeight: 700,
             lineHeight: 1.1,
             background: `linear-gradient(to right, ${ACCENT_AMBER}, ${COSMIC_PURPLE}, ${ACCENT_TEAL})`,
@@ -610,8 +610,8 @@ export function UnfurlCanvas() {
           className="font-heading"
           style={{
             marginTop: "4px",
-            fontSize: "36px",
-            fontWeight: 300,
+            fontSize: "40px",
+            fontWeight: 400,
             color: "rgba(237, 240, 250, 0.7)",
           }}
         >
