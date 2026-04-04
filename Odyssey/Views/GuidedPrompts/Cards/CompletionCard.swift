@@ -1,6 +1,7 @@
 import SwiftUI
 
 struct CompletionCard: View {
+    var entryDate: Date?
     var locationDisplay: String?
     var unlockedAchievements: [Achievement] = []
     let onDismiss: () -> Void
@@ -30,9 +31,15 @@ struct CompletionCard: View {
                             .font(.largeTitle.bold())
                             .foregroundStyle(.white)
 
-                        Text("Keep sailing on your odyssey")
-                            .font(.title3)
-                            .foregroundStyle(.secondary)
+                        if let date = entryDate {
+                            Text("Saved for \(date.shortFormatted)")
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("Keep sailing on your odyssey")
+                                .font(.title3)
+                                .foregroundStyle(.secondary)
+                        }
 
                         if let location = locationDisplay {
                             Text("Entry saved from \(location)")

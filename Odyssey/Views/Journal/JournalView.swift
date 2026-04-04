@@ -5,6 +5,8 @@ struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: JournalViewModel?
     @State private var searchText = ""
+    @State private var showingGuidedFlow = false
+    @State private var guidedFlowDate: Date?
 
     var body: some View {
         NavigationStack {
@@ -18,7 +20,11 @@ struct JournalView: View {
                                 selectedDate: Binding(
                                     get: { vm.selectedDate },
                                     set: { vm.selectedDate = $0 }
-                                )
+                                ),
+                                onTapEmptyDate: { date in
+                                    guidedFlowDate = date
+                                    showingGuidedFlow = true
+                                }
                             )
                         }
                         .listRowBackground(Color.cardSurface)
@@ -47,6 +53,22 @@ struct JournalView: View {
             }
             .navigationTitle("Journal")
             .cosmicBackground()
+            #if os(macOS)
+            .sheet(isPresented: $showingGuidedFlow) {
+                GuidedPromptFlowView(entryDate: guidedFlowDate)
+                    .frame(minWidth: 520, idealWidth: 650, maxWidth: 750,
+                           minHeight: 620, idealHeight: 750, maxHeight: 850)
+            }
+            #else
+            .fullScreenCover(isPresented: $showingGuidedFlow) {
+                GuidedPromptFlowView(entryDate: guidedFlowDate)
+            }
+            #endif
+            .onChange(of: showingGuidedFlow) { _, newValue in
+                if !newValue {
+                    viewModel?.loadEntries()
+                }
+            }
         }
         .onAppear {
             if viewModel == nil {
@@ -84,6 +106,12 @@ struct JournalView: View {
             }
 
             Spacer()
+
+            if !entry.wasCompletedOnDay {
+                Image(systemName: "arrow.counterclockwise")
+                    .font(.caption2)
+                    .foregroundStyle(.secondary)
+            }
 
             MoodIndicator(feeling: entry.feeling, size: 10)
 

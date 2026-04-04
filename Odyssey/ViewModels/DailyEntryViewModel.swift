@@ -92,6 +92,9 @@ final class DailyEntryViewModel {
             entry.journalEntry = journalEntry
             entry.drinks = drinks
             entry.hasUserSubmitted = true
+            if entry.firstSubmittedAt == nil {
+                entry.firstSubmittedAt = Date()
+            }
             entry.updatedAt = Date()
             entry.needsSync = true
 

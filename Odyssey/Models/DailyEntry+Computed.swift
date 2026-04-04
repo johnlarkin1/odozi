@@ -129,6 +129,13 @@ extension DailyEntry {
         return "\(mins)m"
     }
 
+    var wasCompletedOnDay: Bool {
+        guard hasUserSubmitted else { return false }
+        // Legacy entries without firstSubmittedAt are assumed same-day
+        guard let submitted = firstSubmittedAt else { return true }
+        return Calendar.current.isDate(submitted, inSameDayAs: date)
+    }
+
     var hasPromptData: Bool {
         !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
     }

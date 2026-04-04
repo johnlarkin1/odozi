@@ -3,6 +3,7 @@ import SwiftUI
 struct JournalCalendarView: View {
     let entries: [DailyEntry]
     @Binding var selectedDate: Date
+    var onTapEmptyDate: ((Date) -> Void)?
 
     @State private var displayedMonth = Date()
 
@@ -51,17 +52,38 @@ struct JournalCalendarView: View {
                 ForEach(daysInMonth(), id: \.self) { date in
                     if let date = date {
                         let entry = entryFor(date)
+                        let isEmptyPastDate = entry == nil && isPastDate(date)
+
                         Button {
-                            selectedDate = date
+                            if isEmptyPastDate, let callback = onTapEmptyDate {
+                                callback(date)
+                            } else {
+                                selectedDate = date
+                            }
                         } label: {
                             VStack(spacing: 2) {
                                 Text("\(date.dayNumber)")
                                     .font(.caption)
                                     .foregroundStyle(Calendar.current.isDateInToday(date) ? Color.accentAmber : .white)
 
-                                Circle()
-                                    .fill(entry.map { Color.moodGradient(for: $0.feeling) } ?? Color.clear)
-                                    .frame(width: 6, height: 6)
+                                ZStack {
+                                    Circle()
+                                        .fill(entry.map { Color.moodGradient(for: $0.feeling) } ?? Color.clear)
+                                        .frame(width: 6, height: 6)
+
+                                    if let entry = entry, !entry.wasCompletedOnDay {
+                                        Circle()
+                                            .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+                                            .foregroundStyle(Color.white.opacity(0.5))
+                                            .frame(width: 10, height: 10)
+                                    }
+
+                                    if isEmptyPastDate && onTapEmptyDate != nil {
+                                        Circle()
+                                            .strokeBorder(Color.white.opacity(0.15), lineWidth: 0.5)
+                                            .frame(width: 6, height: 6)
+                                    }
+                                }
                             }
                             .frame(width: 36, height: 36)
                             .background(
@@ -111,5 +133,11 @@ struct JournalCalendarView: View {
 
     private func entryFor(_ date: Date) -> DailyEntry? {
         entries.first { $0.hasPromptData && Calendar.current.isDate($0.date, inSameDayAs: date) }
+    }
+
+    private func isPastDate(_ date: Date) -> Bool {
+        let today = Calendar.current.startOfDay(for: Date())
+        let target = Calendar.current.startOfDay(for: date)
+        return target < today
     }
 }
