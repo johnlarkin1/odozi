@@ -1,5 +1,8 @@
 import DeviceActivity
+import os
 import SwiftUI
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "TotalActivityReport")
 
 extension DeviceActivityReport.Context {
     static let totalActivity = Self("Total Activity")
@@ -10,6 +13,8 @@ struct TotalActivityReport: DeviceActivityReportScene {
     let content: (String) -> TotalActivityView
 
     func makeConfiguration(representing data: DeviceActivityResults<DeviceActivityData>) async -> String {
+        logger.info("makeConfiguration called")
+
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.day, .hour, .minute, .second]
         formatter.unitsStyle = .abbreviated
@@ -29,6 +34,8 @@ struct TotalActivityReport: DeviceActivityReportScene {
             }
         }
 
+        logger.info("Screen time: \(totalDuration)s, pickups: \(totalPickups)")
+
         // Write to shared defaults so main app can read
         // Keys must match SharedDefaults.screenTimeSecondsKey / .pickupsKey / .screenTimeLastUpdatedKey
         let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
@@ -36,6 +43,7 @@ struct TotalActivityReport: DeviceActivityReportScene {
         defaults?.set(totalPickups, forKey: "pickups")
         defaults?.set(Date().timeIntervalSince1970, forKey: "screenTimeLastUpdated")
         defaults?.synchronize()
+        logger.info("Wrote screen time to SharedDefaults")
 
         return formatter.string(from: totalDuration) ?? "No activity data"
     }

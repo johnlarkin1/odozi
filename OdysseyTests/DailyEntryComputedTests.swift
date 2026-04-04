@@ -206,6 +206,48 @@ final class DailyEntryComputedTests: XCTestCase {
         XCTAssertFalse(entry.hasMapPhoto)
     }
 
+    // MARK: - hasAutoData
+
+    func testHasAutoDataFalseWhenAllNil() {
+        let entry = DailyEntry()
+        XCTAssertFalse(entry.hasAutoData)
+    }
+
+    func testHasAutoDataTrueWithStepCount() {
+        let entry = DailyEntry(stepCount: 5000)
+        XCTAssertTrue(entry.hasAutoData)
+    }
+
+    func testHasAutoDataTrueWithSleepHours() {
+        let entry = DailyEntry(sleepHours: 7.5)
+        XCTAssertTrue(entry.hasAutoData)
+    }
+
+    func testHasAutoDataTrueWithScreenTime() {
+        let entry = DailyEntry(screenTimeSeconds: 3600)
+        XCTAssertTrue(entry.hasAutoData)
+    }
+
+    func testHasAutoDataTrueWithWorkoutData() {
+        let entry = DailyEntry(workoutDataJSON: Data([0x01]))
+        XCTAssertTrue(entry.hasAutoData)
+    }
+
+    func testHasAutoDataTrueWithLocation() {
+        let entry = DailyEntry(latitude: 40.7)
+        XCTAssertTrue(entry.hasAutoData)
+    }
+
+    func testHasAutoDataTrueWithHeartRate() {
+        let entry = DailyEntry(restingHeartRate: 65.0)
+        XCTAssertTrue(entry.hasAutoData)
+    }
+
+    func testHasAutoDataIndependentOfPromptData() {
+        let entry = DailyEntry(gratitude: "Family", win: "Shipped feature")
+        XCTAssertFalse(entry.hasAutoData)
+    }
+
     // MARK: - sleepScoreLabel
 
     func testSleepScoreLabelBoundaries() {

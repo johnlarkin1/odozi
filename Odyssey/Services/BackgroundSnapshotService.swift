@@ -55,9 +55,12 @@ actor BackgroundSnapshotService {
                 workoutCount = health.workouts.count
                 totalMinutes = health.workouts.reduce(0) { $0 + $1.durationSeconds } / 60.0
                 intensityScore = HealthKitService.computeIntensityScore(for: health.workouts)
+                logger.info("Encoded \(health.workouts.count) workouts")
             } catch {
                 logger.error("Failed to encode workout data: \(error)")
             }
+        } else {
+            logger.info("No workouts found for \(today)")
         }
 
         return SnapshotData(

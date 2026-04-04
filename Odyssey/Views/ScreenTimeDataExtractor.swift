@@ -19,6 +19,9 @@ struct ScreenTimeDataExtractor: View {
             .clipped()
             .allowsHitTesting(false)
             .accessibilityHidden(true)
+            .onAppear {
+                refreshID = UUID()
+            }
             .onChange(of: scenePhase) { _, newPhase in
                 if newPhase == .active {
                     filter = DeviceActivityFilter(
