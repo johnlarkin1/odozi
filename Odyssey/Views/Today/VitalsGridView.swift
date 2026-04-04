@@ -7,6 +7,7 @@ enum VitalType: Hashable {
 struct VitalsGridView: View {
     let entry: DailyEntry?
     let streak: Int
+    var screenTimeFallback: Double?
     var onTapVital: ((VitalType) -> Void)?
     var animateIn: Bool = false
 
@@ -53,7 +54,7 @@ struct VitalsGridView: View {
             vitalButton(.streak) {
                 vitalCard(
                     icon: "flame.fill",
-                    value: streak > 0 ? "\(streak)" : "--",
+                    value: "\(streak)",
                     label: nextMilestoneLabel,
                     color: .accentAmber,
                     index: 4
@@ -96,6 +97,14 @@ struct VitalsGridView: View {
     private var screenTimeValue: String {
         if let entry = entry, entry.screenTimeSeconds != nil {
             return entry.screenTimeFormatted
+        }
+        if let seconds = screenTimeFallback {
+            let hours = Int(seconds) / 3600
+            let minutes = (Int(seconds) % 3600) / 60
+            if hours > 0 {
+                return "\(hours)h \(minutes)m"
+            }
+            return "\(minutes)m"
         }
         return "--"
     }

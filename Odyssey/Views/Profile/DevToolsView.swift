@@ -86,6 +86,81 @@
                 }
                 .listRowBackground(Color.cardSurface)
 
+                // MARK: - Screen Time Debug
+
+                Section("Screen Time") {
+                    let debugInfo = SharedDefaults.getScreenTimeDebugInfo()
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("SharedDefaults")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                        Text(debugInfo)
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.white)
+                    }
+
+                    if let todayEntry = allEntries.first(where: { Calendar.current.isDateInToday($0.date) }) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("DailyEntry")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text("screenTimeSeconds: \(todayEntry.screenTimeSeconds.map { String(format: "%.0f", $0) } ?? "nil")")
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                            Text("pickups: \(todayEntry.pickups.map { "\($0)" } ?? "nil")")
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                            Text("formatted: \(todayEntry.screenTimeFormatted)")
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                        }
+                    } else {
+                        Text("No DailyEntry for today")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+
+                    Button("Force Read SharedDefaults → DailyEntry") {
+                        runAction {
+                            guard let screenTime = SharedDefaults.getScreenTime() else {
+                                return "SharedDefaults returned nil (no data or stale timestamp)"
+                            }
+                            let repository = DailyEntryRepository(context: modelContext)
+                            let entry = try repository.fetchOrCreateToday()
+                            entry.screenTimeSeconds = screenTime.seconds
+                            entry.pickups = screenTime.pickups
+                            try modelContext.save()
+                            NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
+                            return "Wrote \(screenTime.seconds)s, \(screenTime.pickups) pickups → DailyEntry"
+                        }
+                    }
+
+                    Button("Run Snapshot + Poll Screen Time") {
+                        runAction {
+                            let service = BackgroundSnapshotService()
+                            let snapshot = await service.captureSnapshot()
+                            applySnapshotData(snapshot, to: modelContext)
+
+                            // Poll like foregroundCatchUp does
+                            let delays: [Int] = [500, 500, 750, 750, 1000, 1000, 1000, 1500, 1500, 2000]
+                            for (index, delay) in delays.enumerated() {
+                                try await Task.sleep(for: .milliseconds(delay))
+                                if let screenTime = SharedDefaults.getScreenTime() {
+                                    let repository = DailyEntryRepository(context: modelContext)
+                                    let entry = try repository.fetchOrCreateToday()
+                                    entry.screenTimeSeconds = screenTime.seconds
+                                    entry.pickups = screenTime.pickups
+                                    try modelContext.save()
+                                    NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
+                                    return "Poll \(index + 1): \(screenTime.seconds)s, \(screenTime.pickups) pickups"
+                                }
+                            }
+                            return "Polling exhausted — SharedDefaults: \(SharedDefaults.getScreenTimeDebugInfo())"
+                        }
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
+
                 // MARK: - Background Services
 
                 Section("Background Services") {
