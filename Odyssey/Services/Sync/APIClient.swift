@@ -107,7 +107,7 @@ actor APIClient {
         return request
     }
 
-    private func buildRequest(
+    func buildRequest(
         path: String,
         method: String,
         token: String
@@ -141,7 +141,7 @@ actor APIClient {
         }
     }
 
-    private func validateResponse(_ response: URLResponse) throws {
+    func validateResponse(_ response: URLResponse) throws {
         guard let httpResponse = response as? HTTPURLResponse else { return }
 
         switch httpResponse.statusCode {

@@ -191,12 +191,13 @@ final class DailyEntryViewModelTests: XCTestCase {
         XCTAssertEqual(vm.currentStreak, 2)
     }
 
-    func testCurrentStreakZeroWhenNoToday() throws {
+    func testCurrentStreakCountsFromYesterdayWhenTodayMissing() throws {
         context.insert(makeEntry(daysAgo: 1, journalEntry: "Yesterday"))
         try context.save()
 
         let vm = DailyEntryViewModel(modelContext: context)
-        XCTAssertEqual(vm.currentStreak, 0)
+        // Streak is forgiving: if today isn't filled in yet, it counts from yesterday
+        XCTAssertEqual(vm.currentStreak, 1)
     }
 
     func testCurrentStreakRequiresPromptData() throws {

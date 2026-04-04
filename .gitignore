@@ -121,3 +121,8 @@ odyssey-server/loadtests/keys/*.pem
 appstore-assets/
 
 **/*__pycache*
+
+website/.claude
+website/public/unfurls/main_input_fast_old.mov
+website/public/unfurls/main_input_old.heic
+website/public/unfurls/main_input_old.png
