@@ -18,15 +18,21 @@ final class GuidedPromptViewModel {
     var locationCapturedAt: Date?
 
     private let modelContext: ModelContext
+    let targetDate: Date
 
-    init(modelContext: ModelContext) {
+    var isPastEntry: Bool {
+        !Calendar.current.isDateInToday(targetDate)
+    }
+
+    init(modelContext: ModelContext, date: Date = Date()) {
         self.modelContext = modelContext
+        self.targetDate = Calendar.current.startOfDay(for: date)
         loadExistingEntry()
     }
 
     private func loadExistingEntry() {
         let repository = DailyEntryRepository(context: modelContext)
-        guard let entry = try? repository.fetchOrCreateToday(),
+        guard let entry = try? repository.fetchOrCreate(for: targetDate),
               entry.hasUserSubmitted else { return }
 
         responses.feeling = entry.feeling
@@ -89,7 +95,7 @@ final class GuidedPromptViewModel {
         let repository = DailyEntryRepository(context: modelContext)
 
         do {
-            let entry = try repository.fetchOrCreateToday()
+            let entry = try repository.fetchOrCreate(for: targetDate)
 
             entry.feeling = responses.feeling
             entry.singleWordFeeling = responses.singleWordFeeling
@@ -114,6 +120,9 @@ final class GuidedPromptViewModel {
             }
 
             entry.hasUserSubmitted = true
+            if entry.firstSubmittedAt == nil {
+                entry.firstSubmittedAt = Date()
+            }
             entry.updatedAt = Date()
             entry.needsSync = true
 
@@ -136,7 +145,7 @@ final class GuidedPromptViewModel {
 
     func loadCurrentLocation() {
         let repository = DailyEntryRepository(context: modelContext)
-        guard let entry = try? repository.fetchOrCreateToday() else { return }
+        guard let entry = try? repository.fetchOrCreate(for: targetDate) else { return }
 
         if let city = entry.city, let state = entry.state {
             currentLocationDisplay = "\(city), \(state)"
@@ -154,7 +163,7 @@ final class GuidedPromptViewModel {
 
         do {
             let repository = DailyEntryRepository(context: modelContext)
-            let entry = try repository.fetchOrCreateToday()
+            let entry = try repository.fetchOrCreate(for: targetDate)
 
             let service = LocationCaptureService()
             let snapshot = try await service.captureCurrentLocation()

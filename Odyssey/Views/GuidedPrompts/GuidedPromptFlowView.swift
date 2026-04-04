@@ -2,6 +2,8 @@ import SwiftData
 import SwiftUI
 
 struct GuidedPromptFlowView: View {
+    var entryDate: Date?
+
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: GuidedPromptViewModel?
@@ -71,6 +73,7 @@ struct GuidedPromptFlowView: View {
                     set: { vm.showingCompletion = $0 }
                 )) {
                     CompletionCard(
+                        entryDate: vm.isPastEntry ? vm.targetDate : nil,
                         locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
                         unlockedAchievements: vm.newlyUnlockedAchievements
                     ) {
@@ -84,6 +87,7 @@ struct GuidedPromptFlowView: View {
                             set: { vm.showingCompletion = $0 }
                         )) {
                             CompletionCard(
+                                entryDate: vm.isPastEntry ? vm.targetDate : nil,
                                 locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
                                 unlockedAchievements: vm.newlyUnlockedAchievements
                             ) {
@@ -97,7 +101,11 @@ struct GuidedPromptFlowView: View {
         }
         .onAppear {
             if viewModel == nil {
-                viewModel = GuidedPromptViewModel(modelContext: modelContext)
+                if let date = entryDate {
+                    viewModel = GuidedPromptViewModel(modelContext: modelContext, date: date)
+                } else {
+                    viewModel = GuidedPromptViewModel(modelContext: modelContext)
+                }
             }
         }
     }

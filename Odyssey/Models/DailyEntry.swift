@@ -88,6 +88,7 @@ final class DailyEntry {
 
     // User submission flag
     var hasUserSubmitted: Bool = false
+    var firstSubmittedAt: Date?
 
     // Metadata
     var createdAt: Date

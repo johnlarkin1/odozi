@@ -3,6 +3,7 @@ import SwiftUI
 struct WeekPulseView: View {
     let weekEntries: [DailyEntry?]
     var onTapEntry: ((DailyEntry) -> Void)?
+    var onTapEmptyDay: ((Date) -> Void)?
     var animateIn: Bool = false
 
     @State private var dotsVisible = false
@@ -23,12 +24,21 @@ struct WeekPulseView: View {
                     let date = Date().daysAgo(6 - index)
                     let entry = weekEntries[index]
                     let isToday = index == 6
+                    let isPast = !isToday
 
                     if let entry = entry, onTapEntry != nil {
                         Button {
                             onTapEntry?(entry)
                         } label: {
                             dayContent(entry: entry, isToday: isToday, index: index, date: date)
+                        }
+                        .buttonStyle(.plain)
+                        .frame(maxWidth: .infinity)
+                    } else if entry == nil, isPast, onTapEmptyDay != nil {
+                        Button {
+                            onTapEmptyDay?(date)
+                        } label: {
+                            dayContent(entry: nil, isToday: false, index: index, date: date)
                         }
                         .buttonStyle(.plain)
                         .frame(maxWidth: .infinity)
@@ -54,16 +64,33 @@ struct WeekPulseView: View {
     }
 
     private func dayContent(entry: DailyEntry?, isToday: Bool, index: Int, date: Date) -> some View {
-        VStack(spacing: 6) {
+        let isPast = !isToday && !Calendar.current.isDateInToday(date)
+        return VStack(spacing: 6) {
             ZStack {
                 if let entry = entry, entry.hasUserSubmitted {
                     Circle()
                         .fill(Color.moodGradient(for: entry.feeling))
                         .frame(width: 32, height: 32)
+
+                    if !entry.wasCompletedOnDay {
+                        Circle()
+                            .strokeBorder(style: StrokeStyle(lineWidth: 2, dash: [4, 3]))
+                            .foregroundStyle(Color.white.opacity(0.5))
+                            .frame(width: 36, height: 36)
+                    }
                 } else if entry != nil {
                     Circle()
                         .strokeBorder(Color.accentAmber, lineWidth: 2)
                         .frame(width: 32, height: 32)
+                } else if isPast && onTapEmptyDay != nil {
+                    ZStack {
+                        Circle()
+                            .strokeBorder(Color.white.opacity(0.15), lineWidth: 1.5)
+                            .frame(width: 32, height: 32)
+                        Image(systemName: "plus")
+                            .font(.caption2.weight(.medium))
+                            .foregroundStyle(Color.white.opacity(0.3))
+                    }
                 } else {
                     Circle()
                         .strokeBorder(Color.white.opacity(0.1), lineWidth: 1.5)

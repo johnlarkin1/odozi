@@ -10,6 +10,7 @@ struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingGuidedFlow = false
+    @State private var guidedFlowDate: Date?
     @State private var viewModel: DailyEntryViewModel?
     @State private var insightsViewModel: InsightsViewModel?
     @State private var navigationPath = NavigationPath()
@@ -28,7 +29,10 @@ struct TodayView: View {
                     MoodOrbView(
                         entry: todayEntry,
                         hasEntry: viewModel?.hasSubmittedData ?? false,
-                        onBeginEntry: { showingGuidedFlow = true },
+                        onBeginEntry: {
+                            guidedFlowDate = nil
+                            showingGuidedFlow = true
+                        },
                         onTapOrb: { navigationPath.append(MetricDefinition.mood) },
                         animateIn: animateIn
                     )
@@ -38,6 +42,10 @@ struct TodayView: View {
                         WeekPulseView(
                             weekEntries: vm.fetchWeekEntries(),
                             onTapEntry: { entry in navigationPath.append(entry) },
+                            onTapEmptyDay: { date in
+                                guidedFlowDate = date
+                                showingGuidedFlow = true
+                            },
                             animateIn: animateIn
                         )
                         .padding(.horizontal, 16)
@@ -110,17 +118,18 @@ struct TodayView: View {
             }
             #if os(macOS)
             .sheet(isPresented: $showingGuidedFlow) {
-                GuidedPromptFlowView()
+                GuidedPromptFlowView(entryDate: guidedFlowDate)
                     .frame(minWidth: 520, idealWidth: 650, maxWidth: 750,
                            minHeight: 620, idealHeight: 750, maxHeight: 850)
             }
             #else
             .fullScreenCover(isPresented: $showingGuidedFlow) {
-                        GuidedPromptFlowView()
+                        GuidedPromptFlowView(entryDate: guidedFlowDate)
                     }
             #endif
                     .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
                         if shouldShow {
+                            guidedFlowDate = nil
                             showingGuidedFlow = true
                             NavigationState.shared.showGuidedPrompt = false
                         }
@@ -145,6 +154,7 @@ struct TodayView: View {
                     }
             #endif
                     .onReceive(NotificationCenter.default.publisher(for: .openGuidedPrompt)) { _ in
+                        guidedFlowDate = nil
                         showingGuidedFlow = true
                     }
                     .onChange(of: showingGuidedFlow) { _, newValue in
