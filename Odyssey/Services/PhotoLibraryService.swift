@@ -58,6 +58,27 @@ actor PhotoLibraryService {
         }
     }
 
+    func loadFullImage(for asset: PHAsset) async -> UIImage? {
+        await withCheckedContinuation { continuation in
+            let options = PHImageRequestOptions()
+            options.deliveryMode = .highQualityFormat
+            options.isNetworkAccessAllowed = true
+            options.resizeMode = .none
+
+            PHImageManager.default().requestImage(
+                for: asset,
+                targetSize: PHImageManagerMaximumSize,
+                contentMode: .aspectFit,
+                options: options
+            ) { image, info in
+                let isDegraded = (info?[PHImageResultIsDegradedKey] as? Bool) ?? false
+                if !isDegraded {
+                    continuation.resume(returning: image)
+                }
+            }
+        }
+    }
+
     func loadJpegData(for asset: PHAsset, compressionQuality: CGFloat = 0.8) async -> Data? {
         guard let image = await loadThumbnail(for: asset, targetSize: CGSize(width: 800, height: 800)) else {
             return nil

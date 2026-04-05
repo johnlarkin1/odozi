@@ -18,6 +18,7 @@ final class JourneyExplorerViewModel {
 
     #if os(iOS)
         var autoPhotoThumbnails: [UIImage] = []
+        var autoPhotoAssets: [PHAsset] = []
     #endif
     var isLoadingPhotos = false
 
@@ -70,7 +71,7 @@ final class JourneyExplorerViewModel {
         if let lat = entry.latitude, let lon = entry.longitude {
             let camera = MapCamera(
                 centerCoordinate: CLLocationCoordinate2D(latitude: lat, longitude: lon),
-                distance: 8_000_000,
+                distance: 100_000,
                 heading: 0,
                 pitch: 0
             )
@@ -103,12 +104,15 @@ final class JourneyExplorerViewModel {
             let status = await photoService.requestAuthorization()
             guard status == .authorized || status == .limited else {
                 autoPhotoThumbnails = []
+                autoPhotoAssets = []
                 return
             }
 
             let assets = await photoService.fetchAssets(for: entry.date)
+            let prefixedAssets = Array(assets.prefix(6))
+            autoPhotoAssets = prefixedAssets
             var thumbnails: [UIImage] = []
-            for asset in assets.prefix(6) {
+            for asset in prefixedAssets {
                 if let thumb = await photoService.loadThumbnail(for: asset) {
                     thumbnails.append(thumb)
                 }

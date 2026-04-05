@@ -9,6 +9,8 @@ struct JourneyPhotoStrip: View {
     let isLoading: Bool
     var onAttachPhoto: ((Data) -> Void)?
     var onRemoveAttached: ((Int) -> Void)?
+    var onAutoPhotoTapped: ((Int) -> Void)?
+    var onAttachedPhotoTapped: ((Int) -> Void)?
 
     #if os(iOS)
         @State private var selectedItem: PhotosPickerItem?
@@ -19,16 +21,20 @@ struct JourneyPhotoStrip: View {
             HStack(spacing: 8) {
                 #if os(iOS)
                     // Auto-surfaced photos
-                    ForEach(Array(autoThumbnails.enumerated()), id: \.offset) { _, image in
-                        Image(uiImage: image)
-                            .resizable()
-                            .aspectRatio(contentMode: .fill)
-                            .frame(width: 64, height: 64)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
-                            )
+                    ForEach(Array(autoThumbnails.enumerated()), id: \.offset) { index, image in
+                        Button {
+                            onAutoPhotoTapped?(index)
+                        } label: {
+                            Image(uiImage: image)
+                                .resizable()
+                                .aspectRatio(contentMode: .fill)
+                                .frame(width: 64, height: 64)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                                .overlay(
+                                    RoundedRectangle(cornerRadius: 8)
+                                        .stroke(Color.white.opacity(0.15), lineWidth: 0.5)
+                                )
+                        }
                     }
                 #endif
 
@@ -70,6 +76,9 @@ struct JourneyPhotoStrip: View {
                                         RoundedRectangle(cornerRadius: 8)
                                             .stroke(Color.accentAmber.opacity(0.4), lineWidth: 1)
                                     )
+                                    .onTapGesture {
+                                        onAttachedPhotoTapped?(index)
+                                    }
 
                                 Button {
                                     onRemoveAttached?(index)
