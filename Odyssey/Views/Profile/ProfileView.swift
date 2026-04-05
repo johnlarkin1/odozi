@@ -106,7 +106,11 @@ struct ProfileView: View {
                 #if os(iOS)
                     Section("Screen Time") {
                         DeviceActivityReport(context, filter: filter)
+                        #if DEBUG
+                            .frame(height: 120)
+                        #else
                             .frame(height: 60)
+                        #endif
                             .onChange(of: scenePhase) { _, newPhase in
                                 if newPhase == .active {
                                     filter = DeviceActivityFilter(

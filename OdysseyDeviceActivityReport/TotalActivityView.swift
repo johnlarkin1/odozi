@@ -16,10 +16,21 @@ struct TotalActivityView: View {
                 Text("Today's Usage")
                     .font(.caption)
                     .foregroundStyle(.secondary)
-                Text(totalActivity)
-                    .font(.title2.bold())
-                    .fontDesign(.rounded)
-                    .foregroundStyle(.white)
+                #if DEBUG
+                    // Debug build: display whatever the extension returned verbatim,
+                    // wrapped in a monospaced font so diagnostic strings are readable.
+                    Text(totalActivity)
+                        .font(.caption2.monospaced())
+                        .foregroundStyle(.white)
+                        .lineLimit(nil)
+                        .fixedSize(horizontal: false, vertical: true)
+                        .textSelection(.enabled)
+                #else
+                    Text(totalActivity)
+                        .font(.title2.bold())
+                        .fontDesign(.rounded)
+                        .foregroundStyle(.white)
+                #endif
             }
             Spacer()
         }

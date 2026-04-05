@@ -1,4 +1,7 @@
 #if DEBUG
+    #if os(iOS)
+        import FamilyControls
+    #endif
     import SwiftData
     import SwiftUI
     import UserNotifications
@@ -16,6 +19,8 @@
         @State private var pendingNotificationCount: Int?
         @State private var showOnboardingPreview = false
         @State private var onboardingPreviewStep: OnboardingStep = .welcome
+        @State private var healthCheckResult: AppGroupHealthCheck.Result?
+        @State private var containerFileListing: String?
 
         var body: some View {
             List {
@@ -120,6 +125,30 @@
                             .foregroundStyle(.secondary)
                     }
 
+                    Button("Run App Group Health Check") {
+                        let result = AppGroupHealthCheck.run()
+                        healthCheckResult = result
+                        showStatus(result.summary, isError: !result.isHealthy)
+                    }
+
+                    if let result = healthCheckResult {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Health Check")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text(result.summary)
+                                .font(.caption.monospaced())
+                                .foregroundStyle(result.isHealthy ? Color.successGreen : Color.coralRed)
+                            ForEach(Array(result.details.enumerated()), id: \.offset) { _, line in
+                                Text(line)
+                                    .font(.caption2.monospaced())
+                                    .foregroundStyle(.white.opacity(0.8))
+                                    .lineLimit(nil)
+                                    .fixedSize(horizontal: false, vertical: true)
+                            }
+                        }
+                    }
+
                     Button("Force Read SharedDefaults → DailyEntry") {
                         runAction {
                             guard let screenTime = SharedDefaults.getScreenTime() else {
@@ -132,6 +161,106 @@
                             try modelContext.save()
                             NotificationCenter.default.post(name: .screenTimeDidUpdate, object: nil)
                             return "Wrote \(screenTime.seconds)s, \(screenTime.pickups) pickups → DailyEntry"
+                        }
+                    }
+
+                    #if os(iOS)
+                        Button("Check FamilyControls Authorization") {
+                            runAction {
+                                let center = AuthorizationCenter.shared
+                                let status = center.authorizationStatus
+                                let statusStr: String
+                                switch status {
+                                case .notDetermined: statusStr = "notDetermined (never asked)"
+                                case .denied: statusStr = "DENIED (user refused)"
+                                case .approved: statusStr = "approved ✓"
+                                @unknown default: statusStr = "unknown(\(status.rawValue))"
+                                }
+                                return "FamilyControls: \(statusStr)"
+                            }
+                        }
+
+                        Button("Request FamilyControls Auth") {
+                            runAction {
+                                try await AuthorizationCenter.shared.requestAuthorization(for: .individual)
+                                let status = AuthorizationCenter.shared.authorizationStatus
+                                return "After request: \(status)"
+                            }
+                        }
+                    #endif
+
+                    Button("List App Group Container Files") {
+                        let suiteName = SharedDefaults.suiteName
+                        guard let container = FileManager.default.containerURL(
+                            forSecurityApplicationGroupIdentifier: suiteName
+                        ) else {
+                            containerFileListing = "containerURL nil"
+                            showStatus("containerURL nil", isError: true)
+                            return
+                        }
+                        var lines: [String] = []
+                        if let enumerator = FileManager.default.enumerator(
+                            at: container,
+                            includingPropertiesForKeys: [.fileSizeKey, .contentModificationDateKey, .isDirectoryKey],
+                            options: [.skipsHiddenFiles]
+                        ) {
+                            let df = DateFormatter()
+                            df.dateFormat = "MM-dd HH:mm:ss"
+                            for case let url as URL in enumerator {
+                                let v = try? url.resourceValues(
+                                    forKeys: [.fileSizeKey, .contentModificationDateKey, .isDirectoryKey]
+                                )
+                                if v?.isDirectory == true { continue }
+                                let size = v?.fileSize ?? 0
+                                let mtime = v?.contentModificationDate.map(df.string(from:)) ?? "?"
+                                let rel = url.path.replacingOccurrences(of: container.path + "/", with: "")
+                                lines.append("\(mtime)  \(size)B  \(rel)")
+                            }
+                        }
+                        if lines.isEmpty {
+                            containerFileListing = "EMPTY — extension has never written"
+                            showStatus("Container empty", isError: true)
+                        } else {
+                            containerFileListing = lines.joined(separator: "\n")
+                            showStatus("\(lines.count) file(s) found")
+                        }
+                    }
+
+                    if let listing = containerFileListing {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Container Files")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text(listing)
+                                .font(.caption2.monospaced())
+                                .foregroundStyle(.white)
+                                .lineLimit(nil)
+                                .fixedSize(horizontal: false, vertical: true)
+                                .textSelection(.enabled)
+                        }
+                    }
+
+                    Button("Read screentime.json (file fallback)") {
+                        runAction {
+                            let suiteName = SharedDefaults.suiteName
+                            guard let container = FileManager.default.containerURL(
+                                forSecurityApplicationGroupIdentifier: suiteName
+                            ) else {
+                                return "containerURL nil — main app not entitled for \(suiteName)"
+                            }
+                            let url = container.appendingPathComponent("screentime.json")
+                            guard FileManager.default.fileExists(atPath: url.path) else {
+                                return "No screentime.json at \(url.path) — extension hasn't written yet"
+                            }
+                            let data = try Data(contentsOf: url)
+                            guard let json = try JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+                                return "screentime.json present but not valid JSON"
+                            }
+                            let seconds = json["seconds"] as? Double ?? -1
+                            let pickups = json["pickups"] as? Int ?? -1
+                            let ts = json["ts"] as? Double ?? 0
+                            let date = Date(timeIntervalSince1970: ts)
+                            return "file: \(seconds)s, \(pickups) pickups, ts=\(date)"
                         }
                     }
 
