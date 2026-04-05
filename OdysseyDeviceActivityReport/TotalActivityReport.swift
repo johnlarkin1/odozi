@@ -106,7 +106,7 @@ struct TotalActivityReport: DeviceActivityReportScene {
             // Encode diagnostics INTO the return string — the one channel Apple
             // guarantees reaches the main app from the DAR extension sandbox.
             let baseStr = formatter.string(from: totalDuration) ?? "0s"
-            let shortTs = Int(stamp) % 100000
+            let shortTs = Int(stamp) % 100_000
             return "v4 pid=\(getpid()) t=\(shortTs) f=\(fileWriteResult) |\(pathSuffix)| \(baseStr)"
         #else
             return formatter.string(from: totalDuration) ?? "No activity data"

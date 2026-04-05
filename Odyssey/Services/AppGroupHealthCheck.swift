@@ -86,7 +86,7 @@
                     }
                 }
                 if fileWrite, let readData = try? Data(contentsOf: url),
-                   let _ = try? JSONSerialization.jsonObject(with: readData) {
+                   (try? JSONSerialization.jsonObject(with: readData)) != nil {
                     fileRead = true
                     details.append("file read OK")
                 } else if fileWrite {

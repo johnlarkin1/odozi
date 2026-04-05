@@ -65,7 +65,7 @@ final class JourneyExplorerViewModelTests: XCTestCase {
     func testLocatedEntriesExcludesWithoutCoordinates() throws {
         let entries = [
             makeEntry(daysAgo: 0, latitude: 40.7, longitude: -74.0),
-            makeEntry(daysAgo: 1), // no coordinates
+            makeEntry(daysAgo: 1) // no coordinates
         ]
         try insertEntries(entries, into: context)
 
@@ -77,7 +77,7 @@ final class JourneyExplorerViewModelTests: XCTestCase {
     func testLocatedEntriesIncludesWithCoordinates() throws {
         let entries = [
             makeEntry(daysAgo: 0, latitude: 40.7, longitude: -74.0),
-            makeEntry(daysAgo: 1, latitude: 34.0, longitude: -118.2),
+            makeEntry(daysAgo: 1, latitude: 34.0, longitude: -118.2)
         ]
         try insertEntries(entries, into: context)
 
@@ -92,7 +92,7 @@ final class JourneyExplorerViewModelTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, latitude: 40.7, longitude: -74.0),
             makeEntry(daysAgo: 1, latitude: 34.0, longitude: -118.2),
-            makeEntry(daysAgo: 2, latitude: 41.8, longitude: -87.6),
+            makeEntry(daysAgo: 2, latitude: 41.8, longitude: -87.6)
         ]
         try insertEntries(entries, into: context)
 
@@ -121,7 +121,7 @@ final class JourneyExplorerViewModelTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, latitude: 40.7, longitude: -74.0),
             makeEntry(daysAgo: 1), // no location
-            makeEntry(daysAgo: 2, latitude: 34.0, longitude: -118.2),
+            makeEntry(daysAgo: 2, latitude: 34.0, longitude: -118.2)
         ]
         try insertEntries(entries, into: context)
 
