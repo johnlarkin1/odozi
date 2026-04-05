@@ -8,6 +8,8 @@ struct JourneyDayDetailCard: View {
     let isLoadingPhotos: Bool
     var onAttachPhoto: ((Data) -> Void)?
     var onRemoveAttached: ((Int) -> Void)?
+    var onAutoPhotoTapped: ((Int) -> Void)?
+    var onAttachedPhotoTapped: ((Int) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -97,7 +99,9 @@ struct JourneyDayDetailCard: View {
                         attachedPhotoData: attachedData,
                         isLoading: isLoadingPhotos,
                         onAttachPhoto: onAttachPhoto,
-                        onRemoveAttached: onRemoveAttached
+                        onRemoveAttached: onRemoveAttached,
+                        onAutoPhotoTapped: onAutoPhotoTapped,
+                        onAttachedPhotoTapped: onAttachedPhotoTapped
                     )
                 } else {
                     JourneyPhotoStrip(
@@ -105,7 +109,9 @@ struct JourneyDayDetailCard: View {
                         attachedPhotoData: [],
                         isLoading: isLoadingPhotos,
                         onAttachPhoto: onAttachPhoto,
-                        onRemoveAttached: onRemoveAttached
+                        onRemoveAttached: onRemoveAttached,
+                        onAutoPhotoTapped: onAutoPhotoTapped,
+                        onAttachedPhotoTapped: onAttachedPhotoTapped
                     )
                 }
             #else
@@ -114,7 +120,8 @@ struct JourneyDayDetailCard: View {
                         attachedPhotoData: attachedData,
                         isLoading: isLoadingPhotos,
                         onAttachPhoto: onAttachPhoto,
-                        onRemoveAttached: onRemoveAttached
+                        onRemoveAttached: onRemoveAttached,
+                        onAttachedPhotoTapped: onAttachedPhotoTapped
                     )
                 }
             #endif

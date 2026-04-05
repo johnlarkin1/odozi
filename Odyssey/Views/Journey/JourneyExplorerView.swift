@@ -4,6 +4,7 @@ import SwiftUI
 struct JourneyExplorerView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: JourneyExplorerViewModel?
+    @State private var previewImageSource: PhotoPreviewView.ImageSource?
 
     var body: some View {
         Group {
@@ -36,6 +37,15 @@ struct JourneyExplorerView: View {
                                     },
                                     onRemoveAttached: { index in
                                         vm.removeAttachedPhoto(at: index, from: entry)
+                                    },
+                                    onAutoPhotoTapped: { index in
+                                        guard index < vm.autoPhotoAssets.count else { return }
+                                        previewImageSource = .asset(vm.autoPhotoAssets[index])
+                                    },
+                                    onAttachedPhotoTapped: { index in
+                                        guard let data = entry.attachedPhotoData,
+                                              index < data.count else { return }
+                                        previewImageSource = .data(data[index])
                                     }
                                 )
                                 .transition(.move(edge: .bottom).combined(with: .opacity))
@@ -106,6 +116,9 @@ struct JourneyExplorerView: View {
                     viewModel = JourneyExplorerViewModel(modelContext: modelContext)
                 }
                 viewModel?.loadEntries()
+            }
+            .fullScreenCover(item: $previewImageSource) { source in
+                PhotoPreviewView(source: source)
             }
     }
 }
