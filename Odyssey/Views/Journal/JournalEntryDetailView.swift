@@ -3,6 +3,8 @@ import SwiftUI
 struct JournalEntryDetailView: View {
     let entry: DailyEntry
 
+    @State private var isEditing = false
+
     var body: some View {
         ScrollView {
             VStack(alignment: .leading, spacing: 20) {
@@ -200,6 +202,19 @@ struct JournalEntryDetailView: View {
         #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
         #endif
+        .toolbar {
+            ToolbarItem(placement: .primaryAction) {
+                Button {
+                    isEditing = true
+                } label: {
+                    Label("Edit", systemImage: "pencil")
+                }
+                .tint(.accentAmber)
+            }
+        }
+        .fullScreenCover(isPresented: $isEditing) {
+            GuidedPromptFlowView(entryDate: entry.date)
+        }
     }
 
     private func detailCard(title: String, value: String, color: Color) -> some View {
