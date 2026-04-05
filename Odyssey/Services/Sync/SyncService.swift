@@ -1,5 +1,4 @@
 // TODO: Replace with CloudKit sync
-// swiftlint:disable file_length
 import Foundation
 import os
 import SwiftData
@@ -9,7 +8,6 @@ private let conflictLogger = Logger(subsystem: "com.johnlarkin.Odyssey", categor
 
 @MainActor
 @Observable
-// swiftlint:disable:next type_body_length
 final class SyncService {
     var status: SyncStatus = .idle
     var lastSyncDate: Date?

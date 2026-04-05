@@ -2,7 +2,6 @@
 import XCTest
 
 final class HealthKitIntensityScoreTests: XCTestCase {
-
     private func makeWorkout(
         activityName: String = "Running",
         durationSeconds: Double = 1800,

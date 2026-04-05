@@ -111,10 +111,10 @@ extension DailyEntry {
     var workoutIntensityLabel: String? {
         guard let score = workoutIntensityScore else { return nil }
         switch score {
-        case 1...3: return "Light"
-        case 4...5: return "Moderate"
-        case 6...7: return "Hard"
-        case 8...10: return "Intense"
+        case 1 ... 3: return "Light"
+        case 4 ... 5: return "Moderate"
+        case 6 ... 7: return "Hard"
+        case 8 ... 10: return "Intense"
         default: return nil
         }
     }
@@ -142,8 +142,8 @@ extension DailyEntry {
 
     var hasAutoData: Bool {
         stepCount != nil || sleepHours != nil || screenTimeSeconds != nil ||
-        workoutDataJSON != nil || latitude != nil || restingHeartRate != nil ||
-        averageHeartRate != nil || walkingDistanceMeters != nil
+            workoutDataJSON != nil || latitude != nil || restingHeartRate != nil ||
+            averageHeartRate != nil || walkingDistanceMeters != nil
     }
 
     var hasPhotos: Bool {

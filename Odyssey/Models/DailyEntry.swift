@@ -12,12 +12,12 @@ struct WorkoutSummary: Codable, Sendable, Identifiable {
     // Stable ID derived from content — survives re-capture without causing SwiftUI remounts
     var id: String { "\(activityType)-\(startDate.timeIntervalSince1970)" }
 
-    let activityType: UInt            // HKWorkoutActivityType.rawValue
-    let activityName: String          // Human-readable name (e.g., "Running")
+    let activityType: UInt // HKWorkoutActivityType.rawValue
+    let activityName: String // Human-readable name (e.g., "Running")
     let durationSeconds: Double
-    let totalCalories: Double?        // kcal
+    let totalCalories: Double? // kcal
     let totalDistanceMeters: Double?
-    let averageHeartRate: Double?     // bpm during workout
+    let averageHeartRate: Double? // bpm during workout
     let startDate: Date
     let endDate: Date
 

@@ -14,6 +14,24 @@ struct TotalActivityReport: DeviceActivityReportScene {
 
     func makeConfiguration(representing data: DeviceActivityResults<DeviceActivityData>) async -> String {
         logger.info("makeConfiguration called")
+        #if DEBUG
+            NSLog("[Odyssey DAR] makeConfiguration called pid=%d", getpid())
+
+            // Breadcrumb: makeConfiguration entered (before any data iteration).
+            if let container = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: "group.com.johnlarkin.Odyssey"
+            ) {
+                let url = container.appendingPathComponent("dar_makeconfig_entered.json")
+                let payload: [String: Any] = [
+                    "ts": Date().timeIntervalSince1970,
+                    "pid": getpid()
+                ]
+                if let data = try? JSONSerialization.data(withJSONObject: payload) {
+                    try? data.write(to: url, options: .atomic)
+                    NSLog("[Odyssey DAR] wrote dar_makeconfig_entered.json")
+                }
+            }
+        #endif
 
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.day, .hour, .minute, .second]
@@ -38,13 +56,60 @@ struct TotalActivityReport: DeviceActivityReportScene {
 
         // Write to shared defaults so main app can read
         // Keys must match SharedDefaults.screenTimeSecondsKey / .pickupsKey / .screenTimeLastUpdatedKey
-        let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
-        defaults?.set(totalDuration, forKey: "screenTimeSeconds")
-        defaults?.set(totalPickups, forKey: "pickups")
-        defaults?.set(Date().timeIntervalSince1970, forKey: "screenTimeLastUpdated")
-        defaults?.synchronize()
-        logger.info("Wrote screen time to SharedDefaults")
+        let suiteName = "group.com.johnlarkin.Odyssey"
+        let stamp = Date().timeIntervalSince1970
 
-        return formatter.string(from: totalDuration) ?? "No activity data"
+        if let defaults = UserDefaults(suiteName: suiteName) {
+            defaults.set(totalDuration, forKey: "screenTimeSeconds")
+            defaults.set(totalPickups, forKey: "pickups")
+            defaults.set(stamp, forKey: "screenTimeLastUpdated")
+            defaults.synchronize()
+            #if DEBUG
+                // Canary: write-then-read-back in-process to detect silent sandbox drops.
+                let readback = defaults.double(forKey: "screenTimeLastUpdated")
+                let matches = abs(readback - stamp) < 0.01
+                logger.info("DAR UD write stamp=\(stamp) readback=\(readback) match=\(matches)")
+            #endif
+        } else {
+            logger.error("DAR: UserDefaults(suiteName: \(suiteName)) returned nil — App Group not entitled")
+        }
+
+        #if DEBUG
+            // File-based fallback in the App Group container — survives even if
+            // cross-process UserDefaults propagation is blocked by the sandbox.
+            var fileWriteResult = "skipped"
+            let container = FileManager.default.containerURL(
+                forSecurityApplicationGroupIdentifier: suiteName
+            )
+            let pathSuffix = container?.path.suffix(12) ?? "nil"
+            if let container {
+                let url = container.appendingPathComponent("screentime.json")
+                let payload: [String: Any] = [
+                    "seconds": totalDuration,
+                    "pickups": totalPickups,
+                    "ts": stamp
+                ]
+                if let data = try? JSONSerialization.data(withJSONObject: payload) {
+                    do {
+                        try data.write(to: url, options: .atomic)
+                        if let readData = try? Data(contentsOf: url) {
+                            fileWriteResult = "OK(\(readData.count)B)"
+                        } else {
+                            fileWriteResult = "wrote-no-readback"
+                        }
+                    } catch {
+                        fileWriteResult = "THREW"
+                    }
+                }
+            }
+
+            // Encode diagnostics INTO the return string — the one channel Apple
+            // guarantees reaches the main app from the DAR extension sandbox.
+            let baseStr = formatter.string(from: totalDuration) ?? "0s"
+            let shortTs = Int(stamp) % 100_000
+            return "v4 pid=\(getpid()) t=\(shortTs) f=\(fileWriteResult) |\(pathSuffix)| \(baseStr)"
+        #else
+            return formatter.string(from: totalDuration) ?? "No activity data"
+        #endif
     }
 }

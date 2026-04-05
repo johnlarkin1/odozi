@@ -20,7 +20,7 @@ final class TrendCalculatorTests: XCTestCase {
             makeEntry(daysAgo: 4, feeling: 3),
             makeEntry(daysAgo: 3, feeling: 4),
             makeEntry(daysAgo: 1, feeling: 8),
-            makeEntry(daysAgo: 0, feeling: 9),
+            makeEntry(daysAgo: 0, feeling: 9)
         ]
         let trend = TrendCalculator.trend(for: .mood, entries: entries)
         XCTAssertEqual(trend.direction, .up)
@@ -33,7 +33,7 @@ final class TrendCalculatorTests: XCTestCase {
             makeEntry(daysAgo: 4, feeling: 8),
             makeEntry(daysAgo: 3, feeling: 9),
             makeEntry(daysAgo: 1, feeling: 3),
-            makeEntry(daysAgo: 0, feeling: 4),
+            makeEntry(daysAgo: 0, feeling: 4)
         ]
         let trend = TrendCalculator.trend(for: .mood, entries: entries)
         XCTAssertEqual(trend.direction, .down)
@@ -45,7 +45,7 @@ final class TrendCalculatorTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 2, stepCount: 100),
             makeEntry(daysAgo: 1, stepCount: 100),
-            makeEntry(daysAgo: 0, stepCount: 101),
+            makeEntry(daysAgo: 0, stepCount: 101)
         ]
         let trend = TrendCalculator.trend(for: .steps, entries: entries)
         XCTAssertEqual(trend.direction, .flat)
@@ -55,7 +55,7 @@ final class TrendCalculatorTests: XCTestCase {
         // Prior half: avg = 5.0, Current half: avg = 10.0 → 100% increase
         let entries = [
             makeEntry(daysAgo: 2, feeling: 5),
-            makeEntry(daysAgo: 0, feeling: 10),
+            makeEntry(daysAgo: 0, feeling: 10)
         ]
         let trend = TrendCalculator.trend(for: .mood, entries: entries)
         XCTAssertEqual(trend.direction, .up)
@@ -67,7 +67,7 @@ final class TrendCalculatorTests: XCTestCase {
         // Use drinks: prior half all 0, current half > 0
         let entries = [
             makeEntry(daysAgo: 2, drinks: 0),
-            makeEntry(daysAgo: 0, drinks: 3),
+            makeEntry(daysAgo: 0, drinks: 3)
         ]
         let trend = TrendCalculator.trend(for: .drinks, entries: entries)
         XCTAssertEqual(trend.direction, .up)
@@ -77,7 +77,7 @@ final class TrendCalculatorTests: XCTestCase {
     func testFlatWhenBothHalvesZero() {
         let entries = [
             makeEntry(daysAgo: 2, drinks: 0),
-            makeEntry(daysAgo: 0, drinks: 0),
+            makeEntry(daysAgo: 0, drinks: 0)
         ]
         let trend = TrendCalculator.trend(for: .drinks, entries: entries)
         XCTAssertEqual(trend.direction, .flat)
@@ -88,7 +88,7 @@ final class TrendCalculatorTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 2),
             makeEntry(daysAgo: 1),
-            makeEntry(daysAgo: 0, stepCount: 5000),
+            makeEntry(daysAgo: 0, stepCount: 5000)
         ]
         let trend = TrendCalculator.trend(for: .steps, entries: entries)
         XCTAssertEqual(trend.direction, .flat)

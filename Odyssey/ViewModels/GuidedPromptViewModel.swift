@@ -26,7 +26,7 @@ final class GuidedPromptViewModel {
 
     init(modelContext: ModelContext, date: Date = Date()) {
         self.modelContext = modelContext
-        self.targetDate = Calendar.current.startOfDay(for: date)
+        targetDate = Calendar.current.startOfDay(for: date)
         loadExistingEntry()
     }
 

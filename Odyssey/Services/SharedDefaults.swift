@@ -47,6 +47,16 @@ enum SharedDefaults {
         return (seconds, pickups)
     }
 
+    #if DEBUG
+        /// Returns the path this process resolves `group.com.johnlarkin.Odyssey` to.
+        /// Returns nil if this process isn't entitled for the App Group.
+        static func appGroupContainerPath() -> String? {
+            FileManager.default
+                .containerURL(forSecurityApplicationGroupIdentifier: suiteName)?
+                .path
+        }
+    #endif
+
     static func getScreenTimeDebugInfo() -> String {
         let lastUpdated = suite.double(forKey: screenTimeLastUpdatedKey)
         let seconds = suite.double(forKey: screenTimeSecondsKey)

@@ -147,7 +147,14 @@ enum SyncMergeStrategy {
         // Prefer the side with location data
         if !localHasLocation, remoteHasLocation {
             conflictLogger.info("[\(entryDate)] location: remote wins (local has no location)")
-            applyLocation(latitude: remoteLatitude, longitude: remoteLongitude, city: remoteCity, state: remoteState, country: remoteCountry, to: localEntry)
+            applyLocation(
+                latitude: remoteLatitude,
+                longitude: remoteLongitude,
+                city: remoteCity,
+                state: remoteState,
+                country: remoteCountry,
+                to: localEntry
+            )
             return
         }
         if localHasLocation, !remoteHasLocation {
@@ -158,7 +165,14 @@ enum SyncMergeStrategy {
         // Both have location data: timestamp breaks tie
         if remoteTimestamp > localTimestamp {
             conflictLogger.info("[\(entryDate)] location: remote wins (newer timestamp)")
-            applyLocation(latitude: remoteLatitude, longitude: remoteLongitude, city: remoteCity, state: remoteState, country: remoteCountry, to: localEntry)
+            applyLocation(
+                latitude: remoteLatitude,
+                longitude: remoteLongitude,
+                city: remoteCity,
+                state: remoteState,
+                country: remoteCountry,
+                to: localEntry
+            )
         } else {
             conflictLogger.info("[\(entryDate)] location: local wins (newer or equal timestamp)")
         }

@@ -106,7 +106,7 @@ final class APIClientTests: XCTestCase {
             .serverError(500),
             .invalidURL,
             .decodingError(NSError(domain: "", code: 0)),
-            .networkError(NSError(domain: "", code: 0)),
+            .networkError(NSError(domain: "", code: 0))
         ]
         for error in cases {
             XCTAssertNotNil(error.errorDescription, "\(error) should have a description")
