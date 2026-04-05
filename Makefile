@@ -6,11 +6,7 @@ CONFIG_RELEASE = Release
 # Default destination — override with: make build DESTINATION='platform=iOS,name=MyiPhone'
 DESTINATION ?= platform=iOS Simulator,name=iPhone 17 Pro
 
-# Backend server
-SERVER_DIR = odyssey-server
-SERVER_PORT ?= 8080
-
-.PHONY: help setup-simulator run run-app preview run-server stop-server build build-release build-mac build-watch test test-unit test-ui build-widget clean resolve lint lint-ios lint-website typecheck typecheck-website format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots appstore appstore-iphone appstore-watch loadtest-keys loadtest loadtest-headless demo demo-pr widget-screenshots widget-screenshots-pr
+.PHONY: help setup-simulator run-app preview build build-release build-mac build-watch test test-unit test-ui build-widget clean resolve lint lint-ios lint-website typecheck typecheck-website format fmt update-secret-template tag beta beta-local beta-local-no-screen release release-local release-local-no-screen match-appstore match-development match-force-local website-dev website-build website-install screenshots appstore appstore-iphone appstore-watch demo demo-pr widget-screenshots widget-screenshots-pr
 
 help: ## Show available commands
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
@@ -24,35 +20,6 @@ setup-simulator: ## Download iOS platform and create iPhone 16 simulator
 		2>/dev/null || echo "iPhone 16 simulator already exists"
 	@echo "Done! Available simulators:"
 	@xcrun simctl list devices available | grep -i iphone | head -5
-
-run: ## Build and run iOS app + Rust backend (Ctrl+C stops both)
-	@trap 'echo "\nStopping backend..."; kill $$SERVER_PID 2>/dev/null; exit 0' INT TERM; \
-	lsof -ti :$(SERVER_PORT) | xargs kill 2>/dev/null; sleep 0.5; \
-	xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true; \
-	open -a Simulator; \
-	echo "Starting backend server on port $(SERVER_PORT)..."; \
-	(cd $(SERVER_DIR) && cargo run) & \
-	SERVER_PID=$$!; \
-	echo "Waiting for backend (PID $$SERVER_PID)..."; \
-	for i in $$(seq 1 30); do \
-		if curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
-			echo "Backend ready on http://localhost:$(SERVER_PORT)"; \
-			break; \
-		fi; \
-		if [ $$i -eq 30 ]; then \
-			echo "ERROR: Backend failed to start within 30s"; \
-			kill $$SERVER_PID 2>/dev/null; \
-			exit 1; \
-		fi; \
-		sleep 1; \
-	done; \
-	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) \
-		-destination '$(DESTINATION)' -derivedDataPath build \
-		ODYSSEY_API_BASE_URL='http://localhost:$(SERVER_PORT)' build; \
-	xcrun simctl install booted build/Build/Products/Debug-iphonesimulator/Odyssey.app; \
-	xcrun simctl launch booted com.johnlarkin.Odyssey; \
-	echo "App launched. Backend running (PID $$SERVER_PID). Ctrl+C to stop."; \
-	wait $$SERVER_PID
 
 run-app: ## Build and run iOS app only (uses Odyssey.xcconfig URL)
 	xcrun simctl boot "iPhone 17 Pro" 2>/dev/null || true
@@ -70,12 +37,6 @@ preview: ## Launch app in simulator with 30 days of seeded sample data
 	xcrun simctl terminate booted com.johnlarkin.Odyssey 2>/dev/null || true
 	SIMCTL_CHILD_SCREENSHOT_MODE=1 xcrun simctl launch booted com.johnlarkin.Odyssey
 	@echo "App launched with sample data. Use 'make run-app' for normal mode."
-
-run-server: ## Start the Rust backend server
-	cd $(SERVER_DIR) && cargo run
-
-stop-server: ## Stop any running backend server on SERVER_PORT
-	@lsof -ti :$(SERVER_PORT) | xargs kill 2>/dev/null && echo "Stopped server on port $(SERVER_PORT)" || echo "No server running on port $(SERVER_PORT)"
 
 build: ## Build debug configuration
 	xcodebuild -project $(PROJECT) -scheme $(SCHEME) -configuration $(CONFIG_DEBUG) -destination '$(DESTINATION)' build
@@ -267,79 +228,6 @@ website-dev: ## Start website dev server
 
 website-build: ## Build website for production (static export)
 	cd website && npm run build
-
-# --- Load Testing ---
-
-LOADTEST_DIR = $(SERVER_DIR)/loadtests
-LOADTEST_KEYS_DIR = $(LOADTEST_DIR)/keys
-LOADTEST_PRIVATE_KEY = $(LOADTEST_KEYS_DIR)/test_private.pem
-LOADTEST_PUBLIC_KEY = $(LOADTEST_KEYS_DIR)/test_public.pem
-
-loadtest-keys: ## Generate RSA keypair for load testing
-	cd $(LOADTEST_DIR) && python -m common.auth generate-keys
-
-loadtest: ## Run Locust load test with web UI (auto-starts server if needed)
-	@STARTED_SERVER=0; \
-	if ! curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
-		echo "Starting backend in load test mode on port $(SERVER_PORT)..."; \
-		(cd $(SERVER_DIR) && \
-			ODYSSEY_LOADTEST_PUBLIC_KEY_PATH=loadtests/keys/test_public.pem \
-			ODYSSEY_LOADTEST_DISABLE_RATELIMIT=1 \
-			cargo run) & \
-		SERVER_PID=$$!; \
-		STARTED_SERVER=1; \
-		echo "Waiting for backend (PID $$SERVER_PID)..."; \
-		for i in $$(seq 1 30); do \
-			if curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
-				echo "Backend ready on http://localhost:$(SERVER_PORT)"; \
-				break; \
-			fi; \
-			if [ $$i -eq 30 ]; then \
-				echo "ERROR: Backend failed to start within 30s"; \
-				kill $$SERVER_PID 2>/dev/null; \
-				exit 1; \
-			fi; \
-			sleep 1; \
-		done; \
-	else \
-		echo "Backend already running on port $(SERVER_PORT)"; \
-	fi; \
-	trap 'echo "\nStopping..."; if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; echo "Stopped backend"; fi; exit 0' INT TERM; \
-	echo "Starting Locust web UI at http://localhost:8089 ..."; \
-	cd $(LOADTEST_DIR) && locust -f locustfile.py --host http://localhost:$(SERVER_PORT); \
-	if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; fi
-
-loadtest-headless: ## Run headless Locust load test (100 users, 10/s spawn, 60s)
-	@STARTED_SERVER=0; \
-	if ! curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
-		echo "Starting backend in load test mode on port $(SERVER_PORT)..."; \
-		(cd $(SERVER_DIR) && \
-			ODYSSEY_LOADTEST_PUBLIC_KEY_PATH=loadtests/keys/test_public.pem \
-			ODYSSEY_LOADTEST_DISABLE_RATELIMIT=1 \
-			cargo run) & \
-		SERVER_PID=$$!; \
-		STARTED_SERVER=1; \
-		echo "Waiting for backend (PID $$SERVER_PID)..."; \
-		for i in $$(seq 1 30); do \
-			if curl -sf http://localhost:$(SERVER_PORT)/healthz > /dev/null 2>&1; then \
-				echo "Backend ready on http://localhost:$(SERVER_PORT)"; \
-				break; \
-			fi; \
-			if [ $$i -eq 30 ]; then \
-				echo "ERROR: Backend failed to start within 30s"; \
-				kill $$SERVER_PID 2>/dev/null; \
-				exit 1; \
-			fi; \
-			sleep 1; \
-		done; \
-	else \
-		echo "Backend already running on port $(SERVER_PORT)"; \
-	fi; \
-	trap 'if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; fi; exit 0' INT TERM; \
-	cd $(LOADTEST_DIR) && locust -f locustfile.py \
-		--host http://localhost:$(SERVER_PORT) \
-		--headless -u 100 -r 10 -t 60s; \
-	if [ $$STARTED_SERVER -eq 1 ]; then kill $$SERVER_PID 2>/dev/null; echo "Stopped backend"; fi
 
 # --- Widget Screenshots ---
 
