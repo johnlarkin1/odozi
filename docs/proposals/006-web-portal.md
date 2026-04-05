@@ -1,6 +1,6 @@
 ---
 title: Web Portal — View-Only Journal Dashboard
-status: draft
+status: archived
 date: 2026-03-19
 tags: [web, portal, next.js, clerk, dashboard, cross-platform]
 ---

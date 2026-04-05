@@ -1,6 +1,6 @@
 ---
 title: Cloudflare Workers Backend Migration
-status: draft
+status: archived
 date: 2026-03-17
 tags: [backend, infrastructure, cloudflare, workers, cost-optimization, neon, postgres]
 ---
