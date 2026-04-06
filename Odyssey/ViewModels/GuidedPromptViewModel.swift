@@ -124,7 +124,6 @@ final class GuidedPromptViewModel {
                 entry.firstSubmittedAt = Date()
             }
             entry.updatedAt = Date()
-            entry.needsSync = true
 
             try modelContext.save()
             NotificationCenter.default.post(name: .didSaveFirstEntry, object: nil)

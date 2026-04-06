@@ -50,7 +50,6 @@ struct JourneyDayDetailCard: View {
                         }
                         entry.showOnPhotoMap = newValue
                         entry.updatedAt = Date()
-                        entry.needsSync = true
                     } label: {
                         Image(systemName: entry.showOnPhotoMap ? "mappin.circle.fill" : "mappin.circle")
                             .font(.body)

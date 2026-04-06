@@ -6,11 +6,9 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "MacA
 
 @main
 struct OdysseyMacApp: App {
-    @Environment(\.scenePhase) private var scenePhase
     @AppStorage("hasCompletedOnboarding") private var hasCompletedOnboarding = false
 
     @State private var authManager = AuthManager()
-    @State private var syncService = SyncService()
     @State private var selectedSection: SidebarSection = .today
     @State private var showGuidedPrompt = false
 
@@ -40,7 +38,6 @@ struct OdysseyMacApp: App {
                         .frame(minWidth: 800, minHeight: 600)
                         .environment(\.colorScheme, .dark)
                         .environment(authManager)
-                        .environment(syncService)
                         .modelContainer(container)
                         .task {
                             await authManager.initialize()
@@ -48,13 +45,6 @@ struct OdysseyMacApp: App {
                 } else {
                     MacDataStoreErrorView(error: containerError)
                         .environment(\.colorScheme, .dark)
-                }
-            }
-            .onChange(of: scenePhase) { _, newPhase in
-                if newPhase == .active, container != nil {
-                    Task {
-                        await foregroundSync()
-                    }
                 }
             }
         }
@@ -96,22 +86,11 @@ struct OdysseyMacApp: App {
                 MacSettingsView()
                     .environment(\.colorScheme, .dark)
                     .environment(authManager)
-                    .environment(syncService)
                     .modelContainer(container)
             }
         }
     }
 
-    @MainActor
-    private func foregroundSync() async {
-        guard let container else { return }
-        let context = container.mainContext
-
-        // Sync pending entries if signed in
-        if authManager.hasAccount {
-            await syncService.syncPendingEntries(modelContext: context, authManager: authManager)
-        }
-    }
 }
 
 private struct MacDataStoreErrorView: View {

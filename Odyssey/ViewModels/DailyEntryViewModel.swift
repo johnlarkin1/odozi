@@ -96,7 +96,6 @@ final class DailyEntryViewModel {
                 entry.firstSubmittedAt = Date()
             }
             entry.updatedAt = Date()
-            entry.needsSync = true
 
             try modelContext.save()
             hasSubmittedData = true

@@ -101,7 +101,6 @@ struct WatchHealthCapture {
             // (requires SleepScoreService which lives in the Odyssey target)
 
             entry.updatedAt = Date()
-            entry.needsSync = true
             try modelContext.save()
 
             logger

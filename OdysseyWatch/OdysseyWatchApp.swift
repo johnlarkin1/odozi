@@ -7,7 +7,6 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Watc
 @main
 struct OdysseyWatchApp: App {
     @State private var watchAuth = WatchAuthManager()
-    @State private var watchSync = WatchSyncService()
     @State private var sessionReceiver = WatchSessionReceiver()
 
     static let isScreenshotMode = ProcessInfo.processInfo.environment["SCREENSHOT_MODE"] == "1"
@@ -55,14 +54,9 @@ struct OdysseyWatchApp: App {
     private func normalWatchView(container: ModelContainer) -> some View {
         WatchTabView()
             .environment(watchAuth)
-            .environment(watchSync)
             .modelContainer(container)
             .task {
                 sessionReceiver.activate(authManager: watchAuth)
-                await watchSync.syncPendingEntries(
-                    modelContext: container.mainContext,
-                    authManager: watchAuth
-                )
             }
     }
 }

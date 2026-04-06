@@ -181,7 +181,6 @@ struct JournalEntryDetailView: View {
                                 }
                                 entry.showOnPhotoMap = newValue
                                 entry.updatedAt = Date()
-                                entry.needsSync = true
                             }
                         ))
                         .labelsHidden()

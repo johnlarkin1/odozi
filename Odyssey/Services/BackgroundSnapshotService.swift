@@ -180,7 +180,6 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
         applyScreenTimeData(from: data, to: entry)
 
         entry.updatedAt = Date()
-        entry.needsSync = true
 
         try context.save()
     } catch {
