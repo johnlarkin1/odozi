@@ -42,6 +42,7 @@ struct GuidedPromptFlowView: View {
                                 }
                             }
                             .tabViewStyle(.page(indexDisplayMode: .never))
+                        .ignoresSafeArea(.keyboard)
                         #endif
 
                         PromptNavigationBar(
