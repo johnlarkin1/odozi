@@ -24,6 +24,9 @@ class ScreenTimeSelectAppsModel {
         if let encoded = try? JSONEncoder().encode(activitySelection) {
             defaults?.set(encoded, forKey: Self.defaultsKey)
         }
+        #if os(iOS) && !targetEnvironment(simulator)
+            ScreenTimeMonitoringManager.register()
+        #endif
     }
 
     private func loadSelection() {

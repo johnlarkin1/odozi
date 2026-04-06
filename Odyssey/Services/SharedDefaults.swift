@@ -15,10 +15,12 @@ enum SharedDefaults {
         return defaults
     }
 
-    // Screen Time keys
+    // Screen Time keys (written by DeviceActivityMonitorExtension)
     static let screenTimeSecondsKey = "screenTimeSeconds"
     static let pickupsKey = "pickups"
     static let screenTimeLastUpdatedKey = "screenTimeLastUpdated"
+    static let maxThresholdMinutesKey = "screenTimeMaxThresholdMinutes"
+    static let intervalDateKey = "screenTimeIntervalDate"
 
     static func setScreenTime(seconds: Double, pickups: Int) {
         suite.set(seconds, forKey: screenTimeSecondsKey)
@@ -27,7 +29,6 @@ enum SharedDefaults {
     }
 
     static func getScreenTime() -> (seconds: Double, pickups: Int)? {
-        suite.synchronize() // Force cross-process read from disk
         let lastUpdated = suite.double(forKey: screenTimeLastUpdatedKey)
         guard lastUpdated > 0 else {
             logger.debug("Screen time: no lastUpdated timestamp found")
