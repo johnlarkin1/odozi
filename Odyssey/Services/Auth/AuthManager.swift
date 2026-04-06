@@ -5,6 +5,44 @@ import SwiftUI
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Auth")
 
+/// Delegate that bridges ASAuthorizationController callbacks to async/await.
+private class SIWARefreshDelegate: NSObject, ASAuthorizationControllerDelegate,
+    ASAuthorizationControllerPresentationContextProviding
+{
+    private var continuation: CheckedContinuation<ASAuthorization, Error>?
+
+    init(continuation: CheckedContinuation<ASAuthorization, Error>) {
+        self.continuation = continuation
+    }
+
+    func authorizationController(
+        controller _: ASAuthorizationController,
+        didCompleteWithAuthorization authorization: ASAuthorization
+    ) {
+        continuation?.resume(returning: authorization)
+        continuation = nil
+    }
+
+    func authorizationController(
+        controller _: ASAuthorizationController,
+        didCompleteWithError error: Error
+    ) {
+        continuation?.resume(throwing: error)
+        continuation = nil
+    }
+
+    func presentationAnchor(for _: ASAuthorizationController) -> ASPresentationAnchor {
+        #if os(iOS)
+            return UIApplication.shared.connectedScenes
+                .compactMap { $0 as? UIWindowScene }
+                .flatMap(\.windows)
+                .first(where: \.isKeyWindow) ?? ASPresentationAnchor()
+        #else
+            return ASPresentationAnchor()
+        #endif
+    }
+}
+
 enum AuthError: Error, LocalizedError {
     case notAuthenticated
     case credentialRevoked
@@ -204,6 +242,9 @@ final class AuthManager {
 
     // MARK: - Token Access (for sync compatibility)
 
+    /// Kept alive during a token refresh to prevent the delegate from being deallocated.
+    private var refreshDelegate: SIWARefreshDelegate?
+
     @discardableResult
     func getStoredToken() async -> String? {
         // SIWA identity tokens expire in ~10 minutes and cannot be refreshed client-side.
@@ -213,6 +254,72 @@ final class AuthManager {
             logger.debug("Returning stored SIWA token — may be expired")
         }
         return token
+    }
+
+    /// Attempts to obtain a fresh SIWA identity token by performing a new
+    /// authorization request.  If the user's credential is still authorized
+    /// the system will prompt only for biometric confirmation (Face ID / Touch ID).
+    /// Returns `nil` when the refresh cannot be completed.
+    func refreshToken() async -> String? {
+        guard let userIdentifier = try? KeychainService.retrieveAppleUserID() else {
+            logger.info("No stored Apple user ID — cannot refresh token")
+            return nil
+        }
+
+        // Verify the credential is still authorized by Apple
+        do {
+            let state = try await ASAuthorizationAppleIDProvider()
+                .credentialState(forUserID: userIdentifier)
+            guard state == .authorized else {
+                logger.info("Credential state is \(String(describing: state)) — cannot refresh")
+                return nil
+            }
+        } catch {
+            logger.error("Credential state check failed during refresh: \(error.localizedDescription)")
+            return nil
+        }
+
+        // Request a fresh identity token (no scopes — name/email already stored)
+        let request = ASAuthorizationAppleIDProvider().createRequest()
+        let controller = ASAuthorizationController(authorizationRequests: [request])
+
+        do {
+            let authorization = try await withCheckedThrowingContinuation { continuation in
+                let delegate = SIWARefreshDelegate(continuation: continuation)
+                self.refreshDelegate = delegate
+                controller.delegate = delegate
+                controller.presentationContextProvider = delegate
+                controller.performRequests()
+            }
+
+            self.refreshDelegate = nil
+
+            guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
+                  let tokenData = credential.identityToken,
+                  let token = String(data: tokenData, encoding: .utf8)
+            else {
+                logger.error("Refresh succeeded but no identity token in credential")
+                return nil
+            }
+
+            try? KeychainService.storeAuthToken(token)
+            logger.info("Successfully refreshed SIWA identity token")
+
+            #if os(iOS)
+                WatchConnectivityService.shared.sendToken(token)
+            #endif
+
+            return token
+        } catch {
+            self.refreshDelegate = nil
+            // ASAuthorizationError.canceled means the user dismissed — not a real error
+            if (error as? ASAuthorizationError)?.code == .canceled {
+                logger.info("User cancelled token refresh")
+            } else {
+                logger.error("Token refresh failed: \(error.localizedDescription)")
+            }
+            return nil
+        }
     }
 
     // MARK: - Helpers

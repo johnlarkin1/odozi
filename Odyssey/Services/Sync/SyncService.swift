@@ -66,7 +66,17 @@ final class SyncService {
                     return
                 }
 
-                let response = try await apiClient.uploadEntries(payload, token: token)
+                let response: SyncUploadResponse
+                do {
+                    response = try await apiClient.uploadEntries(payload, token: token)
+                } catch APIError.unauthorized {
+                    // Token expired — attempt a silent refresh and retry once
+                    guard let freshToken = await authManager?.refreshToken() else {
+                        status = .error(APIError.unauthorized.localizedDescription)
+                        return
+                    }
+                    response = try await apiClient.uploadEntries(payload, token: freshToken)
+                }
 
                 // Mark entries as synced
                 let syncedAt = Self.iso8601.date(from: response.syncedAt) ?? Date()
@@ -95,15 +105,28 @@ final class SyncService {
     func restoreFromCloud(modelContext: ModelContext, authManager: AuthManager) async {
         status = .syncing
 
-        guard let token = await authManager.getStoredToken() else {
+        guard var token = await authManager.getStoredToken() else {
             status = .error("Not authenticated")
             return
         }
 
         do {
             var cursor: String?
+            var didRefreshToken = false
             repeat {
-                let response = try await apiClient.fetchEntries(since: nil, cursor: cursor, token: token)
+                let response: SyncDownloadResponse
+                do {
+                    response = try await apiClient.fetchEntries(since: nil, cursor: cursor, token: token)
+                } catch APIError.unauthorized where !didRefreshToken {
+                    // Token expired — attempt a silent refresh and retry once
+                    guard let freshToken = await authManager.refreshToken() else {
+                        status = .error(APIError.unauthorized.localizedDescription)
+                        return
+                    }
+                    token = freshToken
+                    didRefreshToken = true
+                    response = try await apiClient.fetchEntries(since: nil, cursor: cursor, token: token)
+                }
                 for downloadEntry in response.entries {
                     try await mergeEntry(downloadEntry, into: modelContext)
                 }
