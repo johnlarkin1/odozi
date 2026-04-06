@@ -57,7 +57,6 @@ private struct AccountSettingsTab: View {
                 }
                 .padding(.vertical, 4)
 
-                SyncStatusBanner()
             } else {
                 VStack(alignment: .leading, spacing: 8) {
                     HStack(spacing: 8) {

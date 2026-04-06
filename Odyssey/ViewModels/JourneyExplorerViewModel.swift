@@ -134,7 +134,6 @@ final class JourneyExplorerViewModel {
             entry.showOnPhotoMap = true
         }
         entry.updatedAt = Date()
-        entry.needsSync = true
     }
 
     func removeAttachedPhoto(at index: Int, from entry: DailyEntry) {

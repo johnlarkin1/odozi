@@ -13,7 +13,6 @@ struct OdysseyApp: App {
 
     @State private var onboardingViewModel = OnboardingViewModel()
     @State private var authManager = AuthManager()
-    @State private var syncService = SyncService()
     @State private var showBackupPrompt = false
     @State private var showRetentionAlert = false
     @State private var showAchievementWelcome = false
@@ -73,15 +72,11 @@ struct OdysseyApp: App {
                         ContentView()
                             .environment(\.colorScheme, .dark)
                             .environment(authManager)
-                            .environment(syncService)
                             .overlay {
                                 ScreenTimeDataExtractor()
                             }
                             .modelContainer(container)
                             .task {
-                                #if os(iOS)
-                                    WatchConnectivityService.shared.activate()
-                                #endif
                                 await authManager.initialize()
                                 performRetroactiveAchievementEvaluation()
                             }
@@ -234,11 +229,6 @@ struct OdysseyApp: App {
 
         // Refresh weekly digest notification with latest stats
         await WeeklyDigestNotificationManager.refreshContent(context: context)
-
-        // Sync pending entries if signed in
-        if authManager.hasAccount {
-            await syncService.syncPendingEntries(modelContext: context, authManager: authManager)
-        }
 
         // Data retention: count old entries and prompt user for confirmation
         let count = DataRetentionService.countOldEntries(

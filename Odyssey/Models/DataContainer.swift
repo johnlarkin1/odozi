@@ -29,7 +29,8 @@ enum DataContainer {
             config = ModelConfiguration(
                 "Odyssey",
                 schema: schema,
-                url: storeURL
+                url: storeURL,
+                cloudKitDatabase: .private("iCloud.com.johnlarkin.Odyssey")
             )
         }
 

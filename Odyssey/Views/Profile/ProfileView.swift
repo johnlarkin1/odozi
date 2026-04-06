@@ -36,10 +36,8 @@ struct ProfileView: View {
     @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
 
     @State private var csvExportURL: URL?
-    @State private var showSignInForReauth = false
 
     @Environment(AuthManager.self) private var authManager
-    @Environment(SyncService.self) private var syncService
 
     var body: some View {
         NavigationStack {
@@ -61,22 +59,6 @@ struct ProfileView: View {
                                 }
                             }
                         }
-
-                        SyncStatusBanner(onReauthenticate: {
-                            Task {
-                                // Try silent token refresh first
-                                if let _ = await authManager.refreshToken() {
-                                    // Refresh succeeded — kick off sync with fresh token
-                                    await syncService.syncPendingEntries(
-                                        modelContext: modelContext,
-                                        authManager: authManager
-                                    )
-                                } else {
-                                    // Refresh failed — fall back to manual sign-in
-                                    showSignInForReauth = true
-                                }
-                            }
-                        })
 
                         NavigationLink("Manage Account") {
                             AccountView()
@@ -235,11 +217,6 @@ struct ProfileView: View {
             .scrollContentBackground(.hidden)
             .navigationTitle("Profile")
             .cosmicBackground()
-            .sheet(isPresented: $showSignInForReauth) {
-                NavigationStack {
-                    SignInView()
-                }
-            }
         }
     }
 

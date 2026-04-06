@@ -2,8 +2,6 @@ import SwiftUI
 
 struct AccountView: View {
     @Environment(AuthManager.self) private var authManager
-    @Environment(SyncService.self) private var syncService
-    @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
 
     @State private var showDeleteConfirmation = false
@@ -13,28 +11,6 @@ struct AccountView: View {
 
     var body: some View {
         List {
-            Section("Sync") {
-                SyncStatusBanner()
-
-                Button("Sync Now") {
-                    Task {
-                        await syncService.syncPendingEntries(
-                            modelContext: modelContext,
-                            authManager: authManager
-                        )
-                    }
-                }
-
-                Button("Restore from Cloud") {
-                    Task {
-                        await syncService.restoreFromCloud(
-                            modelContext: modelContext,
-                            authManager: authManager
-                        )
-                    }
-                }
-            }
-
             Section("Account") {
                 if let user = authManager.user {
                     HStack(spacing: 12) {
