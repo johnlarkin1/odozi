@@ -39,7 +39,7 @@ struct PhotoPreviewView: View {
                             .onChanged { value in
                                 scale = lastScale * value.magnification
                             }
-                            .onEnded { value in
+                            .onEnded { _ in
                                 lastScale = max(scale, 1.0)
                                 scale = lastScale
                                 if scale == 1.0 {
@@ -62,7 +62,7 @@ struct PhotoPreviewView: View {
                                     dragOffset = value.translation.height
                                 }
                             }
-                            .onEnded { value in
+                            .onEnded { _ in
                                 if scale > 1.0 {
                                     lastOffset = offset
                                 } else {

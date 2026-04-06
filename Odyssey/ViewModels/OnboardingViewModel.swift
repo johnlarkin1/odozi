@@ -111,21 +111,7 @@ final class OnboardingViewModel {
 
     #if os(iOS)
         private func setupDeviceActivityMonitoring() {
-            let schedule = DeviceActivitySchedule(
-                intervalStart: DateComponents(hour: 0, minute: 0, second: 0),
-                intervalEnd: DateComponents(hour: 23, minute: 59, second: 59),
-                repeats: true
-            )
-
-            let center = DeviceActivityCenter()
-            do {
-                try center.startMonitoring(
-                    DeviceActivityName("Odyssey"),
-                    during: schedule
-                )
-            } catch {
-                logger.error("Device activity monitoring setup failed: \(error)")
-            }
+            ScreenTimeMonitoringManager.register()
         }
     #endif
 }

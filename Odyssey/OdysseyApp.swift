@@ -182,6 +182,12 @@ struct OdysseyApp: App {
         guard let container else { return }
         let context = container.mainContext
 
+        // Re-register screen time monitoring on every foreground (defensive best practice —
+        // callbacks can silently break after app/OS updates or reboots)
+        #if os(iOS) && !targetEnvironment(simulator)
+            ScreenTimeMonitoringManager.register()
+        #endif
+
         // Re-request HealthKit auth (idempotent) — covers users who denied then re-enabled in Settings
         if HealthKitService.isAvailable {
             let hk = HealthKitService()
