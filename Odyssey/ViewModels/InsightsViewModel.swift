@@ -81,7 +81,7 @@ final class InsightsViewModel {
 
     var feelingColors: [String] {
         filteredEntries
-            .filter { $0.feelingColorHex != "#FFFFFF" }
+            .filter { $0.hasPromptData && $0.feelingColorHex != "#FFFFFF" }
             .map { $0.feelingColorHex }
     }
 
@@ -107,7 +107,7 @@ final class InsightsViewModel {
     }
 
     var totalDrinks: Int {
-        filteredEntries.reduce(0) { $0 + $1.drinks }
+        filteredEntries.filter(\.hasPromptData).reduce(0) { $0 + $1.drinks }
     }
 
     // MARK: - Workout & Heart Rate Metrics

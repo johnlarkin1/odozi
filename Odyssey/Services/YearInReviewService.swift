@@ -56,7 +56,7 @@ final class YearInReviewService {
         let avgMood = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.feeling }) / Double(withData.count)
         let avgSleep = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.sleepQuality }) / Double(withData.count)
         let totalSteps = entries.compactMap(\.stepCount).reduce(0, +)
-        let totalDrinks = entries.reduce(0) { $0 + $1.drinks }
+        let totalDrinks = withData.reduce(0) { $0 + $1.drinks }
 
         // Mood by month
         let monthFormatter = DateFormatter()
@@ -115,7 +115,7 @@ final class YearInReviewService {
         let bestDay = withData.max(by: { $0.feeling < $1.feeling })
 
         // All colors
-        let allColors = entries.filter { $0.feelingColorHex != "#FFFFFF" }.map(\.feelingColorHex)
+        let allColors = withData.filter { $0.feelingColorHex != "#FFFFFF" }.map(\.feelingColorHex)
 
         // Top gratitudes
         let gratitudes = entries.map(\.gratitude).filter { !$0.isEmpty }.prefix(5).map { String($0) }

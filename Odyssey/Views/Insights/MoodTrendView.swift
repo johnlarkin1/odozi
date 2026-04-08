@@ -127,8 +127,8 @@ struct MoodTrendView: View {
     }
 
     /// All entries that have mood data (user-submitted entries only for averages, all for line continuity)
-    private var moodEntries: [DailyEntry] { entries }
-    private var sleepEntries: [DailyEntry] { entries }
+    private var moodEntries: [DailyEntry] { entries.filter(\.hasPromptData) }
+    private var sleepEntries: [DailyEntry] { entries.filter(\.hasPromptData) }
 
     private var averageMood: Double {
         let valid = entries.filter { $0.hasPromptData }
