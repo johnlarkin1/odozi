@@ -229,7 +229,7 @@ export const faqs = [
   {
     question: "Do I need an account?",
     answer:
-      "Nope. Odyssey works fully without one. You only need an account if you want cloud backup, and you can sign in with Apple or Google.",
+      "Nope. Odyssey works fully without one. You only need an account if you want cloud backup and it'll use your iCloud account to sync your data.",
   },
   {
     question: "Is there an Android version?",

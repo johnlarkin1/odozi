@@ -231,7 +231,7 @@ export function HeroSection() {
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.7, delay: 0.25 }}
-          className="relative z-10 min-h-0 min-w-0 w-full pt-2 sm:pt-3"
+          className="relative z-10 min-h-0 min-w-0 w-full overflow-hidden pt-2 sm:pt-3"
         >
           <div
             ref={scrollRef}
@@ -271,12 +271,12 @@ export function HeroSection() {
         </motion.div>
 
         {/* Row 3: Dot labels */}
-        <div className="relative z-10 flex items-center justify-center gap-2 py-2 sm:gap-3 sm:py-3">
+        <div className="relative z-10 flex items-center justify-center gap-2 overflow-x-auto py-2 scrollbar-hide sm:gap-3 sm:py-3" style={{ scrollbarWidth: "none" }}>
           {screenshots.map((shot, i) => (
             <button
               key={shot.src}
               onClick={() => scrollToIndex(i)}
-              className={`min-h-11 rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
+              className={`min-h-11 shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium transition-all duration-200 sm:px-3 sm:py-1.5 sm:text-sm ${
                 activeIndex === i
                   ? "bg-white/15 text-star-white"
                   : "text-star-white/40 hover:text-star-white/60"

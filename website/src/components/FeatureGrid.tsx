@@ -149,12 +149,12 @@ export function ScreenshotCarousel() {
         </div>
 
         {/* Dots + labels */}
-        <div className="mt-8 flex items-center justify-center gap-3">
+        <div className="mt-8 flex items-center justify-center gap-3 overflow-x-auto scrollbar-hide" style={{ scrollbarWidth: "none" }}>
           {screenshots.map((shot, i) => (
             <button
               key={shot.src}
               onClick={() => scrollToIndex(i)}
-              className={`min-h-11 rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
+              className={`min-h-11 shrink-0 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-medium transition-all duration-200 ${
                 activeIndex === i
                   ? "bg-white/15 text-star-white"
                   : "text-star-white/40 hover:text-star-white/60"
