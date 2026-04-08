@@ -132,9 +132,9 @@ enum MetricDefinition: String, CaseIterable, Identifiable {
 
     func value(from entry: DailyEntry) -> Double? {
         switch self {
-        case .mood: return Double(entry.feeling)
-        case .sleepRating: return Double(entry.sleepQuality)
-        case .drinks: return Double(entry.drinks)
+        case .mood: return entry.feeling.map { Double($0) }
+        case .sleepRating: return entry.sleepQuality.map { Double($0) }
+        case .drinks: return entry.drinks.map { Double($0) }
         case .steps: return entry.stepCount.map { Double($0) }
         case .walkingDistance:
             return entry.walkingDistanceMeters.map { $0 / 1609.34 }

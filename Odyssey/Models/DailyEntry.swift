@@ -35,17 +35,17 @@ final class DailyEntry {
     // Identity
     var date: Date = Date()
 
-    // Guided prompts (defaults required for CloudKit sync compatibility)
-    var feeling: Int = 5
+    // Guided prompts (optionals = user hasn't entered yet; CloudKit-compatible)
+    var feeling: Int?
     var singleWordFeeling: String = ""
     @Attribute(originalName: "feelingColor")
-    var feelingColorHex: String = "#FFFFFF"
-    var sleepQuality: Int = 5
+    var feelingColorHex: String?
+    var sleepQuality: Int?
     var gratitude: String = ""
     var win: String = ""
     var tension: String = ""
     var journalEntry: String = ""
-    var drinks: Int = 0
+    var drinks: Int?
 
     // Background: Location (optional)
     var latitude: Double?
@@ -100,15 +100,15 @@ final class DailyEntry {
 
     init(
         date: Date = Calendar.current.startOfDay(for: Date()),
-        feeling: Int = 5,
+        feeling: Int? = nil,
         singleWordFeeling: String = "",
-        feelingColorHex: String = "#FFFFFF",
-        sleepQuality: Int = 5,
+        feelingColorHex: String? = nil,
+        sleepQuality: Int? = nil,
         gratitude: String = "",
         win: String = "",
         tension: String = "",
         journalEntry: String = "",
-        drinks: Int = 0,
+        drinks: Int? = nil,
         latitude: Double? = nil,
         longitude: Double? = nil,
         city: String? = nil,
