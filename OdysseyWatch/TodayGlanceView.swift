@@ -37,10 +37,10 @@ struct TodayGlanceView: View {
             if let entry = todayEntry, entry.hasUserSubmitted {
                 // Mood orb
                 Circle()
-                    .fill(Color.moodGradient(for: entry.feeling ?? 5))
+                    .fill(Color.moodGradient(for: entry.feeling))
                     .frame(width: 60, height: 60)
                     .overlay {
-                        Text("\(entry.feeling ?? 0)")
+                        Text("\(entry.feeling)")
                             .font(.system(size: 24, weight: .bold, design: .rounded))
                             .foregroundStyle(.white)
                     }

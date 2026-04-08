@@ -21,11 +21,11 @@ final class WeeklyDigestServiceTests: XCTestCase {
 
     private func makeEntry(
         daysAgo: Int = 0,
-        feeling: Int? = 5,
-        sleepQuality: Int? = 5,
+        feeling: Int = 5,
+        sleepQuality: Int = 5,
         singleWordFeeling: String = "",
         journalEntry: String = "Test",
-        drinks: Int? = 0,
+        drinks: Int = 0,
         stepCount: Int? = nil,
         sleepHours: Double? = nil,
         screenTimeSeconds: Double? = nil
@@ -88,7 +88,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "Has data"),
             makeEntry(daysAgo: 1, journalEntry: "Also has data"),
-            makeEntry(daysAgo: 2, feeling: nil, sleepQuality: nil, journalEntry: "") // No prompt data
+            makeEntry(daysAgo: 2, singleWordFeeling: "", journalEntry: "") // No prompt data
         ]
         try insertEntries(entries)
 
@@ -125,7 +125,7 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testAverageMoodExcludesNonPromptEntries() throws {
         let entries = [
             makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Has data"),
-            makeEntry(daysAgo: 1, feeling: nil, sleepQuality: nil, journalEntry: "") // No prompt data
+            makeEntry(daysAgo: 1, feeling: 2, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 

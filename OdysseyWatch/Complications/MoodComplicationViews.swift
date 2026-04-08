@@ -27,7 +27,7 @@ struct MoodComplicationView: View {
 
             if entry.hasEntry {
                 VStack(spacing: 0) {
-                    Text("\(entry.moodScore ?? 0)")
+                    Text("\(entry.moodScore)")
                         .font(.system(size: 24, weight: .bold, design: .rounded))
                     Text("/10")
                         .font(.system(size: 10))
@@ -44,7 +44,7 @@ struct MoodComplicationView: View {
     private var rectangularView: some View {
         VStack(alignment: .leading, spacing: 2) {
             if entry.hasEntry {
-                Text("Mood: \(entry.moodScore ?? 0)/10")
+                Text("Mood: \(entry.moodScore)/10")
                     .font(.headline)
                 HStack(spacing: 4) {
                     Image(systemName: "flame.fill")
@@ -65,7 +65,7 @@ struct MoodComplicationView: View {
     private var inlineView: some View {
         Group {
             if entry.hasEntry {
-                Text("Mood: \(entry.moodScore ?? 0)/10 \u{1F525}\(entry.streakDays)")
+                Text("Mood: \(entry.moodScore)/10 \u{1F525}\(entry.streakDays)")
             } else {
                 Text("Odyssey — Check in")
             }
@@ -75,7 +75,7 @@ struct MoodComplicationView: View {
     private var cornerView: some View {
         ZStack {
             if entry.hasEntry {
-                Text("\(entry.moodScore ?? 0)")
+                Text("\(entry.moodScore)")
                     .font(.system(size: 20, weight: .bold, design: .rounded))
             } else {
                 Image(systemName: "brain.head.profile")

@@ -76,8 +76,7 @@ struct MoodOrbView: View {
     // MARK: - Completed State
 
     private func completedState(entry: DailyEntry) -> some View {
-        let mood = entry.feeling ?? 5
-        let moodColor = Color.moodGradient(for: mood)
+        let moodColor = Color.moodGradient(for: entry.feeling)
 
         return VStack(spacing: 16) {
             Button {
@@ -105,7 +104,7 @@ struct MoodOrbView: View {
                     // Mood number
                     VStack(spacing: 2) {
                         HStack(alignment: .firstTextBaseline, spacing: 2) {
-                            Text("\(mood)")
+                            Text("\(entry.feeling)")
                                 .font(.system(size: 56, weight: .bold, design: .rounded))
                                 .foregroundStyle(.white)
                             Text("/10")
@@ -119,8 +118,8 @@ struct MoodOrbView: View {
             .scaleEffect(animateIn ? 1 : 0.5)
             .opacity(animateIn ? 1 : 0)
             .animation(.spring(response: 0.7, dampingFraction: 0.75).delay(0.15), value: animateIn)
-            .accessibilityLabel("Mood score \(mood) out of 10")
-            .accessibilityValue("\(mood)")
+            .accessibilityLabel("Mood score \(entry.feeling) out of 10")
+            .accessibilityValue("\(entry.feeling)")
 
             VStack(spacing: 4) {
                 if !entry.singleWordFeeling.isEmpty {

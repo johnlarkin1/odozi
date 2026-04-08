@@ -199,7 +199,7 @@ enum AchievementRegistry {
             iconName: "face.smiling",
             sortOrder: 4, tier: 0,
             condition: { entries, _ in
-                entries.contains { $0.feeling != nil && $0.hasUserSubmitted }
+                entries.contains { $0.feeling > 0 && $0.hasUserSubmitted }
             }
         )
     ]
@@ -231,8 +231,8 @@ enum AchievementRegistry {
                         !entry.win.isEmpty &&
                         !entry.tension.isEmpty &&
                         !entry.journalEntry.isEmpty &&
-                        entry.sleepQuality != nil &&
-                        entry.feeling != nil
+                        entry.sleepQuality > 0 &&
+                        entry.feeling > 0
                 }
             }
         ),
@@ -251,7 +251,7 @@ enum AchievementRegistry {
             iconName: "moon.stars.fill",
             sortOrder: 3, tier: 1,
             condition: { entries, _ in
-                AchievementConditions.consecutiveDays(in: entries, count: 30) { $0.sleepQuality != nil && $0.hasUserSubmitted }
+                AchievementConditions.consecutiveDays(in: entries, count: 30) { $0.sleepQuality > 0 && $0.hasUserSubmitted }
             }
         ),
         .init(
@@ -290,7 +290,7 @@ enum AchievementRegistry {
             iconName: "checklist",
             sortOrder: 0, tier: 0,
             condition: { entries, _ in
-                let hasMood = entries.contains { $0.feeling != nil && $0.hasUserSubmitted }
+                let hasMood = entries.contains { $0.feeling > 0 && $0.hasUserSubmitted }
                 let hasFeeling = entries.contains { !$0.singleWordFeeling.isEmpty }
                 let hasGratitude = entries.contains { !$0.gratitude.isEmpty }
                 let hasWin = entries.contains { !$0.win.isEmpty }
@@ -327,7 +327,7 @@ enum AchievementRegistry {
             iconName: "drop.degreesign",
             sortOrder: 0, tier: 0,
             condition: { entries, _ in
-                AchievementConditions.consecutiveDays(in: entries, count: 7) { $0.hasUserSubmitted && ($0.drinks ?? 0) == 0 }
+                AchievementConditions.consecutiveDays(in: entries, count: 7) { $0.hasUserSubmitted && $0.drinks == 0 }
             }
         ),
         .init(

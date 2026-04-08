@@ -2,12 +2,10 @@ import SwiftUI
 
 extension DailyEntry {
     var feelingColor: Color {
-        guard let hex = feelingColorHex else { return .white }
-        return Color(PlatformColor.fromHexString(hex))
+        Color(PlatformColor.fromHexString(feelingColorHex))
     }
 
     var moodLabel: String {
-        guard let feeling else { return "—" }
         switch feeling {
         case 1 ... 2: return "Low"
         case 3 ... 4: return "Below Avg"
@@ -19,7 +17,6 @@ extension DailyEntry {
     }
 
     var moodGradientColor: Color {
-        guard let feeling else { return .gray }
         let t = Double(feeling - 1) / 9.0
         if t < 0.5 {
             let u = t / 0.5
@@ -140,9 +137,7 @@ extension DailyEntry {
     }
 
     var hasPromptData: Bool {
-        feeling != nil || sleepQuality != nil ||
-            !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty ||
-            !tension.isEmpty || !singleWordFeeling.isEmpty
+        !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
     }
 
     var hasAutoData: Bool {

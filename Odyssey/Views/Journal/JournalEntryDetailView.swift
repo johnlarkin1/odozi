@@ -18,12 +18,8 @@ struct JournalEntryDetailView: View {
 
                 // Mood & Feeling
                 HStack(spacing: 16) {
-                    if let feeling = entry.feeling {
-                        detailCard(title: "Mood", value: "\(feeling)/10", color: entry.moodGradientColor)
-                    }
-                    if let sleepQuality = entry.sleepQuality {
-                        detailCard(title: "Sleep", value: "\(sleepQuality)/10", color: .accentTeal)
-                    }
+                    detailCard(title: "Mood", value: "\(entry.feeling)/10", color: entry.moodGradientColor)
+                    detailCard(title: "Sleep", value: "\(entry.sleepQuality)/10", color: .accentTeal)
                 }
                 .padding(.horizontal, 16)
 
@@ -63,9 +59,9 @@ struct JournalEntryDetailView: View {
                     }
                 }
 
-                if let drinks = entry.drinks, drinks > 0 {
+                if entry.drinks > 0 {
                     sectionCard(title: "Drinks", icon: "wineglass") {
-                        Text("\(drinks)")
+                        Text("\(entry.drinks)")
                             .font(.title2.bold())
                     }
                 }

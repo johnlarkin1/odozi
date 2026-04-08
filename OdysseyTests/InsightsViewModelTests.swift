@@ -21,11 +21,11 @@ final class InsightsViewModelTests: XCTestCase {
 
     private func makeEntry(
         daysAgo: Int = 0,
-        feeling: Int? = 5,
-        sleepQuality: Int? = 5,
+        feeling: Int = 5,
+        sleepQuality: Int = 5,
         singleWordFeeling: String = "",
         journalEntry: String = "Test",
-        feelingColorHex: String? = "#FF0000"
+        feelingColorHex: String = "#FF0000"
     ) -> DailyEntry {
         let date = Calendar.current.startOfDay(for: Date().daysAgo(daysAgo))
         return DailyEntry(
@@ -118,7 +118,10 @@ final class InsightsViewModelTests: XCTestCase {
         let vm = InsightsViewModel(modelContext: context)
         let withData = makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Has data")
         let withoutData = DailyEntry(
-            date: Calendar.current.startOfDay(for: Date().daysAgo(1))
+            date: Calendar.current.startOfDay(for: Date().daysAgo(1)),
+            feeling: 2,
+            singleWordFeeling: "",
+            journalEntry: ""
         )
         try populateAndLoad(vm, entries: [withData, withoutData])
         vm.dateRange = .allTime
@@ -226,7 +229,7 @@ final class InsightsViewModelTests: XCTestCase {
         let vm = InsightsViewModel(modelContext: context)
         let entries = [
             makeEntry(daysAgo: 0, feelingColorHex: "#FF0000"),
-            makeEntry(daysAgo: 1, feelingColorHex: nil), // Should be excluded
+            makeEntry(daysAgo: 1, feelingColorHex: "#FFFFFF"), // Should be excluded
             makeEntry(daysAgo: 2, feelingColorHex: "#00FF00")
         ]
         try populateAndLoad(vm, entries: entries)

@@ -275,7 +275,7 @@ struct TodayView: View {
     private var backgroundGradient: some View {
         let moodColor: Color = {
             if let entry = todayEntry, viewModel?.hasSubmittedData == true {
-                return Color.moodGradient(for: entry.feeling ?? 5)
+                return Color.moodGradient(for: entry.feeling)
             }
             return Color.gray
         }()

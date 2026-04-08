@@ -89,10 +89,9 @@ struct CalendarHeatmapView: View {
         var current = alignedStart
         while current <= today {
             if let entry = entryMap[current], entry.hasPromptData {
-                let mood = entry.feeling ?? 5
-                let intensity = Double(mood) / 10.0
+                let intensity = Double(entry.feeling) / 10.0
                 let color = Color.accentAmber.opacity(max(0.15, intensity))
-                days.append(HeatmapDay(date: current, color: color, hasEntry: true, moodScore: mood))
+                days.append(HeatmapDay(date: current, color: color, hasEntry: true, moodScore: entry.feeling))
             } else {
                 days.append(HeatmapDay(date: current, color: Color.white.opacity(0.05), hasEntry: false, moodScore: nil))
             }

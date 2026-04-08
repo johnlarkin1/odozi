@@ -23,14 +23,14 @@ final class YearInReviewServiceTests: XCTestCase {
         year: Int,
         month: Int,
         day: Int,
-        feeling: Int? = 5,
-        sleepQuality: Int? = 5,
+        feeling: Int = 5,
+        sleepQuality: Int = 5,
         singleWordFeeling: String = "",
         journalEntry: String = "Test",
         city: String? = nil,
         stepCount: Int? = nil,
-        drinks: Int? = 0,
-        feelingColorHex: String? = "#FF0000",
+        drinks: Int = 0,
+        feelingColorHex: String = "#FF0000",
         gratitude: String = ""
     ) -> DailyEntry {
         let date = Calendar.current.date(from: DateComponents(year: year, month: month, day: day))!
@@ -80,7 +80,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testTotalEntriesCountsOnlyWithPromptData() throws {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, journalEntry: "Has data"),
-            makeEntry(year: 2025, month: 1, day: 2, feeling: nil, sleepQuality: nil, journalEntry: "") // No prompt data
+            makeEntry(year: 2025, month: 1, day: 2, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 
@@ -252,7 +252,7 @@ final class YearInReviewServiceTests: XCTestCase {
     func testAllColorsExcludesWhite() throws {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, feelingColorHex: "#FF0000"),
-            makeEntry(year: 2025, month: 1, day: 2, feelingColorHex: nil) // No color = excluded
+            makeEntry(year: 2025, month: 1, day: 2, feelingColorHex: "#FFFFFF")
         ]
         try insertEntries(entries)
 

@@ -48,15 +48,15 @@ final class InsightsViewModel {
     }
 
     var averageMood: Double {
-        let values = filteredEntries.compactMap(\.feeling)
-        guard !values.isEmpty else { return 0 }
-        return Double(values.reduce(0, +)) / Double(values.count)
+        let valid = filteredEntries.filter { $0.hasPromptData }
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0) { $0 + $1.feeling }) / Double(valid.count)
     }
 
     var averageSleep: Double {
-        let values = filteredEntries.compactMap(\.sleepQuality)
-        guard !values.isEmpty else { return 0 }
-        return Double(values.reduce(0, +)) / Double(values.count)
+        let valid = filteredEntries.filter { $0.hasPromptData }
+        guard !valid.isEmpty else { return 0 }
+        return Double(valid.reduce(0) { $0 + $1.sleepQuality }) / Double(valid.count)
     }
 
     var currentStreak: Int {
@@ -80,7 +80,9 @@ final class InsightsViewModel {
     }
 
     var feelingColors: [String] {
-        filteredEntries.compactMap(\.feelingColorHex)
+        filteredEntries
+            .filter { $0.feelingColorHex != "#FFFFFF" }
+            .map { $0.feelingColorHex }
     }
 
     // MARK: - Body Metrics
@@ -105,7 +107,7 @@ final class InsightsViewModel {
     }
 
     var totalDrinks: Int {
-        filteredEntries.compactMap(\.drinks).reduce(0, +)
+        filteredEntries.reduce(0) { $0 + $1.drinks }
     }
 
     // MARK: - Workout & Heart Rate Metrics
