@@ -1,3 +1,5 @@
+import CloudKit
+import CoreData
 import Foundation
 import os
 import SwiftData
@@ -6,6 +8,59 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Data
 
 enum DataContainer {
     static let appGroupID = "group.com.johnlarkin.Odyssey"
+    static let iCloudSyncEnabledKey = "iCloudSyncEnabled"
+
+    private static let quotaDisabledKey = "cloudKitQuotaDisabled"
+    private static let quotaDisabledDateKey = "cloudKitQuotaDisabledDate"
+    private static let quotaRetryInterval: TimeInterval = 7 * 24 * 60 * 60 // 1 week
+
+    /// User's explicit preference for iCloud sync
+    static var isUserCloudKitEnabled: Bool {
+        UserDefaults.standard.bool(forKey: iCloudSyncEnabledKey)
+    }
+
+    /// Whether CloudKit was auto-disabled due to quota exceeded (retries after cooldown)
+    static var isQuotaDisabled: Bool {
+        guard UserDefaults.standard.bool(forKey: quotaDisabledKey) else { return false }
+        if let disabledDate = UserDefaults.standard.object(forKey: quotaDisabledDateKey) as? Date,
+           Date().timeIntervalSince(disabledDate) > quotaRetryInterval
+        {
+            logger.info("CloudKit quota cooldown expired, re-enabling")
+            UserDefaults.standard.set(false, forKey: quotaDisabledKey)
+            return false
+        }
+        return true
+    }
+
+    static func disableCloudKitForQuota() {
+        logger.warning("Disabling CloudKit sync due to quota exceeded — will retry in 1 week")
+        UserDefaults.standard.set(true, forKey: quotaDisabledKey)
+        UserDefaults.standard.set(Date(), forKey: quotaDisabledDateKey)
+    }
+
+    /// Observe CloudKit sync events and auto-disable on quota exceeded
+    static func observeCloudKitErrors() {
+        NotificationCenter.default.addObserver(
+            forName: NSPersistentCloudKitContainer.eventChangedNotification,
+            object: nil,
+            queue: .main
+        ) { notification in
+            guard let event = notification.userInfo?["event"]
+                as? NSPersistentCloudKitContainer.Event,
+                let error = event.error as? NSError else { return }
+
+            if error.code == CKError.quotaExceeded.rawValue {
+                disableCloudKitForQuota()
+                return
+            }
+            if error.code == CKError.partialFailure.rawValue {
+                let partialErrors = error.userInfo[CKPartialErrorsByItemIDKey] as? [AnyHashable: NSError] ?? [:]
+                if partialErrors.values.contains(where: { $0.code == CKError.quotaExceeded.rawValue }) {
+                    disableCloudKitForQuota()
+                }
+            }
+        }
+    }
 
     static func create(inMemory: Bool = false) throws -> ModelContainer {
         #if os(watchOS)
@@ -13,28 +68,48 @@ enum DataContainer {
         #else
             let schema = Schema([DailyEntry.self, UserPreferences.self, Achievement.self])
         #endif
-        let config: ModelConfiguration
 
         if inMemory {
-            config = ModelConfiguration(
+            let config = ModelConfiguration(
                 "Odyssey",
                 schema: schema,
                 isStoredInMemoryOnly: true
             )
-        } else {
-            #if os(iOS)
-                migrateStoreToAppGroupIfNeeded()
-            #endif
-            let storeURL = appGroupStoreURL
-            config = ModelConfiguration(
-                "Odyssey",
-                schema: schema,
-                url: storeURL,
-                cloudKitDatabase: .private("iCloud.com.johnlarkin.Odyssey")
-            )
+            return try ModelContainer(for: schema, configurations: [config])
         }
 
-        return try ModelContainer(for: schema, configurations: [config])
+        #if os(iOS)
+            migrateStoreToAppGroupIfNeeded()
+        #endif
+        let storeURL = appGroupStoreURL
+        let shouldUseCloudKit = isUserCloudKitEnabled && !isQuotaDisabled
+
+        if shouldUseCloudKit {
+            do {
+                let cloudConfig = ModelConfiguration(
+                    "Odyssey",
+                    schema: schema,
+                    url: storeURL,
+                    cloudKitDatabase: .private("iCloud.com.johnlarkin.Odyssey")
+                )
+                let container = try ModelContainer(for: schema, configurations: [cloudConfig])
+                logger.info("CloudKit container opened successfully")
+                observeCloudKitErrors()
+                return container
+            } catch {
+                logger.error("CloudKit container failed: \(error)")
+            }
+        }
+
+        // Local-only (explicit .none — default .automatic auto-enables CloudKit
+        // when iCloud entitlements are present)
+        let localConfig = ModelConfiguration(
+            "Odyssey",
+            schema: schema,
+            url: storeURL,
+            cloudKitDatabase: .none
+        )
+        return try ModelContainer(for: schema, configurations: [localConfig])
     }
 
     static var appGroupStoreURL: URL {
@@ -82,7 +157,7 @@ enum DataContainer {
         let extensions = ["", "-wal", "-shm"]
         for ext in extensions {
             let source = URL(fileURLWithPath: defaultURL.path + ext)
-            let dest = URL(fileURLWithPath: appGroupURL.path.replacingOccurrences(of: ".store", with: ".sqlite") + ext)
+            let dest = URL(fileURLWithPath: appGroupURL.path + ext)
             if fileManager.fileExists(atPath: source.path) {
                 do {
                     try fileManager.copyItem(at: source, to: dest)
