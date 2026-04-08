@@ -39,8 +39,8 @@ export function PrivacySection() {
           className="mt-12 grid gap-6 sm:grid-cols-3"
         >
           {privacy.cards.map((item, i) => (
-            <div key={item.title} className="rounded-2xl border border-white/10 bg-card-surface/50 p-7">
-              <div>{privacyIcons[i]}</div>
+            <div key={item.title} className="rounded-2xl border border-white/10 bg-card-surface/50 p-7 text-center sm:text-left">
+              <div className="flex justify-center sm:justify-start">{privacyIcons[i]}</div>
               <p className="mt-4 text-lg font-semibold text-star-white">{item.title}</p>
               <p className="mt-2 text-base text-star-white/60">{renderInlineMarkdown(item.desc)}</p>
             </div>

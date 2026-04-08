@@ -17,15 +17,21 @@
   --font-heading: var(--font-space-grotesk), var(--font-geist-sans), system-ui, sans-serif;
 }
 
-html,
-body {
+html {
   scroll-behavior: smooth;
+  background: var(--color-deep-space);
   overflow-x: clip;
 }
 
 body {
   background: var(--color-deep-space);
   color: var(--color-star-white);
+  overflow-x: clip;
+  width: 100%;
+}
+
+main {
+  overflow-x: clip;
 }
 
 /* Twinkling stars */
