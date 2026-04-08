@@ -37,8 +37,8 @@ struct WeekSummaryView: View {
                             VStack(spacing: 2) {
                                 if let entry {
                                     RoundedRectangle(cornerRadius: 3)
-                                        .fill(Color.moodGradient(for: entry.feeling))
-                                        .frame(height: CGFloat(entry.feeling) * 4)
+                                        .fill(Color.moodGradient(for: entry.feeling ?? 5))
+                                        .frame(height: CGFloat(entry.feeling ?? 0) * 4)
                                 } else {
                                     RoundedRectangle(cornerRadius: 3)
                                         .fill(Color.cardSurface)
@@ -54,7 +54,8 @@ struct WeekSummaryView: View {
                     .frame(height: 60)
 
                     // Summary stats
-                    let avgMood = weekEntries.map(\.feeling).reduce(0, +) / max(weekEntries.count, 1)
+                    let moodValues = weekEntries.compactMap(\.feeling)
+                    let avgMood = moodValues.isEmpty ? 0 : moodValues.reduce(0, +) / moodValues.count
                     HStack {
                         StatBubble(label: "Avg", value: "\(avgMood)/10")
                         StatBubble(label: "Days", value: "\(weekEntries.count)/7")

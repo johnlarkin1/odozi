@@ -65,10 +65,12 @@ enum WeeklyDigestService {
         let prevPromptEntries: [DailyEntry] = prevWeekEntries.filter { $0.hasPromptData }
 
         // Mood averages
-        let avgMood = promptEntries.isEmpty ? 0 : Double(promptEntries.map { $0.feeling }.reduce(0, +)) / Double(promptEntries.count)
-        let prevAvgMood: Double? = prevPromptEntries.isEmpty
+        let moodValues = promptEntries.compactMap(\.feeling)
+        let avgMood = moodValues.isEmpty ? 0.0 : Double(moodValues.reduce(0, +)) / Double(moodValues.count)
+        let prevMoodValues = prevPromptEntries.compactMap(\.feeling)
+        let prevAvgMood: Double? = prevMoodValues.isEmpty
             ? nil
-            : Double(prevPromptEntries.map { $0.feeling }.reduce(0, +)) / Double(prevPromptEntries.count)
+            : Double(prevMoodValues.reduce(0, +)) / Double(prevMoodValues.count)
         let delta: Double? = prevAvgMood.map { avgMood - $0 }
 
         // Top emotion
@@ -90,14 +92,14 @@ enum WeeklyDigestService {
         let streak = recentEntries.currentStreak
 
         // Sleep quality average
-        let sleepQualities = promptEntries.map { $0.sleepQuality }
+        let sleepQualities = promptEntries.compactMap(\.sleepQuality)
         let avgSleepQuality: Double? = sleepQualities.isEmpty ? nil : Double(sleepQualities.reduce(0, +)) / Double(sleepQualities.count)
 
         // Steps total
         let totalSteps = currentWeekEntries.compactMap { $0.stepCount }.reduce(0, +)
 
         // Drinks total
-        let totalDrinks = promptEntries.map { $0.drinks }.reduce(0, +)
+        let totalDrinks = promptEntries.compactMap(\.drinks).reduce(0, +)
 
         // Sleep hours average
         let sleepHoursValues = currentWeekEntries.compactMap { $0.sleepHours }

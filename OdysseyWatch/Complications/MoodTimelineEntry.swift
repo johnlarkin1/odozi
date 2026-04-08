@@ -2,7 +2,7 @@ import WidgetKit
 
 struct MoodTimelineEntry: TimelineEntry {
     let date: Date
-    let moodScore: Int
+    let moodScore: Int?
     let streakDays: Int
     let hasEntry: Bool
 
@@ -11,6 +11,6 @@ struct MoodTimelineEntry: TimelineEntry {
     }
 
     static var empty: MoodTimelineEntry {
-        MoodTimelineEntry(date: .now, moodScore: 0, streakDays: 0, hasEntry: false)
+        MoodTimelineEntry(date: .now, moodScore: nil, streakDays: 0, hasEntry: false)
     }
 }

@@ -68,7 +68,7 @@ struct JournalCalendarView: View {
 
                                 ZStack {
                                     Circle()
-                                        .fill(entry.map { Color.moodGradient(for: $0.feeling) } ?? Color.clear)
+                                        .fill(entry.map { Color.moodGradient(for: $0.feeling ?? 5) } ?? Color.clear)
                                         .frame(width: 6, height: 6)
 
                                     if let entry = entry, !entry.wasCompletedOnDay {

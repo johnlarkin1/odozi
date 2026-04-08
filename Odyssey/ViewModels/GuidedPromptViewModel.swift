@@ -35,15 +35,15 @@ final class GuidedPromptViewModel {
         guard let entry = try? repository.fetchOrCreate(for: targetDate),
               entry.hasUserSubmitted else { return }
 
-        responses.feeling = entry.feeling
+        responses.feeling = entry.feeling ?? 5
         responses.singleWordFeeling = entry.singleWordFeeling
-        responses.feelingColorHex = entry.feelingColorHex
-        responses.sleepQuality = entry.sleepQuality
+        responses.feelingColorHex = entry.feelingColorHex ?? "#FFFFFF"
+        responses.sleepQuality = entry.sleepQuality ?? 5
         responses.gratitude = entry.gratitude
         responses.win = entry.win
         responses.tension = entry.tension
         responses.journalEntry = entry.journalEntry
-        responses.drinks = entry.drinks
+        responses.drinks = entry.drinks ?? 0
     }
 
     var currentStepIndex: Int {

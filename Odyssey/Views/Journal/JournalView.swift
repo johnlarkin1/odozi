@@ -113,9 +113,9 @@ struct JournalView: View {
                     .foregroundStyle(.secondary)
             }
 
-            MoodIndicator(feeling: entry.feeling, size: 10)
+            MoodIndicator(feeling: entry.feeling ?? 5, size: 10)
 
-            Text("\(entry.feeling)")
+            Text("\(entry.feeling ?? 0)")
                 .font(.subheadline.weight(.medium))
                 .foregroundStyle(.secondary)
         }

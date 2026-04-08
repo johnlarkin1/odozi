@@ -25,7 +25,7 @@ struct MoodTrendView: View {
                         ForEach(moodEntries, id: \.date) { entry in
                             LineMark(
                                 x: .value("Date", entry.date),
-                                y: .value("Mood", entry.feeling),
+                                y: .value("Mood", entry.feeling ?? 0),
                                 series: .value("Type", "Mood")
                             )
                             .foregroundStyle(Color.accentAmber)
@@ -37,14 +37,14 @@ struct MoodTrendView: View {
                             if entry.hasPromptData {
                                 PointMark(
                                     x: .value("Date", entry.date),
-                                    y: .value("Mood", entry.feeling)
+                                    y: .value("Mood", entry.feeling ?? 0)
                                 )
                                 .foregroundStyle(Color.accentAmber)
                                 .symbolSize(30)
                             } else {
                                 PointMark(
                                     x: .value("Date", entry.date),
-                                    y: .value("Mood", entry.feeling)
+                                    y: .value("Mood", entry.feeling ?? 0)
                                 )
                                 .foregroundStyle(Color.cardSurface)
                                 .symbolSize(30)
@@ -67,7 +67,7 @@ struct MoodTrendView: View {
                         ForEach(sleepEntries, id: \.date) { entry in
                             LineMark(
                                 x: .value("Date", entry.date),
-                                y: .value("Sleep", entry.sleepQuality),
+                                y: .value("Sleep", entry.sleepQuality ?? 0),
                                 series: .value("Type", "Sleep")
                             )
                             .foregroundStyle(Color.accentTeal)
@@ -78,14 +78,14 @@ struct MoodTrendView: View {
                             if entry.hasPromptData {
                                 PointMark(
                                     x: .value("Date", entry.date),
-                                    y: .value("Sleep", entry.sleepQuality)
+                                    y: .value("Sleep", entry.sleepQuality ?? 0)
                                 )
                                 .foregroundStyle(Color.accentTeal)
                                 .symbolSize(30)
                             } else {
                                 PointMark(
                                     x: .value("Date", entry.date),
-                                    y: .value("Sleep", entry.sleepQuality)
+                                    y: .value("Sleep", entry.sleepQuality ?? 0)
                                 )
                                 .foregroundStyle(Color.cardSurface)
                                 .symbolSize(30)
@@ -102,7 +102,7 @@ struct MoodTrendView: View {
                         ForEach(entries.filter { $0.hasPromptData }, id: \.date) { entry in
                             BarMark(
                                 x: .value("Date", entry.date),
-                                y: .value("Drinks", entry.drinks)
+                                y: .value("Drinks", entry.drinks ?? 0)
                             )
                             .foregroundStyle(Color.coralRed.opacity(0.6))
                         }
@@ -131,19 +131,19 @@ struct MoodTrendView: View {
     private var sleepEntries: [DailyEntry] { entries }
 
     private var averageMood: Double {
-        let valid = entries.filter { $0.hasPromptData }
-        guard !valid.isEmpty else { return 0 }
-        return Double(valid.reduce(0) { $0 + $1.feeling }) / Double(valid.count)
+        let values = entries.compactMap(\.feeling)
+        guard !values.isEmpty else { return 0 }
+        return Double(values.reduce(0, +)) / Double(values.count)
     }
 
     private var averageSleep: Double {
-        let valid = entries.filter { $0.hasPromptData }
-        guard !valid.isEmpty else { return 0 }
-        return Double(valid.reduce(0) { $0 + $1.sleepQuality }) / Double(valid.count)
+        let values = entries.compactMap(\.sleepQuality)
+        guard !values.isEmpty else { return 0 }
+        return Double(values.reduce(0, +)) / Double(values.count)
     }
 
     private var totalDrinks: Int {
-        entries.filter { $0.hasPromptData }.reduce(0) { $0 + $1.drinks }
+        entries.compactMap(\.drinks).reduce(0, +)
     }
 
     private func toggleChip(_ label: String, isOn: Binding<Bool>, color: Color) -> some View {

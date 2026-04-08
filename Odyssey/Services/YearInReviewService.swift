@@ -53,10 +53,12 @@ final class YearInReviewService {
 
         let totalDays = (calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day ?? 364) + 1
 
-        let avgMood = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.feeling }) / Double(withData.count)
-        let avgSleep = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.sleepQuality }) / Double(withData.count)
+        let moodValues = withData.compactMap(\.feeling)
+        let avgMood = moodValues.isEmpty ? 0.0 : Double(moodValues.reduce(0, +)) / Double(moodValues.count)
+        let sleepValues = withData.compactMap(\.sleepQuality)
+        let avgSleep = sleepValues.isEmpty ? 0.0 : Double(sleepValues.reduce(0, +)) / Double(sleepValues.count)
         let totalSteps = entries.compactMap(\.stepCount).reduce(0, +)
-        let totalDrinks = entries.reduce(0) { $0 + $1.drinks }
+        let totalDrinks = entries.compactMap(\.drinks).reduce(0, +)
 
         // Mood by month
         let monthFormatter = DateFormatter()
@@ -64,7 +66,9 @@ final class YearInReviewService {
         var monthMoods: [Int: [Int]] = [:]
         for entry in withData {
             let month = calendar.component(.month, from: entry.date)
-            monthMoods[month, default: []].append(entry.feeling)
+            if let feeling = entry.feeling {
+                monthMoods[month, default: []].append(feeling)
+            }
         }
         let moodByMonth = (1 ... 12).compactMap { month -> (String, Double)? in
             guard let date = calendar.date(from: DateComponents(year: year, month: month)) else { return nil }
@@ -112,10 +116,10 @@ final class YearInReviewService {
         }
 
         // Best day
-        let bestDay = withData.max(by: { $0.feeling < $1.feeling })
+        let bestDay = withData.max(by: { ($0.feeling ?? 0) < ($1.feeling ?? 0) })
 
         // All colors
-        let allColors = entries.filter { $0.feelingColorHex != "#FFFFFF" }.map(\.feelingColorHex)
+        let allColors = entries.compactMap(\.feelingColorHex)
 
         // Top gratitudes
         let gratitudes = entries.map(\.gratitude).filter { !$0.isEmpty }.prefix(5).map { String($0) }

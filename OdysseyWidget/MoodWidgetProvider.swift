@@ -41,7 +41,7 @@ struct MoodWidgetProvider: TimelineProvider {
         let todayEntry = WidgetDataAccess.fetchTodayEntry(context: context)
         let streak = WidgetDataAccess.calculateStreak(context: context)
 
-        let mood: Int? = todayEntry.map { $0.feeling }
+        let mood: Int? = todayEntry?.feeling
         let submitted = todayEntry?.hasUserSubmitted ?? false
 
         return MoodWidgetEntry(

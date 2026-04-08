@@ -69,7 +69,7 @@ struct WeekPulseView: View {
             ZStack {
                 if let entry = entry, entry.hasUserSubmitted {
                     Circle()
-                        .fill(Color.moodGradient(for: entry.feeling))
+                        .fill(Color.moodGradient(for: entry.feeling ?? 5))
                         .frame(width: 32, height: 32)
 
                     if !entry.wasCompletedOnDay {

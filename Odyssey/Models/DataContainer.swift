@@ -23,8 +23,7 @@ enum DataContainer {
     static var isQuotaDisabled: Bool {
         guard UserDefaults.standard.bool(forKey: quotaDisabledKey) else { return false }
         if let disabledDate = UserDefaults.standard.object(forKey: quotaDisabledDateKey) as? Date,
-           Date().timeIntervalSince(disabledDate) > quotaRetryInterval
-        {
+           Date().timeIntervalSince(disabledDate) > quotaRetryInterval {
             logger.info("CloudKit quota cooldown expired, re-enabling")
             UserDefaults.standard.set(false, forKey: quotaDisabledKey)
             return false

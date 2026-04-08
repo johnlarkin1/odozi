@@ -203,10 +203,7 @@ final class DailyEntryViewModelTests: XCTestCase {
     func testCurrentStreakRequiresPromptData() throws {
         // Entry for today with no prompt data
         let emptyEntry = DailyEntry(
-            date: Calendar.current.startOfDay(for: Date()),
-            feeling: 5,
-            singleWordFeeling: "",
-            journalEntry: ""
+            date: Calendar.current.startOfDay(for: Date())
         )
         context.insert(emptyEntry)
         try context.save()
