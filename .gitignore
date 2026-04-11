@@ -120,6 +120,15 @@ deprecated/odyssey-server/loadtests/keys/*.pem
 # App Store generated assets
 appstore-assets/
 
+# Personal sample photos for DEBUG/SCREENSHOT_MODE (not shipped, loaded from repo).
+# The day_NN/ subfolder structure is tracked so the scaffolding stays in the repo,
+# but all actual photo/journal/mood content is ignored.
+# `photo*` catches photo.jpg, photo_2.jpg, photo.heic, etc.
+SampleAssets/**/photo*
+SampleAssets/**/journal.txt
+SampleAssets/**/mood.txt
+SampleAssets/photos/
+
 **/*__pycache*
 
 website/.claude
