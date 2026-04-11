@@ -5,11 +5,10 @@ struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var viewModel: JournalViewModel?
     @State private var searchText = ""
-    @State private var showingGuidedFlow = false
-    @State private var guidedFlowDate: Date?
+    @State private var navigationPath = NavigationPath()
 
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $navigationPath) {
             Group {
                 if let vm = viewModel {
                     List {
@@ -21,9 +20,11 @@ struct JournalView: View {
                                     get: { vm.selectedDate },
                                     set: { vm.selectedDate = $0 }
                                 ),
+                                onTapEntry: { entry in
+                                    navigationPath.append(entry)
+                                },
                                 onTapEmptyDate: { date in
-                                    guidedFlowDate = date
-                                    showingGuidedFlow = true
+                                    navigationPath.append(EmptyDayDate(date: date))
                                 }
                             )
                         }
@@ -37,7 +38,7 @@ struct JournalView: View {
                                     .foregroundStyle(.secondary)
                             } else {
                                 ForEach(filtered, id: \.date) { entry in
-                                    NavigationLink(destination: JournalEntryDetailView(entry: entry)) {
+                                    NavigationLink(value: entry) {
                                         journalRow(entry: entry)
                                     }
                                 }
@@ -53,22 +54,12 @@ struct JournalView: View {
             }
             .navigationTitle("Journal")
             .cosmicBackground()
-            #if os(macOS)
-                .sheet(isPresented: $showingGuidedFlow) {
-                    GuidedPromptFlowView(entryDate: guidedFlowDate)
-                        .frame(minWidth: 520, idealWidth: 650, maxWidth: 750,
-                               minHeight: 620, idealHeight: 750, maxHeight: 850)
-                }
-            #else
-                .fullScreenCover(isPresented: $showingGuidedFlow) {
-                        GuidedPromptFlowView(entryDate: guidedFlowDate)
-                    }
-            #endif
-                    .onChange(of: showingGuidedFlow) { _, newValue in
-                        if !newValue {
-                            viewModel?.loadEntries()
-                        }
-                    }
+            .navigationDestination(for: DailyEntry.self) { entry in
+                JournalEntryDetailView(entry: entry)
+            }
+            .navigationDestination(for: EmptyDayDate.self) { destination in
+                JournalEntryDetailView(date: destination.date)
+            }
         }
         .onAppear {
             if viewModel == nil {

@@ -31,9 +31,13 @@ final class GuidedPromptViewModel {
     }
 
     private func loadExistingEntry() {
+        // Pre-fill from any existing entry for this date — including auto-captured
+        // entries with only background data. Loading zero/empty values is harmless
+        // because the prompt cards treat 0/"" as "not answered", and it lets users
+        // who hit "Add journal details" on an auto-captured day pick up anything
+        // they'd previously typed.
         let repository = DailyEntryRepository(context: modelContext)
-        guard let entry = try? repository.fetchOrCreate(for: targetDate),
-              entry.hasUserSubmitted else { return }
+        guard let entry = try? repository.fetchOrCreate(for: targetDate) else { return }
 
         responses.feeling = entry.feeling
         responses.singleWordFeeling = entry.singleWordFeeling

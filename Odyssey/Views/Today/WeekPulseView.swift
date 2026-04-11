@@ -79,9 +79,17 @@ struct WeekPulseView: View {
                             .frame(width: 36, height: 36)
                     }
                 } else if entry != nil {
-                    Circle()
-                        .strokeBorder(Color.accentAmber, lineWidth: 2)
-                        .frame(width: 32, height: 32)
+                    // Auto-captured day: background data exists but the user
+                    // hasn't journaled. Amber ring + a tiny sparkles glyph makes
+                    // this visually distinct from an untouched empty day.
+                    ZStack {
+                        Circle()
+                            .strokeBorder(Color.accentAmber, lineWidth: 2)
+                            .frame(width: 32, height: 32)
+                        Image(systemName: "sparkles")
+                            .font(.system(size: 10, weight: .semibold))
+                            .foregroundStyle(Color.accentAmber)
+                    }
                 } else if isPast && onTapEmptyDay != nil {
                     ZStack {
                         Circle()

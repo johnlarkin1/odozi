@@ -76,7 +76,15 @@ struct MoodOrbView: View {
     // MARK: - Completed State
 
     private func completedState(entry: DailyEntry) -> some View {
-        let moodColor = Color.moodGradient(for: entry.feeling)
+        // Prefer the user-picked feeling color from the Feeling step; fall back
+        // to the mood-based gradient when the user hasn't chosen one.
+        // #FFFFFF is the sentinel for "no color selected".
+        let orbColor: Color = {
+            if entry.feelingColorHex != "#FFFFFF" {
+                return entry.feelingColor
+            }
+            return Color.moodGradient(for: entry.feeling)
+        }()
 
         return VStack(spacing: 16) {
             Button {
@@ -85,7 +93,7 @@ struct MoodOrbView: View {
                 ZStack {
                     // Ambient glow
                     Circle()
-                        .fill(moodColor.opacity(0.08))
+                        .fill(orbColor.opacity(0.08))
                         .frame(width: 280, height: 280)
                         .blur(radius: 100)
 
@@ -93,7 +101,7 @@ struct MoodOrbView: View {
                     Circle()
                         .fill(
                             RadialGradient(
-                                colors: [moodColor, moodColor.opacity(0.15)],
+                                colors: [orbColor, orbColor.opacity(0.15)],
                                 center: .center,
                                 startRadius: 10,
                                 endRadius: 90
