@@ -39,6 +39,9 @@ export function Header() {
           <Link href="/#faq" onClick={() => trackEvent("nav_clicked", { label: "FAQ", destination: "/#faq" })} className="text-sm text-star-white/70 transition hover:text-accent-teal">
             FAQ
           </Link>
+          <Link href="/support" onClick={() => trackEvent("nav_clicked", { label: "Support", destination: "/support" })} className="text-sm text-star-white/70 transition hover:text-accent-teal">
+            Support
+          </Link>
           <a
             href={APP_STORE_URL}
             target="_blank"
@@ -71,6 +74,9 @@ export function Header() {
             </Link>
             <Link href="/#faq" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "FAQ", destination: "/#faq" }); }} className="py-3 text-star-white/70">
               FAQ
+            </Link>
+            <Link href="/support" onClick={() => { setMobileOpen(false); trackEvent("nav_clicked", { label: "Support", destination: "/support" }); }} className="py-3 text-star-white/70">
+              Support
             </Link>
             <a
               href={APP_STORE_URL}

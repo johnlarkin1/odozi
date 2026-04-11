@@ -5,7 +5,16 @@ import { motion, AnimatePresence } from "framer-motion";
 import { faqs } from "@/content";
 import { trackEvent } from "@/lib/analytics";
 
-function FAQItem({ question, answer }: { question: string; answer: string }) {
+type FAQ = { question: string; answer: string };
+
+type FAQSectionProps = {
+  items?: readonly FAQ[];
+  id?: string;
+  heading?: string;
+  headingAccent?: string;
+};
+
+function FAQItem({ question, answer }: FAQ) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -42,9 +51,14 @@ function FAQItem({ question, answer }: { question: string; answer: string }) {
   );
 }
 
-export function FAQSection() {
+export function FAQSection({
+  items = faqs,
+  id = "faq",
+  heading = "Frequently asked",
+  headingAccent = "questions.",
+}: FAQSectionProps = {}) {
   return (
-    <section id="faq" className="relative px-6 py-28">
+    <section id={id} className="relative px-6 py-28">
       <div className="mx-auto max-w-3xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -54,8 +68,8 @@ export function FAQSection() {
           className="text-center"
         >
           <h2 className="font-heading text-4xl font-bold sm:text-5xl">
-            Frequently asked{" "}
-            <span className="text-accent-amber">questions.</span>
+            {heading}{" "}
+            <span className="text-accent-amber">{headingAccent}</span>
           </h2>
         </motion.div>
 
@@ -66,7 +80,7 @@ export function FAQSection() {
           transition={{ duration: 0.6, delay: 0.15 }}
           className="mt-14"
         >
-          {faqs.map((faq) => (
+          {items.map((faq) => (
             <FAQItem key={faq.question} {...faq} />
           ))}
         </motion.div>
