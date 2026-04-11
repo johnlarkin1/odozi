@@ -3,6 +3,7 @@ import SwiftUI
 struct JournalCalendarView: View {
     let entries: [DailyEntry]
     @Binding var selectedDate: Date
+    var onTapEntry: ((DailyEntry) -> Void)?
     var onTapEmptyDate: ((Date) -> Void)?
 
     @State private var displayedMonth = Date()
@@ -59,8 +60,10 @@ struct JournalCalendarView: View {
                         let isEmptyPastDate = entry == nil && isPastDate(date)
 
                         Button {
-                            if isEmptyPastDate, let callback = onTapEmptyDate {
-                                callback(date)
+                            if let entry = entry, let tapEntry = onTapEntry {
+                                tapEntry(entry)
+                            } else if isEmptyPastDate, let tapEmpty = onTapEmptyDate {
+                                tapEmpty(date)
                             } else {
                                 selectedDate = date
                             }
@@ -71,18 +74,26 @@ struct JournalCalendarView: View {
                                     .foregroundStyle(Calendar.current.isDateInToday(date) ? Color.accentAmber : .white)
 
                                 ZStack {
-                                    Circle()
-                                        .fill(entry.map { Color.moodGradient(for: $0.feeling) } ?? Color.clear)
-                                        .frame(width: 6, height: 6)
-
-                                    if let entry = entry, !entry.wasCompletedOnDay {
+                                    // User-journaled → filled mood dot.
+                                    // Auto-captured only → amber ring (matches the WeekPulseView convention).
+                                    // Empty past → faint outline.
+                                    if let entry = entry, entry.hasUserSubmitted {
                                         Circle()
-                                            .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
-                                            .foregroundStyle(Color.white.opacity(0.5))
-                                            .frame(width: 10, height: 10)
-                                    }
+                                            .fill(Color.moodGradient(for: entry.feeling))
+                                            .frame(width: 6, height: 6)
 
-                                    if isEmptyPastDate && onTapEmptyDate != nil {
+                                        if !entry.wasCompletedOnDay {
+                                            Circle()
+                                                .strokeBorder(style: StrokeStyle(lineWidth: 1, dash: [2, 2]))
+                                                .foregroundStyle(Color.white.opacity(0.5))
+                                                .frame(width: 10, height: 10)
+                                        }
+                                    } else if entry != nil {
+                                        // Auto-captured only
+                                        Circle()
+                                            .strokeBorder(Color.accentAmber, lineWidth: 1)
+                                            .frame(width: 8, height: 8)
+                                    } else if isEmptyPastDate && onTapEmptyDate != nil {
                                         Circle()
                                             .strokeBorder(Color.white.opacity(0.15), lineWidth: 0.5)
                                             .frame(width: 6, height: 6)
@@ -136,7 +147,10 @@ struct JournalCalendarView: View {
     }
 
     private func entryFor(_ date: Date) -> DailyEntry? {
-        entries.first { $0.hasPromptData && Calendar.current.isDate($0.date, inSameDayAs: date) }
+        // Return any entry for this date — including auto-captured entries
+        // with only background data. Cell rendering distinguishes journaled
+        // vs auto-captured visually.
+        entries.first { Calendar.current.isDate($0.date, inSameDayAs: date) }
     }
 
     private func isPastDate(_ date: Date) -> Bool {

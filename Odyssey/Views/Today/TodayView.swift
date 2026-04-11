@@ -6,6 +6,14 @@ enum TodayDrillDown: Hashable {
     case map
 }
 
+/// Navigation destination for a past date that has no `DailyEntry` yet.
+/// Pushed onto a `NavigationPath` to route tapping an empty calendar / week-row
+/// cell through `JournalEntryDetailView` in "no data" mode, where the user
+/// can then tap "Start entry" to open the guided flow.
+struct EmptyDayDate: Hashable {
+    let date: Date
+}
+
 struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
@@ -43,8 +51,7 @@ struct TodayView: View {
                             weekEntries: vm.fetchWeekEntries(),
                             onTapEntry: { entry in navigationPath.append(entry) },
                             onTapEmptyDay: { date in
-                                guidedFlowDate = date
-                                showingGuidedFlow = true
+                                navigationPath.append(EmptyDayDate(date: date))
                             },
                             animateIn: animateIn
                         )
@@ -100,6 +107,9 @@ struct TodayView: View {
             }
             .navigationDestination(for: DailyEntry.self) { entry in
                 JournalEntryDetailView(entry: entry)
+            }
+            .navigationDestination(for: EmptyDayDate.self) { destination in
+                JournalEntryDetailView(date: destination.date)
             }
             .navigationDestination(for: TodayDrillDown.self) { destination in
                 switch destination {
@@ -273,16 +283,22 @@ struct TodayView: View {
     // MARK: - Background
 
     private var backgroundGradient: some View {
-        let moodColor: Color = {
-            if let entry = todayEntry, viewModel?.hasSubmittedData == true {
-                return Color.moodGradient(for: entry.feeling)
+        let tintColor: Color = {
+            guard let entry = todayEntry, viewModel?.hasSubmittedData == true else {
+                return Color.gray
             }
-            return Color.gray
+            // Prefer the color the user picked in the Feeling step; fall back to
+            // the mood-based gradient when they haven't picked one (#FFFFFF is
+            // the sentinel for "no color selected").
+            if entry.feelingColorHex != "#FFFFFF" {
+                return entry.feelingColor
+            }
+            return Color.moodGradient(for: entry.feeling)
         }()
 
         return LinearGradient(
             colors: [
-                moodColor.opacity(0.15),
+                tintColor.opacity(0.15),
                 Color.clear
             ],
             startPoint: .top,
