@@ -3,17 +3,17 @@ import SwiftData
 
 @Model
 final class Achievement {
-    var id: String
-    var category: String
-    var title: String
-    var achievementDescription: String
-    var iconName: String
+    var id: String = ""
+    var category: String = ""
+    var title: String = ""
+    var achievementDescription: String = ""
+    var iconName: String = ""
 
     var unlockedDate: Date?
-    var isNew: Bool
+    var isNew: Bool = false
 
-    var sortOrder: Int
-    var tier: Int
+    var sortOrder: Int = 0
+    var tier: Int = 0
 
     var isUnlocked: Bool { unlockedDate != nil }
 

@@ -59,6 +59,7 @@ struct OdysseyApp: App {
                 }
             }
         } catch {
+            logger.error("Failed to create ModelContainer: \(error)")
             container = nil
             containerError = error
         }

@@ -25,6 +25,9 @@ struct ProfileView: View {
         )
     #endif
 
+    @AppStorage(DataContainer.iCloudSyncEnabledKey) private var iCloudSyncEnabled = false
+    @State private var syncToggleChanged = false
+
     @AppStorage("reminderEnabled") private var reminderEnabled = true
     @AppStorage("reminderTimeOfDay") private var reminderTimeOfDayRaw = ReminderTimeOfDay.evening.rawValue
     @AppStorage("reminderCustomHour") private var reminderCustomHour = 20
@@ -100,6 +103,32 @@ struct ProfileView: View {
                         }
                     }
                 }
+
+                Section("Sync") {
+                    Toggle(isOn: $iCloudSyncEnabled) {
+                        Label("iCloud Sync", systemImage: "arrow.triangle.2.circlepath.icloud")
+                    }
+                    .onChange(of: iCloudSyncEnabled) { _, _ in
+                        syncToggleChanged = true
+                    }
+
+                    Text("Sync your journal across iPhone, Apple Watch, and Mac via iCloud")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+
+                    if syncToggleChanged {
+                        Label("Restart Odyssey to apply", systemImage: "arrow.clockwise")
+                            .font(.caption)
+                            .foregroundStyle(Color.accentAmber)
+                    }
+
+                    if DataContainer.isQuotaDisabled {
+                        Label("Sync paused — iCloud storage full", systemImage: "exclamationmark.icloud")
+                            .font(.caption)
+                            .foregroundStyle(Color.coralRed)
+                    }
+                }
+                .listRowBackground(Color.cardSurface)
 
                 #if os(iOS)
                     Section("Screen Time") {

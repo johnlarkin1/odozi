@@ -33,19 +33,19 @@ final class DailyEntry {
     // via fetch-before-insert in DailyEntryViewModel.submitData and applySnapshotData.
 
     // Identity
-    var date: Date
+    var date: Date = Date()
 
-    // Guided prompts (non-optional, defaults provided)
-    var feeling: Int
-    var singleWordFeeling: String
+    // Guided prompts (defaults required for CloudKit sync compatibility)
+    var feeling: Int = 5
+    var singleWordFeeling: String = ""
     @Attribute(originalName: "feelingColor")
-    var feelingColorHex: String
-    var sleepQuality: Int
-    var gratitude: String
-    var win: String
-    var tension: String
-    var journalEntry: String
-    var drinks: Int
+    var feelingColorHex: String = "#FFFFFF"
+    var sleepQuality: Int = 5
+    var gratitude: String = ""
+    var win: String = ""
+    var tension: String = ""
+    var journalEntry: String = ""
+    var drinks: Int = 0
 
     // Background: Location (optional)
     var latitude: Double?
@@ -91,8 +91,8 @@ final class DailyEntry {
     var firstSubmittedAt: Date?
 
     // Metadata
-    var createdAt: Date
-    var updatedAt: Date
+    var createdAt: Date = Date()
+    var updatedAt: Date = Date()
 
     // Sync metadata (lightweight migration-safe: optional + default)
     var lastSyncedAt: Date?
