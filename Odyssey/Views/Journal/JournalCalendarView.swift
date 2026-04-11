@@ -20,7 +20,9 @@ struct JournalCalendarView: View {
                     }
                 } label: {
                     Image(systemName: "chevron.left")
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.borderless)
 
                 Spacer()
 
@@ -35,7 +37,9 @@ struct JournalCalendarView: View {
                     }
                 } label: {
                     Image(systemName: "chevron.right")
+                        .contentShape(Rectangle())
                 }
+                .buttonStyle(.borderless)
             }
 
             // Day headers
