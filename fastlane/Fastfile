@@ -11,7 +11,7 @@ platform :ios do
     scan(
       project: "Odyssey.xcodeproj",
       scheme: "Odyssey",
-      devices: ["iPhone 16 Pro Max"],
+      devices: ["iPhone 17 Pro Max"],
       code_coverage: true,
       result_bundle: true
     )
@@ -35,7 +35,7 @@ platform :ios do
     setup_xcconfig
     capture_screenshots(
       scheme: "Odyssey",
-      devices: ["iPhone 11 Pro Max", "iPhone 13 Pro Max"],
+      devices: ["iPhone 17 Pro Max"],
       languages: ["en-US"],
       output_directory: "./screenshots",
       clear_previous_screenshots: true,

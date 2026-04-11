@@ -1,4 +1,4 @@
-devices(["iPhone 11 Pro Max", "iPhone 13 Pro Max"])
+devices(["iPhone 17 Pro Max"])
 languages(["en-US"])
 
 scheme("Odyssey")
