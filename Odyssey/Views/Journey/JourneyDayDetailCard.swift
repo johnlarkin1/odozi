@@ -15,15 +15,17 @@ struct JourneyDayDetailCard: View {
         VStack(alignment: .leading, spacing: 12) {
             // Header: date, mood, location
             HStack(spacing: 12) {
-                // Mood circle
-                Circle()
-                    .fill(entry.moodGradientColor)
-                    .frame(width: 36, height: 36)
-                    .overlay(
-                        Text("\(entry.feeling)")
-                            .font(.caption.bold())
-                            .foregroundStyle(.white)
-                    )
+                // Mood circle (hidden when user didn't answer)
+                if entry.feeling > 0 {
+                    Circle()
+                        .fill(entry.moodGradientColor)
+                        .frame(width: 36, height: 36)
+                        .overlay(
+                            Text("\(entry.feeling)")
+                                .font(.caption.bold())
+                                .foregroundStyle(.white)
+                        )
+                }
 
                 VStack(alignment: .leading, spacing: 2) {
                     Text(entry.date.shortFormatted)

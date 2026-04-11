@@ -12,11 +12,13 @@ extension DailyEntry {
         case 5 ... 6: return "Neutral"
         case 7 ... 8: return "Good"
         case 9 ... 10: return "Great"
-        default: return "Neutral"
+        default: return "—"
         }
     }
 
     var moodGradientColor: Color {
+        // feeling == 0 is the "not answered" sentinel — return neutral gray
+        guard feeling > 0 else { return .gray }
         let t = Double(feeling - 1) / 9.0
         if t < 0.5 {
             let u = t / 0.5

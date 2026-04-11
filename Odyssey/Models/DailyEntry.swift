@@ -35,12 +35,14 @@ final class DailyEntry {
     // Identity
     var date: Date = Date()
 
-    // Guided prompts (defaults required for CloudKit sync compatibility)
-    var feeling: Int = 5
+    // Guided prompts. Defaults are required for CloudKit compatibility;
+    // numeric 0 acts as a "not answered" sentinel since the scales are 1-10.
+    // Display code should gate on `> 0` before showing these values.
+    var feeling: Int = 0
     var singleWordFeeling: String = ""
     @Attribute(originalName: "feelingColor")
     var feelingColorHex: String = "#FFFFFF"
-    var sleepQuality: Int = 5
+    var sleepQuality: Int = 0
     var gratitude: String = ""
     var win: String = ""
     var tension: String = ""
@@ -100,10 +102,10 @@ final class DailyEntry {
 
     init(
         date: Date = Calendar.current.startOfDay(for: Date()),
-        feeling: Int = 5,
+        feeling: Int = 0,
         singleWordFeeling: String = "",
         feelingColorHex: String = "#FFFFFF",
-        sleepQuality: Int = 5,
+        sleepQuality: Int = 0,
         gratitude: String = "",
         win: String = "",
         tension: String = "",

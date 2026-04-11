@@ -18,8 +18,12 @@ struct JournalEntryDetailView: View {
 
                 // Mood & Feeling
                 HStack(spacing: 16) {
-                    detailCard(title: "Mood", value: "\(entry.feeling)/10", color: entry.moodGradientColor)
-                    detailCard(title: "Sleep", value: "\(entry.sleepQuality)/10", color: .accentTeal)
+                    if entry.feeling > 0 {
+                        detailCard(title: "Mood", value: "\(entry.feeling)/10", color: entry.moodGradientColor)
+                    }
+                    if entry.sleepQuality > 0 {
+                        detailCard(title: "Sleep", value: "\(entry.sleepQuality)/10", color: .accentTeal)
+                    }
                 }
                 .padding(.horizontal, 16)
 

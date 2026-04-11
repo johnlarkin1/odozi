@@ -64,11 +64,13 @@ enum WeeklyDigestService {
         let prevWeekEntries: [DailyEntry] = fetchEntries(context: context, from: prevWeekStart, to: weekStart)
         let prevPromptEntries: [DailyEntry] = prevWeekEntries.filter { $0.hasPromptData }
 
-        // Mood averages
-        let avgMood = promptEntries.isEmpty ? 0 : Double(promptEntries.map { $0.feeling }.reduce(0, +)) / Double(promptEntries.count)
-        let prevAvgMood: Double? = prevPromptEntries.isEmpty
+        // Mood averages (only count entries where mood was actually answered)
+        let moodValues = promptEntries.map(\.feeling).filter { $0 > 0 }
+        let avgMood = moodValues.isEmpty ? 0 : Double(moodValues.reduce(0, +)) / Double(moodValues.count)
+        let prevMoodValues = prevPromptEntries.map(\.feeling).filter { $0 > 0 }
+        let prevAvgMood: Double? = prevMoodValues.isEmpty
             ? nil
-            : Double(prevPromptEntries.map { $0.feeling }.reduce(0, +)) / Double(prevPromptEntries.count)
+            : Double(prevMoodValues.reduce(0, +)) / Double(prevMoodValues.count)
         let delta: Double? = prevAvgMood.map { avgMood - $0 }
 
         // Top emotion
@@ -89,8 +91,8 @@ enum WeeklyDigestService {
         let recentEntries: [DailyEntry] = (try? context.fetch(streakDescriptor)) ?? []
         let streak = recentEntries.currentStreak
 
-        // Sleep quality average
-        let sleepQualities = promptEntries.map { $0.sleepQuality }
+        // Sleep quality average (only count entries where sleep was actually answered)
+        let sleepQualities = promptEntries.map(\.sleepQuality).filter { $0 > 0 }
         let avgSleepQuality: Double? = sleepQualities.isEmpty ? nil : Double(sleepQualities.reduce(0, +)) / Double(sleepQualities.count)
 
         // Steps total
