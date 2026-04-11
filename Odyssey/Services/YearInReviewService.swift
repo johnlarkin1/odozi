@@ -53,8 +53,10 @@ final class YearInReviewService {
 
         let totalDays = (calendar.dateComponents([.day], from: startOfYear, to: endOfYear).day ?? 364) + 1
 
-        let avgMood = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.feeling }) / Double(withData.count)
-        let avgSleep = withData.isEmpty ? 0 : Double(withData.reduce(0) { $0 + $1.sleepQuality }) / Double(withData.count)
+        let moodValues = withData.map(\.feeling).filter { $0 > 0 }
+        let avgMood = moodValues.isEmpty ? 0 : Double(moodValues.reduce(0, +)) / Double(moodValues.count)
+        let sleepValues = withData.map(\.sleepQuality).filter { $0 > 0 }
+        let avgSleep = sleepValues.isEmpty ? 0 : Double(sleepValues.reduce(0, +)) / Double(sleepValues.count)
         let totalSteps = entries.compactMap(\.stepCount).reduce(0, +)
         let totalDrinks = withData.reduce(0) { $0 + $1.drinks }
 
@@ -62,7 +64,7 @@ final class YearInReviewService {
         let monthFormatter = DateFormatter()
         monthFormatter.dateFormat = "MMM"
         var monthMoods: [Int: [Int]] = [:]
-        for entry in withData {
+        for entry in withData where entry.feeling > 0 {
             let month = calendar.component(.month, from: entry.date)
             monthMoods[month, default: []].append(entry.feeling)
         }
@@ -112,7 +114,7 @@ final class YearInReviewService {
         }
 
         // Best day
-        let bestDay = withData.max(by: { $0.feeling < $1.feeling })
+        let bestDay = withData.filter { $0.feeling > 0 }.max(by: { $0.feeling < $1.feeling })
 
         // All colors
         let allColors = withData.filter { $0.feelingColorHex != "#FFFFFF" }.map(\.feelingColorHex)

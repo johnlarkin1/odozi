@@ -97,15 +97,33 @@ final class GuidedPromptViewModel {
         do {
             let entry = try repository.fetchOrCreate(for: targetDate)
 
-            entry.feeling = responses.feeling
-            entry.singleWordFeeling = responses.singleWordFeeling
-            entry.feelingColorHex = responses.feelingColorHex
-            entry.sleepQuality = responses.sleepQuality
-            entry.gratitude = responses.gratitude
-            entry.win = responses.win
-            entry.tension = responses.tension
-            entry.journalEntry = responses.journalEntry
-            entry.drinks = responses.drinks
+            // Only write fields for steps the user didn't skip — prevents phantom
+            // defaults (e.g., sleepQuality=5) for steps the user explicitly skipped.
+            if !skippedSteps.contains(.mood) {
+                entry.feeling = responses.feeling
+            }
+            if !skippedSteps.contains(.feeling) {
+                entry.singleWordFeeling = responses.singleWordFeeling
+                entry.feelingColorHex = responses.feelingColorHex
+            }
+            if !skippedSteps.contains(.sleep) {
+                entry.sleepQuality = responses.sleepQuality
+            }
+            if !skippedSteps.contains(.gratitude) {
+                entry.gratitude = responses.gratitude
+            }
+            if !skippedSteps.contains(.win) {
+                entry.win = responses.win
+            }
+            if !skippedSteps.contains(.tension) {
+                entry.tension = responses.tension
+            }
+            if !skippedSteps.contains(.journal) {
+                entry.journalEntry = responses.journalEntry
+            }
+            if !skippedSteps.contains(.drinks) {
+                entry.drinks = responses.drinks
+            }
 
             if let photoData = responses.attachedPhotoData {
                 var existing = entry.attachedPhotoData ?? []
@@ -119,9 +137,14 @@ final class GuidedPromptViewModel {
                 }
             }
 
-            entry.hasUserSubmitted = true
-            if entry.firstSubmittedAt == nil {
-                entry.firstSubmittedAt = Date()
+            // Only mark as submitted if the user actually provided content.
+            // hasPromptData checks text fields (journal/gratitude/win/tension/singleWordFeeling)
+            // which are the signal for "user entered something meaningful."
+            if entry.hasPromptData {
+                entry.hasUserSubmitted = true
+                if entry.firstSubmittedAt == nil {
+                    entry.firstSubmittedAt = Date()
+                }
             }
             entry.updatedAt = Date()
 

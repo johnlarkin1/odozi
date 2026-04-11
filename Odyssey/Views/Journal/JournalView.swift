@@ -113,11 +113,13 @@ struct JournalView: View {
                     .foregroundStyle(.secondary)
             }
 
-            MoodIndicator(feeling: entry.feeling, size: 10)
+            if entry.feeling > 0 {
+                MoodIndicator(feeling: entry.feeling, size: 10)
 
-            Text("\(entry.feeling)")
-                .font(.subheadline.weight(.medium))
-                .foregroundStyle(.secondary)
+                Text("\(entry.feeling)")
+                    .font(.subheadline.weight(.medium))
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(.vertical, 4)
     }

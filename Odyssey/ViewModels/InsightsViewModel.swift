@@ -48,15 +48,15 @@ final class InsightsViewModel {
     }
 
     var averageMood: Double {
-        let valid = filteredEntries.filter { $0.hasPromptData }
-        guard !valid.isEmpty else { return 0 }
-        return Double(valid.reduce(0) { $0 + $1.feeling }) / Double(valid.count)
+        let values = filteredEntries.filter(\.hasPromptData).map(\.feeling).filter { $0 > 0 }
+        guard !values.isEmpty else { return 0 }
+        return Double(values.reduce(0, +)) / Double(values.count)
     }
 
     var averageSleep: Double {
-        let valid = filteredEntries.filter { $0.hasPromptData }
-        guard !valid.isEmpty else { return 0 }
-        return Double(valid.reduce(0) { $0 + $1.sleepQuality }) / Double(valid.count)
+        let values = filteredEntries.filter(\.hasPromptData).map(\.sleepQuality).filter { $0 > 0 }
+        guard !values.isEmpty else { return 0 }
+        return Double(values.reduce(0, +)) / Double(values.count)
     }
 
     var currentStreak: Int {

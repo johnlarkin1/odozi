@@ -45,7 +45,15 @@ struct QuickCheckInView: View {
         entry.feeling = Int(moodScore)
         entry.singleWordFeeling = selectedFeeling.lowercased()
         entry.feelingColorHex = moodColorHex(for: Int(moodScore))
-        entry.hasUserSubmitted = true
+        // sleepQuality/drinks intentionally not touched — watch only captures mood.
+        // Defaults of 0 leave them as "not answered" so display code hides them.
+        // Watch always sets singleWordFeeling, so this is effectively true.
+        if !entry.singleWordFeeling.isEmpty {
+            entry.hasUserSubmitted = true
+            if entry.firstSubmittedAt == nil {
+                entry.firstSubmittedAt = Date()
+            }
+        }
         entry.updatedAt = Date()
         try? modelContext.save()
     }
