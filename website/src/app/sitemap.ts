@@ -11,6 +11,12 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
+      url: "https://odozi.app/support",
+      lastModified: "2026-04-11",
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    {
       url: "https://odozi.app/privacy",
       lastModified: "2026-03-15",
       changeFrequency: "monthly",

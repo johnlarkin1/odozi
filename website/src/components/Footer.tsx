@@ -40,6 +40,9 @@ export function Footer() {
             <Link href="/#faq" onClick={() => trackEvent("cta_clicked", { label: "faq", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               FAQ
             </Link>
+            <Link href="/support" onClick={() => trackEvent("cta_clicked", { label: "support", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
+              Support
+            </Link>
             <a href={GITHUB_URL} target="_blank" rel="noopener noreferrer" onClick={() => trackEvent("cta_clicked", { label: "github", location: "footer" })} className="text-star-white/60 transition hover:text-accent-teal">
               GitHub
             </a>

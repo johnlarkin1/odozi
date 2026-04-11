@@ -242,6 +242,88 @@ export const faqs = [
 ];
 
 // ---------------------------------------------------------------------------
+// Support
+// ---------------------------------------------------------------------------
+export const support = {
+  heading: "Support",
+  intro:
+    "Need a hand with Odyssey? You're in the right place. I usually respond within a day or two.",
+  contact: {
+    email: "john@odozi.app",
+    emailNote: "Fastest route for account, privacy, or anything you'd rather keep private.",
+    githubIssuesUrl: `${GITHUB_URL}/issues`,
+    githubNote: "Best route for bugs, feature requests, and anything you're happy to discuss in public.",
+  },
+  permissions: [
+    {
+      title: "Location",
+      why: "One GPS snapshot per day, stored on-device, used to color-code your journey map.",
+    },
+    {
+      title: "Apple Health",
+      why: "Reads steps, walking distance, and sleep from HealthKit so you don't have to log them manually. Never used for advertising.",
+    },
+    {
+      title: "Screen Time",
+      why: "Fetches daily totals and pickups via Apple's DeviceActivity framework — powers the mood-vs-screen-time correlation.",
+    },
+    {
+      title: "Notifications",
+      why: "Optional. A single daily nudge to open the app. Off by default.",
+    },
+  ],
+  yourData: [
+    {
+      title: "Export",
+      body: "Profile tab → Export CSV. Your whole journal, any time, for free.",
+    },
+    {
+      title: "Sync",
+      body: "CloudKit sync is opt-in from the Profile tab and off by default. When it's on, your data syncs to your private Apple iCloud container — I can't read it.",
+    },
+    {
+      title: "Delete",
+      body: "Uninstalling the app removes everything stored on-device. If you had CloudKit sync on, also delete the Odyssey container from Settings → [your name] → iCloud → Manage Account Storage → Odyssey.",
+    },
+  ],
+  platform: "Odyssey runs on iPhone, iOS 17 or later. No Android, no web app.",
+  knownIssues:
+    "Nothing reported right now. The latest status lives on GitHub Issues.",
+  troubleshooting: [
+    {
+      question: "My Screen Time numbers look wrong or are zero.",
+      answer:
+        "Screen Time requires the Family Controls permission and only works on a physical device. Go to Profile → Permissions and confirm Screen Time is granted. If it's already on, toggle it off and on — iOS occasionally loses the report handshake.",
+    },
+    {
+      question: "My streak dropped even though I journaled.",
+      answer:
+        "Streaks are calculated in your device's local timezone at midnight. If you crossed a timezone, the streak may appear to skip a day. If you genuinely entered data and it's missing, email john@odozi.app with the date and I'll take a look.",
+    },
+    {
+      question: "I turned on CloudKit sync but nothing's syncing.",
+      answer:
+        "CloudKit sync requires an active iCloud account and an internet connection. The first run can take a few minutes to propagate. If it's still stuck after ten minutes, toggle sync off and back on from the Profile tab.",
+    },
+    {
+      question: "Can I use Odyssey on iPad or Mac?",
+      answer:
+        "iPhone only for now. iPad and Mac may come later — they're not actively blocked, just not tested or shipped.",
+    },
+    {
+      question: "How do I delete my data?",
+      answer:
+        "Uninstall the app to wipe everything on-device. If you had CloudKit sync on, also delete the Odyssey container from Settings → [your name] → iCloud → Manage Account Storage → Odyssey.",
+    },
+    {
+      question: "I found a bug. How do I report it?",
+      answer:
+        "Best place is GitHub Issues — include your iOS version and a short repro. If you'd rather email, john@odozi.app works too.",
+    },
+  ],
+};
+
+// ---------------------------------------------------------------------------
 // Footer
 // ---------------------------------------------------------------------------
 export const footer = {
