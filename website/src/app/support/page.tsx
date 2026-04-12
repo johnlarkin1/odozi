@@ -6,7 +6,7 @@ import { support } from "@/content";
 export const metadata: Metadata = {
   title: "Support - Odyssey",
   description:
-    "Get help with Odyssey — contact, troubleshooting, permissions, and data export.",
+    "Get help with Odyssey: contact, troubleshooting, permissions, and data export.",
   alternates: {
     canonical: "/support",
   },
@@ -21,11 +21,11 @@ export default function Support() {
 
         <hr />
 
-        <h2>Get in touch</h2>
+        <h2>Contact</h2>
         <p>
           <strong>Email:</strong>{" "}
           <a href={`mailto:${support.contact.email}`}>{support.contact.email}</a>
-          {" — "}
+          {". "}
           {support.contact.emailNote}
         </p>
         <p>
@@ -37,19 +37,16 @@ export default function Support() {
           >
             {support.contact.githubIssuesUrl}
           </a>
-          {" — "}
+          {". "}
           {support.contact.githubNote}
         </p>
 
-        <h2>Permissions Odyssey asks for</h2>
-        <p>
-          Odyssey is useful in direct proportion to what it can see. Every permission
-          is optional — if you say no, the app still works, you just get less out of it.
-        </p>
+        <h2>Permissions</h2>
+        <p>Every permission is optional. The app still works without them.</p>
         <ul>
           {support.permissions.map((p) => (
             <li key={p.title}>
-              <strong>{p.title}</strong> — {p.why}
+              <strong>{p.title}:</strong> {p.why}
             </li>
           ))}
         </ul>
@@ -58,28 +55,19 @@ export default function Support() {
         <ul>
           {support.yourData.map((d) => (
             <li key={d.title}>
-              <strong>{d.title}</strong> — {d.body}
+              <strong>{d.title}:</strong> {d.body}
             </li>
           ))}
         </ul>
         <p>
-          For the full details, see the{" "}
-          <Link href="/privacy">Privacy Policy</Link>.
+          See the <Link href="/privacy">Privacy Policy</Link> for full details.
         </p>
 
-        <h2>Platform requirements</h2>
+        <h2>Platform</h2>
         <p>{support.platform}</p>
 
         <h2>Known issues</h2>
         <p>{support.knownIssues}</p>
-
-        <hr />
-
-        <p>
-          Still stuck? Email{" "}
-          <a href={`mailto:${support.contact.email}`}>{support.contact.email}</a>
-          {" "}and I&apos;ll help you sort it out.
-        </p>
       </article>
 
       <FAQSection
