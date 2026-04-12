@@ -101,6 +101,57 @@ final class DailyEntryComputedTests: XCTestCase {
         XCTAssertTrue(entry.hasPromptData)
     }
 
+    func testHasPromptDataTrueWithFeelingOnly() {
+        let entry = DailyEntry(feeling: 5)
+        XCTAssertTrue(entry.hasPromptData)
+    }
+
+    func testHasPromptDataTrueWithSleepQualityOnly() {
+        let entry = DailyEntry(sleepQuality: 4)
+        XCTAssertTrue(entry.hasPromptData)
+    }
+
+    func testHasPromptDataTrueWithDrinksOnly() {
+        let entry = DailyEntry(drinks: 2)
+        XCTAssertTrue(entry.hasPromptData)
+    }
+
+    // MARK: - hasCustomFeelingColor
+
+    func testHasCustomFeelingColorFalseForSentinel() {
+        let entry = DailyEntry(feelingColorHex: "#FFFFFF")
+        XCTAssertFalse(entry.hasCustomFeelingColor)
+    }
+
+    func testHasCustomFeelingColorFalseForLowercaseSentinel() {
+        let entry = DailyEntry(feelingColorHex: "#ffffff")
+        XCTAssertFalse(entry.hasCustomFeelingColor)
+    }
+
+    func testHasCustomFeelingColorTrueForPickedColor() {
+        let entry = DailyEntry(feelingColorHex: "#AB12CD")
+        XCTAssertTrue(entry.hasCustomFeelingColor)
+    }
+
+    // MARK: - effectiveFeelingColor
+
+    func testEffectiveFeelingColorFallsThroughToMoodGradient() {
+        let entry = DailyEntry(feeling: 10, feelingColorHex: "#FFFFFF")
+        let effective = UIColor(entry.effectiveFeelingColor).cgColor.components!
+        let fallback = UIColor(entry.moodGradientColor).cgColor.components!
+        XCTAssertEqual(effective[0], fallback[0], accuracy: 0.001)
+        XCTAssertEqual(effective[1], fallback[1], accuracy: 0.001)
+        XCTAssertEqual(effective[2], fallback[2], accuracy: 0.001)
+    }
+
+    func testEffectiveFeelingColorUsesCustomWhenSet() {
+        let entry = DailyEntry(feeling: 5, feelingColorHex: "#FF0000")
+        let components = UIColor(entry.effectiveFeelingColor).cgColor.components!
+        XCTAssertEqual(components[0], 1.0, accuracy: 0.01)
+        XCTAssertEqual(components[1], 0.0, accuracy: 0.01)
+        XCTAssertEqual(components[2], 0.0, accuracy: 0.01)
+    }
+
     // MARK: - moodGradientColor
 
     func testMoodGradientColorLowMoodIsRedish() {

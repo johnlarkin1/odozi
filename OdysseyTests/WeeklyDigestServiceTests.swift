@@ -88,7 +88,8 @@ final class WeeklyDigestServiceTests: XCTestCase {
         let entries = [
             makeEntry(daysAgo: 0, journalEntry: "Has data"),
             makeEntry(daysAgo: 1, journalEntry: "Also has data"),
-            makeEntry(daysAgo: 2, singleWordFeeling: "", journalEntry: "") // No prompt data
+            // No prompt data: all numeric fields zero and no text
+            makeEntry(daysAgo: 2, feeling: 0, sleepQuality: 0, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 
@@ -125,7 +126,8 @@ final class WeeklyDigestServiceTests: XCTestCase {
     func testAverageMoodExcludesNonPromptEntries() throws {
         let entries = [
             makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Has data"),
-            makeEntry(daysAgo: 1, feeling: 2, singleWordFeeling: "", journalEntry: "")
+            // No prompt data: all numeric fields zero and no text
+            makeEntry(daysAgo: 1, feeling: 0, sleepQuality: 0, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 

@@ -117,7 +117,7 @@ final class YearInReviewService {
         let bestDay = withData.filter { $0.feeling > 0 }.max(by: { $0.feeling < $1.feeling })
 
         // All colors
-        let allColors = withData.filter { $0.feelingColorHex != "#FFFFFF" }.map(\.feelingColorHex)
+        let allColors = withData.filter(\.hasCustomFeelingColor).map(\.feelingColorHex)
 
         // Top gratitudes
         let gratitudes = entries.map(\.gratitude).filter { !$0.isEmpty }.prefix(5).map { String($0) }

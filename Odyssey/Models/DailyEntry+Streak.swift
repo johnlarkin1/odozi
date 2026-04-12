@@ -75,7 +75,7 @@ extension Array where Element == DailyEntry {
     }
 
     var uniqueFeelingColorCount: Int {
-        Set(map(\.feelingColorHex).filter { $0 != "#FFFFFF" }).count
+        Set(filter(\.hasCustomFeelingColor).map(\.feelingColorHex)).count
     }
 
     var uniqueGratitudeCount: Int {

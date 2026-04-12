@@ -119,7 +119,7 @@ final class InsightsViewModelTests: XCTestCase {
         let withData = makeEntry(daysAgo: 0, feeling: 8, journalEntry: "Has data")
         let withoutData = DailyEntry(
             date: Calendar.current.startOfDay(for: Date().daysAgo(1)),
-            feeling: 2,
+            feeling: 0,
             singleWordFeeling: "",
             journalEntry: ""
         )

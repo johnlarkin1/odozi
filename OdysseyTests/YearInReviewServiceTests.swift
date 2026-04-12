@@ -80,7 +80,8 @@ final class YearInReviewServiceTests: XCTestCase {
     func testTotalEntriesCountsOnlyWithPromptData() throws {
         let entries = [
             makeEntry(year: 2025, month: 1, day: 1, journalEntry: "Has data"),
-            makeEntry(year: 2025, month: 1, day: 2, singleWordFeeling: "", journalEntry: "")
+            // No prompt data: all numeric fields zero and no text
+            makeEntry(year: 2025, month: 1, day: 2, feeling: 0, sleepQuality: 0, singleWordFeeling: "", journalEntry: "")
         ]
         try insertEntries(entries)
 

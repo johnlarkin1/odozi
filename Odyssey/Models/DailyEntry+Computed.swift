@@ -5,6 +5,16 @@ extension DailyEntry {
         Color(PlatformColor.fromHexString(feelingColorHex))
     }
 
+    var hasCustomFeelingColor: Bool {
+        feelingColorHex.lowercased() != "#ffffff"
+    }
+
+    /// The color to tint UI with: the user-picked color when set,
+    /// otherwise the mood-based gradient.
+    var effectiveFeelingColor: Color {
+        hasCustomFeelingColor ? feelingColor : moodGradientColor
+    }
+
     var moodLabel: String {
         switch feeling {
         case 1 ... 2: return "Low"
@@ -139,7 +149,9 @@ extension DailyEntry {
     }
 
     var hasPromptData: Bool {
-        !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty || !tension.isEmpty || !singleWordFeeling.isEmpty
+        !journalEntry.isEmpty || !gratitude.isEmpty || !win.isEmpty ||
+            !tension.isEmpty || !singleWordFeeling.isEmpty ||
+            feeling > 0 || sleepQuality > 0 || drinks > 0
     }
 
     var hasAutoData: Bool {

@@ -81,7 +81,7 @@ final class InsightsViewModel {
 
     var feelingColors: [String] {
         filteredEntries
-            .filter { $0.hasPromptData && $0.feelingColorHex != "#FFFFFF" }
+            .filter { $0.hasPromptData && $0.hasCustomFeelingColor }
             .map { $0.feelingColorHex }
     }
 
