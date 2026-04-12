@@ -3,55 +3,47 @@ import SwiftUI
 
 struct JournalView: View {
     @Environment(\.modelContext) private var modelContext
-    @State private var viewModel: JournalViewModel?
+    @Query(sort: \DailyEntry.date, order: .reverse) private var allEntries: [DailyEntry]
+    @State private var selectedDate: Date = .init()
     @State private var searchText = ""
     @State private var navigationPath = NavigationPath()
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
-            Group {
-                if let vm = viewModel {
-                    List {
-                        // Calendar section
-                        Section {
-                            JournalCalendarView(
-                                entries: vm.allEntries,
-                                selectedDate: Binding(
-                                    get: { vm.selectedDate },
-                                    set: { vm.selectedDate = $0 }
-                                ),
-                                onTapEntry: { entry in
-                                    navigationPath.append(entry)
-                                },
-                                onTapEmptyDate: { date in
-                                    navigationPath.append(EmptyDayDate(date: date))
-                                }
-                            )
+            List {
+                // Calendar section
+                Section {
+                    JournalCalendarView(
+                        entries: allEntries,
+                        selectedDate: $selectedDate,
+                        onTapEntry: { entry in
+                            navigationPath.append(entry)
+                        },
+                        onTapEmptyDate: { date in
+                            navigationPath.append(EmptyDayDate(date: date))
                         }
-                        .listRowBackground(Color.cardSurface)
+                    )
+                }
+                .listRowBackground(Color.cardSurface)
 
-                        // Entries list — only show entries where the user actually journaled
-                        Section("Entries") {
-                            let filtered = filteredEntries(vm.allEntries).filter { $0.hasPromptData }
-                            if filtered.isEmpty {
-                                Text("No entries yet")
-                                    .foregroundStyle(.secondary)
-                            } else {
-                                ForEach(filtered, id: \.date) { entry in
-                                    NavigationLink(value: entry) {
-                                        journalRow(entry: entry)
-                                    }
-                                }
+                // Entries list — only show entries where the user actually journaled
+                Section("Entries") {
+                    let filtered = filteredEntries(allEntries).filter { $0.hasPromptData }
+                    if filtered.isEmpty {
+                        Text("No entries yet")
+                            .foregroundStyle(.secondary)
+                    } else {
+                        ForEach(filtered, id: \.date) { entry in
+                            NavigationLink(value: entry) {
+                                journalRow(entry: entry)
                             }
                         }
-                        .listRowBackground(Color.cardSurface)
                     }
-                    .scrollContentBackground(.hidden)
-                    .searchable(text: $searchText, prompt: "Search entries")
-                } else {
-                    ProgressView()
                 }
+                .listRowBackground(Color.cardSurface)
             }
+            .scrollContentBackground(.hidden)
+            .searchable(text: $searchText, prompt: "Search entries")
             .navigationTitle("Journal")
             .cosmicBackground()
             .navigationDestination(for: DailyEntry.self) { entry in
@@ -60,12 +52,6 @@ struct JournalView: View {
             .navigationDestination(for: EmptyDayDate.self) { destination in
                 JournalEntryDetailView(date: destination.date)
             }
-        }
-        .onAppear {
-            if viewModel == nil {
-                viewModel = JournalViewModel(modelContext: modelContext)
-            }
-            viewModel?.loadEntries()
         }
     }
 

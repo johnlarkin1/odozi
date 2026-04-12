@@ -245,6 +245,7 @@
 		A7CB3A113B24BD5EEFA5ED6F /* WelcomeCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */; };
 		A7F3B21C9E4D8A0F12345678 /* MindCardsGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = A7F3B21C9E4D8A0F87654321 /* MindCardsGrid.swift */; };
 		A85EC80D0D7463CE12251E51 /* GuidedPromptDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = C9A1BD63A880ED11BE9E27A7 /* GuidedPromptDemo.swift */; };
+		EPE1111111111111111111101 /* EditablePastEntriesDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EPE1111111111111111111102 /* EditablePastEntriesDemo.swift */; };
 		A94CC4B44A3E708D97B183D5 /* ReviewMoodCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 97569FD9C2589433BE90F633 /* ReviewMoodCard.swift */; };
 		AA0000000000000000000005 /* LocationCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000001 /* LocationCard.swift */; };
 		AA0000000000000000000006 /* LocationCaptureMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA0000000000000000000002 /* LocationCaptureMode.swift */; };
@@ -683,6 +684,7 @@
 		C51BECC1B151111FA47F9F9C /* TodayGlanceView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TodayGlanceView.swift; sourceTree = "<group>"; };
 		C635C49F97ED57570F72EFF6 /* MainTabView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MainTabView.swift; sourceTree = "<group>"; };
 		C9A1BD63A880ED11BE9E27A7 /* GuidedPromptDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = GuidedPromptDemo.swift; sourceTree = "<group>"; };
+		EPE1111111111111111111102 /* EditablePastEntriesDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = EditablePastEntriesDemo.swift; sourceTree = "<group>"; };
 		C9A739CE8449DECE5322E83B /* OnboardingNavigationBar.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = OnboardingNavigationBar.swift; sourceTree = "<group>"; };
 		CCAB32F494AE54D990FEDD6D /* WelcomeCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WelcomeCard.swift; sourceTree = "<group>"; };
 		CEB6A59374B91D8A0881333F /* MacMainView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = MacMainView.swift; sourceTree = "<group>"; };
@@ -1355,6 +1357,7 @@
 			isa = PBXGroup;
 			children = (
 				C39F1B6D1BC805FABFA2F980 /* FeatureDemoBase.swift */,
+				EPE1111111111111111111102 /* EditablePastEntriesDemo.swift */,
 				2C87191FFF15D31AEA9D54DC /* FullWalkthroughDemo.swift */,
 				C9A1BD63A880ED11BE9E27A7 /* GuidedPromptDemo.swift */,
 				93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */,
@@ -1945,6 +1948,7 @@
 				AA00000000000001SCREEN01 /* AppStoreScreenshotTests.swift in Sources */,
 				AA00000000000003SCREEN03 /* SnapshotHelper.swift in Sources */,
 				E193D6E3D8F2790DBB698A92 /* FeatureDemoBase.swift in Sources */,
+				EPE1111111111111111111101 /* EditablePastEntriesDemo.swift in Sources */,
 				1115D60DD17B21F0DB722467 /* FullWalkthroughDemo.swift in Sources */,
 				A85EC80D0D7463CE12251E51 /* GuidedPromptDemo.swift in Sources */,
 				03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */,

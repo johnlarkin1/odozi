@@ -6,26 +6,26 @@ import SwiftUI
 /// context-aware CTA that opens `GuidedPromptFlowView` to add/edit journal
 /// content for the day.
 struct JournalEntryDetailView: View {
-    private let entry: DailyEntry?
     private let placeholderDate: Date?
 
     @Environment(\.modelContext) private var modelContext
+    @State private var resolvedEntry: DailyEntry?
     @State private var showingGuidedFlow = false
 
     init(entry: DailyEntry) {
-        self.entry = entry
+        _resolvedEntry = State(initialValue: entry)
         placeholderDate = nil
     }
 
     /// Use this initializer for days that have no `DailyEntry` yet — the view
     /// renders a placeholder body and a "Start entry" CTA.
     init(date: Date) {
-        entry = nil
+        _resolvedEntry = State(initialValue: nil)
         placeholderDate = date
     }
 
     private var displayDate: Date {
-        entry?.date ?? placeholderDate ?? Date()
+        resolvedEntry?.date ?? placeholderDate ?? Date()
     }
 
     var body: some View {
@@ -35,7 +35,7 @@ struct JournalEntryDetailView: View {
 
                 editCTA
 
-                if let entry = entry {
+                if let entry = resolvedEntry {
                     entryBody(entry)
                 } else {
                     emptyPlaceholder
@@ -47,7 +47,7 @@ struct JournalEntryDetailView: View {
         }
         .cosmicBackground()
         #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
+        .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(macOS)
         .sheet(isPresented: $showingGuidedFlow) {
@@ -57,9 +57,23 @@ struct JournalEntryDetailView: View {
         }
         #else
         .fullScreenCover(isPresented: $showingGuidedFlow) {
-                    GuidedPromptFlowView(entryDate: displayDate)
-                }
+            GuidedPromptFlowView(entryDate: displayDate)
+        }
         #endif
+        .onChange(of: showingGuidedFlow) { _, newValue in
+            if !newValue { reloadEntry() }
+        }
+    }
+
+    private func reloadEntry() {
+        let day = Calendar.current.startOfDay(for: displayDate)
+        var descriptor = FetchDescriptor<DailyEntry>(
+            predicate: #Predicate<DailyEntry> { entry in
+                entry.date == day
+            }
+        )
+        descriptor.fetchLimit = 1
+        resolvedEntry = (try? modelContext.fetch(descriptor))?.first
     }
 
     // MARK: - Header + Badges
@@ -79,7 +93,7 @@ struct JournalEntryDetailView: View {
 
     @ViewBuilder
     private var sourceBadges: some View {
-        if let entry = entry {
+        if let entry = resolvedEntry {
             HStack(spacing: 8) {
                 if entry.hasUserSubmitted {
                     badge(
@@ -96,9 +110,11 @@ struct JournalEntryDetailView: View {
                     )
                 }
                 if entry.hasUserSubmitted && !entry.wasCompletedOnDay {
-                    Text("Added later")
-                        .font(.caption2)
-                        .foregroundStyle(.secondary)
+                    badge(
+                        label: "Added later",
+                        systemImage: "clock",
+                        tint: .gray
+                    )
                 }
             }
             .padding(.top, 2)
@@ -160,14 +176,14 @@ struct JournalEntryDetailView: View {
     }
 
     private var ctaLabel: String {
-        guard let entry = entry else { return "Start entry" }
+        guard let entry = resolvedEntry else { return "Start entry" }
         if entry.hasUserSubmitted { return "Edit entry" }
         if entry.hasAutoData { return "Add journal details" }
         return "Start entry"
     }
 
     private var ctaIcon: String {
-        guard let entry = entry else { return "square.and.pencil" }
+        guard let entry = resolvedEntry else { return "square.and.pencil" }
         if entry.hasUserSubmitted { return "pencil" }
         return "square.and.pencil"
     }
@@ -182,7 +198,7 @@ struct JournalEntryDetailView: View {
             Text("No data captured for this day")
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-            Text("Tap \u{201C}Start entry\u{201D} to journal how this day went.")
+            Text("Tap \"Start entry\" to journal how this day went.")
                 .font(.caption)
                 .foregroundStyle(.secondary.opacity(0.7))
                 .multilineTextAlignment(.center)
