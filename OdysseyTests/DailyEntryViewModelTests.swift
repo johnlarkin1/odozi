@@ -201,10 +201,10 @@ final class DailyEntryViewModelTests: XCTestCase {
     }
 
     func testCurrentStreakRequiresPromptData() throws {
-        // Entry for today with no prompt data
+        // Entry for today with zero mood/sleep/drinks and no text → no prompt data
         let emptyEntry = DailyEntry(
             date: Calendar.current.startOfDay(for: Date()),
-            feeling: 5,
+            feeling: 0,
             singleWordFeeling: "",
             journalEntry: ""
         )
@@ -213,5 +213,20 @@ final class DailyEntryViewModelTests: XCTestCase {
 
         let vm = DailyEntryViewModel(modelContext: context)
         XCTAssertEqual(vm.currentStreak, 0)
+    }
+
+    func testCurrentStreakCountsMoodOnlyEntry() throws {
+        // A mood-only entry (no text) still counts as prompt data after #152
+        let moodOnlyEntry = DailyEntry(
+            date: Calendar.current.startOfDay(for: Date()),
+            feeling: 5,
+            singleWordFeeling: "",
+            journalEntry: ""
+        )
+        context.insert(moodOnlyEntry)
+        try context.save()
+
+        let vm = DailyEntryViewModel(modelContext: context)
+        XCTAssertEqual(vm.currentStreak, 1)
     }
 }

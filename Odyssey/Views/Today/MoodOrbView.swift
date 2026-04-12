@@ -76,15 +76,7 @@ struct MoodOrbView: View {
     // MARK: - Completed State
 
     private func completedState(entry: DailyEntry) -> some View {
-        // Prefer the user-picked feeling color from the Feeling step; fall back
-        // to the mood-based gradient when the user hasn't chosen one.
-        // #FFFFFF is the sentinel for "no color selected".
-        let orbColor: Color = {
-            if entry.feelingColorHex != "#FFFFFF" {
-                return entry.feelingColor
-            }
-            return Color.moodGradient(for: entry.feeling)
-        }()
+        let orbColor: Color = entry.effectiveFeelingColor
 
         return VStack(spacing: 16) {
             Button {

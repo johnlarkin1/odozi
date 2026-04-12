@@ -142,8 +142,6 @@ final class GuidedPromptViewModel {
             }
 
             // Only mark as submitted if the user actually provided content.
-            // hasPromptData checks text fields (journal/gratitude/win/tension/singleWordFeeling)
-            // which are the signal for "user entered something meaningful."
             if entry.hasPromptData {
                 entry.hasUserSubmitted = true
                 if entry.firstSubmittedAt == nil {

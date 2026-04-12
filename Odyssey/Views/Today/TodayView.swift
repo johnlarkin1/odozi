@@ -287,13 +287,7 @@ struct TodayView: View {
             guard let entry = todayEntry, viewModel?.hasSubmittedData == true else {
                 return Color.gray
             }
-            // Prefer the color the user picked in the Feeling step; fall back to
-            // the mood-based gradient when they haven't picked one (#FFFFFF is
-            // the sentinel for "no color selected").
-            if entry.feelingColorHex != "#FFFFFF" {
-                return entry.feelingColor
-            }
-            return Color.moodGradient(for: entry.feeling)
+            return entry.effectiveFeelingColor
         }()
 
         return LinearGradient(
