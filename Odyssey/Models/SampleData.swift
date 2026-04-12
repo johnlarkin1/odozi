@@ -56,10 +56,10 @@ import Foundation
                     city: loc.city,
                     state: loc.state,
                     country: "US",
-                    stepCount: 4_000 + (i * 347) % 10_000,
-                    walkingDistanceMeters: 3_000 + Double((i * 291) % 8_000),
+                    stepCount: 4000 + (i * 347) % 10000,
+                    walkingDistanceMeters: 3000 + Double((i * 291) % 8000),
                     sleepHours: 6.5 + Double(i % 6) * 0.4,
-                    screenTimeSeconds: Double(3_600 + (i * 619) % 18_000),
+                    screenTimeSeconds: Double(3600 + (i * 619) % 18000),
                     pickups: 30 + (i * 7) % 90
                 )
 
@@ -123,7 +123,7 @@ import Foundation
             // 27 — dog day
             "March in NYC, what a dream. Took these pics of Nali",
             "Made real progress on the thing I've been putting off.",
-            "Finished the book I started last month. Already miss the characters.",
+            "Finished the book I started last month. Already miss the characters."
         ]
 
         private static let gratitudes: [String] = [
@@ -156,7 +156,7 @@ import Foundation
             "Yoga first thing",
             "Dachshunds in jackets",
             "Small steps forward",
-            "Great last pages",
+            "Great last pages"
         ]
 
         private static let wins: [String] = [
@@ -189,7 +189,7 @@ import Foundation
             "Made the 7am class",
             "Gave a real compliment",
             "Started the thing",
-            "Finished the book",
+            "Finished the book"
         ]
 
         private static let tensions: [String] = [
@@ -198,7 +198,7 @@ import Foundation
             "", "", "", "Low energy", "",
             "", "", "Can't shake that meeting", "", "",
             "Overwhelmed by the todo list", "", "", "Hard talk ahead", "",
-            "", "", "", "", "",
+            "", "", "", "", ""
         ]
 
         private static let singleWords: [String] = [
@@ -207,13 +207,13 @@ import Foundation
             "steady", "peaceful", "proud", "weary", "smitten",
             "productive", "connected", "strong", "relaxed", "content",
             "supported", "inspired", "joyful", "honest", "invigorated",
-            "reflective", "centered", "tickled", "motivated", "satisfied",
+            "reflective", "centered", "tickled", "motivated", "satisfied"
         ]
 
         private static let sleepQualities: [Int] = [
             8, 7, 6, 7, 8, 7, 8, 5, 8, 6,
             7, 8, 7, 4, 8, 7, 7, 8, 7, 7,
-            6, 7, 8, 6, 7, 8, 8, 8, 7, 8,
+            6, 7, 8, 6, 7, 8, 8, 8, 7, 8
         ]
 
         // MARK: - Location
@@ -229,7 +229,7 @@ import Foundation
             (41.8781, -87.6298, "Chicago", "IL"), // day 9
             (34.0522, -118.2437, "Los Angeles", "CA"), // day 17
             (42.3601, -71.0589, "Boston", "MA"), // day 23
-            (42.3601, -71.0589, "Boston", "MA"), // day 24
+            (42.3601, -71.0589, "Boston", "MA") // day 24
         ]
 
         /// NYC spots spread across all 5 boroughs. Indexed by `i % count`.
@@ -265,7 +265,7 @@ import Foundation
             (40.6580, -73.9928), // 20 Green-Wood Cemetery — Brooklyn
             (40.8976, -73.8859), // 21 Van Cortlandt Park — Bronx
             (40.7799, -73.9235), // 22 Astoria Park — Queens             ← day_23 🐕
-            (40.6437, -74.0731), // 23 St. George — Staten Island
+            (40.6437, -74.0731) // 23 St. George — Staten Island
         ]
 
         private static func location(for i: Int) -> (latitude: Double, longitude: Double, city: String, state: String) {
@@ -275,8 +275,8 @@ import Foundation
             }
             let spot = nycSpots[i % nycSpots.count]
             // Tiny deterministic jitter so pins don't stack exactly.
-            let jitterLat = Double((i * 13) % 41 - 20) / 50_000.0
-            let jitterLng = Double((i * 17) % 37 - 18) / 50_000.0
+            let jitterLat = Double((i * 13) % 41 - 20) / 50000.0
+            let jitterLng = Double((i * 17) % 37 - 18) / 50000.0
             return (spot.lat + jitterLat, spot.lng + jitterLng, "New York", "NY")
         }
 
@@ -333,9 +333,7 @@ import Foundation
             /// directory enumeration on arbitrary host paths, so we cannot load
             /// them via `#filePath` at runtime — Bundle.main is the only reliable
             /// path that survives the sandbox.
-            private static let sampleAssetsDirectory: URL = {
-                Bundle.main.bundleURL.appendingPathComponent("SampleAssets", isDirectory: true)
-            }()
+            private static let sampleAssetsDirectory: URL = Bundle.main.bundleURL.appendingPathComponent("SampleAssets", isDirectory: true)
 
             /// `SampleAssets/day_NN/` for a given daysAgo value.
             private static func sampleDayDirectory(forDaysAgo daysAgo: Int) -> URL {
@@ -397,7 +395,7 @@ import Foundation
                           let uiImage = UIImage(data: rawData)
                     else { continue }
 
-                    let full = resizedJPEG(image: uiImage, maxDimension: 1_200) ?? rawData
+                    let full = resizedJPEG(image: uiImage, maxDimension: 1200) ?? rawData
                     fullImages.append(full)
 
                     if thumb == nil {
@@ -410,11 +408,11 @@ import Foundation
             }
 
             private static func resizedJPEG(image: UIImage, maxDimension: CGFloat) -> Data? {
-                let w = image.size.width
-                let h = image.size.height
-                guard w > 0, h > 0 else { return nil }
-                let scale = min(maxDimension / w, maxDimension / h, 1.0)
-                let newSize = CGSize(width: w * scale, height: h * scale)
+                let width = image.size.width
+                let height = image.size.height
+                guard width > 0, height > 0 else { return nil }
+                let scale = min(maxDimension / width, maxDimension / height, 1.0)
+                let newSize = CGSize(width: width * scale, height: height * scale)
                 let renderer = UIGraphicsImageRenderer(size: newSize)
                 let rendered = renderer.image { _ in
                     image.draw(in: CGRect(origin: .zero, size: newSize))

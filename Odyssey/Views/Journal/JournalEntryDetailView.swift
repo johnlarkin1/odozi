@@ -47,7 +47,7 @@ struct JournalEntryDetailView: View {
         }
         .cosmicBackground()
         #if os(iOS)
-        .navigationBarTitleDisplayMode(.inline)
+            .navigationBarTitleDisplayMode(.inline)
         #endif
         #if os(macOS)
         .sheet(isPresented: $showingGuidedFlow) {
@@ -57,12 +57,12 @@ struct JournalEntryDetailView: View {
         }
         #else
         .fullScreenCover(isPresented: $showingGuidedFlow) {
-            GuidedPromptFlowView(entryDate: displayDate)
-        }
+                    GuidedPromptFlowView(entryDate: displayDate)
+                }
         #endif
-        .onChange(of: showingGuidedFlow) { _, newValue in
-            if !newValue { reloadEntry() }
-        }
+                .onChange(of: showingGuidedFlow) { _, newValue in
+                    if !newValue { reloadEntry() }
+                }
     }
 
     private func reloadEntry() {
