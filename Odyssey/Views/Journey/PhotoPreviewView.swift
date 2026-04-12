@@ -18,8 +18,8 @@ struct PhotoPreviewView: View {
 
         var id: String {
             switch self {
-            case .asset(let asset): asset.localIdentifier
-            case .data(let data): "\(data.hashValue)"
+            case let .asset(asset): asset.localIdentifier
+            case let .data(data): "\(data.hashValue)"
             }
         }
     }
@@ -107,9 +107,9 @@ struct PhotoPreviewView: View {
         }
         .task {
             switch source {
-            case .asset(let asset):
+            case let .asset(asset):
                 image = await PhotoLibraryService.shared.loadFullImage(for: asset)
-            case .data(let data):
+            case let .data(data):
                 image = UIImage(data: data)
             }
         }

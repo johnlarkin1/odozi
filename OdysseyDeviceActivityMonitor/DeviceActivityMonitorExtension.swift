@@ -5,7 +5,6 @@ import os
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "DeviceActivityMonitor")
 
 class DeviceActivityMonitorExtension: DeviceActivityMonitor {
-
     private let suiteName = "group.com.johnlarkin.Odyssey"
 
     private var suite: UserDefaults? {

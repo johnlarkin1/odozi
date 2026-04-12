@@ -275,7 +275,7 @@ final class AuthManager {
                 controller.performRequests()
             }
 
-            self.refreshDelegate = nil
+            refreshDelegate = nil
 
             guard let credential = authorization.credential as? ASAuthorizationAppleIDCredential,
                   let tokenData = credential.identityToken,
@@ -290,7 +290,7 @@ final class AuthManager {
 
             return token
         } catch {
-            self.refreshDelegate = nil
+            refreshDelegate = nil
             // ASAuthorizationError.canceled means the user dismissed — not a real error
             if (error as? ASAuthorizationError)?.code == .canceled {
                 logger.info("User cancelled token refresh")

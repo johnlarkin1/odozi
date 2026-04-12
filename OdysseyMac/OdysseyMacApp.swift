@@ -90,7 +90,6 @@ struct OdysseyMacApp: App {
             }
         }
     }
-
 }
 
 private struct MacDataStoreErrorView: View {
