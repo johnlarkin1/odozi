@@ -4,7 +4,6 @@
 <dict>
 	<key>UIBackgroundModes</key>
 	<array>
-		<string>location</string>
 		<string>fetch</string>
 		<string>processing</string>
 	</array>
@@ -28,8 +27,6 @@
 	<string>Odyssey reads your step count, walking distance, sleep data, workout sessions, and heart rate to enrich your daily journal entries with health and fitness insights.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Odyssey does not write any health data, but this permission is required by the HealthKit framework.</string>
-	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-	<string>Odyssey captures your location once daily to add context to your journal entries and show where your journey takes you.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Odyssey captures your location to add context to your journal entries.</string>
 	<key>NSPhotoLibraryUsageDescription</key>

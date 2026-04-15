@@ -31,7 +31,6 @@ struct OnboardingFlowView: View {
                     step: viewModel.currentStep,
                     isFirstStep: viewModel.isFirstStep,
                     onBack: { viewModel.goToPrevious() },
-                    onSkip: { viewModel.skip() },
                     onNext: { viewModel.goToNext() },
                     onEnable: { handleEnable() }
                 )

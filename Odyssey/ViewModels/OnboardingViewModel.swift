@@ -46,10 +46,6 @@ final class OnboardingViewModel {
         }
     }
 
-    func skip() {
-        goToNext()
-    }
-
     // MARK: - Notifications
 
     func requestNotificationAccess() {
