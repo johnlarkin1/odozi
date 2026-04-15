@@ -6,6 +6,7 @@ final class NavigationState {
 
     var selectedTab: Tab = .today
     var showGuidedPrompt = false
+    var showWeeklyReports = false
 
     enum Tab: Int {
         case today

@@ -118,6 +118,8 @@
 		4ECCE2DC9ADB7BDAB7B2E6FB /* TensionPromptCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 85AA8AAEB7A435084C23ECD6 /* TensionPromptCard.swift */; };
 		4EE5CD05CC5E05669C26E8E7 /* BackupPromptModal.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA11E2F3A4B5C6D7E8F9A0B1 /* BackupPromptModal.swift */; };
 		4EE8121C4FEA589046955598 /* InsightsDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26320E40541186488A825EA6 /* InsightsDashboardView.swift */; };
+		DDE305F467F345A2B0C645FA /* WeeklyReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4DB694E65446F8B0896FB8 /* WeeklyReportsView.swift */; };
+		9F2A07C054D74384A4C349AB /* WeeklyReportsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E4DB694E65446F8B0896FB8 /* WeeklyReportsView.swift */; };
 		4FFDF3B41ADF4918BDB80F2F /* LottieView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FAFBC472B49F70B0018504E /* LottieView.swift */; };
 		50F88DE0F085B5AF37AFAF0E /* ReviewColorsCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 25A7F206495740519BC1F73D /* ReviewColorsCard.swift */; };
 		510EE519095B428DC77F5117 /* InsightsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 292434A69490374EABCAAC1B /* InsightsViewModel.swift */; };
@@ -300,6 +302,8 @@
 		BD906E4887AFC93D0DEE93A2 /* AchievementService.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3FD9D3DFC558B342DB2DB00 /* AchievementService.swift */; };
 		BED82C002853A9359A931665 /* JournalPromptCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D5F4E571066024E60EE64E5 /* JournalPromptCard.swift */; };
 		BFEDFD751FFA4936B46EF79B /* NavigationState.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5988BAF118243F29DCA9AE4 /* NavigationState.swift */; };
+		893A461E3BB34A25B425F040 /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A57439FD66476F83F9ED5F /* DeepLinkRouter.swift */; };
+		C4B2485E2FBA4503A884052A /* DeepLinkRouter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 19A57439FD66476F83F9ED5F /* DeepLinkRouter.swift */; };
 		C188003CC6B708D133640E98 /* ColorPaletteView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6E921B1A796352D0DC2F16E /* ColorPaletteView.swift */; };
 		C24FBCB81717BA4A7065C30E /* OdysseyWidgetBundle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 376E839A270A1C14F40E4D57 /* OdysseyWidgetBundle.swift */; };
 		C331762F3E3996974A75CA73 /* FeelingPromptCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5357AA89DC0B9F0A1AE8A7CF /* FeelingPromptCard.swift */; };
@@ -702,6 +706,8 @@
 		D3F4701C9B4B5B7D8B94B3B5 /* WidgetDataAccessTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WidgetDataAccessTests.swift; sourceTree = "<group>"; };
 		D4E5F6A7B8C9D0E1F2A3B4C5 /* JourneyGlobeView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JourneyGlobeView.swift; sourceTree = "<group>"; };
 		D5988BAF118243F29DCA9AE4 /* NavigationState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationState.swift; sourceTree = "<group>"; };
+		19A57439FD66476F83F9ED5F /* DeepLinkRouter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkRouter.swift; sourceTree = "<group>"; };
+		2E4DB694E65446F8B0896FB8 /* WeeklyReportsView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = WeeklyReportsView.swift; sourceTree = "<group>"; };
 		D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WeeklyDigestServiceTests.swift; sourceTree = "<group>"; };
 		AABB00112233445500010002 /* HealthKitIntensityScoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitIntensityScoreTests.swift; sourceTree = "<group>"; };
 		AA22334455667788AABB0002 /* SleepScoreServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SleepScoreServiceTests.swift; sourceTree = "<group>"; };
@@ -905,6 +911,7 @@
 			isa = PBXGroup;
 			children = (
 				D5988BAF118243F29DCA9AE4 /* NavigationState.swift */,
+				19A57439FD66476F83F9ED5F /* DeepLinkRouter.swift */,
 			);
 			path = Navigation;
 			sourceTree = "<group>";
@@ -987,6 +994,7 @@
 				450F969F9ADE627865001E13 /* Tabs */,
 				00F22F1159A2FBB03079A51C /* DetailViews */,
 				117C9B4A6C2870C545213600 /* SleepArchitectureView.swift */,
+				2E4DB694E65446F8B0896FB8 /* WeeklyReportsView.swift */,
 			);
 			path = Insights;
 			sourceTree = "<group>";
@@ -1755,6 +1763,7 @@
 				CA5EC237DFA24A80B7D448AB /* WeeklyDigestNotificationManager.swift in Sources */,
 				D6FB64013CA14E9AB702C5AD /* WeeklyDigestSettingsView.swift in Sources */,
 				BFEDFD751FFA4936B46EF79B /* NavigationState.swift in Sources */,
+				893A461E3BB34A25B425F040 /* DeepLinkRouter.swift in Sources */,
 				AB124E2EFDF84CF4B23ADDC7 /* WeeklyDigestCardView.swift in Sources */,
 				5FAFBC162B49E1A80018504E /* Odyssey.xcdatamodeld in Sources */,
 				5F96AA802B4A0E7700999B84 /* OdysseyAppDelegate.swift in Sources */,
@@ -1828,6 +1837,7 @@
 				E51C5D58A81FAA85D118A4C6 /* AnimatedCounter.swift in Sources */,
 				403B0A5F4F972B5C9E96BAD6 /* ShareableCardRenderer.swift in Sources */,
 				CF3339ADAB86B293A60EAD64 /* InsightsDashboardView.swift in Sources */,
+				9F2A07C054D74384A4C349AB /* WeeklyReportsView.swift in Sources */,
 				0814E118C935327B73A83396 /* MoodTrendView.swift in Sources */,
 				FA6C21484F83845F417763B0 /* CalendarHeatmapView.swift in Sources */,
 				AB8D49FB59B1F5B518D76BBD /* MapVisualizationView.swift in Sources */,
@@ -2028,6 +2038,7 @@
 				A4D697EA7A33F8F377F9A068 /* WeeklyDigestNotificationManager.swift in Sources */,
 				ED00C78B25D40C6DC8D26438 /* WeeklyDigestSettingsView.swift in Sources */,
 				EA9511575612D2363A7C8B79 /* NavigationState.swift in Sources */,
+				C4B2485E2FBA4503A884052A /* DeepLinkRouter.swift in Sources */,
 				F97C931D0605D39F76C3C62E /* WeeklyDigestCardView.swift in Sources */,
 				4FFDF3B41ADF4918BDB80F2F /* LottieView.swift in Sources */,
 				30F7CC5A95EA5AA10E72B9EB /* DailyEntryViewModel.swift in Sources */,
@@ -2086,6 +2097,7 @@
 				9606C43B3BAD7C655701F312 /* AnimatedCounter.swift in Sources */,
 				C4661D4E1624D9E41DBBC4E4 /* ShareableCardRenderer.swift in Sources */,
 				4EE8121C4FEA589046955598 /* InsightsDashboardView.swift in Sources */,
+				DDE305F467F345A2B0C645FA /* WeeklyReportsView.swift in Sources */,
 				E9EDC8D6923B740D54033F45 /* MoodTrendView.swift in Sources */,
 				871BC02728070D36A359B4ED /* CalendarHeatmapView.swift in Sources */,
 				07C8AE34B654AE9EC33777AD /* MapVisualizationView.swift in Sources */,

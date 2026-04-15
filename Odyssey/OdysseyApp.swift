@@ -86,8 +86,7 @@ struct OdysseyApp: App {
                                     .environment(\.colorScheme, .dark)
                             }
                             .onOpenURL { url in
-                                guard url.scheme == "odyssey", url.host == "guided-prompt" else { return }
-                                NotificationCenter.default.post(name: .openGuidedPrompt, object: nil)
+                                _ = DeepLinkRouter.handle(url)
                             }
                             .onReceive(NotificationCenter.default.publisher(for: .didSaveFirstEntry)) { _ in
                                 NotificationService.cancelTodaysPendingReminder()

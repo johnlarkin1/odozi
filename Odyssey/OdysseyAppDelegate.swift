@@ -44,14 +44,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         let categoryIdentifier = response.notification.request.content.categoryIdentifier
 
         if categoryIdentifier == WeeklyDigestNotificationManager.categoryIdentifier {
-            switch response.actionIdentifier {
-            case "START_ENTRY":
-                NavigationState.shared.selectedTab = .today
-                NavigationState.shared.showGuidedPrompt = true
-            case "OPEN_INSIGHTS", UNNotificationDefaultActionIdentifier:
-                NavigationState.shared.selectedTab = .insights
-            default:
-                break
+            Task { @MainActor in
+                switch response.actionIdentifier {
+                case "START_ENTRY":
+                    DeepLinkRouter.navigate(to: .guidedPrompt)
+                case "OPEN_INSIGHTS", UNNotificationDefaultActionIdentifier:
+                    DeepLinkRouter.navigate(to: .weeklyReport)
+                default:
+                    break
+                }
             }
         }
 
