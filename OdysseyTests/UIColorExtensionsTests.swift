@@ -92,4 +92,41 @@ final class UIColorExtensionsTests: XCTestCase {
         let result = color.toHexString()
         XCTAssertEqual(result.lowercased(), hex.lowercased())
     }
+
+    // MARK: - Alpha (8-digit) support
+
+    func testFromHexStringWithAlpha() {
+        let color = UIColor.fromHexString("#FF000080")
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.getRed(&r, green: &g, blue: &b, alpha: &a)
+        XCTAssertEqual(r, 1.0, accuracy: 0.01)
+        XCTAssertEqual(g, 0.0, accuracy: 0.01)
+        XCTAssertEqual(b, 0.0, accuracy: 0.01)
+        XCTAssertEqual(a, 128.0 / 255.0, accuracy: 0.01)
+    }
+
+    func testToHexStringEmitsAlphaWhenNotOpaque() {
+        let color = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 128.0 / 255.0)
+        XCTAssertEqual(color.toHexString().lowercased(), "#ff000080")
+    }
+
+    func testToHexStringOmitsAlphaWhenOpaque() {
+        let color = UIColor(red: 1.0, green: 0.0, blue: 0.0, alpha: 1.0)
+        XCTAssertEqual(color.toHexString().lowercased(), "#ff0000")
+    }
+
+    func testRoundTripWithAlpha() {
+        let hex = "#80c0ff40"
+        let color = UIColor.fromHexString(hex)
+        XCTAssertEqual(color.toHexString().lowercased(), hex.lowercased())
+    }
+
+    func testFromHexStringInvalidLengthSevenReturnsGray() {
+        let color = UIColor.fromHexString("#FFFFFFF")
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        color.getRed(&r, green: &g, blue: &b, alpha: &a)
+        XCTAssertEqual(r, 0.5, accuracy: 0.01)
+        XCTAssertEqual(g, 0.5, accuracy: 0.01)
+        XCTAssertEqual(b, 0.5, accuracy: 0.01)
+    }
 }
