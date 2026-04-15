@@ -31,6 +31,17 @@ struct GuidedPromptFlowView: View {
                                     removal: .move(edge: .leading).combined(with: .opacity)
                                 ))
                                 .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
+
+                            PromptNavigationBar(
+                                isFirstStep: vm.isFirstStep,
+                                isLastStep: vm.isLastStep,
+                                onBack: { vm.goToPrevious() },
+                                onSkip: { vm.skip() },
+                                onNext: { vm.goToNext() },
+                                onSubmit: { vm.submit() }
+                            )
+                            .padding(.horizontal, 16)
+                            .padding(.bottom, 8)
                         #else
                             TabView(selection: Binding(
                                 get: { vm.currentStep },
@@ -42,21 +53,25 @@ struct GuidedPromptFlowView: View {
                                 }
                             }
                             .tabViewStyle(.page(indexDisplayMode: .never))
-                            .ignoresSafeArea(.keyboard)
                         #endif
-
-                        PromptNavigationBar(
-                            isFirstStep: vm.isFirstStep,
-                            isLastStep: vm.isLastStep,
-                            onBack: { vm.goToPrevious() },
-                            onSkip: { vm.skip() },
-                            onNext: { vm.goToNext() },
-                            onSubmit: { vm.submit() }
-                        )
-                        .padding(.horizontal, 16)
-                        .padding(.bottom, 8)
                     }
+                    .ignoresSafeArea(.keyboard)
                 }
+                #if !os(macOS)
+                .safeAreaInset(edge: .bottom, spacing: 0) {
+                    PromptNavigationBar(
+                        isFirstStep: vm.isFirstStep,
+                        isLastStep: vm.isLastStep,
+                        onBack: { vm.goToPrevious() },
+                        onSkip: { vm.skip() },
+                        onNext: { vm.goToNext() },
+                        onSubmit: { vm.submit() }
+                    )
+                    .padding(.horizontal, 16)
+                    .padding(.bottom, 8)
+                    .background(Color.black)
+                }
+                #endif
                 .overlay(alignment: .topTrailing) {
                     Button { dismiss() } label: {
                         Image(systemName: "xmark")
