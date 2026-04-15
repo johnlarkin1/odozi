@@ -4,7 +4,6 @@ struct OnboardingNavigationBar: View {
     let step: OnboardingStep
     let isFirstStep: Bool
     let onBack: () -> Void
-    let onSkip: () -> Void
     let onNext: () -> Void
     let onEnable: () -> Void
 
@@ -23,22 +22,11 @@ struct OnboardingNavigationBar: View {
 
             Spacer()
 
-            // Skip button (only on permission steps)
-            if step.isPermissionStep {
-                Button("Skip") {
-                    onSkip()
-                }
-                .font(.body)
-                .foregroundStyle(.secondary)
-            }
-
-            Spacer()
-
-            // Enable / Continue button
+            // Continue button
             if step.isPermissionStep {
                 Button(action: onEnable) {
                     HStack(spacing: 4) {
-                        Text(enableButtonTitle)
+                        Text("Continue")
                         Image(systemName: "chevron.right")
                     }
                     .font(.body.weight(.medium))
@@ -64,14 +52,5 @@ struct OnboardingNavigationBar: View {
             }
         }
         .padding(.vertical, 12)
-    }
-
-    private var enableButtonTitle: String {
-        #if targetEnvironment(simulator)
-            if step == .screenTime {
-                return "Continue"
-            }
-        #endif
-        return "Enable"
     }
 }
