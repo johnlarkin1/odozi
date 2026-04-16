@@ -5,6 +5,8 @@ struct InsightsDashboardView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @State private var viewModel: InsightsViewModel?
+    @State private var showWeeklyReports = false
+    @Bindable private var navigationState = NavigationState.shared
 
     var body: some View {
         NavigationStack {
@@ -17,6 +19,27 @@ struct InsightsDashboardView: View {
             }
             .navigationTitle("Insights")
             .cosmicBackground()
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    NavigationLink {
+                        WeeklyReportsView()
+                    } label: {
+                        Image(systemName: "chart.bar.doc.horizontal")
+                            .foregroundStyle(Color.accentAmber)
+                    }
+                    .accessibilityLabel("Weekly Reports")
+                    .accessibilityHint("View past weekly digest summaries")
+                }
+            }
+            .navigationDestination(isPresented: $showWeeklyReports) {
+                WeeklyReportsView()
+            }
+        }
+        .onChange(of: navigationState.showWeeklyReports) { _, newValue in
+            if newValue {
+                showWeeklyReports = true
+                navigationState.showWeeklyReports = false
+            }
         }
         .onAppear {
             if viewModel == nil {
