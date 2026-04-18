@@ -6,7 +6,7 @@
  * Prerequisites:
  *   brew install ffmpeg
  *
- * Inputs (place in public/unfurls/):
+ * Inputs (place in public/unfurls/odozi/):
  *   main_input_fast.mov — 3-5 sec screen recording at 2400x1260 (Retina 2x, preferred)
  *   main_input.mov      — fallback if main_input_fast.mov not found
  *   main_input.png      — static screenshot at 2400x1260
@@ -27,7 +27,7 @@ import { fileURLToPath } from "url";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-const UNFURLS_DIR = path.join(__dirname, "..", "public", "unfurls");
+const UNFURLS_DIR = path.join(__dirname, "..", "public", "unfurls", "odozi");
 
 const INPUTS = {
   mov: path.join(UNFURLS_DIR, "main_input.mov"),
@@ -43,8 +43,8 @@ const OUTPUTS = {
   webp: path.join(UNFURLS_DIR, "main-static.webp"),
 };
 
-const PALETTE_PATH = "/tmp/odyssey-unfurl-palette.png";
-const SDR_INTERMEDIATE = "/tmp/odyssey-unfurl-sdr.mp4";
+const PALETTE_PATH = "/tmp/odozi-unfurl-palette.png";
+const SDR_INTERMEDIATE = "/tmp/odozi-unfurl-sdr.mp4";
 
 function run(cmd, args, label) {
   console.log(`\n--- ${label} ---`);

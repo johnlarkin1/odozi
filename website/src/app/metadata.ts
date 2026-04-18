@@ -5,9 +5,9 @@ export type { Metadata };
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL || "https://odozi.app";
 
 const UNFURL_PATHS = {
-  gif: "/unfurls/main.gif",
-  mp4: "/unfurls/main.mp4",
-  static: "/unfurls/main-static.png",
+  gif: "/unfurls/odozi/main.gif",
+  mp4: "/unfurls/odozi/main.mp4",
+  static: "/unfurls/odozi/main-static.png",
 };
 
 export function getPlatformSpecificImage(userAgent?: string): {
