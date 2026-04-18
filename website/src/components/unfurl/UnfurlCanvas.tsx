@@ -27,6 +27,11 @@ const PARTICLE_COLORS = [
 // Boat travel: sails slowly left-to-right across the full canvas over ~12 seconds
 const BOAT_CYCLE_DURATION = 6;
 
+// Time (seconds into the cycle) at which the boat is horizontally centered.
+// smoothStep(0.5) = 0.5, and boatX = -80 + eased * (W + 160), so cycleT = 0.5
+// puts boatX at 600 = W/2. Used by the `?static=1` capture mode on /unfurl.
+const FROZEN_TIME = BOAT_CYCLE_DURATION / 2;
+
 interface Star {
   x: number;
   y: number;
@@ -554,11 +559,19 @@ export function UnfurlCanvas() {
     starsRef.current = createStars();
     particlesRef.current = createParticles();
     startTimeRef.current = performance.now() / 1000;
+
+    // /unfurl?static=1 freezes every time-driven animation at a frame where
+    // the boat is horizontally centered — used to capture main_input.png
+    // without timing the shutter against a moving scene.
+    const frozen = new URLSearchParams(window.location.search).has("static");
+
     animate();
 
     function animate() {
       if (!ctx) return;
-      const time = performance.now() / 1000 - startTimeRef.current;
+      const time = frozen
+        ? FROZEN_TIME
+        : performance.now() / 1000 - startTimeRef.current;
 
       drawBackground(ctx);
       drawGradientOrbs(ctx, time);
@@ -568,7 +581,10 @@ export function UnfurlCanvas() {
       drawBoat(ctx, time);
       drawVignette(ctx);
 
-      animationRef.current = requestAnimationFrame(animate);
+      // When frozen, a single draw is enough — no need to burn a raf loop.
+      if (!frozen) {
+        animationRef.current = requestAnimationFrame(animate);
+      }
     }
 
     return () => cancelAnimationFrame(animationRef.current);
