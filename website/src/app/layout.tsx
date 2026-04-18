@@ -34,23 +34,23 @@ export async function generateMetadata(): Promise<Metadata> {
   const isIMessage = isIMessageUserAgent(userAgent);
 
   return {
-    title: "Odyssey",
+    title: "Odozi",
     description: DESCRIPTION,
     metadataBase: new URL(BASE_URL),
     alternates: {
       canonical: "/",
     },
     openGraph: {
-      title: "Odyssey",
+      title: "Odozi",
       description: DESCRIPTION,
       url: BASE_URL,
-      siteName: "Odyssey",
+      siteName: "Odozi",
       images: [
         {
           url: image.url,
           width: 1200,
           height: 630,
-          alt: "Odyssey — Your daily journey inward",
+          alt: "Odozi — Your daily journey inward",
           type: image.type,
         },
       ],
@@ -58,7 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Odyssey",
+      title: "Odozi",
       description: DESCRIPTION,
       images: [`${BASE_URL}/unfurls/main-static.png`],
       creator: "@johnlarkin1",
@@ -108,7 +108,7 @@ export async function generateMetadata(): Promise<Metadata> {
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "SoftwareApplication",
-  name: "Odyssey",
+  name: "Odozi",
   applicationCategory: "HealthApplication",
   operatingSystem: "iOS 17+",
   offers: {

@@ -14,12 +14,12 @@ export function Footer() {
             <div className="flex items-center gap-2">
               <Image
                 src="/app-icon.png"
-                alt="Odyssey app icon"
+                alt="Odozi app icon"
                 width={28}
                 height={28}
                 className="rounded-md"
               />
-              <p className="text-lg font-bold text-star-white">Odyssey</p>
+              <p className="text-lg font-bold text-star-white">Odozi</p>
             </div>
             <p className="mt-2 text-sm text-star-white/60">
               {footer.tagline}
@@ -73,7 +73,7 @@ export function Footer() {
         </div>
 
         <div className="mt-8 border-t border-white/10 pt-6 text-center text-xs text-star-white/40">
-          &copy; {new Date().getFullYear()} Odyssey. All rights reserved.
+          &copy; {new Date().getFullYear()} Odozi. All rights reserved.
         </div>
       </div>
     </footer>

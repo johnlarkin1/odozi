@@ -10,7 +10,7 @@ function LogoMark() {
   return (
     <Image
       src="/app-icon.png"
-      alt="Odyssey app icon"
+      alt="Odozi app icon"
       width={28}
       height={28}
       className="rounded-md"
@@ -28,7 +28,7 @@ export function Header() {
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-6 py-4">
         <Link href="/" className="flex items-center gap-2 font-heading text-xl font-bold tracking-tight text-star-white">
           <LogoMark />
-          Odyssey
+          Odozi
         </Link>
 
         {/* Desktop nav */}

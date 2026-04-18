@@ -604,7 +604,7 @@ export function UnfurlCanvas() {
             backgroundClip: "text",
           }}
         >
-          Odyssey
+          Odozi
         </h1>
         <p
           className="font-heading"

@@ -4,9 +4,9 @@ import { FAQSection } from "@/components/FAQSection";
 import { support } from "@/content";
 
 export const metadata: Metadata = {
-  title: "Support - Odyssey",
+  title: "Support - Odozi",
   description:
-    "Get help with Odyssey: contact, troubleshooting, permissions, and data export.",
+    "Get help with Odozi: contact, troubleshooting, permissions, and data export.",
   alternates: {
     canonical: "/support",
   },

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Terms of Service - Odyssey",
-  description: "Terms of service for the Odyssey journaling app.",
+  title: "Terms of Service - Odozi",
+  description: "Terms of service for the Odozi journaling app.",
   alternates: {
     canonical: "/terms",
   },
@@ -20,13 +20,13 @@ export default function TermsOfService() {
 
       <h2>1. Acceptance of Terms</h2>
       <p>
-        By downloading, installing, or using Odyssey (&quot;the app&quot;), you agree to be bound
+        By downloading, installing, or using Odozi (&quot;the app&quot;), you agree to be bound
         by these Terms of Service. If you do not agree, do not use the app.
       </p>
 
       <h2>2. Description of Service</h2>
       <p>
-        Odyssey is a personal journaling and wellness tracking app for iOS. It provides
+        Odozi is a personal journaling and wellness tracking app for iOS. It provides
         guided daily prompts, passive background data capture (location, health metrics,
         screen time), visualizations, and a year-in-review feature. The app is designed
         for personal, non-commercial use.
@@ -41,7 +41,7 @@ export default function TermsOfService() {
       </p>
 
       <h2>4. Acceptable Use</h2>
-      <p>You agree to use Odyssey for personal, non-commercial purposes only. You may not:</p>
+      <p>You agree to use Odozi for personal, non-commercial purposes only. You may not:</p>
       <ul>
         <li>Reverse engineer, decompile, or disassemble the app</li>
         <li>Use the app to collect data about other individuals without their consent</li>
@@ -67,7 +67,7 @@ export default function TermsOfService() {
 
       <h2>7. HealthKit</h2>
       <p>
-        With your permission, Odyssey reads health data (steps, walking distance, sleep)
+        With your permission, Odozi reads health data (steps, walking distance, sleep)
         from Apple HealthKit. This data is:
       </p>
       <ul>
@@ -79,14 +79,14 @@ export default function TermsOfService() {
 
       <h2>8. Intellectual Property</h2>
       <p>
-        The Odyssey app, its design, code, visual elements, and brand are proprietary
+        The Odozi app, its design, code, visual elements, and brand are proprietary
         and protected by intellectual property laws. You may not copy, modify, distribute,
         or create derivative works based on the app without our written permission.
       </p>
 
       <h2>9. Disclaimers</h2>
       <p>
-        <strong>Odyssey is not a medical device or healthcare service.</strong> The app
+        <strong>Odozi is not a medical device or healthcare service.</strong> The app
         does not provide medical advice, diagnosis, or treatment. Mood tracking, health
         metrics, and insights are for personal reflection only and should not be used as
         a substitute for professional medical advice.
@@ -99,7 +99,7 @@ export default function TermsOfService() {
 
       <h2>10. Limitation of Liability</h2>
       <p>
-        To the maximum extent permitted by applicable law, the developers of Odyssey shall
+        To the maximum extent permitted by applicable law, the developers of Odozi shall
         not be liable for any indirect, incidental, special, consequential, or punitive
         damages arising out of or related to your use of the app, including but not limited
         to loss of data, emotional distress, or interruption of service.
