@@ -60,7 +60,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: "Odozi",
       description: DESCRIPTION,
-      images: [`${BASE_URL}/unfurls/main-static.png`],
+      images: [`${BASE_URL}/unfurls/odozi/main-static.png`],
       creator: "@johnlarkin1",
     },
     icons: {
@@ -76,8 +76,8 @@ export async function generateMetadata(): Promise<Metadata> {
       // iMessage: serve MP4 video for inline playback
       ...(isIMessage
         ? {
-            "og:video": `${BASE_URL}/unfurls/main.mp4`,
-            "og:video:secure_url": `${BASE_URL}/unfurls/main.mp4`,
+            "og:video": `${BASE_URL}/unfurls/odozi/main.mp4`,
+            "og:video:secure_url": `${BASE_URL}/unfurls/odozi/main.mp4`,
             "og:video:type": "video/mp4",
             "og:video:width": "1200",
             "og:video:height": "630",
@@ -87,16 +87,16 @@ export async function generateMetadata(): Promise<Metadata> {
       // Discord: serve GIF as og:video (Discord renders it animated)
       ...(userAgent.toLowerCase().includes("discord")
         ? {
-            "og:video": `${BASE_URL}/unfurls/main.gif`,
+            "og:video": `${BASE_URL}/unfurls/odozi/main.gif`,
             "og:video:type": "image/gif",
             "og:video:width": "1200",
             "og:video:height": "630",
-            "og:video:secure_url": `${BASE_URL}/unfurls/main.gif`,
+            "og:video:secure_url": `${BASE_URL}/unfurls/odozi/main.gif`,
           }
         : {}),
 
       // LinkedIn: custom linkedin-specific meta tags
-      "linkedin:image": `${BASE_URL}/unfurls/main.gif`,
+      "linkedin:image": `${BASE_URL}/unfurls/odozi/main.gif`,
       "linkedin:image:type": "image/gif",
       "linkedin:image:width": "1200",
       "linkedin:image:height": "630",

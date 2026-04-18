@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# archived pre-rebrand unfurl assets (kept locally for reference)
+/public/unfurls/odyssey/
