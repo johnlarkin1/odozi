@@ -117,7 +117,7 @@ struct ProfileView: View {
                         .foregroundStyle(.secondary)
 
                     if syncToggleChanged {
-                        Label("Restart Odyssey to apply", systemImage: "arrow.clockwise")
+                        Label("Restart Odozi to apply", systemImage: "arrow.clockwise")
                             .font(.caption)
                             .foregroundStyle(Color.accentAmber)
                     }

@@ -53,7 +53,7 @@ struct MoodComplicationView: View {
                 .font(.caption)
                 .foregroundStyle(.secondary)
             } else {
-                Text("Odyssey")
+                Text("Odozi")
                     .font(.headline)
                 Text("No check-in yet")
                     .font(.caption)
@@ -67,7 +67,7 @@ struct MoodComplicationView: View {
             if entry.hasEntry {
                 Text("Mood: \(entry.moodScore)/10 \u{1F525}\(entry.streakDays)")
             } else {
-                Text("Odyssey — Check in")
+                Text("Odozi — Check in")
             }
         }
     }

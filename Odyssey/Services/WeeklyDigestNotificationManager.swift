@@ -141,7 +141,7 @@ enum WeeklyDigestNotificationManager {
 
     static func formatDigestBody(_ data: WeeklyDigestData) -> String {
         guard data.hasData else {
-            return "Start journaling this week! Open Odyssey to begin your first entry."
+            return "Start journaling this week! Open Odozi to begin your first entry."
         }
 
         var lines: [String] = []

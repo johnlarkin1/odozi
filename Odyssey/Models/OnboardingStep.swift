@@ -13,7 +13,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
 
     var title: String {
         switch self {
-        case .welcome: "Your Odyssey Begins"
+        case .welcome: "Your odyssey begins"
         case .location: "Location"
         case .health: "Health Insights"
         case .screenTime: "Screen Time"

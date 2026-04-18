@@ -103,7 +103,7 @@ private struct SmallWidgetSnapshot: View {
 
     private var promptState: some View {
         VStack(spacing: 8) {
-            Text("Odyssey")
+            Text("Odozi")
                 .font(.caption2.bold())
                 .foregroundStyle(Color.accentAmber)
 
@@ -200,7 +200,7 @@ private struct MediumWidgetSnapshot: View {
         VStack(spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Odyssey")
+                    Text("Odozi")
                         .font(.caption.bold())
                         .foregroundStyle(Color.accentAmber)
                     Text("How are you feeling?")
@@ -265,7 +265,7 @@ private struct MediumWidgetSnapshot: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text("Odyssey")
+                    Text("Odozi")
                         .font(.caption.bold())
                         .foregroundStyle(Color.accentAmber)
                     Spacer()

@@ -25,7 +25,7 @@ struct WelcomeCard: View {
                 .opacity(showIcon ? 1 : 0)
 
             VStack(spacing: 12) {
-                Text("Your Odyssey Begins")
+                Text("Your odyssey begins")
                     .font(.largeTitle.bold())
                     .fontDesign(.rounded)
                     .foregroundStyle(.white)

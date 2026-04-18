@@ -45,7 +45,7 @@
                     Button("Send Test Reminder (5s)") {
                         runAction {
                             let content = UNMutableNotificationContent()
-                            content.title = "Odyssey Reminder"
+                            content.title = "Odozi Reminder"
                             content.body = "Time to check in with yourself today."
                             content.sound = .default
 

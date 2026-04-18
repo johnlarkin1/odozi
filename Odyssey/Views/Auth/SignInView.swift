@@ -19,7 +19,7 @@ struct SignInView: View {
                     .fontWeight(.bold)
 
                 Text(
-                    "Odyssey uses iCloud to keep your journal entries safe and synced "
+                    "Odozi uses iCloud to keep your journal entries safe and synced "
                         + "across your devices. Sign in with Apple is the simplest, most "
                         + "secure way to protect your data -- no extra accounts or "
                         + "passwords needed."
@@ -75,7 +75,7 @@ struct SignInView: View {
                 .foregroundStyle(Color.accentTeal)
 
             Text(
-                "Odyssey syncs through iCloud, which requires an Apple account. "
+                "Odozi syncs through iCloud, which requires an Apple account. "
                     + "This keeps your journal data within Apple's secure ecosystem "
                     + "-- no third-party servers involved."
             )

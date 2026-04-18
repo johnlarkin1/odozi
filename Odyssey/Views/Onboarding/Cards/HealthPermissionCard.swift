@@ -13,7 +13,7 @@ struct HealthPermissionCard: View {
                 featureRow(icon: "bed.double.fill", text: "Sleep duration tracking")
                 featureRow(icon: "figure.run", text: "Workout sessions and exercise data")
                 featureRow(icon: "heart.fill", text: "Heart rate and resting heart rate")
-                featureRow(icon: "eye.slash.fill", text: "Read-only access — Odyssey never writes health data")
+                featureRow(icon: "eye.slash.fill", text: "Read-only access — Odozi never writes health data")
             }
             .padding(.horizontal, 8)
         }

@@ -29,7 +29,7 @@ struct ReviewTitleCard: View {
                 }
 
                 if showSubtitle {
-                    Text("Odyssey")
+                    Text("Odozi")
                         .font(.system(size: 36, weight: .light, design: .rounded))
                         .foregroundStyle(Color.accentAmber)
                         .transition(.opacity)
