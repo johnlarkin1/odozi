@@ -49,7 +49,7 @@ function drawFrame(ctx, frame) {
   // Wake behind boat
   drawWake(ctx, boatX, oceanTop + 4, t, eased);
 
-  // Title - "Odyssey"
+  // Title - "Odozi"
   drawTitle(ctx);
 }
 
@@ -268,7 +268,7 @@ function drawTitle(ctx) {
   ctx.textAlign = "center";
   ctx.textBaseline = "middle";
 
-  // "Odyssey" with gradient matching app icon sail colors
+  // "Odozi" with gradient matching app icon sail colors
   const titleGrad = ctx.createLinearGradient(460, 0, 740, 0);
   titleGrad.addColorStop(0, "#F5A623");
   titleGrad.addColorStop(0.4, "#E88A30");
@@ -276,7 +276,7 @@ function drawTitle(ctx) {
   titleGrad.addColorStop(1, "#2EC4B6");
   ctx.font = "bold 60px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";
   ctx.fillStyle = titleGrad;
-  ctx.fillText("Odyssey", WIDTH / 2, HEIGHT * 0.18);
+  ctx.fillText("Odozi", WIDTH / 2, HEIGHT * 0.18);
 
   // Tagline
   ctx.font = "26px -apple-system, BlinkMacSystemFont, Segoe UI, sans-serif";

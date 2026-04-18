@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Privacy Policy - Odyssey",
-  description: "How Odyssey handles your data. Local-first, end-to-end encrypted, no tracking.",
+  title: "Privacy Policy - Odozi",
+  description: "How Odozi handles your data. Local-first, end-to-end encrypted, no tracking.",
   alternates: {
     canonical: "/privacy",
   },
@@ -16,7 +16,7 @@ export default function PrivacyPolicy() {
         Effective date: March 1, 2026
       </p>
       <p>
-        Odyssey (&quot;we,&quot; &quot;our,&quot; or &quot;the app&quot;) is a personal journaling and
+        Odozi (&quot;we,&quot; &quot;our,&quot; or &quot;the app&quot;) is a personal journaling and
         wellness tracking app for iOS. We are committed to protecting your privacy.
         This policy explains what data we collect, how we use it, and your rights.
       </p>
@@ -42,7 +42,7 @@ export default function PrivacyPolicy() {
 
       <h2>2. Data Collected Automatically</h2>
       <p>
-        With your explicit permission, Odyssey collects the following data in the background:
+        With your explicit permission, Odozi collects the following data in the background:
       </p>
       <ul>
         <li>
@@ -82,7 +82,7 @@ export default function PrivacyPolicy() {
 
       <h2>5. Data Storage</h2>
       <p>
-        Odyssey is <strong>local-first</strong>. All journal data is stored on your device using
+        Odozi is <strong>local-first</strong>. All journal data is stored on your device using
         Apple&apos;s SwiftData framework.
       </p>
       <p>
@@ -126,7 +126,7 @@ export default function PrivacyPolicy() {
 
       <h2>9. Children&apos;s Privacy</h2>
       <p>
-        Odyssey is not directed at children under the age of 13. We do not knowingly collect
+        Odozi is not directed at children under the age of 13. We do not knowingly collect
         personal information from children under 13. If we learn that we have collected data
         from a child under 13, we will delete it promptly.
       </p>

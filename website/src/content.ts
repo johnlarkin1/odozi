@@ -6,7 +6,7 @@ export const GITHUB_URL = "https://github.com/johnlarkin1/odyssey";
 // Hero
 // ---------------------------------------------------------------------------
 export const hero = {
-  title: "Odyssey",
+  title: "Odozi",
   tagline: "a journal for your journey",
   subtitle:
     "An open-source project to help you be a bit more cognizant of your days. Available on MacOS, iOS, watchOS. It's your data, and it doesn't even have to leave your device",
@@ -106,7 +106,7 @@ export const whatYouGetBack = {
   heading: "What you",
   headingAccent: "get back.",
   subtitle:
-    "Odyssey connects the dots between your mood, habits, and daily context.",
+    "Odozi connects the dots between your mood, habits, and daily context.",
   items: [
     {
       title: "Mood Trends",
@@ -212,7 +212,7 @@ export const finalCTA = {
 // ---------------------------------------------------------------------------
 export const faqs = [
   {
-    question: "Is Odyssey free?",
+    question: "Is Odozi free?",
     answer:
       "Yep. Completely free. No subscriptions, no in-app purchases, no ads.",
   },
@@ -229,7 +229,7 @@ export const faqs = [
   {
     question: "Do I need an account?",
     answer:
-      "Nope. Odyssey works fully without one. You only need an account if you want cloud backup and it'll use your iCloud account to sync your data.",
+      "Nope. Odozi works fully without one. You only need an account if you want cloud backup and it'll use your iCloud account to sync your data.",
   },
   {
     question: "Is there an Android version?",
@@ -246,7 +246,7 @@ export const faqs = [
 // ---------------------------------------------------------------------------
 export const support = {
   heading: "Support",
-  intro: "Need help with Odyssey? I usually respond within a week.",
+  intro: "Need help with Odozi? I usually respond within a week.",
   contact: {
     email: "john@odozi.app",
     emailNote: "For privacy questions or anything you'd rather keep private.",
@@ -282,7 +282,7 @@ export const support = {
     },
     {
       title: "Delete",
-      body: "Uninstalling removes everything on-device. If CloudKit sync was on, also delete the Odyssey container from Settings, [your name], iCloud, Manage Account Storage, Odyssey.",
+      body: "Uninstalling removes everything on-device. If CloudKit sync was on, also delete the Odozi container from Settings, [your name], iCloud, Manage Account Storage, Odozi.",
     },
   ],
   platform: "iPhone only, iOS 17 or later.",
@@ -305,13 +305,13 @@ export const support = {
         "CloudKit sync needs an active iCloud account and an internet connection. The first run can take a few minutes. If it's still stuck after ten, toggle sync off and back on.",
     },
     {
-      question: "Can I use Odyssey on iPad or Mac?",
+      question: "Can I use Odozi on iPad or Mac?",
       answer: "iPhone only for now.",
     },
     {
       question: "How do I delete my data?",
       answer:
-        "Uninstall the app to wipe everything on-device. If CloudKit sync was on, also delete the Odyssey container from Settings > [your name] > iCloud > Manage Account Storage > Odyssey.",
+        "Uninstall the app to wipe everything on-device. If CloudKit sync was on, also delete the Odozi container from Settings > [your name] > iCloud > Manage Account Storage > Odozi.",
     },
     {
       question: "I found a bug. How do I report it?",
