@@ -100,7 +100,7 @@ struct BackupPromptModal: View {
                 .foregroundStyle(Color.accentTeal)
 
             Text(
-                "Odyssey syncs through iCloud, which requires an Apple account. "
+                "Odozi syncs through iCloud, which requires an Apple account. "
                     + "This keeps your journal data within Apple's secure ecosystem "
                     + "-- no third-party servers involved."
             )

@@ -24,7 +24,7 @@ struct MediumMoodWidgetView: View {
         VStack(spacing: 8) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Odyssey")
+                    Text("Odozi")
                         .font(.caption.bold())
                         .foregroundStyle(Color.accentAmber)
                     Text("How are you feeling?")
@@ -96,7 +96,7 @@ struct MediumMoodWidgetView: View {
 
             VStack(alignment: .leading, spacing: 6) {
                 HStack {
-                    Text("Odyssey")
+                    Text("Odozi")
                         .font(.caption.bold())
                         .foregroundStyle(Color.accentAmber)
                     Spacer()

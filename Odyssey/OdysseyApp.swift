@@ -293,7 +293,7 @@ private struct DataStoreErrorView: View {
                 .foregroundStyle(Color.coralRed)
             Text("Unable to Load Data")
                 .font(.title2.bold())
-            Text("There was a problem loading your journal data. Please restart the app. If the problem persists, reinstall Odyssey.")
+            Text("There was a problem loading your journal data. Please restart the app. If the problem persists, reinstall Odozi.")
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
                 .padding(.horizontal)

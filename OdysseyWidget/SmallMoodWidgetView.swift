@@ -26,7 +26,7 @@ struct SmallMoodWidgetView: View {
 
     private var promptState: some View {
         VStack(spacing: 8) {
-            Text("Odyssey")
+            Text("Odozi")
                 .font(.caption2.bold())
                 .foregroundStyle(Color.accentAmber)
 

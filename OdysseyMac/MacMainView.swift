@@ -44,7 +44,7 @@ struct MacMainView: View {
     var body: some View {
         NavigationSplitView {
             sidebarContent
-                .navigationTitle("Odyssey")
+                .navigationTitle("Odozi")
                 .listStyle(.sidebar)
         } detail: {
             detailView

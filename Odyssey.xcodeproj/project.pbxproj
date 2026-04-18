@@ -2213,7 +2213,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyDeviceActivityMonitor/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityMonitor;
+				INFOPLIST_KEY_CFBundleDisplayName = "Odozi Monitor";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2239,7 +2239,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyDeviceActivityMonitor/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityMonitor;
+				INFOPLIST_KEY_CFBundleDisplayName = "Odozi Monitor";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2265,7 +2265,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyDeviceActivityReport/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityReport;
+				INFOPLIST_KEY_CFBundleDisplayName = "Odozi Report";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2292,7 +2292,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyDeviceActivityReport/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = OdysseyDeviceActivityReport;
+				INFOPLIST_KEY_CFBundleDisplayName = "Odozi Report";
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -2439,6 +2439,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Odyssey/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM. That is the only time this App uses your location.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM.";
@@ -2476,6 +2477,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Odyssey/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
 				INFOPLIST_KEY_LSApplicationCategoryType = "";
 				INFOPLIST_KEY_NSLocationAlwaysAndWhenInUseUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM. That is the only time this App uses your location.";
 				INFOPLIST_KEY_NSLocationAlwaysUsageDescription = "We need to access your location data in the background to track your daily activity at 11:55 PM.";
@@ -2588,6 +2590,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Odyssey/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2614,9 +2617,9 @@
 				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Odyssey;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Odyssey reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Odyssey does not write any health data, but this permission is required by the HealthKit framework.";
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Odozi reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Odozi does not write any health data, but this permission is required by the HealthKit framework.";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.johnlarkin.Odyssey;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				MARKETING_VERSION = 1.0;
@@ -2651,6 +2654,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = Odyssey/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -2678,6 +2682,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
@@ -2706,9 +2711,9 @@
 				CURRENT_PROJECT_VERSION = 98;
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_KEY_CFBundleDisplayName = Odyssey;
-				INFOPLIST_KEY_NSHealthShareUsageDescription = "Odyssey reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.";
-				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Odyssey does not write any health data, but this permission is required by the HealthKit framework.";
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
+				INFOPLIST_KEY_NSHealthShareUsageDescription = "Odozi reads your step count, walking distance, and sleep data to enrich your daily journal entries with health insights.";
+				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "Odozi does not write any health data, but this permission is required by the HealthKit framework.";
 				INFOPLIST_KEY_WKCompanionAppBundleIdentifier = com.johnlarkin.Odyssey;
 				INFOPLIST_KEY_WKRunsIndependentlyOfCompanionApp = YES;
 				MARKETING_VERSION = 1.0;
@@ -2740,6 +2745,7 @@
 				DEVELOPMENT_TEAM = P3Q6VLD666;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = OdysseyWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = Odozi;
 				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
