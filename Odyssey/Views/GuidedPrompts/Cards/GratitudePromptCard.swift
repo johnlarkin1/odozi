@@ -2,6 +2,7 @@ import SwiftUI
 
 struct GratitudePromptCard: View {
     @Binding var text: String
+    var focusedField: FocusState<PromptStep?>.Binding
 
     var body: some View {
         PromptCardContainer(
@@ -11,6 +12,7 @@ struct GratitudePromptCard: View {
             subtitle: PromptStep.gratitude.subtitle
         ) {
             TextEditor(text: $text)
+                .focused(focusedField, equals: .gratitude)
                 .font(.body)
                 .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)

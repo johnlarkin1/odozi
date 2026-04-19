@@ -73,4 +73,13 @@ enum PromptStep: Int, CaseIterable, Identifiable {
         case .location: return .accentTeal
         }
     }
+
+    /// Steps that host a TextField / TextEditor. Used to decide whether the
+    /// shared @FocusState should keep the keyboard up after a step transition.
+    var hasTextInput: Bool {
+        switch self {
+        case .feeling, .gratitude, .win, .tension, .journal: return true
+        case .mood, .sleep, .photo, .drinks, .location: return false
+        }
+    }
 }
