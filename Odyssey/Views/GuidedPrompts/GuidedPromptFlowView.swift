@@ -35,12 +35,10 @@ struct GuidedPromptFlowView: View {
                             .gesture(
                                 DragGesture(minimumDistance: 50)
                                     .onEnded { value in
-                                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                                        guard abs(value.translation.width) > 2 * abs(value.translation.height) else { return }
                                         if value.translation.width < -50, !vm.isLastStep {
-                                            navigatingForward = true
                                             vm.goToNext()
                                         } else if value.translation.width > 50, !vm.isFirstStep {
-                                            navigatingForward = false
                                             vm.goToPrevious()
                                         }
                                     }
@@ -51,18 +49,9 @@ struct GuidedPromptFlowView: View {
                             PromptNavigationBar(
                                 isFirstStep: vm.isFirstStep,
                                 isLastStep: vm.isLastStep,
-                                onBack: {
-                                    navigatingForward = false
-                                    vm.goToPrevious()
-                                },
-                                onSkip: {
-                                    navigatingForward = true
-                                    vm.skip()
-                                },
-                                onNext: {
-                                    navigatingForward = true
-                                    vm.goToNext()
-                                },
+                                onBack: { vm.goToPrevious() },
+                                onSkip: { vm.skip() },
+                                onNext: { vm.goToNext() },
                                 onSubmit: { vm.submit() }
                             )
                             .padding(.horizontal, 16)
@@ -70,23 +59,17 @@ struct GuidedPromptFlowView: View {
                         #endif
                     }
                 }
+                .onChange(of: vm.currentStep) { oldStep, newStep in
+                    navigatingForward = newStep.rawValue > oldStep.rawValue
+                }
                 #if !os(macOS)
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     PromptNavigationBar(
                         isFirstStep: vm.isFirstStep,
                         isLastStep: vm.isLastStep,
-                        onBack: {
-                            navigatingForward = false
-                            vm.goToPrevious()
-                        },
-                        onSkip: {
-                            navigatingForward = true
-                            vm.skip()
-                        },
-                        onNext: {
-                            navigatingForward = true
-                            vm.goToNext()
-                        },
+                        onBack: { vm.goToPrevious() },
+                        onSkip: { vm.skip() },
+                        onNext: { vm.goToNext() },
                         onSubmit: { vm.submit() }
                     )
                     .padding(.horizontal, 16)
