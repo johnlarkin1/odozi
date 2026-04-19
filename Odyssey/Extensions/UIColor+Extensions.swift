@@ -32,6 +32,10 @@ extension PlatformColor {
         #endif
 
         let rgb = Int(r * 255) << 16 | Int(g * 255) << 8 | Int(b * 255) << 0
+        if a < 1.0 {
+            let alphaByte = Int(a * 255)
+            return String(format: "#%06x%02x", rgb, alphaByte)
+        }
         return String(format: "#%06x", rgb)
     }
 
@@ -43,18 +47,29 @@ extension PlatformColor {
             cString.remove(at: cString.startIndex)
         }
 
-        if cString.count != 6 {
+        guard cString.count == 6 || cString.count == 8 else {
             return PlatformColor.gray
         }
 
         var rgbValue: UInt64 = 0
         Scanner(string: cString).scanHexInt64(&rgbValue)
 
-        return PlatformColor(
-            red: CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0,
-            green: CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0,
-            blue: CGFloat(rgbValue & 0x0000FF) / 255.0,
-            alpha: CGFloat(1.0)
-        )
+        let alpha: CGFloat
+        let red: CGFloat
+        let green: CGFloat
+        let blue: CGFloat
+        if cString.count == 8 {
+            red = CGFloat((rgbValue & 0xFF00_0000) >> 24) / 255.0
+            green = CGFloat((rgbValue & 0x00FF_0000) >> 16) / 255.0
+            blue = CGFloat((rgbValue & 0x0000_FF00) >> 8) / 255.0
+            alpha = CGFloat(rgbValue & 0x0000_00FF) / 255.0
+        } else {
+            red = CGFloat((rgbValue & 0xFF0000) >> 16) / 255.0
+            green = CGFloat((rgbValue & 0x00FF00) >> 8) / 255.0
+            blue = CGFloat(rgbValue & 0x0000FF) / 255.0
+            alpha = 1.0
+        }
+
+        return PlatformColor(red: red, green: green, blue: blue, alpha: alpha)
     }
 }

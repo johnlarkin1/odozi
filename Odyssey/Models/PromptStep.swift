@@ -32,7 +32,7 @@ enum PromptStep: Int, CaseIterable, Identifiable {
     var subtitle: String {
         switch self {
         case .mood: return "Rate your overall mood"
-        case .feeling: return "Pick a word to describe today"
+        case .feeling: return "Pick a word or phrase to describe today"
         case .sleep: return "Rate last night's sleep"
         case .gratitude: return "Something big or small"
         case .win: return "Celebrate an accomplishment"

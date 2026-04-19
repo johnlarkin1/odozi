@@ -90,4 +90,21 @@ final class ColorExtensionsTests: XCTestCase {
         XCTAssertEqual(components[1], 0.65, accuracy: 0.02) // Green
         XCTAssertEqual(components[2], 0.14, accuracy: 0.02) // Blue
     }
+
+    func testHexInitWithAlphaChannel() {
+        let color = Color(hex: "#FF000080")
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a)
+        XCTAssertEqual(r, 1.0, accuracy: 0.01)
+        XCTAssertEqual(g, 0.0, accuracy: 0.01)
+        XCTAssertEqual(b, 0.0, accuracy: 0.01)
+        XCTAssertEqual(a, 128.0 / 255.0, accuracy: 0.01)
+    }
+
+    func testHexInitSixDigitIsOpaque() {
+        let color = Color(hex: "#FF0000")
+        var r: CGFloat = 0, g: CGFloat = 0, b: CGFloat = 0, a: CGFloat = 0
+        UIColor(color).getRed(&r, green: &g, blue: &b, alpha: &a)
+        XCTAssertEqual(a, 1.0, accuracy: 0.01)
+    }
 }
