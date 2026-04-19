@@ -2,6 +2,7 @@ import SwiftUI
 
 struct WinPromptCard: View {
     @Binding var text: String
+    var focusedField: FocusState<PromptStep?>.Binding
 
     var body: some View {
         PromptCardContainer(
@@ -11,6 +12,7 @@ struct WinPromptCard: View {
             subtitle: PromptStep.win.subtitle
         ) {
             TextEditor(text: $text)
+                .focused(focusedField, equals: .win)
                 .font(.body)
                 .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)

@@ -9,6 +9,11 @@ struct GuidedPromptFlowView: View {
     @State private var viewModel: GuidedPromptViewModel?
     @State private var navigatingForward = true
 
+    /// Shared focus state lives in the parent so keyboard survives
+    /// card-swap transitions. Each text card binds against this via
+    /// `.focused($focusedField, equals: <its step>)`.
+    @FocusState private var focusedField: PromptStep?
+
     var body: some View {
         Group {
             if let vm = viewModel {
@@ -61,6 +66,15 @@ struct GuidedPromptFlowView: View {
                 }
                 .onChange(of: vm.currentStep) { oldStep, newStep in
                     navigatingForward = newStep.rawValue > oldStep.rawValue
+                    // After the new card is mounted, auto-focus its text field
+                    // (if any). Non-text steps clear focus, dismissing the
+                    // keyboard cleanly. Deferring by one runloop tick ensures
+                    // SwiftUI has installed the new TextEditor/TextField before
+                    // we try to claim focus on it.
+                    Task { @MainActor in
+                        try? await Task.sleep(nanoseconds: 50_000_000) // 50ms
+                        focusedField = newStep.hasTextInput ? newStep : nil
+                    }
                 }
                 #if !os(macOS)
                 .safeAreaInset(edge: .bottom, spacing: 0) {
@@ -148,7 +162,8 @@ struct GuidedPromptFlowView: View {
                 colorHex: Binding(
                     get: { viewModel.responses.feelingColorHex },
                     set: { viewModel.responses.feelingColorHex = $0 }
-                )
+                ),
+                focusedField: $focusedField
             )
         case .sleep:
             SleepPromptCard(sleepQuality: Binding(
@@ -156,25 +171,37 @@ struct GuidedPromptFlowView: View {
                 set: { viewModel.responses.sleepQuality = $0 }
             ))
         case .gratitude:
-            GratitudePromptCard(text: Binding(
-                get: { viewModel.responses.gratitude },
-                set: { viewModel.responses.gratitude = $0 }
-            ))
+            GratitudePromptCard(
+                text: Binding(
+                    get: { viewModel.responses.gratitude },
+                    set: { viewModel.responses.gratitude = $0 }
+                ),
+                focusedField: $focusedField
+            )
         case .win:
-            WinPromptCard(text: Binding(
-                get: { viewModel.responses.win },
-                set: { viewModel.responses.win = $0 }
-            ))
+            WinPromptCard(
+                text: Binding(
+                    get: { viewModel.responses.win },
+                    set: { viewModel.responses.win = $0 }
+                ),
+                focusedField: $focusedField
+            )
         case .tension:
-            TensionPromptCard(text: Binding(
-                get: { viewModel.responses.tension },
-                set: { viewModel.responses.tension = $0 }
-            ))
+            TensionPromptCard(
+                text: Binding(
+                    get: { viewModel.responses.tension },
+                    set: { viewModel.responses.tension = $0 }
+                ),
+                focusedField: $focusedField
+            )
         case .journal:
-            JournalPromptCard(text: Binding(
-                get: { viewModel.responses.journalEntry },
-                set: { viewModel.responses.journalEntry = $0 }
-            ))
+            JournalPromptCard(
+                text: Binding(
+                    get: { viewModel.responses.journalEntry },
+                    set: { viewModel.responses.journalEntry = $0 }
+                ),
+                focusedField: $focusedField
+            )
         case .photo:
             PhotoPromptCard(photoData: Binding(
                 get: { viewModel.responses.attachedPhotoData },

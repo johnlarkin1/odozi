@@ -45,6 +45,13 @@ struct OdysseyApp: App {
             let achievementService = AchievementService(modelContext: seedContext)
             achievementService.seedIfNeeded()
 
+            // Merge any cross-timezone duplicate entries (e.g. from a user
+            // journaling across a zone change). Idempotent — no-op if clean.
+            MainActor.assumeIsolated {
+                let repo = DailyEntryRepository(context: seedContext)
+                _ = try? repo.dedupeByCalendarDay()
+            }
+
             if Self.isScreenshotMode {
                 UserDefaults.standard.set(true, forKey: "hasCompletedOnboarding")
             }

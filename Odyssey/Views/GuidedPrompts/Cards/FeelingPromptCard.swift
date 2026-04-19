@@ -3,6 +3,7 @@ import SwiftUI
 struct FeelingPromptCard: View {
     @Binding var word: String
     @Binding var colorHex: String
+    var focusedField: FocusState<PromptStep?>.Binding
 
     var body: some View {
         PromptCardContainer(
@@ -19,56 +20,71 @@ struct FeelingPromptCard: View {
                 ColorGridPicker(colorHex: $colorHex)
                     .frame(height: 180)
 
-                TextField("A word or phrase...", text: $word)
-                    .font(.title2.bold())
-                    .fontDesign(.rounded)
-                    .multilineTextAlignment(.center)
-                    .textFieldStyle(.plain)
-                    .foregroundStyle(Color(hex: colorHex))
-                    .padding()
-                    .background(
-                        RoundedRectangle(cornerRadius: 16)
-                            .fill(Color.cardSurface)
-                    )
-                    .accessibilityLabel("Feeling word")
-                    .accessibilityHint("Enter a word or phrase describing how you feel")
+                HStack(spacing: 8) {
+                    TextField("A word or phrase...", text: $word)
+                        .focused(focusedField, equals: .feeling)
+                        .submitLabel(.done)
+                        .onSubmit { focusedField.wrappedValue = nil }
+                        .font(.title2.bold())
+                        .fontDesign(.rounded)
+                        .multilineTextAlignment(.center)
+                        .textFieldStyle(.plain)
+                        .foregroundStyle(Color(hex: colorHex))
+                        .accessibilityLabel("Feeling word")
+                        .accessibilityHint("Enter a word or phrase describing how you feel")
+
+                    if !word.isEmpty {
+                        Button {
+                            word = ""
+                        } label: {
+                            Image(systemName: "xmark.circle.fill")
+                                .foregroundStyle(.secondary)
+                                .font(.title3)
+                        }
+                        .buttonStyle(.plain)
+                        .accessibilityLabel("Clear feeling word")
+                    }
+                }
+                .padding()
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color.cardSurface)
+                )
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        Spacer()
+                        Button("Done") { focusedField.wrappedValue = nil }
+                    }
+                }
             }
         }
     }
 }
 
-/// 2D touch pad for picking a color.
+/// 2D touch pad for picking a color — classic HSV picker.
 /// - X axis controls hue (0.0 → 1.0)
-/// - Y axis controls alpha (1.0 at top → 0.0 at bottom)
-/// Saturation and brightness are fixed so the picker stays readable.
+/// - Y axis controls brightness (1.0 at top → 0.0 at bottom)
+/// Saturation is fixed so the picker stays colorful and readable.
 private struct ColorGridPicker: View {
     @Binding var colorHex: String
     @State private var pinLocation: CGPoint?
 
-    private let fixedSaturation: CGFloat = 0.6
-    private let fixedBrightness: CGFloat = 0.85
+    private let fixedSaturation: CGFloat = 0.85
 
     var body: some View {
         GeometryReader { geo in
             ZStack(alignment: .topLeading) {
-                // Checkerboard so transparency is visible.
-                CheckerboardPattern()
-                    .fill(Color.white.opacity(0.12))
-                    .background(Color.black.opacity(0.25))
-
-                // Hue gradient that fades to clear toward the bottom to
-                // visualize the alpha axis.
+                // Horizontal hue rainbow...
                 LinearGradient(
-                    colors: [.red, .orange, .yellow, .green, .cyan, .blue, .indigo, .purple, .pink],
+                    colors: [.red, .orange, .yellow, .green, .cyan, .blue, .indigo, .purple, .pink, .red],
                     startPoint: .leading,
                     endPoint: .trailing
                 )
-                .mask(
-                    LinearGradient(
-                        colors: [.black, .clear],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
+                // ...faded down to black for the brightness axis.
+                LinearGradient(
+                    colors: [.clear, .black],
+                    startPoint: .top,
+                    endPoint: .bottom
                 )
 
                 if let point = pinLocation {
@@ -96,7 +112,7 @@ private struct ColorGridPicker: View {
             }
             .accessibilityElement(children: .ignore)
             .accessibilityLabel("Color grid")
-            .accessibilityHint("Drag across the grid to choose a color. Up and down adjusts transparency; left and right adjusts hue.")
+            .accessibilityHint("Drag across the grid to choose a color. Up and down adjusts brightness; left and right adjusts hue.")
             .accessibilityValue("Current color: \(colorHex)")
         }
     }
@@ -107,12 +123,12 @@ private struct ColorGridPicker: View {
         pinLocation = CGPoint(x: x, y: y)
 
         let hue = size.width > 0 ? x / size.width : 0
-        let alpha = size.height > 0 ? 1 - (y / size.height) : 1
+        let brightness = size.height > 0 ? 1 - (y / size.height) : 1
         let color = PlatformColor(
             hue: hue,
             saturation: fixedSaturation,
-            brightness: fixedBrightness,
-            alpha: alpha
+            brightness: brightness,
+            alpha: 1.0
         )
         colorHex = color.toHexString()
     }
@@ -134,7 +150,7 @@ private struct ColorGridPicker: View {
         // If the stored color has no saturation (e.g. pure white default), we
         // can't recover a hue, so anchor the pin at top-center.
         let x: CGFloat = sat < 0.01 ? size.width / 2 : hue * size.width
-        let y: CGFloat = (1 - alpha) * size.height
+        let y: CGFloat = (1 - bright) * size.height
         return CGPoint(x: x, y: y)
     }
 }
@@ -155,29 +171,5 @@ private struct PinIndicator: View {
                 .frame(width: 24, height: 24)
         }
         .shadow(color: .black.opacity(0.3), radius: 3, y: 1)
-    }
-}
-
-/// Simple checkerboard used behind the hue gradient so the alpha axis is
-/// visually apparent.
-private struct CheckerboardPattern: Shape {
-    var tile: CGFloat = 8
-
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let cols = Int((rect.width / tile).rounded(.up))
-        let rows = Int((rect.height / tile).rounded(.up))
-        for row in 0..<rows {
-            for col in 0..<cols where (row + col).isMultiple(of: 2) {
-                let square = CGRect(
-                    x: CGFloat(col) * tile,
-                    y: CGFloat(row) * tile,
-                    width: tile,
-                    height: tile
-                )
-                path.addRect(square)
-            }
-        }
-        return path
     }
 }

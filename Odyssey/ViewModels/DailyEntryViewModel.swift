@@ -1,3 +1,4 @@
+import Foundation
 import os
 import SwiftData
 import SwiftUI
@@ -17,48 +18,43 @@ final class DailyEntryViewModel {
         checkForTodayEntry()
     }
 
-    func checkForTodayEntry() {
-        let today = Calendar.current.startOfDay(for: Date())
-        let predicate = #Predicate<DailyEntry> { $0.date == today }
-        var descriptor = FetchDescriptor(predicate: predicate)
-        descriptor.fetchLimit = 1
+    private var repository: DailyEntryRepository {
+        DailyEntryRepository(context: modelContext)
+    }
 
-        do {
-            let results = try modelContext.fetch(descriptor)
-            hasSubmittedData = results.first?.hasUserSubmitted ?? false
-            if hasSubmittedData {
-                submissionMessage = "Already completed entry for today."
-            }
-        } catch {
-            logger.error("Failed to fetch today's entry: \(error)")
+    func checkForTodayEntry() {
+        let today = fetchTodayEntry()
+        hasSubmittedData = today?.hasUserSubmitted ?? false
+        if hasSubmittedData {
+            submissionMessage = "Already completed entry for today."
         }
     }
 
     func fetchTodayEntry() -> DailyEntry? {
-        let today = Calendar.current.startOfDay(for: Date())
-        let predicate = #Predicate<DailyEntry> { $0.date == today }
-        var descriptor = FetchDescriptor(predicate: predicate)
-        descriptor.fetchLimit = 1
-
-        return try? modelContext.fetch(descriptor).first
+        fetchEntry(for: Date())
     }
 
     func fetchEntry(for date: Date) -> DailyEntry? {
-        let targetDate = Calendar.current.startOfDay(for: date)
-        let predicate = #Predicate<DailyEntry> { $0.date == targetDate }
-        var descriptor = FetchDescriptor(predicate: predicate)
-        descriptor.fetchLimit = 1
-
-        return try? modelContext.fetch(descriptor).first
+        do {
+            return try repository.fetchEntry(for: date)
+        } catch {
+            logger.error("Failed to fetch entry for \(date): \(error)")
+            return nil
+        }
     }
 
     func fetchEntries(from startDate: Date, to endDate: Date) -> [DailyEntry] {
-        let start = Calendar.current.startOfDay(for: startDate)
-        let end = Calendar.current.startOfDay(for: endDate)
+        let cal = Calendar.current
+        let start = cal.date(byAdding: .hour, value: -36, to: cal.startOfDay(for: startDate)) ?? startDate
+        let end = cal.date(byAdding: .hour, value: 60, to: cal.startOfDay(for: endDate)) ?? endDate
         let predicate = #Predicate<DailyEntry> { $0.date >= start && $0.date <= end }
         let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\.date, order: .reverse)])
-
-        return (try? modelContext.fetch(descriptor)) ?? []
+        let results = (try? modelContext.fetch(descriptor)) ?? []
+        return results.filter { entry in
+            let day = entry.date
+            return (cal.isDate(day, inSameDayAs: startDate) || day >= cal.startOfDay(for: startDate))
+                && (cal.isDate(day, inSameDayAs: endDate) || day < (cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: endDate)) ?? endDate))
+        }
     }
 
     func fetchAllEntries() -> [DailyEntry] {
@@ -77,8 +73,6 @@ final class DailyEntryViewModel {
         journalEntry: String,
         drinks: Int
     ) {
-        let repository = DailyEntryRepository(context: modelContext)
-
         do {
             let entry = try repository.fetchOrCreateToday()
 
@@ -106,12 +100,27 @@ final class DailyEntryViewModel {
         }
     }
 
+    /// One fetch, bucketed into slots for the last 7 days. Timezone-robust:
+    /// entries authored in a different zone still land in their local-calendar
+    /// slot via `Calendar.isDate(_:inSameDayAs:)`.
     func fetchWeekEntries() -> [DailyEntry?] {
-        (0 ..< 7).reversed().map { fetchEntry(for: Date().daysAgo($0)) }
+        let cal = Calendar.current
+        let now = Date()
+        let todayStart = cal.startOfDay(for: now)
+        let windowStart = cal.date(byAdding: .hour, value: -36, to: cal.date(byAdding: .day, value: -6, to: todayStart) ?? todayStart) ?? todayStart
+        let windowEnd = cal.date(byAdding: .hour, value: 60, to: todayStart) ?? todayStart
+
+        let predicate = #Predicate<DailyEntry> { $0.date >= windowStart && $0.date < windowEnd }
+        let results = (try? modelContext.fetch(FetchDescriptor(predicate: predicate))) ?? []
+
+        return (0 ..< 7).reversed().map { offset in
+            let target = now.daysAgo(offset)
+            let matches = results.filter { cal.isDate($0.date, inSameDayAs: target) }
+            return DailyEntryRepository.pickPrimary(matches)
+        }
     }
 
     func updateLocation() async throws {
-        let repository = DailyEntryRepository(context: modelContext)
         let entry = try repository.fetchOrCreateToday()
 
         let service = LocationCaptureService()

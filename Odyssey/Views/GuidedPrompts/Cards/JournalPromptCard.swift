@@ -2,6 +2,7 @@ import SwiftUI
 
 struct JournalPromptCard: View {
     @Binding var text: String
+    var focusedField: FocusState<PromptStep?>.Binding
 
     var body: some View {
         PromptCardContainer(
@@ -11,6 +12,7 @@ struct JournalPromptCard: View {
             subtitle: PromptStep.journal.subtitle
         ) {
             TextEditor(text: $text)
+                .focused(focusedField, equals: .journal)
                 .font(.body)
                 .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)

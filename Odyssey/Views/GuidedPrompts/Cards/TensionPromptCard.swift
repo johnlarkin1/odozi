@@ -2,6 +2,7 @@ import SwiftUI
 
 struct TensionPromptCard: View {
     @Binding var text: String
+    var focusedField: FocusState<PromptStep?>.Binding
 
     var body: some View {
         PromptCardContainer(
@@ -11,6 +12,7 @@ struct TensionPromptCard: View {
             subtitle: PromptStep.tension.subtitle
         ) {
             TextEditor(text: $text)
+                .focused(focusedField, equals: .tension)
                 .font(.body)
                 .foregroundStyle(.white)
                 .scrollContentBackground(.hidden)

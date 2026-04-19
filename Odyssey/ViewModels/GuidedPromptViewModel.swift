@@ -153,6 +153,16 @@ final class GuidedPromptViewModel {
             try modelContext.save()
             NotificationCenter.default.post(name: .didSaveFirstEntry, object: nil)
 
+            // Capture GPS so the new entry shows up on the map immediately
+            // instead of waiting for the next BackgroundSnapshotService run.
+            // Non-blocking: a failure here is fine (background task will try
+            // again at 8 PM / 2 AM). Only runs for today's entry — past
+            // entries should keep whatever location they already have.
+            let needsLocation = entry.latitude == nil || entry.longitude == nil
+            if needsLocation, Calendar.current.isDateInToday(targetDate) {
+                Task { await updateLocationFromGPS() }
+            }
+
             let achievementService = AchievementService(modelContext: modelContext)
             let allEntries = (try? modelContext.fetch(FetchDescriptor<DailyEntry>())) ?? []
             let unlocked = achievementService.evaluateAll(entries: allEntries, latestEntry: entry)
