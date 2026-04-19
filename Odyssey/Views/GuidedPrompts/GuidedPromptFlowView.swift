@@ -7,6 +7,7 @@ struct GuidedPromptFlowView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
     @State private var viewModel: GuidedPromptViewModel?
+    @State private var navigatingForward = true
 
     var body: some View {
         Group {
@@ -22,49 +23,70 @@ struct GuidedPromptFlowView: View {
                         .padding(.horizontal, 16)
                         .padding(.top, 12)
 
-                        #if os(macOS)
-                            promptCard(for: vm.currentStep, viewModel: vm)
-                                .frame(maxWidth: .infinity, maxHeight: .infinity)
-                                .id(vm.currentStep)
-                                .transition(.asymmetric(
-                                    insertion: .move(edge: .trailing).combined(with: .opacity),
-                                    removal: .move(edge: .leading).combined(with: .opacity)
-                                ))
-                                .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
+                        promptCard(for: vm.currentStep, viewModel: vm)
+                            .frame(maxWidth: .infinity, maxHeight: .infinity)
+                            .id(vm.currentStep)
+                            .transition(.asymmetric(
+                                insertion: .move(edge: navigatingForward ? .trailing : .leading),
+                                removal: .move(edge: navigatingForward ? .leading : .trailing)
+                            ))
+                            .animation(.easeInOut(duration: 0.3), value: vm.currentStep)
+                        #if !os(macOS)
+                            .gesture(
+                                DragGesture(minimumDistance: 50)
+                                    .onEnded { value in
+                                        guard abs(value.translation.width) > abs(value.translation.height) else { return }
+                                        if value.translation.width < -50, !vm.isLastStep {
+                                            navigatingForward = true
+                                            vm.goToNext()
+                                        } else if value.translation.width > 50, !vm.isFirstStep {
+                                            navigatingForward = false
+                                            vm.goToPrevious()
+                                        }
+                                    }
+                            )
+                        #endif
 
+                        #if os(macOS)
                             PromptNavigationBar(
                                 isFirstStep: vm.isFirstStep,
                                 isLastStep: vm.isLastStep,
-                                onBack: { vm.goToPrevious() },
-                                onSkip: { vm.skip() },
-                                onNext: { vm.goToNext() },
+                                onBack: {
+                                    navigatingForward = false
+                                    vm.goToPrevious()
+                                },
+                                onSkip: {
+                                    navigatingForward = true
+                                    vm.skip()
+                                },
+                                onNext: {
+                                    navigatingForward = true
+                                    vm.goToNext()
+                                },
                                 onSubmit: { vm.submit() }
                             )
                             .padding(.horizontal, 16)
                             .padding(.bottom, 8)
-                        #else
-                            TabView(selection: Binding(
-                                get: { vm.currentStep },
-                                set: { vm.currentStep = $0 }
-                            )) {
-                                ForEach(PromptStep.allCases) { step in
-                                    promptCard(for: step, viewModel: vm)
-                                        .tag(step)
-                                }
-                            }
-                            .tabViewStyle(.page(indexDisplayMode: .never))
                         #endif
                     }
-                    .ignoresSafeArea(.keyboard)
                 }
                 #if !os(macOS)
                 .safeAreaInset(edge: .bottom, spacing: 0) {
                     PromptNavigationBar(
                         isFirstStep: vm.isFirstStep,
                         isLastStep: vm.isLastStep,
-                        onBack: { vm.goToPrevious() },
-                        onSkip: { vm.skip() },
-                        onNext: { vm.goToNext() },
+                        onBack: {
+                            navigatingForward = false
+                            vm.goToPrevious()
+                        },
+                        onSkip: {
+                            navigatingForward = true
+                            vm.skip()
+                        },
+                        onNext: {
+                            navigatingForward = true
+                            vm.goToNext()
+                        },
                         onSubmit: { vm.submit() }
                     )
                     .padding(.horizontal, 16)
