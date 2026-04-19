@@ -19,6 +19,7 @@ final class GuidedPromptViewModel {
 
     private let modelContext: ModelContext
     let targetDate: Date
+    private var hasAttemptedAutoCapture = false
 
     var isPastEntry: Bool {
         !Calendar.current.isDateInToday(targetDate)
@@ -165,6 +166,10 @@ final class GuidedPromptViewModel {
 
         isComplete = true
         showingCompletion = true
+
+        Task { [weak self] in
+            await self?.captureLocationIfNeeded()
+        }
     }
 
     func loadCurrentLocation() {
@@ -204,6 +209,37 @@ final class GuidedPromptViewModel {
             loadCurrentLocation()
         } catch {
             guidedPromptLogger.error("Failed to update location from GPS: \(error)")
+        }
+    }
+
+    func captureLocationIfNeeded() async {
+        guard !isPastEntry else { return }
+        guard !hasAttemptedAutoCapture else { return }
+        hasAttemptedAutoCapture = true
+
+        do {
+            let repository = DailyEntryRepository(context: modelContext)
+            let entry = try repository.fetchOrCreate(for: targetDate)
+
+            if entry.latitude != nil, entry.longitude != nil { return }
+
+            isUpdatingLocation = true
+            defer { isUpdatingLocation = false }
+
+            let snapshot = try await LocationCaptureService().captureCurrentLocation()
+
+            if entry.latitude == nil { entry.latitude = snapshot.latitude }
+            if entry.longitude == nil { entry.longitude = snapshot.longitude }
+            if entry.city == nil, let city = snapshot.city { entry.city = city }
+            if entry.state == nil, let state = snapshot.state { entry.state = state }
+            if entry.country == nil, let country = snapshot.country { entry.country = country }
+            if entry.locationCapturedAt == nil { entry.locationCapturedAt = Date() }
+            entry.updatedAt = Date()
+
+            try modelContext.save()
+            loadCurrentLocation()
+        } catch {
+            guidedPromptLogger.error("Auto location capture failed: \(error)")
         }
     }
 }

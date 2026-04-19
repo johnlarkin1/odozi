@@ -189,7 +189,12 @@ struct GuidedPromptFlowView: View {
                     Task { await viewModel.updateLocationFromGPS() }
                 }
             )
-            .onAppear { viewModel.loadCurrentLocation() }
+            .onAppear {
+                viewModel.loadCurrentLocation()
+                if viewModel.locationCapturedAt == nil, !viewModel.isUpdatingLocation {
+                    Task { await viewModel.captureLocationIfNeeded() }
+                }
+            }
         }
     }
 }
