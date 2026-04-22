@@ -1,3 +1,4 @@
+import CoreLocation
 import os
 import SwiftData
 import SwiftUI
@@ -16,6 +17,8 @@ final class GuidedPromptViewModel {
     var isUpdatingLocation = false
     var currentLocationDisplay: String = "No location captured"
     var locationCapturedAt: Date?
+    var locationErrorMessage: String?
+    var locationPermissionDenied = false
 
     private let modelContext: ModelContext
     let targetDate: Date
@@ -193,8 +196,24 @@ final class GuidedPromptViewModel {
 
     func updateLocationFromGPS() async {
         isUpdatingLocation = true
+        locationErrorMessage = nil
         defer { isUpdatingLocation = false }
 
+        await performLocationCapture(allowPermissionPrompt: true)
+    }
+
+    /// Fires on LocationCard.onAppear for today's entry when no coordinates
+    /// are stored yet. Silent on failure — the explicit button handles retries.
+    func autoCaptureLocationIfNeeded() async {
+        guard Calendar.current.isDateInToday(targetDate) else { return }
+        let repository = DailyEntryRepository(context: modelContext)
+        guard let entry = try? repository.fetchOrCreate(for: targetDate),
+              entry.latitude == nil || entry.longitude == nil
+        else { return }
+        await updateLocationFromGPS()
+    }
+
+    private func performLocationCapture(allowPermissionPrompt: Bool) async {
         do {
             let repository = DailyEntryRepository(context: modelContext)
             let entry = try repository.fetchOrCreate(for: targetDate)
@@ -211,8 +230,26 @@ final class GuidedPromptViewModel {
             entry.updatedAt = Date()
 
             try modelContext.save()
+            locationPermissionDenied = false
+            locationErrorMessage = nil
+            loadCurrentLocation()
+        } catch LocationCaptureError.permissionNotDetermined where allowPermissionPrompt {
+            // First tap with undetermined status: request auth, then retry once.
+            CLLocationManager().requestWhenInUseAuthorization()
+            try? await Task.sleep(for: .milliseconds(400))
+            await performLocationCapture(allowPermissionPrompt: false)
+        } catch LocationCaptureError.permissionNotDetermined {
+            locationPermissionDenied = false
+            locationErrorMessage = "Grant location access to capture where you are."
+            loadCurrentLocation()
+        } catch LocationCaptureError.permissionDenied {
+            locationPermissionDenied = true
+            locationErrorMessage = "Location is off for Odyssey. Enable it in Settings."
             loadCurrentLocation()
         } catch {
+            locationPermissionDenied = false
+            locationErrorMessage = "Couldn't get your location. Try again."
+            loadCurrentLocation()
             guidedPromptLogger.error("Failed to update location from GPS: \(error)")
         }
     }

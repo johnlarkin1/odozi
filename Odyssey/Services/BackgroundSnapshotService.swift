@@ -30,7 +30,6 @@ struct SnapshotData: Sendable {
 }
 
 actor BackgroundSnapshotService {
-    private let locationService = LocationCaptureService()
     private let healthKitService = HealthKitService()
 
     func captureSnapshot() async -> SnapshotData {
@@ -91,7 +90,8 @@ actor BackgroundSnapshotService {
 
     private func captureLocation() async -> LocationSnapshot? {
         do {
-            return try await locationService.captureCurrentLocation()
+            let service = await LocationCaptureService()
+            return try await service.captureCurrentLocation()
         } catch {
             logger.error("Location capture failed: \(error)")
             return nil

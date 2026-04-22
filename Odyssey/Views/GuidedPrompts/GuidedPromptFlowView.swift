@@ -217,11 +217,16 @@ struct GuidedPromptFlowView: View {
                 currentLocationDisplay: viewModel.currentLocationDisplay,
                 locationCapturedAt: viewModel.locationCapturedAt,
                 isUpdating: viewModel.isUpdatingLocation,
+                errorMessage: viewModel.locationErrorMessage,
+                showOpenSettings: viewModel.locationPermissionDenied,
                 onUpdateLocation: {
                     Task { await viewModel.updateLocationFromGPS() }
                 }
             )
-            .onAppear { viewModel.loadCurrentLocation() }
+            .onAppear {
+                viewModel.loadCurrentLocation()
+                Task { await viewModel.autoCaptureLocationIfNeeded() }
+            }
         }
     }
 }
