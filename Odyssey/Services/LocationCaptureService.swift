@@ -1,10 +1,41 @@
 import CoreLocation
 
-actor LocationCaptureService {
-    func captureCurrentLocation() async throws -> LocationSnapshot {
-        let location = try await requestSingleLocation()
-        let placemark = try? await reverseGeocode(location)
+enum LocationCaptureError: Error {
+    case permissionDenied
+    case permissionNotDetermined
+    case locationUnavailable(Error)
+}
 
+struct LocationSnapshot: Sendable {
+    let latitude: Double
+    let longitude: Double
+    let city: String?
+    let state: String?
+    let country: String?
+}
+
+@MainActor
+final class LocationCaptureService {
+    func captureCurrentLocation() async throws -> LocationSnapshot {
+        switch CLLocationManager().authorizationStatus {
+        case .denied, .restricted:
+            throw LocationCaptureError.permissionDenied
+        case .notDetermined:
+            throw LocationCaptureError.permissionNotDetermined
+        default:
+            break
+        }
+
+        let location: CLLocation
+        do {
+            location = try await SingleLocationRequest().run()
+        } catch let error as LocationCaptureError {
+            throw error
+        } catch {
+            throw LocationCaptureError.locationUnavailable(error)
+        }
+
+        let placemark = try? await CLGeocoder().reverseGeocodeLocation(location).first
         return LocationSnapshot(
             latitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude,
@@ -13,32 +44,48 @@ actor LocationCaptureService {
             country: placemark?.isoCountryCode
         )
     }
+}
 
-    private func requestSingleLocation() async throws -> CLLocation {
-        try await withCheckedThrowingContinuation { continuation in
-            let delegate = SingleLocationDelegate(continuation: continuation)
-            // CLLocationManager must be created and used on the main thread
-            DispatchQueue.main.async {
-                let manager = CLLocationManager()
-                manager.delegate = delegate
-                manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
-                objc_setAssociatedObject(manager, "delegate", delegate, .OBJC_ASSOCIATION_RETAIN)
-                manager.requestLocation()
-            }
+@MainActor
+private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
+    private let manager = CLLocationManager()
+    private var continuation: CheckedContinuation<CLLocation, Error>?
+    // Pin self alive across the async boundary — CLLocationManager stores its
+    // delegate weakly, so without this the whole request chain deallocates as
+    // soon as run() returns its continuation and the callback never fires.
+    private var selfRef: SingleLocationRequest?
+
+    func run() async throws -> CLLocation {
+        try await withCheckedThrowingContinuation { cont in
+            self.continuation = cont
+            self.selfRef = self
+            manager.delegate = self
+            manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+            manager.requestLocation()
         }
     }
 
-    private func reverseGeocode(_ location: CLLocation) async throws -> CLPlacemark? {
-        let geocoder = CLGeocoder()
-        let placemarks = try await geocoder.reverseGeocodeLocation(location)
-        return placemarks.first
+    nonisolated func locationManager(_: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let last = locations.last
+        Task { @MainActor in
+            guard let loc = last else {
+                self.finish(.failure(CLError(.locationUnknown)))
+                return
+            }
+            self.finish(.success(loc))
+        }
     }
-}
 
-struct LocationSnapshot {
-    let latitude: Double
-    let longitude: Double
-    let city: String?
-    let state: String?
-    let country: String?
+    nonisolated func locationManager(_: CLLocationManager, didFailWithError error: Error) {
+        Task { @MainActor in
+            self.finish(.failure(error))
+        }
+    }
+
+    private func finish(_ result: Result<CLLocation, Error>) {
+        manager.stopUpdatingLocation()
+        continuation?.resume(with: result)
+        continuation = nil
+        selfRef = nil
+    }
 }

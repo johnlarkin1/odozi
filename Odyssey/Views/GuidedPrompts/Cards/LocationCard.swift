@@ -1,9 +1,14 @@
 import SwiftUI
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 struct LocationCard: View {
     let currentLocationDisplay: String
     let locationCapturedAt: Date?
     let isUpdating: Bool
+    let errorMessage: String?
+    let showOpenSettings: Bool
     let onUpdateLocation: () -> Void
 
     var body: some View {
@@ -55,7 +60,32 @@ struct LocationCard: View {
                     .clipShape(Capsule())
                 }
                 .disabled(isUpdating)
+
+                if let errorMessage {
+                    VStack(spacing: 8) {
+                        Text(errorMessage)
+                            .font(.caption)
+                            .foregroundStyle(Color.coralRed)
+                            .multilineTextAlignment(.center)
+                            .padding(.horizontal, 24)
+
+                        if showOpenSettings {
+                            Button(action: openAppSettings) {
+                                Text("Open Settings")
+                                    .font(.caption.weight(.semibold))
+                                    .foregroundStyle(Color.accentAmber)
+                            }
+                        }
+                    }
+                }
             }
         }
+    }
+
+    private func openAppSettings() {
+        #if canImport(UIKit)
+            guard let url = URL(string: UIApplication.openSettingsURLString) else { return }
+            UIApplication.shared.open(url)
+        #endif
     }
 }
