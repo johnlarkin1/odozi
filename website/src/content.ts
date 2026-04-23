@@ -1,5 +1,5 @@
 export const APP_STORE_URL =
-  "https://apps.apple.com/app/odyssey-journal/id6743597741";
+  "https://apps.apple.com/us/app/odozi/id6760240423";
 export const GITHUB_URL = "https://github.com/johnlarkin1/odyssey";
 
 // ---------------------------------------------------------------------------
