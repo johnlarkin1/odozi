@@ -119,7 +119,7 @@ const jsonLd = {
   description:
     "A guided journaling app for iOS that captures your world - location, health, screen time - and reveals patterns in your wellbeing.",
   url: "https://odozi.app",
-  downloadUrl: "https://apps.apple.com/app/odyssey-journal/id6743597741",
+  downloadUrl: "https://apps.apple.com/us/app/odozi/id6760240423",
   author: {
     "@type": "Person",
     name: "John Larkin",
