@@ -135,3 +135,6 @@ website/.claude
 website/public/unfurls/main_input_fast_old.mov
 website/public/unfurls/main_input_old.heic
 website/public/unfurls/main_input_old.png
+
+# Internal planning docs (kept local-only, not for public repo)
+docs/
