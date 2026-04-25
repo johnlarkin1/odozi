@@ -1,10 +1,16 @@
+<p align="center">
+  <img src="website/public/unfurls/odozi/main-static.png" alt="Odozi — a journal for your journey" width="800">
+</p>
+
 # Odozi
 
-Alright! This is the public facing Github repo for [odozi][https://odozi.app/].
+Alright! This is the public facing Github repo for [odozi](https://odozi.app/).
 
-You can download it on the App Store [here] or just search for `odozi` on your phone. The ASO should be decent given the name (although damn did I want odyssey). I'll talk about that later.
+This is yet another journaling app, but it is a bit more data driven and can be fun to discover some insights into some of the patterns that you might not even know about.
 
-You should really just check out the [marketing page][https://odozi.app/] for more of the background. I built this for basically myself, my girlfriend, and my best friend from kindergarten. They like it and I figure in the age of ai, might as well open source it and let people fork it and let it rip.
+You can download it on the App Store [here](https://apps.apple.com/us/app/odozi/id6760240423) or just search for `odozi` on your phone. The ASO should be decent given the name (although damn did I want odyssey). I'll talk about that later.
+
+You should really just check out the [marketing page](https://odozi.app/) for more of the background. I built this for basically myself, my girlfriend, and my best friend from kindergarten. They like it and I figure in the age of ai, might as well open source it and let people fork it and let it rip.
 
 A huge proponent of your data being your data... So all of this data is yours and lands on your phone. You can also export basically the `SwiftData` rows. More or less, and again, I might write it up in more detail, but the vast majority of this is powered by `SwiftData` which sits on top of `CoreData` under the hood and it's basically SwiftUI / Apple's wrapper around SQlite. So it's pretty nice.
 
