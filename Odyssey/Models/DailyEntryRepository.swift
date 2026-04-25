@@ -105,26 +105,36 @@ struct DailyEntryRepository {
         }
     }
 
-    private static func contentScore(_ e: DailyEntry) -> Int {
-        var s = 0
-        if e.feeling > 0 { s += 1 }
-        if e.sleepQuality > 0 { s += 1 }
-        if !e.singleWordFeeling.isEmpty { s += 1 }
-        if !e.gratitude.isEmpty { s += 1 }
-        if !e.win.isEmpty { s += 1 }
-        if !e.tension.isEmpty { s += 1 }
-        if !e.journalEntry.isEmpty { s += 1 }
-        if e.latitude != nil { s += 1 }
-        if e.stepCount != nil { s += 1 }
-        if e.sleepHours != nil { s += 1 }
-        if e.screenTimeSeconds != nil { s += 1 }
-        if let photos = e.attachedPhotoData, !photos.isEmpty { s += 1 }
-        return s
+    private static func contentScore(_ entry: DailyEntry) -> Int {
+        var score = 0
+        if entry.feeling > 0 { score += 1 }
+        if entry.sleepQuality > 0 { score += 1 }
+        if !entry.singleWordFeeling.isEmpty { score += 1 }
+        if !entry.gratitude.isEmpty { score += 1 }
+        if !entry.win.isEmpty { score += 1 }
+        if !entry.tension.isEmpty { score += 1 }
+        if !entry.journalEntry.isEmpty { score += 1 }
+        if entry.latitude != nil { score += 1 }
+        if entry.stepCount != nil { score += 1 }
+        if entry.sleepHours != nil { score += 1 }
+        if entry.screenTimeSeconds != nil { score += 1 }
+        if let photos = entry.attachedPhotoData, !photos.isEmpty { score += 1 }
+        return score
     }
 
     /// Copy non-empty/non-nil fields from `src` into `dst` without clobbering
     /// values `dst` already has. Photos and workout arrays are unioned.
     private func mergeDuplicates(into dst: DailyEntry, from src: DailyEntry) {
+        Self.mergeJournalContent(into: dst, from: src)
+        Self.mergeLocation(into: dst, from: src)
+        Self.mergeSleepAndSteps(into: dst, from: src)
+        Self.mergeWorkouts(into: dst, from: src)
+        Self.mergeScreenTime(into: dst, from: src)
+        Self.mergePhotos(into: dst, from: src)
+        Self.mergeMetadata(into: dst, from: src)
+    }
+
+    private static func mergeJournalContent(into dst: DailyEntry, from src: DailyEntry) {
         if dst.feeling == 0 { dst.feeling = src.feeling }
         if dst.sleepQuality == 0 { dst.sleepQuality = src.sleepQuality }
         if dst.drinks == 0 { dst.drinks = src.drinks }
@@ -136,14 +146,18 @@ struct DailyEntryRepository {
         if dst.win.isEmpty { dst.win = src.win }
         if dst.tension.isEmpty { dst.tension = src.tension }
         if dst.journalEntry.isEmpty { dst.journalEntry = src.journalEntry }
+    }
 
+    private static func mergeLocation(into dst: DailyEntry, from src: DailyEntry) {
         if dst.latitude == nil { dst.latitude = src.latitude }
         if dst.longitude == nil { dst.longitude = src.longitude }
         if dst.city == nil { dst.city = src.city }
         if dst.state == nil { dst.state = src.state }
         if dst.country == nil { dst.country = src.country }
         if dst.locationCapturedAt == nil { dst.locationCapturedAt = src.locationCapturedAt }
+    }
 
+    private static func mergeSleepAndSteps(into dst: DailyEntry, from src: DailyEntry) {
         if dst.stepCount == nil { dst.stepCount = src.stepCount }
         if dst.walkingDistanceMeters == nil { dst.walkingDistanceMeters = src.walkingDistanceMeters }
         if dst.sleepHours == nil { dst.sleepHours = src.sleepHours }
@@ -154,17 +168,23 @@ struct DailyEntryRepository {
         if dst.sleepOnset == nil { dst.sleepOnset = src.sleepOnset }
         if dst.sleepInterruptionCount == nil { dst.sleepInterruptionCount = src.sleepInterruptionCount }
         if dst.sleepScore == nil { dst.sleepScore = src.sleepScore }
+    }
 
+    private static func mergeWorkouts(into dst: DailyEntry, from src: DailyEntry) {
         if dst.workoutDataJSON == nil { dst.workoutDataJSON = src.workoutDataJSON }
         if dst.workoutCount == nil { dst.workoutCount = src.workoutCount }
         if dst.totalWorkoutMinutes == nil { dst.totalWorkoutMinutes = src.totalWorkoutMinutes }
         if dst.workoutIntensityScore == nil { dst.workoutIntensityScore = src.workoutIntensityScore }
         if dst.restingHeartRate == nil { dst.restingHeartRate = src.restingHeartRate }
         if dst.averageHeartRate == nil { dst.averageHeartRate = src.averageHeartRate }
+    }
 
+    private static func mergeScreenTime(into dst: DailyEntry, from src: DailyEntry) {
         if dst.screenTimeSeconds == nil { dst.screenTimeSeconds = src.screenTimeSeconds }
         if dst.pickups == nil { dst.pickups = src.pickups }
+    }
 
+    private static func mergePhotos(into dst: DailyEntry, from src: DailyEntry) {
         if let srcPhotos = src.attachedPhotoData, !srcPhotos.isEmpty {
             var combined = dst.attachedPhotoData ?? []
             combined.append(contentsOf: srcPhotos.filter { !combined.contains($0) })
@@ -176,7 +196,9 @@ struct DailyEntryRepository {
             dst.autoPhotoIdentifiers = combined
         }
         if dst.mapThumbnailData == nil { dst.mapThumbnailData = src.mapThumbnailData }
+    }
 
+    private static func mergeMetadata(into dst: DailyEntry, from src: DailyEntry) {
         if src.hasUserSubmitted { dst.hasUserSubmitted = true }
         if dst.firstSubmittedAt == nil { dst.firstSubmittedAt = src.firstSubmittedAt }
         if src.createdAt < dst.createdAt { dst.createdAt = src.createdAt }
