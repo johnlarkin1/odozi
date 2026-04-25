@@ -24,8 +24,11 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 const BASE_URL = "https://odozi.app";
+const APP_STORE_ID = "6760240423";
+const TITLE = "Odozi · Mood Journal — Sleep, Gratitude & Screen Time";
+const SOCIAL_TITLE = "Odozi · Mood Journal";
 const DESCRIPTION =
-  "A guided journaling app for iOS that captures your world and reveals patterns in your wellbeing.";
+  "Odozi is a private mood journal for iOS. Track gratitude, sleep, screen time, and daily patterns in about two minutes a day. Local-first, no ads, no tracking.";
 
 export async function generateMetadata(): Promise<Metadata> {
   const headersList = await headers();
@@ -34,14 +37,14 @@ export async function generateMetadata(): Promise<Metadata> {
   const isIMessage = isIMessageUserAgent(userAgent);
 
   return {
-    title: "Odozi",
+    title: TITLE,
     description: DESCRIPTION,
     metadataBase: new URL(BASE_URL),
     alternates: {
       canonical: "/",
     },
     openGraph: {
-      title: "Odozi",
+      title: SOCIAL_TITLE,
       description: DESCRIPTION,
       url: BASE_URL,
       siteName: "Odozi",
@@ -58,7 +61,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     twitter: {
       card: "summary_large_image",
-      title: "Odozi",
+      title: SOCIAL_TITLE,
       description: DESCRIPTION,
       images: [`${BASE_URL}/unfurls/odozi/main-static.png`],
       creator: "@johnlarkin1",
@@ -72,6 +75,8 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
       apple: "/apple-touch-icon.png",
     },
+    // Required for Apple's site-to-app association (Smart App Banner + indexing).
+    itunes: { appId: APP_STORE_ID },
     other: {
       // iMessage: serve MP4 video for inline playback
       ...(isIMessage
@@ -104,26 +109,50 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// Static JSON-LD structured data - all values are hardcoded string literals, no user input
+// Static JSON-LD — all values are build-time constants, safe to inline.
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
+  "@type": "MobileApplication",
   name: "Odozi",
+  alternateName: "Odozi: Mood Journal",
   applicationCategory: "HealthApplication",
-  operatingSystem: "iOS 17+",
+  applicationSubCategory: "Lifestyle",
+  operatingSystem: "iOS 17",
   offers: {
     "@type": "Offer",
     price: "0",
     priceCurrency: "USD",
   },
-  description:
-    "A guided journaling app for iOS that captures your world - location, health, screen time - and reveals patterns in your wellbeing.",
-  url: "https://odozi.app",
-  downloadUrl: "https://apps.apple.com/us/app/odozi/id6760240423",
+  description: DESCRIPTION,
+  url: BASE_URL,
+  downloadUrl: `https://apps.apple.com/us/app/odozi/id${APP_STORE_ID}`,
+  installUrl: `https://apps.apple.com/us/app/odozi/id${APP_STORE_ID}`,
   author: {
     "@type": "Person",
     name: "John Larkin",
   },
+  keywords:
+    "mood journal, gratitude journal, daily reflection, mood tracker, sleep tracker, screen time tracker, private journal, mindfulness, wellbeing, mental health, habit tracker, journal prompts",
+  featureList: [
+    "Two-minute daily check-ins",
+    "Mood and feeling tracking",
+    "Gratitude journaling",
+    "Sleep, steps, and screen time correlations",
+    "Mood-coded journey map",
+    "Word cloud of your entries",
+    "Year-in-review recap",
+    "Local-first storage with optional CloudKit sync",
+  ],
+  screenshot: [
+    `${BASE_URL}/screenshots/today-tab.png`,
+    `${BASE_URL}/screenshots/guided-journaling.png`,
+    `${BASE_URL}/screenshots/insights-dashboard.png`,
+    `${BASE_URL}/screenshots/map-visualization.png`,
+    `${BASE_URL}/screenshots/word-cloud.png`,
+    `${BASE_URL}/screenshots/year-in-review.png`,
+  ],
+  inLanguage: "en",
+  isAccessibleForFree: true,
 };
 
 export default function RootLayout({

@@ -50,10 +50,12 @@ final class DailyEntryViewModel {
         let predicate = #Predicate<DailyEntry> { $0.date >= start && $0.date <= end }
         let descriptor = FetchDescriptor(predicate: predicate, sortBy: [SortDescriptor(\.date, order: .reverse)])
         let results = (try? modelContext.fetch(descriptor)) ?? []
+        let startDayBound = cal.startOfDay(for: startDate)
+        let endDayBound = cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: endDate)) ?? endDate
         return results.filter { entry in
             let day = entry.date
-            return (cal.isDate(day, inSameDayAs: startDate) || day >= cal.startOfDay(for: startDate))
-                && (cal.isDate(day, inSameDayAs: endDate) || day < (cal.date(byAdding: .day, value: 1, to: cal.startOfDay(for: endDate)) ?? endDate))
+            return (cal.isDate(day, inSameDayAs: startDate) || day >= startDayBound)
+                && (cal.isDate(day, inSameDayAs: endDate) || day < endDayBound)
         }
     }
 
@@ -107,7 +109,8 @@ final class DailyEntryViewModel {
         let cal = Calendar.current
         let now = Date()
         let todayStart = cal.startOfDay(for: now)
-        let windowStart = cal.date(byAdding: .hour, value: -36, to: cal.date(byAdding: .day, value: -6, to: todayStart) ?? todayStart) ?? todayStart
+        let weekStart = cal.date(byAdding: .day, value: -6, to: todayStart) ?? todayStart
+        let windowStart = cal.date(byAdding: .hour, value: -36, to: weekStart) ?? todayStart
         let windowEnd = cal.date(byAdding: .hour, value: 60, to: todayStart) ?? todayStart
 
         let predicate = #Predicate<DailyEntry> { $0.date >= windowStart && $0.date < windowEnd }
