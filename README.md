@@ -1,106 +1,25 @@
-# Odyssey
+# Odozi
 
-A personal mental wellness tracking app for iOS, built with SwiftUI and SwiftData. Odyssey combines a guided daily journaling flow with passive background data capture to surface meaningful insights about your wellbeing over time.
+Alright! This is the public facing Github repo for [odozi][https://odozi.app/].
 
-## Features
+You can download it on the App Store [here] or just search for `odozi` on your phone. The ASO should be decent given the name (although damn did I want odyssey). I'll talk about that later.
 
-**Guided Daily Journal**
-- 8-step prompted flow: Mood, Feeling Color, Sleep, Gratitude, Win, Tension, Free Journal, Drinks
-- Every step is skippable — low friction to encourage consistency
-- Animated completion card on submit
+You should really just check out the [marketing page][https://odozi.app/] for more of the background. I built this for basically myself, my girlfriend, and my best friend from kindergarten. They like it and I figure in the age of ai, might as well open source it and let people fork it and let it rip.
 
-**Passive Data Capture**
-- GPS location with reverse geocoding (neighborhood/city)
-- HealthKit integration (steps, walking distance, sleep analysis)
-- Screen Time via DeviceActivityMonitor extensions
-- Background task scheduling (8 PM snapshot + 2 AM fallback) with foreground catch-up
+A huge proponent of your data being your data... So all of this data is yours and lands on your phone. You can also export basically the `SwiftData` rows. More or less, and again, I might write it up in more detail, but the vast majority of this is powered by `SwiftData` which sits on top of `CoreData` under the hood and it's basically SwiftUI / Apple's wrapper around SQlite. So it's pretty nice.
 
-**Visualizations & Insights**
-- Mood trend charts (Swift Charts)
-- Map view with color-coded mood pins (MapKit)
-- Streak tracking
-- Word cloud from journal entries
-- Feeling color palette over time
-- Calendar heatmap
-
-**Year in Review**
-- Spotify Wrapped-style review with animated cards
-- Shareable via `ImageRenderer`
-- Lottie-powered Earth animation on the title card
-
-## Requirements
-
-- iOS 17+
-- Xcode 16+
-- Physical device required for Screen Time / FamilyControls features
-
-## Getting Started
-
-```bash
-# Resolve Swift package dependencies
-make resolve
-
-# Build (simulator — Screen Time extensions will be skipped)
-make build
-
-# Build and run on simulator
-make run
-
-# Run tests
-make test
-
-# See all available commands
-make help
-```
-
-To build without code signing (CI):
-
-```bash
-xcodebuild -project Odyssey.xcodeproj -target Odyssey -configuration Debug -sdk iphoneos CODE_SIGNING_ALLOWED=NO build
-```
+If you're worried about space, yeah it's actually surprising light. Roughly, you can estimate the core `DailyEntry` object as taking up call it ~1.5KB - 2KB. The photos are not included in this and are obviously the bulk of the storage setup. We store the 800x800 thumbnails so call that roughly ~200kb per day if you're attaching it every day. Ok very back of the envelope, but I'd imagine it could take up ~100MB if you're doing every daily entry with one or two photos attached.
 
 ## Architecture
 
-**Pattern:** MVVM with `@Observable` (iOS 17+)
+I won't go into it too much, because I'm assuming people are going to want it spoonfed to them in a custom manner from claude / codex / opencode. There were obviously some super annoying parts given the freaking restrictions Apple puts on "parental control" and really just doing the screentime detection and monitoring. Location permissions are (for better or for worse) a lot more robust and polished.
 
-### Targets
+## Naming Rant
 
-| Target | Purpose |
-|--------|---------|
-| `Odyssey` | Main app |
-| `OdysseyDeviceActivityMonitor` | Out-of-process extension that monitors device activity |
-| `OdysseyDeviceActivityReport` | ExtensionKit extension rendering Screen Time reports |
-| `OdysseyTests` / `OdysseyUITests` | Test targets |
+Yeah yeah, I know. Which one is it - odozi or odyssey?
 
-### Project Structure
+Well I wanted `odyssey` but obviously i wasn't about to pay an arm and a leg for that domain vs just `odozi.app`. And the other benefit is that it's the only app on the app store with that name. So I didn't want to be nor intentionally become a SF/NYC tech bro meme about just slapping a z in the name for a software product but... constraints of side project budget.
 
-```
-Odyssey/
-├── Models/              # SwiftData models (DailyEntry) and persistence (DataContainer)
-├── ViewModels/          # @Observable view models
-├── Views/
-│   ├── Today/           # Home tab — greeting, entry status, journal launch
-│   ├── GuidedPrompts/   # 8-step prompted journal flow + prompt cards
-│   ├── Journal/         # Calendar view, searchable entry list, detail view
-│   ├── Insights/        # Dashboard: mood trends, map, streaks, word cloud, heatmap
-│   ├── YearInReview/    # Wrapped-style review cards
-│   └── Profile/         # Screen Time report, app selection, CSV export
-├── Services/            # Background tasks, HealthKit, location, shared defaults
-└── Extensions/          # Color tokens, UIColor hex conversion
-```
+---
 
-### Data Flow
-
-1. `OdysseyApp` requests permissions (location, Screen Time, HealthKit) at launch
-2. `AppDelegate` registers background tasks (`com.odyssey.snapshot` at 8 PM, `com.odyssey.processing` at 2 AM)
-3. `BackgroundSnapshotService` captures location + HealthKit data concurrently via `async let`
-4. Screen Time data flows from the report extension through shared `UserDefaults` (App Group)
-5. On every `.active` scene phase, the app checks for and fills in any missing daily snapshot
-
-### Dependencies
-
-- [Lottie](https://github.com/airbnb/lottie-ios) (~> 4.0) — animated illustrations in Year in Review
-
-## License
-
-Private project — all rights reserved.
+Anyways, feel free to hit me up if any questions - you can use `john@odozi.app`
