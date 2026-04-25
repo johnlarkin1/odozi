@@ -75,11 +75,9 @@ export async function generateMetadata(): Promise<Metadata> {
       ],
       apple: "/apple-touch-icon.png",
     },
+    // Required for Apple's site-to-app association (Smart App Banner + indexing).
+    itunes: { appId: APP_STORE_ID },
     other: {
-      // iOS Smart App Banner — surfaces a native "Open in App Store" banner
-      // on Safari and is part of how Apple associates this site with the app.
-      "apple-itunes-app": `app-id=${APP_STORE_ID}`,
-
       // iMessage: serve MP4 video for inline playback
       ...(isIMessage
         ? {
@@ -111,7 +109,7 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-// Static JSON-LD structured data - all values are hardcoded string literals, no user input
+// Static JSON-LD — all values are build-time constants, safe to inline.
 const jsonLd = {
   "@context": "https://schema.org",
   "@type": "MobileApplication",
