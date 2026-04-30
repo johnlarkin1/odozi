@@ -402,6 +402,7 @@
 		NEWTEST0006BUILD006 /* YearInReviewViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */; };
 		NEWTEST0007BUILD007 /* JourneyExplorerViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */; };
 		NEWTEST0008BUILD008 /* DataRetentionServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */; };
+		NEWTEST0009BUILD009 /* LocationCaptureServiceTimeoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = NEWTEST0009FILE0009 /* LocationCaptureServiceTimeoutTests.swift */; };
 		PH01A2B3C4D5E6F7A8B90001 /* PhosphorIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = PH01A2B3C4D5E6F7A8B90002 /* PhosphorIcon.swift */; };
 /* End PBXBuildFile section */
 
@@ -749,6 +750,7 @@
 		NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = YearInReviewViewModelTests.swift; sourceTree = "<group>"; };
 		NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JourneyExplorerViewModelTests.swift; sourceTree = "<group>"; };
 		NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataRetentionServiceTests.swift; sourceTree = "<group>"; };
+		NEWTEST0009FILE0009 /* LocationCaptureServiceTimeoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationCaptureServiceTimeoutTests.swift; sourceTree = "<group>"; };
 		PH01A2B3C4D5E6F7A8B90002 /* PhosphorIcon.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhosphorIcon.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1166,6 +1168,7 @@
 				NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */,
 				NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */,
 				NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */,
+				NEWTEST0009FILE0009 /* LocationCaptureServiceTimeoutTests.swift */,
 			);
 			path = OdysseyTests;
 			sourceTree = "<group>";
@@ -1946,6 +1949,7 @@
 				NEWTEST0006BUILD006 /* YearInReviewViewModelTests.swift in Sources */,
 				NEWTEST0007BUILD007 /* JourneyExplorerViewModelTests.swift in Sources */,
 				NEWTEST0008BUILD008 /* DataRetentionServiceTests.swift in Sources */,
+				NEWTEST0009BUILD009 /* LocationCaptureServiceTimeoutTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

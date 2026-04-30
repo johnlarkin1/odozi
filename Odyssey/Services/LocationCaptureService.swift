@@ -16,6 +16,8 @@ struct LocationSnapshot: Sendable {
 
 @MainActor
 final class LocationCaptureService {
+    nonisolated static let geocodeTimeout: Duration = .seconds(5)
+
     func captureCurrentLocation() async throws -> LocationSnapshot {
         switch CLLocationManager().authorizationStatus {
         case .denied, .restricted:
@@ -35,7 +37,7 @@ final class LocationCaptureService {
             throw LocationCaptureError.locationUnavailable(error)
         }
 
-        let placemark = try? await CLGeocoder().reverseGeocodeLocation(location).first
+        let placemark = await Self.reverseGeocode(location)
         return LocationSnapshot(
             latitude: location.coordinate.latitude,
             longitude: location.coordinate.longitude,
@@ -44,12 +46,27 @@ final class LocationCaptureService {
             country: placemark?.isoCountryCode
         )
     }
+
+    static func reverseGeocode(_ location: CLLocation) async -> CLPlacemark? {
+        let geocoder = CLGeocoder()
+        let timeoutTask = Task { @MainActor in
+            try? await Task.sleep(for: geocodeTimeout)
+            if !Task.isCancelled {
+                geocoder.cancelGeocode()
+            }
+        }
+        defer { timeoutTask.cancel() }
+        return try? await geocoder.reverseGeocodeLocation(location).first
+    }
 }
 
 @MainActor
 private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
+    static let fixTimeout: Duration = .seconds(8)
+
     private let manager = CLLocationManager()
     private var continuation: CheckedContinuation<CLLocation, Error>?
+    private var timeoutTask: Task<Void, Never>?
     // Pin self alive across the async boundary — CLLocationManager stores its
     // delegate weakly, so without this the whole request chain deallocates as
     // soon as run() returns its continuation and the callback never fires.
@@ -61,6 +78,11 @@ private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
             self.selfRef = self
             manager.delegate = self
             manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
+            timeoutTask = Task { @MainActor [weak self] in
+                try? await Task.sleep(for: Self.fixTimeout)
+                guard !Task.isCancelled else { return }
+                self?.finish(.failure(CLError(.locationUnknown)))
+            }
             manager.requestLocation()
         }
     }
@@ -83,6 +105,8 @@ private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
     }
 
     private func finish(_ result: Result<CLLocation, Error>) {
+        timeoutTask?.cancel()
+        timeoutTask = nil
         manager.stopUpdatingLocation()
         continuation?.resume(with: result)
         continuation = nil
