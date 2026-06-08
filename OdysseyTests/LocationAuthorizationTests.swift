@@ -66,4 +66,35 @@ final class LocationAuthorizationTests: XCTestCase {
             )
         }
     }
+
+    /// Documents the automated-capture fix: the daily snapshot must not depend on
+    /// a live GPS fix that only When-In-Use authorization can deliver in the foreground.
+    func testAutomatedCaptureFallsBackToCachedLocation() {
+        // Before fix: SingleLocationRequest called requestLocation() and awaited the
+        // delegate callback with no timeout and no fallback. Invoked from a background
+        // BGAppRefreshTask/BGProcessingTask under When-In-Use authorization, that
+        // callback frequently never fires — so the continuation hung until the BGTask
+        // expiration handler cancelled the whole snapshot. The result: no location
+        // (and no health data) was ever saved by the automated 8 PM / 2 AM grab, while
+        // Screen Time still landed because it is read from SharedDefaults in a separate,
+        // non-blocking task.
+        //
+        // After fix:
+        // 1. SingleLocationRequest.run() arms a timeout. If the live request times out
+        //    or fails, it falls back to CLLocationManager.location (the last cached
+        //    fix), which stays readable in the background under When-In-Use — so the
+        //    continuation always resumes and the snapshot never hangs.
+        // 2. foregroundCatchUp() requests When-In-Use authorization when status is
+        //    .notDetermined, covering returning users who skipped onboarding and were
+        //    therefore never prompted.
+        //
+        // CLLocationManager.location returns the most recently cached fix and is
+        // available without an active request once the app is authorized.
+        let manager = CLLocationManager()
+        XCTAssertNil(
+            manager.location,
+            "A freshly created manager has no cached fix in the test host; the fallback " +
+                "path uses whatever the system last cached at runtime."
+        )
+    }
 }

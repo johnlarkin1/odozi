@@ -1,3 +1,4 @@
+import CoreLocation
 import os
 import SwiftData
 import SwiftUI
@@ -194,6 +195,14 @@ struct OdysseyApp: App {
         if HealthKitService.isAvailable {
             let hk = HealthKitService()
             try? await hk.requestAuthorization()
+        }
+
+        // Request location auth if still undetermined. The automated snapshot path
+        // never prompts on its own, so returning users who skipped onboarding (existing
+        // entries → onboarding bypassed) would otherwise never be asked, and the daily
+        // location grab would silently capture nothing.
+        if CLLocationManager().authorizationStatus == .notDetermined {
+            CLLocationManager().requestWhenInUseAuthorization()
         }
 
         // Always capture and apply snapshot — applySnapshotData only writes non-nil values
