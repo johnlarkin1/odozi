@@ -201,8 +201,9 @@ struct OdysseyApp: App {
         // never prompts on its own, so returning users who skipped onboarding (existing
         // entries → onboarding bypassed) would otherwise never be asked, and the daily
         // location grab would silently capture nothing.
-        if CLLocationManager().authorizationStatus == .notDetermined {
-            CLLocationManager().requestWhenInUseAuthorization()
+        let locationManager = CLLocationManager()
+        if locationManager.authorizationStatus == .notDetermined {
+            locationManager.requestWhenInUseAuthorization()
         }
 
         // Always capture and apply snapshot — applySnapshotData only writes non-nil values

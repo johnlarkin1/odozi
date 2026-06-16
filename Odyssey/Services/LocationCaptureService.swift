@@ -1,4 +1,7 @@
 import CoreLocation
+import os
+
+private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "LocationCapture")
 
 enum LocationCaptureError: Error {
     case permissionDenied
@@ -47,7 +50,7 @@ final class LocationCaptureService {
 }
 
 @MainActor
-private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
+final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
     private let manager = CLLocationManager()
     private var continuation: CheckedContinuation<CLLocation, Error>?
     // Pin self alive across the async boundary — CLLocationManager stores its
@@ -64,12 +67,8 @@ private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
             manager.desiredAccuracy = kCLLocationAccuracyHundredMeters
             manager.requestLocation()
 
-            // requestLocation() can silently never call back — most notably from a
-            // background BGTask under When-In-Use authorization, where a live fix is
-            // not granted. Without this guard the continuation hangs until the BGTask
-            // expiration handler cancels everything, so the whole snapshot (location
-            // *and* health) is lost. Time out and fall back to the last cached fix,
-            // which stays readable in the background under When-In-Use.
+            // requestLocation() can silently never call back (e.g. background BGTask
+            // under When-In-Use auth). Time out and fall back to the last cached fix.
             timeoutTask = Task { @MainActor [weak self] in
                 try? await Task.sleep(for: timeout)
                 guard let self, self.continuation != nil else { return }
@@ -95,24 +94,34 @@ private final class SingleLocationRequest: NSObject, CLLocationManagerDelegate {
         }
     }
 
-    // A live request can fail or time out (common in the background). Prefer the
-    // last cached fix over giving up — a stale-but-real coordinate is far more
-    // useful for a once-daily journal snapshot than no location at all.
     private func finishWithFallback(error: Error) {
-        if let cached = manager.location {
-            finish(.success(cached))
-        } else {
-            finish(.failure(error))
+        let result = SingleLocationRequest.fallbackResult(cached: manager.location, error: error)
+        switch result {
+        case .success:
+            logger.info("Live location fix timed out or failed; using cached fix")
+        case .failure:
+            logger.error("Live location fix failed with no cached fix available: \(error.localizedDescription, privacy: .public)")
         }
+        finish(result)
+    }
+
+    /// A live request can fail or time out (common in the background). Prefer the last
+    /// cached fix over giving up — a stale-but-real coordinate is far more useful for a
+    /// once-daily journal snapshot than no location at all. Pure so it can be unit-tested.
+    static func fallbackResult(cached: CLLocation?, error: Error) -> Result<CLLocation, Error> {
+        if let cached {
+            return .success(cached)
+        }
+        return .failure(error)
     }
 
     private func finish(_ result: Result<CLLocation, Error>) {
-        guard continuation != nil else { return }
+        guard let continuation else { return }
         timeoutTask?.cancel()
         timeoutTask = nil
         manager.stopUpdatingLocation()
-        continuation?.resume(with: result)
-        continuation = nil
+        continuation.resume(with: result)
+        self.continuation = nil
         selfRef = nil
     }
 }
