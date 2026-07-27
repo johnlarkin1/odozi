@@ -4,6 +4,18 @@ import UIKit
 
 private let photoLibraryLogger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "PhotoLibrary")
 
+/// Lightweight, `Sendable` snapshot of a photo library asset. Carries just the
+/// bits the sync pipeline needs (identifier, capture time, GPS) so it can cross
+/// actor boundaries without dragging a `PHAsset` along.
+struct PhotoAssetInfo: Sendable, Equatable {
+    let localIdentifier: String
+    let creationDate: Date
+    let latitude: Double?
+    let longitude: Double?
+
+    var hasLocation: Bool { latitude != nil && longitude != nil }
+}
+
 actor PhotoLibraryService {
     static let shared = PhotoLibraryService()
 
@@ -11,6 +23,42 @@ actor PhotoLibraryService {
 
     func requestAuthorization() async -> PHAuthorizationStatus {
         await PHPhotoLibrary.requestAuthorization(for: .readWrite)
+    }
+
+    /// Current authorization status without prompting. Used by the automatic
+    /// sync so it can quietly no-op when the user hasn't granted access yet.
+    nonisolated func currentAuthorizationStatus() -> PHAuthorizationStatus {
+        PHPhotoLibrary.authorizationStatus(for: .readWrite)
+    }
+
+    /// Fetch metadata for every image asset created within `[startDate, endDate)`
+    /// in a single query. Assets without a creation date are skipped since the
+    /// sync pipeline buckets by day.
+    func fetchAssetInfos(from startDate: Date, to endDate: Date) -> [PhotoAssetInfo] {
+        let options = PHFetchOptions()
+        options.predicate = NSPredicate(
+            format: "creationDate >= %@ AND creationDate < %@",
+            startDate as NSDate,
+            endDate as NSDate
+        )
+        options.sortDescriptors = [NSSortDescriptor(key: "creationDate", ascending: true)]
+
+        let result = PHAsset.fetchAssets(with: .image, options: options)
+        var infos: [PhotoAssetInfo] = []
+        infos.reserveCapacity(result.count)
+        result.enumerateObjects { asset, _, _ in
+            guard let creationDate = asset.creationDate else { return }
+            let coordinate = asset.location?.coordinate
+            infos.append(
+                PhotoAssetInfo(
+                    localIdentifier: asset.localIdentifier,
+                    creationDate: creationDate,
+                    latitude: coordinate?.latitude,
+                    longitude: coordinate?.longitude
+                )
+            )
+        }
+        return infos
     }
 
     func fetchAssets(for date: Date) -> [PHAsset] {
