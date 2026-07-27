@@ -10,8 +10,8 @@ struct LocationPermissionCard: View {
         ) {
             VStack(spacing: 16) {
                 featureRow(icon: "map.fill", text: "Build a personal map of your journey")
-                featureRow(icon: "lock.shield.fill", text: "Captured once daily, stays on device")
-                featureRow(icon: "pin.fill", text: "See where your best days happen")
+                featureRow(icon: "lock.shield.fill", text: "Sampled on movement, stays on device")
+                featureRow(icon: "moon.zzz.fill", text: "Captures in the background with \"Always\" enabled")
             }
             .padding(.horizontal, 8)
         }

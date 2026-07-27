@@ -67,6 +67,38 @@ enum SharedDefaults {
         return "screenTime=\(seconds)s pickups=\(pickups) updated=\(updatedDate) isToday=\(isToday)"
     }
 
+    // MARK: - Passive capture outcomes (visibility for location + HealthKit)
+
+    static let lastCaptureAtKey = "passiveCaptureLastRunAt"
+    static let lastLocationOutcomeKey = "passiveCaptureLocationOutcome"
+    static let lastHealthOutcomeKey = "passiveCaptureHealthOutcome"
+
+    /// Record why the most recent location capture did or didn't produce a fix
+    /// (e.g. "ok Brooklyn", "denied", "notDetermined", "unavailable").
+    static func setLocationCaptureOutcome(_ outcome: String) {
+        suite.set(outcome, forKey: lastLocationOutcomeKey)
+    }
+
+    /// Record the most recent HealthKit capture outcome (e.g. "ok", "empty", "skipped-locked").
+    static func setHealthCaptureOutcome(_ outcome: String) {
+        suite.set(outcome, forKey: lastHealthOutcomeKey)
+    }
+
+    /// Stamp the time a snapshot capture run last completed (any trigger: foreground, BGTask,
+    /// significant-location-change wake, or HealthKit observer).
+    static func markCaptureRun() {
+        suite.set(Date().timeIntervalSince1970, forKey: lastCaptureAtKey)
+    }
+
+    static func getCaptureDebugInfo() -> String {
+        let ts = suite.double(forKey: lastCaptureAtKey)
+        let when = ts > 0 ? "\(Date(timeIntervalSince1970: ts))" : "never"
+        let isToday = ts > 0 && Calendar.current.isDateInToday(Date(timeIntervalSince1970: ts))
+        let location = suite.string(forKey: lastLocationOutcomeKey) ?? "—"
+        let health = suite.string(forKey: lastHealthOutcomeKey) ?? "—"
+        return "lastCapture=\(when) isToday=\(isToday) location=\(location) health=\(health)"
+    }
+
     // Widget <-> App communication
     static let widgetMoodValueKey = "widgetMoodValue"
     static let widgetMoodTimestampKey = "widgetMoodTimestamp"

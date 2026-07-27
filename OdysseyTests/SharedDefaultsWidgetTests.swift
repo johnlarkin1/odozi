@@ -131,4 +131,45 @@ final class SharedDefaultsWidgetTests: XCTestCase {
 
         clearScreenTimeKeys()
     }
+
+    // MARK: - Passive capture outcomes
+
+    private func clearCaptureKeys() {
+        let suite = SharedDefaults.suite
+        suite.removeObject(forKey: SharedDefaults.lastCaptureAtKey)
+        suite.removeObject(forKey: SharedDefaults.lastLocationOutcomeKey)
+        suite.removeObject(forKey: SharedDefaults.lastHealthOutcomeKey)
+    }
+
+    func testCaptureDebugInfoDefaultsWhenNeverRun() {
+        clearCaptureKeys()
+        let info = SharedDefaults.getCaptureDebugInfo()
+        XCTAssertTrue(info.contains("lastCapture=never"))
+        XCTAssertTrue(info.contains("location=—"))
+        XCTAssertTrue(info.contains("health=—"))
+    }
+
+    func testCaptureOutcomesRoundTrip() {
+        clearCaptureKeys()
+        SharedDefaults.setLocationCaptureOutcome("denied")
+        SharedDefaults.setHealthCaptureOutcome("skipped-locked")
+        SharedDefaults.markCaptureRun()
+
+        let info = SharedDefaults.getCaptureDebugInfo()
+        XCTAssertTrue(info.contains("location=denied"))
+        XCTAssertTrue(info.contains("health=skipped-locked"))
+        XCTAssertTrue(info.contains("isToday=true"), "markCaptureRun stamps the current time")
+
+        clearCaptureKeys()
+    }
+
+    func testCaptureOutcomeOverwritesPrevious() {
+        clearCaptureKeys()
+        SharedDefaults.setHealthCaptureOutcome("skipped-locked")
+        SharedDefaults.setHealthCaptureOutcome("ok")
+
+        XCTAssertTrue(SharedDefaults.getCaptureDebugInfo().contains("health=ok"))
+
+        clearCaptureKeys()
+    }
 }

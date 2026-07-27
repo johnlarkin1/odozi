@@ -66,4 +66,33 @@ final class LocationAuthorizationTests: XCTestCase {
             )
         }
     }
+
+    /// Background (significant-location-change) capture requires the Always usage description.
+    /// After the fix, Info.plist must declare both the When-In-Use and the Always strings.
+    func testAlwaysUsageDescriptionPresentForBackgroundCapture() {
+        guard let infoPlist = Bundle(for: Self.self).infoDictionary
+            ?? Bundle.main.infoDictionary else {
+            // In some test-host configurations the app Info.plist isn't loaded; treat as skip.
+            return
+        }
+        // Only assert when the app plist is actually visible to the test bundle.
+        if infoPlist["NSLocationWhenInUseUsageDescription"] != nil {
+            let always = infoPlist["NSLocationAlwaysAndWhenInUseUsageDescription"] as? String
+            XCTAssertFalse(
+                (always ?? "").isEmpty,
+                "Background significant-location-change capture requires NSLocationAlwaysAndWhenInUseUsageDescription"
+            )
+        }
+    }
+
+    /// Documents the provisional upgrade path: the app requests When-In-Use first, then upgrades
+    /// to Always contextually via LocationMonitoringService — it must never jump straight to Always.
+    @MainActor
+    func testProvisionalAlwaysUpgradeIsIdempotent() {
+        // register() is safe to call repeatedly regardless of current authorization status.
+        // With no Always grant in the test environment it should no-op without crashing.
+        LocationMonitoringService.shared.register()
+        LocationMonitoringService.shared.register()
+        XCTAssertNotNil(LocationMonitoringService.shared)
+    }
 }

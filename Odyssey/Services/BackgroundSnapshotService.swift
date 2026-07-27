@@ -1,6 +1,9 @@
 import Foundation
 import os
 import SwiftData
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundSnapshot")
 
@@ -42,6 +45,9 @@ actor BackgroundSnapshotService {
 
         let location = await locationResult
         let health = await healthResult
+
+        // Stamp when this run completed so DevTools / logs can show capture liveness.
+        SharedDefaults.markCaptureRun()
 
         // Encode workout data — only compute summary fields if encoding succeeds
         var workoutJSON: Data?
@@ -91,8 +97,22 @@ actor BackgroundSnapshotService {
     private func captureLocation() async -> LocationSnapshot? {
         do {
             let service = await LocationCaptureService()
-            return try await service.captureCurrentLocation()
+            let snapshot = try await service.captureCurrentLocation()
+            SharedDefaults.setLocationCaptureOutcome("ok \(snapshot.city ?? "?")")
+            return snapshot
+        } catch let error as LocationCaptureError {
+            switch error {
+            case .permissionDenied:
+                SharedDefaults.setLocationCaptureOutcome("denied")
+            case .permissionNotDetermined:
+                SharedDefaults.setLocationCaptureOutcome("notDetermined")
+            case .locationUnavailable:
+                SharedDefaults.setLocationCaptureOutcome("unavailable")
+            }
+            logger.error("Location capture failed: \(error)")
+            return nil
         } catch {
+            SharedDefaults.setLocationCaptureOutcome("error")
             logger.error("Location capture failed: \(error)")
             return nil
         }
@@ -109,6 +129,16 @@ actor BackgroundSnapshotService {
 
     private func captureHealthData(for date: Date) async -> HealthData {
         guard HealthKitService.isAvailable else {
+            SharedDefaults.setHealthCaptureOutcome("unavailable")
+            return HealthData(steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil)
+        }
+
+        // HealthKit is encrypted while the device is locked; querying then just fails silently
+        // (a common cause of empty background captures, e.g. an overnight task on a locked phone).
+        // Skip cleanly and let the protected-data-available retry fill it in later.
+        guard await Self.isProtectedDataAvailable() else {
+            logger.warning("Protected data unavailable (device locked) — skipping HealthKit capture")
+            SharedDefaults.setHealthCaptureOutcome("skipped-locked")
             return HealthData(steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil)
         }
 
@@ -155,10 +185,24 @@ actor BackgroundSnapshotService {
             logger.error("Average heart rate fetch failed: \(error)")
         }
 
+        let capturedAny = steps != nil || distance != nil || sleep != nil
+            || !workouts.isEmpty || restingHR != nil || averageHR != nil
+        SharedDefaults.setHealthCaptureOutcome(capturedAny ? "ok" : "empty")
+
         return HealthData(
             steps: steps, distance: distance, sleep: sleep,
             workouts: workouts, restingHeartRate: restingHR, averageHeartRate: averageHR
         )
+    }
+
+    /// Whether HealthKit-protected data is currently readable (device unlocked at least once).
+    /// Checked on the main actor since `UIApplication` is main-actor isolated.
+    private static func isProtectedDataAvailable() async -> Bool {
+        #if canImport(UIKit)
+            return await MainActor.run { UIApplication.shared.isProtectedDataAvailable }
+        #else
+            return true
+        #endif
     }
 
     private func readScreenTimeFromDefaults() -> (seconds: Double, pickups: Int)? {

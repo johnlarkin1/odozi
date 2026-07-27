@@ -68,6 +68,14 @@ final class OnboardingViewModel {
 
     func requestLocationAccess() {
         locationManager.requestWhenInUseAuthorization()
+        // Bring the shared monitoring service to life so its delegate observes the grant and
+        // requests the Always upgrade contextually (the Apple-recommended two-step flow), then
+        // starts significant-location-change monitoring once Always is granted.
+        #if os(iOS)
+            Task { @MainActor in
+                LocationMonitoringService.shared.register()
+            }
+        #endif
         goToNext()
     }
 

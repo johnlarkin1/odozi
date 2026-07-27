@@ -190,10 +190,19 @@ struct OdysseyApp: App {
             ScreenTimeMonitoringManager.register()
         #endif
 
-        // Re-request HealthKit auth (idempotent) — covers users who denied then re-enabled in Settings
+        // Re-arm passive location monitoring (idempotent): requests the Always upgrade when only
+        // When-In-Use is granted, and (re)starts significant-location-change monitoring once
+        // Always is authorized — the same defensive re-registration rationale as Screen Time.
+        #if os(iOS)
+            LocationMonitoringService.shared.register()
+        #endif
+
+        // Re-request HealthKit auth (idempotent) — covers users who denied then re-enabled in
+        // Settings — and (re)arm background delivery + observer queries for backgrounded updates.
         if HealthKitService.isAvailable {
-            let hk = HealthKitService()
-            try? await hk.requestAuthorization()
+            try? await HealthKitService.shared.requestAuthorization()
+            await HealthKitService.shared.enableBackgroundDelivery()
+            await HealthKitService.shared.startObserving()
         }
 
         // Always capture and apply snapshot — applySnapshotData only writes non-nil values

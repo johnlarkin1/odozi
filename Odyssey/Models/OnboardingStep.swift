@@ -28,7 +28,7 @@ enum OnboardingStep: Int, CaseIterable, Identifiable {
         case .welcome:
             "A space for daily reflection. Track how you feel, where you've been, and where you're going."
         case .location:
-            "Capture your location once daily to build a personal map of your journey."
+            "Automatically capture where you are as you move through your day, building a personal map of your journey. Choose \"Allow While Using\" now — we'll ask to keep it in the background so it works even when the app is closed."
         case .health:
             "Connect Apple Health to automatically track your steps, walking distance, and sleep alongside your journal entries."
         case .screenTime:
