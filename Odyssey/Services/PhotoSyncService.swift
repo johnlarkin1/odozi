@@ -41,6 +41,10 @@
         /// Upper bound on identifiers stored per day so a burst of photos on one
         /// day can't bloat a single entry.
         static let maxPhotosPerDay = 30
+        /// Spacing between reverse-geocode requests. `CLGeocoder` rate-limits, so
+        /// on a first sync spanning many un-located days we pace the calls to
+        /// avoid tripping throttling and silently dropping place names.
+        static let geocodeThrottle: Duration = .milliseconds(250)
 
         private let photoService: PhotoLibraryService
         private let geocoder = CLGeocoder()
@@ -108,6 +112,8 @@
             summary.daysScanned = grouped.count
 
             let repository = DailyEntryRepository(context: context)
+            // Pace only calls after the first, so a single-day sync stays instant.
+            var didGeocode = false
             for group in grouped {
                 summary.daysWithPhotos += 1
                 do {
@@ -122,6 +128,8 @@
                         entry.latitude = coordinate.latitude
                         entry.longitude = coordinate.longitude
                         entry.locationCapturedAt = entry.locationCapturedAt ?? Date()
+                        if didGeocode { try? await Task.sleep(for: Self.geocodeThrottle) }
+                        didGeocode = true
                         if let place = await reverseGeocode(latitude: coordinate.latitude, longitude: coordinate.longitude) {
                             if entry.city == nil { entry.city = place.city }
                             if entry.state == nil { entry.state = place.state }
@@ -194,11 +202,11 @@
         @discardableResult
         static func linkPhotos(_ infos: [PhotoAssetInfo], to entry: DailyEntry, maxPerDay: Int) -> Int {
             var identifiers = entry.autoPhotoIdentifiers ?? []
-            let existing = Set(identifiers)
+            var existing = Set(identifiers)
             var added = 0
             for info in infos {
                 guard identifiers.count < maxPerDay else { break }
-                guard !existing.contains(info.localIdentifier) else { continue }
+                guard existing.insert(info.localIdentifier).inserted else { continue }
                 identifiers.append(info.localIdentifier)
                 added += 1
             }

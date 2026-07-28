@@ -116,6 +116,20 @@
             XCTAssertEqual(entry.autoPhotoIdentifiers, ["a"])
         }
 
+        func testLinkPhotosDedupesRepeatedIdentifiersWithinInput() {
+            let entry = DailyEntry(date: date(2026, 6, 1))
+            let infos = [
+                PhotoAssetInfo(localIdentifier: "dup", creationDate: date(2026, 6, 1), latitude: nil, longitude: nil),
+                PhotoAssetInfo(localIdentifier: "dup", creationDate: date(2026, 6, 1), latitude: nil, longitude: nil),
+                PhotoAssetInfo(localIdentifier: "unique", creationDate: date(2026, 6, 1), latitude: nil, longitude: nil)
+            ]
+
+            let added = PhotoSyncService.linkPhotos(infos, to: entry, maxPerDay: 30)
+
+            XCTAssertEqual(added, 2)
+            XCTAssertEqual(entry.autoPhotoIdentifiers, ["dup", "unique"])
+        }
+
         func testLinkPhotosRespectsPerDayCap() {
             let entry = DailyEntry(date: date(2026, 6, 1))
             let infos = (0 ..< 50).map {
