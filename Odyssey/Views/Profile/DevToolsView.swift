@@ -354,6 +354,19 @@
                             LocationMonitoringService.shared.register()
                             showStatus("Location monitoring re-registered (status: \(locationAuthorizationDescription))")
                         }
+
+                        // Runs the exact path the SLC wake / HealthKit observer / unlock retry
+                        // use — shared cached container included — so on-device testing doesn't
+                        // mean waiting for a real background trigger. force: true skips the
+                        // debounce, which would otherwise swallow repeated taps.
+                        Button("Force Capture Now (shared path)") {
+                            runAction {
+                                await BackgroundSnapshotService.captureAndApply(
+                                    trigger: "devtools", force: true
+                                )
+                                return SharedDefaults.getCaptureDebugInfo()
+                            }
+                        }
                     #endif
                 }
                 .listRowBackground(Color.cardSurface)

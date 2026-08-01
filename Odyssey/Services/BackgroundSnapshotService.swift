@@ -48,7 +48,10 @@ private enum BackgroundContainer {
 }
 
 actor BackgroundSnapshotService {
-    private let healthKitService = HealthKitService()
+    // The same instance the observer queries and background delivery are registered on. Two
+    // instances would work (HKHealthStore is a thin proxy), but having the observer fire on one
+    // and the fetch it triggers run on another is needlessly confusing.
+    private let healthKitService = HealthKitService.shared
 
     /// Minimum gap between background-triggered captures. Significant-location-change deliveries
     /// arrive in bursts while travelling, the six HealthKit observer queries can all fire at once
