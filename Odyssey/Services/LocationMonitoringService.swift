@@ -1,7 +1,6 @@
 import CoreLocation
 import Foundation
 import os
-import SwiftData
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "LocationMonitoring")
 
@@ -26,6 +25,14 @@ final class LocationMonitoringService: NSObject {
     override private init() {
         super.init()
         manager.delegate = self
+    }
+
+    /// The app's current location authorization, read from the retained manager. Callers should
+    /// use this instead of allocating a throwaway `CLLocationManager` just to read a status —
+    /// the modern `authorizationStatus` is an instance property, so every such read would
+    /// otherwise construct and discard a manager.
+    var authorizationStatus: CLAuthorizationStatus {
+        manager.authorizationStatus
     }
 
     // MARK: - Registration
@@ -74,19 +81,11 @@ final class LocationMonitoringService: NSObject {
     // MARK: - Snapshot on wake
 
     /// An SLC delivery can wake a suspended app. Run the same snapshot path the BGTasks use so
-    /// location/health get filled in. `applySnapshotData` only writes non-nil values and uses
-    /// `fetchOrCreateToday()`, so repeated captures are safe.
+    /// location/health get filled in. Deliveries arrive in bursts while travelling, so this goes
+    /// through the debounced shared entry point rather than capturing on every one.
     private func captureSnapshotOnWake() {
         Task {
-            do {
-                let container = try DataContainer.create()
-                let service = BackgroundSnapshotService()
-                let data = await service.captureSnapshot()
-                applySnapshotData(data, to: container.mainContext)
-                logger.info("Applied snapshot from significant-location-change wake")
-            } catch {
-                logger.error("Snapshot on location wake failed: \(error)")
-            }
+            await BackgroundSnapshotService.captureAndApply(trigger: "significant-location-change wake")
         }
     }
 }

@@ -100,21 +100,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     // A BGTask (or SLC/observer wake) that ran while the phone was locked can't read HealthKit —
     // captureHealthData skips it and marks "skipped-locked". When protected data becomes
-    // available, run one more capture to backfill. applySnapshotData only writes non-nil values,
-    // so this is safe and idempotent.
+    // available, run one more capture to backfill. This fires on every unlock, so it goes
+    // through the debounced shared path rather than capturing dozens of times a day.
     func applicationProtectedDataDidBecomeAvailable(_: UIApplication) {
-        logger.info("Protected data available — running catch-up snapshot")
         Task {
-            do {
-                let container = try DataContainer.create()
-                let service = BackgroundSnapshotService()
-                let data = await service.captureSnapshot()
-                await MainActor.run {
-                    applySnapshotData(data, to: container.mainContext)
-                }
-            } catch {
-                logger.error("Protected-data catch-up snapshot failed: \(error)")
-            }
+            await BackgroundSnapshotService.captureAndApply(trigger: "protected-data-available")
         }
     }
 

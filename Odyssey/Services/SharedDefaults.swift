@@ -90,6 +90,12 @@ enum SharedDefaults {
         suite.set(Date().timeIntervalSince1970, forKey: lastCaptureAtKey)
     }
 
+    /// When a snapshot capture run last completed, or nil if none ever has.
+    static var lastCaptureRunDate: Date? {
+        let ts = suite.double(forKey: lastCaptureAtKey)
+        return ts > 0 ? Date(timeIntervalSince1970: ts) : nil
+    }
+
     static func getCaptureDebugInfo() -> String {
         let ts = suite.double(forKey: lastCaptureAtKey)
         let when = ts > 0 ? "\(Date(timeIntervalSince1970: ts))" : "never"

@@ -354,6 +354,7 @@
 		DD0DEV700150000000000001 /* DevToolsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DD0DEV700150000000000002 /* DevToolsView.swift */; };
 		DD5D9E4B98511AF942D08EC9 /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = E72678E81212E7CFB2CF8AA8 /* HealthKit.framework */; };
 		DDFBDFAA51A696FB3698FB0A /* SharedDefaultsWidgetTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF542CB95D8B38CD695E5F57 /* SharedDefaultsWidgetTests.swift */; };
+		AA00000000000000000000B2 /* LocationAuthorizationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AA00000000000000000000B1 /* LocationAuthorizationTests.swift */; };
 		DE2D9F217132805B8762246A /* PromptNavigationBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = BA225FCEB3893F396EEFEE89 /* PromptNavigationBar.swift */; };
 		DF96A3343DE529F0A29B06AE /* PromptStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5DAA03677F50ED2C50A8140C /* PromptStep.swift */; };
 		E154F264D5FC97A8E2513202 /* YearInReviewView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ADA0855F12557962C12FD4FF /* YearInReviewView.swift */; };
@@ -743,6 +744,7 @@
 		F818AA569D58A9850835A0EF /* NotificationPermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = NotificationPermissionCard.swift; sourceTree = "<group>"; };
 		FB80AF02CA56C0E95B58A7C9 /* DailyEntryComputedTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DailyEntryComputedTests.swift; sourceTree = "<group>"; };
 		FF542CB95D8B38CD695E5F57 /* SharedDefaultsWidgetTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SharedDefaultsWidgetTests.swift; sourceTree = "<group>"; };
+		AA00000000000000000000B1 /* LocationAuthorizationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocationAuthorizationTests.swift; sourceTree = "<group>"; };
 		NEWTEST0001FILE0001 /* TestHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestHelpers.swift; sourceTree = "<group>"; };
 		NEWTEST0002FILE0002 /* CorrelationServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CorrelationServiceTests.swift; sourceTree = "<group>"; };
 		NEWTEST0003FILE0003 /* TrendCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrendCalculatorTests.swift; sourceTree = "<group>"; };
@@ -1160,6 +1162,7 @@
 				DF20F46E3D7F3982885ED619 /* WidgetSnapshotTests.swift */,
 				D3F4701C9B4B5B7D8B94B3B5 /* WidgetDataAccessTests.swift */,
 				FF542CB95D8B38CD695E5F57 /* SharedDefaultsWidgetTests.swift */,
+				AA00000000000000000000B1 /* LocationAuthorizationTests.swift */,
 				AABB00112233445500010002 /* HealthKitIntensityScoreTests.swift */,
 				NEWTEST0001FILE0001 /* TestHelpers.swift */,
 				NEWTEST0002FILE0002 /* CorrelationServiceTests.swift */,
@@ -1941,6 +1944,7 @@
 				854FAC25D34A186E2505F879 /* WidgetSnapshotTests.swift in Sources */,
 				30521C15C7E1A17E147E1B9E /* WidgetDataAccessTests.swift in Sources */,
 				DDFBDFAA51A696FB3698FB0A /* SharedDefaultsWidgetTests.swift in Sources */,
+				AA00000000000000000000B2 /* LocationAuthorizationTests.swift in Sources */,
 				AABB00112233445500010001 /* HealthKitIntensityScoreTests.swift in Sources */,
 				NEWTEST0001BUILD001 /* TestHelpers.swift in Sources */,
 				NEWTEST0002BUILD002 /* CorrelationServiceTests.swift in Sources */,

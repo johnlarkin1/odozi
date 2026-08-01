@@ -24,8 +24,10 @@
         @State private var containerFileListing: String?
 
         #if os(iOS)
-            private var locationAuthorizationDescription: String {
-                switch CLLocationManager().authorizationStatus {
+            // Reads the retained manager on LocationMonitoringService rather than allocating a
+            // throwaway CLLocationManager — SwiftUI re-evaluates this on every body pass.
+            @MainActor private var locationAuthorizationDescription: String {
+                switch LocationMonitoringService.shared.authorizationStatus {
                 case .notDetermined: return "notDetermined (never asked)"
                 case .restricted: return "restricted"
                 case .denied: return "DENIED"

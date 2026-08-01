@@ -59,6 +59,10 @@ actor HealthKitService {
 
     // MARK: - Background delivery
 
+    // iOS only: this file is also compiled into the watch target, which has no
+    // BackgroundSnapshotService (and no BGTask-driven snapshot to feed).
+    #if os(iOS)
+
     /// Asks HealthKit to wake the app when new samples land while it's backgrounded.
     ///
     /// Requires the `com.apple.developer.healthkit.background-delivery` entitlement plus a
@@ -76,22 +80,25 @@ actor HealthKitService {
         }
     }
 
-    /// Registers one `HKObserverQuery` per read type. Each firing runs the shared snapshot path
-    /// (which itself skips HealthKit while the device is locked) and then calls the required
-    /// completion handler so iOS keeps delivering. Idempotent — no-op if already observing.
+    /// Registers one `HKObserverQuery` per read type. Each firing runs the shared (debounced)
+    /// snapshot path, which itself skips HealthKit while the device is locked. Idempotent —
+    /// no-op if already observing.
     func startObserving() {
         guard HealthKitService.isAvailable, observerQueries.isEmpty else { return }
         for type in backgroundSampleTypes {
             let typeID = type.identifier
             let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completionHandler, error in
+                // Acknowledge before doing any work. If iOS suspends the app mid-capture the
+                // handler would otherwise never fire, and iOS stops delivering background
+                // updates for that type entirely.
+                completionHandler()
+
                 if let error {
                     logger.error("HealthKit observer error for \(typeID, privacy: .public): \(error.localizedDescription)")
-                    completionHandler()
                     return
                 }
                 Task {
-                    await HealthKitService.handleObservedChange()
-                    completionHandler()
+                    await BackgroundSnapshotService.captureAndApply(trigger: "HealthKit observer")
                 }
             }
             store.execute(query)
@@ -100,22 +107,7 @@ actor HealthKitService {
         logger.info("Registered \(self.observerQueries.count) HealthKit observer queries")
     }
 
-    /// Runs the shared snapshot capture + apply in response to a background HealthKit update.
-    /// `applySnapshotData` only writes non-nil values and uses `fetchOrCreateToday()`, so this
-    /// is safe to run repeatedly and alongside the BGTask / location-wake paths.
-    private static func handleObservedChange() async {
-        do {
-            let container = try DataContainer.create()
-            let service = BackgroundSnapshotService()
-            let data = await service.captureSnapshot()
-            await MainActor.run {
-                applySnapshotData(data, to: container.mainContext)
-            }
-            logger.info("Applied snapshot from HealthKit observer")
-        } catch {
-            logger.error("Snapshot from HealthKit observer failed: \(error)")
-        }
-    }
+    #endif
 
     func fetchSteps(for date: Date) async throws -> Int? {
         guard let interval = dayInterval(for: date) else { return nil }

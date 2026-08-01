@@ -95,4 +95,76 @@ final class LocationAuthorizationTests: XCTestCase {
         LocationMonitoringService.shared.register()
         XCTAssertNotNil(LocationMonitoringService.shared)
     }
+
+    // MARK: - Fallback when a live fix never arrives
+
+    /// A background wake under When-In-Use auth frequently never gets a live fix, so the request
+    /// times out. A recent cached fix must be used rather than losing the whole snapshot —
+    /// location and health are awaited together, so failing here used to drop both.
+    func testFallbackUsesRecentCachedFix() {
+        let now = Date()
+        let cached = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060),
+            altitude: 0,
+            horizontalAccuracy: 65,
+            verticalAccuracy: -1,
+            timestamp: now.addingTimeInterval(-2 * 60 * 60) // 2 hours old
+        )
+
+        let result = LocationFallback.result(
+            cached: cached,
+            error: CLError(.locationUnknown),
+            now: now
+        )
+
+        switch result {
+        case let .success(location):
+            XCTAssertEqual(location.coordinate.latitude, 40.7128, accuracy: 0.0001)
+            XCTAssertEqual(location.coordinate.longitude, -74.0060, accuracy: 0.0001)
+        case .failure:
+            XCTFail("A 2-hour-old cached fix should be used as the fallback")
+        }
+    }
+
+    /// Beyond a day the cached fix is likely from a different place entirely — recording it
+    /// would silently mislabel the journal day, which is worse than a blank location.
+    func testFallbackRejectsStaleCachedFix() {
+        let now = Date()
+        let stale = CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060),
+            altitude: 0,
+            horizontalAccuracy: 65,
+            verticalAccuracy: -1,
+            timestamp: now.addingTimeInterval(-48 * 60 * 60) // 2 days old
+        )
+
+        let result = LocationFallback.result(
+            cached: stale,
+            error: CLError(.locationUnknown),
+            now: now
+        )
+
+        switch result {
+        case .success:
+            XCTFail("A 2-day-old cached fix is too stale to attribute to today")
+        case let .failure(error):
+            XCTAssertEqual((error as? CLError)?.code, .locationUnknown)
+        }
+    }
+
+    /// With no cached fix at all, the original error surfaces so the caller records that location
+    /// was genuinely unavailable for this snapshot rather than silently writing nothing.
+    func testFallbackPropagatesErrorWhenNoCachedFix() {
+        let result = LocationFallback.result(
+            cached: nil,
+            error: CLError(.locationUnknown)
+        )
+
+        switch result {
+        case .success:
+            XCTFail("Expected failure when no cached fix is available")
+        case let .failure(error):
+            XCTAssertEqual((error as? CLError)?.code, .locationUnknown)
+        }
+    }
 }

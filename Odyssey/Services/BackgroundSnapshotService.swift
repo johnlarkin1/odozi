@@ -32,8 +32,59 @@ struct SnapshotData: Sendable {
     let pickups: Int?
 }
 
+/// The background triggers all need somewhere to write, and `DataContainer.create()` builds a
+/// brand-new `ModelContainer` — and so a duplicate persistent store over the same App Group
+/// file — on every call. Cache one and hand it out.
+@MainActor
+private enum BackgroundContainer {
+    private static var cached: ModelContainer?
+
+    static func shared() throws -> ModelContainer {
+        if let cached { return cached }
+        let container = try DataContainer.create()
+        cached = container
+        return container
+    }
+}
+
 actor BackgroundSnapshotService {
     private let healthKitService = HealthKitService()
+
+    /// Minimum gap between background-triggered captures. Significant-location-change deliveries
+    /// arrive in bursts while travelling, the six HealthKit observer queries can all fire at once
+    /// when a workout syncs, and protected-data-available fires on every unlock — without this,
+    /// each of those runs a full location + health capture for a value that changes once a day.
+    static let backgroundCaptureInterval: TimeInterval = 60 * 60
+
+    /// The single path every background trigger should use: capture a snapshot and apply it to
+    /// today's entry. `applySnapshotData` only writes non-nil values and goes through
+    /// `fetchOrCreateToday()`, so repeated runs are safe — the debounce is about avoiding wasted
+    /// work, not about correctness.
+    ///
+    /// - Parameters:
+    ///   - trigger: what woke us, for the log line.
+    ///   - force: skip the debounce. Used by the foreground and BGTask paths, which the OS
+    ///     already rate-limits and which the user is actually waiting on.
+    static func captureAndApply(trigger: String, force: Bool = false) async {
+        if !force, let last = SharedDefaults.lastCaptureRunDate {
+            let age = Date().timeIntervalSince(last)
+            if age < backgroundCaptureInterval {
+                logger.info("Skipping \(trigger, privacy: .public) capture — last run \(Int(age))s ago")
+                return
+            }
+        }
+
+        do {
+            let container = try await BackgroundContainer.shared()
+            let data = await BackgroundSnapshotService().captureSnapshot()
+            await MainActor.run {
+                applySnapshotData(data, to: container.mainContext)
+            }
+            logger.info("Applied snapshot from \(trigger, privacy: .public)")
+        } catch {
+            logger.error("Snapshot from \(trigger, privacy: .public) failed: \(error)")
+        }
+    }
 
     func captureSnapshot() async -> SnapshotData {
         let today = Calendar.current.startOfDay(for: Date())
