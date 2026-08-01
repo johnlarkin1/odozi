@@ -1,6 +1,9 @@
 import Foundation
 import os
 import SwiftData
+#if canImport(UIKit)
+    import UIKit
+#endif
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundSnapshot")
 
@@ -29,8 +32,62 @@ struct SnapshotData: Sendable {
     let pickups: Int?
 }
 
+/// The background triggers all need somewhere to write, and `DataContainer.create()` builds a
+/// brand-new `ModelContainer` — and so a duplicate persistent store over the same App Group
+/// file — on every call. Cache one and hand it out.
+@MainActor
+private enum BackgroundContainer {
+    private static var cached: ModelContainer?
+
+    static func shared() throws -> ModelContainer {
+        if let cached { return cached }
+        let container = try DataContainer.create()
+        cached = container
+        return container
+    }
+}
+
 actor BackgroundSnapshotService {
-    private let healthKitService = HealthKitService()
+    // The same instance the observer queries and background delivery are registered on. Two
+    // instances would work (HKHealthStore is a thin proxy), but having the observer fire on one
+    // and the fetch it triggers run on another is needlessly confusing.
+    private let healthKitService = HealthKitService.shared
+
+    /// Minimum gap between background-triggered captures. Significant-location-change deliveries
+    /// arrive in bursts while travelling, the six HealthKit observer queries can all fire at once
+    /// when a workout syncs, and protected-data-available fires on every unlock — without this,
+    /// each of those runs a full location + health capture for a value that changes once a day.
+    static let backgroundCaptureInterval: TimeInterval = 60 * 60
+
+    /// The single path every background trigger should use: capture a snapshot and apply it to
+    /// today's entry. `applySnapshotData` only writes non-nil values and goes through
+    /// `fetchOrCreateToday()`, so repeated runs are safe — the debounce is about avoiding wasted
+    /// work, not about correctness.
+    ///
+    /// - Parameters:
+    ///   - trigger: what woke us, for the log line.
+    ///   - force: skip the debounce. Used by the foreground and BGTask paths, which the OS
+    ///     already rate-limits and which the user is actually waiting on.
+    static func captureAndApply(trigger: String, force: Bool = false) async {
+        if !force, let last = SharedDefaults.lastCaptureRunDate {
+            let age = Date().timeIntervalSince(last)
+            if age < backgroundCaptureInterval {
+                logger.info("Skipping \(trigger, privacy: .public) capture — last run \(Int(age))s ago")
+                return
+            }
+        }
+
+        do {
+            let container = try await BackgroundContainer.shared()
+            let data = await BackgroundSnapshotService().captureSnapshot()
+            await MainActor.run {
+                applySnapshotData(data, to: container.mainContext)
+            }
+            logger.info("Applied snapshot from \(trigger, privacy: .public)")
+        } catch {
+            logger.error("Snapshot from \(trigger, privacy: .public) failed: \(error)")
+        }
+    }
 
     func captureSnapshot() async -> SnapshotData {
         let today = Calendar.current.startOfDay(for: Date())
@@ -42,6 +99,9 @@ actor BackgroundSnapshotService {
 
         let location = await locationResult
         let health = await healthResult
+
+        // Stamp when this run completed so DevTools / logs can show capture liveness.
+        SharedDefaults.markCaptureRun()
 
         // Encode workout data — only compute summary fields if encoding succeeds
         var workoutJSON: Data?
@@ -91,8 +151,22 @@ actor BackgroundSnapshotService {
     private func captureLocation() async -> LocationSnapshot? {
         do {
             let service = await LocationCaptureService()
-            return try await service.captureCurrentLocation()
+            let snapshot = try await service.captureCurrentLocation()
+            SharedDefaults.setLocationCaptureOutcome("ok \(snapshot.city ?? "?")")
+            return snapshot
+        } catch let error as LocationCaptureError {
+            switch error {
+            case .permissionDenied:
+                SharedDefaults.setLocationCaptureOutcome("denied")
+            case .permissionNotDetermined:
+                SharedDefaults.setLocationCaptureOutcome("notDetermined")
+            case .locationUnavailable:
+                SharedDefaults.setLocationCaptureOutcome("unavailable")
+            }
+            logger.error("Location capture failed: \(error)")
+            return nil
         } catch {
+            SharedDefaults.setLocationCaptureOutcome("error")
             logger.error("Location capture failed: \(error)")
             return nil
         }
@@ -109,6 +183,16 @@ actor BackgroundSnapshotService {
 
     private func captureHealthData(for date: Date) async -> HealthData {
         guard HealthKitService.isAvailable else {
+            SharedDefaults.setHealthCaptureOutcome("unavailable")
+            return HealthData(steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil)
+        }
+
+        // HealthKit is encrypted while the device is locked; querying then just fails silently
+        // (a common cause of empty background captures, e.g. an overnight task on a locked phone).
+        // Skip cleanly and let the protected-data-available retry fill it in later.
+        guard await Self.isProtectedDataAvailable() else {
+            logger.warning("Protected data unavailable (device locked) — skipping HealthKit capture")
+            SharedDefaults.setHealthCaptureOutcome("skipped-locked")
             return HealthData(steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil)
         }
 
@@ -155,10 +239,24 @@ actor BackgroundSnapshotService {
             logger.error("Average heart rate fetch failed: \(error)")
         }
 
+        let capturedAny = steps != nil || distance != nil || sleep != nil
+            || !workouts.isEmpty || restingHR != nil || averageHR != nil
+        SharedDefaults.setHealthCaptureOutcome(capturedAny ? "ok" : "empty")
+
         return HealthData(
             steps: steps, distance: distance, sleep: sleep,
             workouts: workouts, restingHeartRate: restingHR, averageHeartRate: averageHR
         )
+    }
+
+    /// Whether HealthKit-protected data is currently readable (device unlocked at least once).
+    /// Checked on the main actor since `UIApplication` is main-actor isolated.
+    private static func isProtectedDataAvailable() async -> Bool {
+        #if canImport(UIKit)
+            return await MainActor.run { UIApplication.shared.isProtectedDataAvailable }
+        #else
+            return true
+        #endif
     }
 
     private func readScreenTimeFromDefaults() -> (seconds: Double, pickups: Int)? {

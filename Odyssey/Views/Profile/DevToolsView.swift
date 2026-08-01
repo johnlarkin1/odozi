@@ -2,6 +2,7 @@
     #if os(iOS)
         import FamilyControls
     #endif
+    import CoreLocation
     import SwiftData
     import SwiftUI
     import UserNotifications
@@ -21,6 +22,21 @@
         @State private var onboardingPreviewStep: OnboardingStep = .welcome
         @State private var healthCheckResult: AppGroupHealthCheck.Result?
         @State private var containerFileListing: String?
+
+        #if os(iOS)
+            // Reads the retained manager on LocationMonitoringService rather than allocating a
+            // throwaway CLLocationManager — SwiftUI re-evaluates this on every body pass.
+            @MainActor private var locationAuthorizationDescription: String {
+                switch LocationMonitoringService.shared.authorizationStatus {
+                case .notDetermined: return "notDetermined (never asked)"
+                case .restricted: return "restricted"
+                case .denied: return "DENIED"
+                case .authorizedAlways: return "authorizedAlways ✓ (background capture on)"
+                case .authorizedWhenInUse: return "authorizedWhenInUse (foreground only)"
+                @unknown default: return "unknown"
+                }
+            }
+        #endif
 
         var body: some View {
             List {
@@ -287,6 +303,71 @@
                             return "Polling exhausted — SharedDefaults: \(SharedDefaults.getScreenTimeDebugInfo())"
                         }
                     }
+                }
+                .listRowBackground(Color.cardSurface)
+
+                // MARK: - Passive Capture Debug
+
+                Section("Passive Capture") {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Last Capture")
+                            .font(.caption.bold())
+                            .foregroundStyle(.secondary)
+                        Text(SharedDefaults.getCaptureDebugInfo())
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.white)
+                            .lineLimit(nil)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+
+                    #if os(iOS)
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Location Authorization")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text(locationAuthorizationDescription)
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                        }
+                    #endif
+
+                    if let todayEntry = allEntries.first(where: { Calendar.current.isDateInToday($0.date) }) {
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("Today's DailyEntry")
+                                .font(.caption.bold())
+                                .foregroundStyle(.secondary)
+                            Text("location: \(todayEntry.city ?? "nil"), \(todayEntry.state ?? "nil")")
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                            Text("steps: \(todayEntry.stepCount.map { "\($0)" } ?? "nil")  ·  sleepHrs: \(todayEntry.sleepHours.map { String(format: "%.1f", $0) } ?? "nil")")
+                                .font(.caption.monospaced())
+                                .foregroundStyle(.white)
+                        }
+                    } else {
+                        Text("No DailyEntry for today")
+                            .font(.caption.monospaced())
+                            .foregroundStyle(.secondary)
+                    }
+
+                    #if os(iOS)
+                        Button("Re-register Location Monitoring") {
+                            LocationMonitoringService.shared.register()
+                            showStatus("Location monitoring re-registered (status: \(locationAuthorizationDescription))")
+                        }
+
+                        // Runs the exact path the SLC wake / HealthKit observer / unlock retry
+                        // use — shared cached container included — so on-device testing doesn't
+                        // mean waiting for a real background trigger. force: true skips the
+                        // debounce, which would otherwise swallow repeated taps.
+                        Button("Force Capture Now (shared path)") {
+                            runAction {
+                                await BackgroundSnapshotService.captureAndApply(
+                                    trigger: "devtools", force: true
+                                )
+                                return SharedDefaults.getCaptureDebugInfo()
+                            }
+                        }
+                    #endif
                 }
                 .listRowBackground(Color.cardSurface)
 

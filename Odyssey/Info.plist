@@ -6,6 +6,7 @@
 	<array>
 		<string>fetch</string>
 		<string>processing</string>
+		<string>location</string>
 	</array>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
@@ -29,6 +30,8 @@
 	<string>Odozi does not write any health data, but this permission is required by the HealthKit framework.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>Odozi captures your location to add context to your journal entries.</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Odozi captures your location in the background to automatically add place context to your daily journal, even when the app is closed. Location is only sampled on meaningful movement and stays on your device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Odozi surfaces photos from your library to enrich your journal entries with visual memories from each day.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>

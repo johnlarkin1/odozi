@@ -15,10 +15,29 @@ struct SleepStageData: Sendable {
 }
 
 actor HealthKitService {
+    /// Long-lived instance used for background delivery + observer queries, which require the
+    /// `HKHealthStore` and the `HKObserverQuery` objects to stay alive for the app's lifetime.
+    /// One-shot fetches may keep using freshly-constructed instances.
+    static let shared = HealthKitService()
+
     private let store = HKHealthStore()
+    private var observerQueries: [HKObserverQuery] = []
 
     static var isAvailable: Bool {
         HKHealthStore.isHealthDataAvailable()
+    }
+
+    /// The sample types we read and want background updates for. (`activeEnergyBurned` is
+    /// authorized for workout calories but has no standalone fetch, so it's excluded here.)
+    private var backgroundSampleTypes: [HKSampleType] {
+        [
+            HKQuantityType(.stepCount),
+            HKQuantityType(.distanceWalkingRunning),
+            HKCategoryType(.sleepAnalysis),
+            HKQuantityType(.heartRate),
+            HKQuantityType(.restingHeartRate),
+            HKWorkoutType.workoutType()
+        ]
     }
 
     func requestAuthorization() async throws {
@@ -37,6 +56,58 @@ actor HealthKitService {
         try await store.requestAuthorization(toShare: [], read: readTypes)
         logger.info("HealthKit authorization requested")
     }
+
+    // MARK: - Background delivery
+
+    // iOS only: this file is also compiled into the watch target, which has no
+    // BackgroundSnapshotService (and no BGTask-driven snapshot to feed).
+    #if os(iOS)
+
+    /// Asks HealthKit to wake the app when new samples land while it's backgrounded.
+    ///
+    /// Requires the `com.apple.developer.healthkit.background-delivery` entitlement plus a
+    /// regenerated provisioning profile. Without it, `enableBackgroundDelivery` throws — we log
+    /// and continue so the app still captures via foreground + BGTasks (graceful degradation).
+    func enableBackgroundDelivery() async {
+        guard HealthKitService.isAvailable else { return }
+        for type in backgroundSampleTypes {
+            do {
+                try await store.enableBackgroundDelivery(for: type, frequency: .hourly)
+                logger.info("Enabled background delivery for \(type.identifier, privacy: .public)")
+            } catch {
+                logger.warning("Background delivery unavailable for \(type.identifier, privacy: .public): \(error.localizedDescription) — is the background-delivery entitlement present?")
+            }
+        }
+    }
+
+    /// Registers one `HKObserverQuery` per read type. Each firing runs the shared (debounced)
+    /// snapshot path, which itself skips HealthKit while the device is locked. Idempotent —
+    /// no-op if already observing.
+    func startObserving() {
+        guard HealthKitService.isAvailable, observerQueries.isEmpty else { return }
+        for type in backgroundSampleTypes {
+            let typeID = type.identifier
+            let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completionHandler, error in
+                // Acknowledge before doing any work. If iOS suspends the app mid-capture the
+                // handler would otherwise never fire, and iOS stops delivering background
+                // updates for that type entirely.
+                completionHandler()
+
+                if let error {
+                    logger.error("HealthKit observer error for \(typeID, privacy: .public): \(error.localizedDescription)")
+                    return
+                }
+                Task {
+                    await BackgroundSnapshotService.captureAndApply(trigger: "HealthKit observer")
+                }
+            }
+            store.execute(query)
+            observerQueries.append(query)
+        }
+        logger.info("Registered \(self.observerQueries.count) HealthKit observer queries")
+    }
+
+    #endif
 
     func fetchSteps(for date: Date) async throws -> Int? {
         guard let interval = dayInterval(for: date) else { return nil }

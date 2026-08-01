@@ -16,13 +16,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationService.registerAllCategories()
         UNUserNotificationCenter.current().delegate = self
 
-        // Register primary snapshot task (8 PM)
+        // Register primary snapshot task (user-chosen capture time)
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.snapshot", using: nil) { task in
             guard let refreshTask = task as? BGAppRefreshTask else { return }
             self.handleSnapshot(task: refreshTask)
         }
 
-        // Register fallback processing task (2 AM)
+        // Register fallback processing task (early morning, after the phone is likely unlocked)
         BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.processing", using: nil) { task in
             guard let processingTask = task as? BGProcessingTask else { return }
             self.handleProcessing(task: processingTask)
@@ -96,7 +96,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         SnapshotScheduler.scheduleSnapshotTask()
     }
 
-    // MARK: - Fallback: BGProcessingTask at 2 AM
+    // MARK: - Retry when the device unlocks
+
+    // A BGTask (or SLC/observer wake) that ran while the phone was locked can't read HealthKit —
+    // captureHealthData skips it and marks "skipped-locked". When protected data becomes
+    // available, run one more capture to backfill. This fires on every unlock, so it goes
+    // through the debounced shared path rather than capturing dozens of times a day.
+    func applicationProtectedDataDidBecomeAvailable(_: UIApplication) {
+        Task {
+            await BackgroundSnapshotService.captureAndApply(trigger: "protected-data-available")
+        }
+    }
+
+    // MARK: - Fallback: BGProcessingTask (early morning)
 
     private func handleProcessing(task: BGProcessingTask) {
         scheduleProcessingTask()
@@ -128,7 +140,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
         let calendar = Calendar.current
         let now = Date()
-        guard var target = calendar.date(bySettingHour: 2, minute: 0, second: 0, of: now) else {
+        // 7 AM: late enough that the phone has usually been unlocked at least once (so HealthKit
+        // is readable), while still an idle window iOS is willing to schedule processing tasks in.
+        guard var target = calendar.date(bySettingHour: 7, minute: 0, second: 0, of: now) else {
             logger.warning("Failed to compute processing target date")
             return
         }
