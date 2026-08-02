@@ -48,7 +48,7 @@ enum JournalInsightService {
                 """
             )
             let response = try await session.respond(to: prompt, generating: JournalInsight.self)
-            let insight = response
+            let insight = response.content
             return JournalInsightResult(
                 followUpQuestion: insight.followUpQuestion,
                 detectedEmotion: insight.detectedEmotion,

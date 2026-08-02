@@ -157,8 +157,11 @@ final class JournalInsightServiceTests: XCTestCase {
 
     // MARK: - generateInsight (unavailable environment)
 
-    func testGenerateInsightReturnsNilWhenUnavailable() async {
-        // On simulator / CI, FoundationModels is not available
+    func testGenerateInsightReturnsNilWhenUnavailable() async throws {
+        try XCTSkipIf(
+            FoundationModelsAvailability.isAvailable,
+            "FoundationModels is available here, so the nil path isn't exercised"
+        )
         let responses = PromptResponses()
         let result = await JournalInsightService.generateInsight(from: responses)
         XCTAssertNil(result, "Should return nil when FoundationModels is unavailable")
