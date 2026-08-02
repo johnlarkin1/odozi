@@ -35,7 +35,10 @@
                     } header: {
                         Text("Date Range")
                     } footer: {
-                        Text("Photos taken on each day in this range will be linked to that day's entry. Days without a location will use the location saved in your photos.")
+                        Text(
+                            "Photos taken on each day in this range will be linked to that day's entry. "
+                                + "Days without a location will use the location saved in your photos."
+                        )
                     }
                     .listRowBackground(Color.cardSurface)
 
