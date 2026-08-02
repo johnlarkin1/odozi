@@ -11,6 +11,10 @@
 		01ADAPT01GRID01MAC0000002 /* AdaptiveGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 01ADAPT01GRID01FILE000001 /* AdaptiveGrid.swift */; };
 		03967DD42B2211FD993A71D3 /* InsightsDashboardDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */; };
 		045753DFF91B844D89D03064 /* InsightsTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5B7A0B21D5A37C00B603DCDA /* InsightsTab.swift */; };
+		FF0000000000000000000001 /* FoundationModelsAvailability.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0000000000000000000011 /* FoundationModelsAvailability.swift */; };
+		FF0000000000000000000002 /* JournalInsightService.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0000000000000000000012 /* JournalInsightService.swift */; };
+		FF0000000000000000000003 /* FoundationModelsAvailabilityTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0000000000000000000013 /* FoundationModelsAvailabilityTests.swift */; };
+		FF0000000000000000000004 /* JournalInsightServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FF0000000000000000000014 /* JournalInsightServiceTests.swift */; };
 		04EB166CB7A7EC94EB5B8122 /* MetricDefinition.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE292778346244DD63835D87 /* MetricDefinition.swift */; };
 		05F5B7CBC435ED663C795965 /* WeekSummaryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = B93985946619FAB87D5ECA57 /* WeekSummaryView.swift */; };
 		060652D48244172B87B51067 /* ReminderSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 162413D44EB26D7A58E55ED3 /* ReminderSettingsView.swift */; };
@@ -628,6 +632,10 @@
 		8A90B323B0F5900D138A2D16 /* BackgroundSnapshotService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackgroundSnapshotService.swift; sourceTree = "<group>"; };
 		8A923F6EEF4C408126C0DDEE /* AchievementBadgeCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AchievementBadgeCell.swift; sourceTree = "<group>"; };
 		8AE2C9DA8054CF21E5FE6F5D /* SampleAssets */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = folder; path = SampleAssets; sourceTree = "<group>"; };
+		FF0000000000000000000011 /* FoundationModelsAvailability.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FoundationModelsAvailability.swift; sourceTree = "<group>"; };
+		FF0000000000000000000012 /* JournalInsightService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = JournalInsightService.swift; sourceTree = "<group>"; };
+		FF0000000000000000000013 /* FoundationModelsAvailabilityTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FoundationModelsAvailabilityTests.swift; sourceTree = "<group>"; };
+		FF0000000000000000000014 /* JournalInsightServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JournalInsightServiceTests.swift; sourceTree = "<group>"; };
 		8E01DE064CE63418C35E7996 /* ScreenTimePermissionCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ScreenTimePermissionCard.swift; sourceTree = "<group>"; };
 		93A39D8428B667128D5F43AC /* InsightsDashboardDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InsightsDashboardDemo.swift; sourceTree = "<group>"; };
 		97569FD9C2589433BE90F633 /* ReviewMoodCard.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ReviewMoodCard.swift; sourceTree = "<group>"; };
@@ -908,6 +916,8 @@
 				EC4EAAD07B30875B687B9F0F /* AchievementRegistry.swift */,
 				F3FD9D3DFC558B342DB2DB00 /* AchievementService.swift */,
 				7B135681C1F8CE946D22A3B8 /* SleepScoreService.swift */,
+				FF0000000000000000000011 /* FoundationModelsAvailability.swift */,
+				FF0000000000000000000012 /* JournalInsightService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -1182,6 +1192,8 @@
 				NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */,
 				NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */,
 				PHSYNC0003FILE0003 /* PhotoSyncServiceTests.swift */,
+				FF0000000000000000000013 /* FoundationModelsAvailabilityTests.swift */,
+				FF0000000000000000000014 /* JournalInsightServiceTests.swift */,
 			);
 			path = OdysseyTests;
 			sourceTree = "<group>";
@@ -1812,6 +1824,8 @@
 				F1057D5C62AEFC256406AD3A /* SingleLocationDelegate.swift in Sources */,
 				869F89CC56B7FAEEAF4BB75C /* HealthKitService.swift in Sources */,
 				6C8DC5973DC4574CDAEEAC80 /* BackgroundSnapshotService.swift in Sources */,
+				FF0000000000000000000001 /* FoundationModelsAvailability.swift in Sources */,
+				FF0000000000000000000002 /* JournalInsightService.swift in Sources */,
 				CFD4121282DB9533E2966630 /* YearInReviewService.swift in Sources */,
 				5357B991376AA0AA67ABEC2C /* GuidedPromptViewModel.swift in Sources */,
 				28116A7F43066FFE82A170CA /* JournalViewModel.swift in Sources */,
@@ -1969,6 +1983,8 @@
 				NEWTEST0007BUILD007 /* JourneyExplorerViewModelTests.swift in Sources */,
 				NEWTEST0008BUILD008 /* DataRetentionServiceTests.swift in Sources */,
 				PHSYNC0003BUILD0003 /* PhotoSyncServiceTests.swift in Sources */,
+				FF0000000000000000000003 /* FoundationModelsAvailabilityTests.swift in Sources */,
+				FF0000000000000000000004 /* JournalInsightServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

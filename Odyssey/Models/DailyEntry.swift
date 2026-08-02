@@ -100,6 +100,9 @@ final class DailyEntry {
     var lastSyncedAt: Date?
     var needsSync: Bool = false
 
+    // AI reflections (cached JSON from on-device LLM)
+    var aiReflectionJSON: String?
+
     init(
         date: Date = Calendar.current.startOfDay(for: Date()),
         feeling: Int = 0,
@@ -174,5 +177,6 @@ final class DailyEntry {
         updatedAt = Date()
         self.lastSyncedAt = lastSyncedAt
         self.needsSync = needsSync
+        self.aiReflectionJSON = nil
     }
 }

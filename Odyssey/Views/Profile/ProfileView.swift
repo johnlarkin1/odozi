@@ -40,6 +40,7 @@ struct ProfileView: View {
     // Key mirrors `PhotoSyncService.autoSyncEnabledKey` (that type is iOS-only,
     // while this view also builds for macOS).
     @AppStorage("photoAutoSyncEnabled") private var photoAutoSyncEnabled = true
+    @AppStorage("aiReflectionsEnabled") private var aiReflectionsEnabled = false
 
     @State private var csvExportURL: URL?
     @State private var showPhotoSync = false
@@ -218,6 +219,20 @@ struct ProfileView: View {
                     }
                     .listRowBackground(Color.cardSurface)
                 #endif
+
+                if FoundationModelsAvailability.isAvailable {
+                    Section("AI Reflections") {
+                        Toggle(isOn: $aiReflectionsEnabled) {
+                            Label("Post-Entry Reflection", systemImage: "sparkles")
+                                .foregroundStyle(Color.cosmicPurple)
+                        }
+
+                        Text("Get a personalized reflection after each entry. Runs entirely on-device — your data never leaves your phone.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .listRowBackground(Color.cardSurface)
+                }
 
                 Section("Data") {
                     if let url = csvExportURL {

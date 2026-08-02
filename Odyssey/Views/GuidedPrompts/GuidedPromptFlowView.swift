@@ -110,7 +110,9 @@ struct GuidedPromptFlowView: View {
                     CompletionCard(
                         entryDate: vm.isPastEntry ? vm.targetDate : nil,
                         locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
-                        unlockedAchievements: vm.newlyUnlockedAchievements
+                        unlockedAchievements: vm.newlyUnlockedAchievements,
+                        isGeneratingInsight: vm.isGeneratingInsight,
+                        insight: vm.insight
                     ) {
                         dismiss()
                     }
@@ -124,7 +126,9 @@ struct GuidedPromptFlowView: View {
                             CompletionCard(
                                 entryDate: vm.isPastEntry ? vm.targetDate : nil,
                                 locationDisplay: vm.currentLocationDisplay == "No location captured" ? nil : vm.currentLocationDisplay,
-                                unlockedAchievements: vm.newlyUnlockedAchievements
+                                unlockedAchievements: vm.newlyUnlockedAchievements,
+                                isGeneratingInsight: vm.isGeneratingInsight,
+                                insight: vm.insight
                             ) {
                                 dismiss()
                             }
