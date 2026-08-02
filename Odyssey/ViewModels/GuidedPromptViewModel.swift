@@ -181,13 +181,13 @@ final class GuidedPromptViewModel {
         isComplete = true
         showingCompletion = true
 
-        if UserDefaults.standard.bool(forKey: "aiReflectionsEnabled")
-            && FoundationModelsAvailability.isAvailable {
-            generateInsight()
-        }
+        generateInsight()
     }
 
     private func generateInsight() {
+        guard UserDefaults.standard.bool(forKey: "aiReflectionsEnabled"),
+              FoundationModelsAvailability.isAvailable else { return }
+
         isGeneratingInsight = true
         let responses = self.responses
         Task {
