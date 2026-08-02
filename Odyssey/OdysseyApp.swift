@@ -243,6 +243,12 @@ struct OdysseyApp: App {
 
         NotificationService.rescheduleIfNeeded()
 
+        // Automatically link recent photos to their days and backfill locations
+        // from photo metadata. Throttled and no-ops without photo access.
+        #if os(iOS)
+            await PhotoSyncService().autoSyncIfNeeded(context: context)
+        #endif
+
         // Refresh weekly digest notification with latest stats
         await WeeklyDigestNotificationManager.refreshContent(context: context)
 

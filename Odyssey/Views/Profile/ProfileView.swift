@@ -37,8 +37,12 @@ struct ProfileView: View {
     @AppStorage("locationCaptureMode") private var locationCaptureModeRaw = LocationCaptureMode.evening.rawValue
     @AppStorage("locationCaptureHour") private var locationCaptureHour = 20
     @AppStorage("locationCaptureMinute") private var locationCaptureMinute = 0
+    // Key mirrors `PhotoSyncService.autoSyncEnabledKey` (that type is iOS-only,
+    // while this view also builds for macOS).
+    @AppStorage("photoAutoSyncEnabled") private var photoAutoSyncEnabled = true
 
     @State private var csvExportURL: URL?
+    @State private var showPhotoSync = false
 
     @Environment(AuthManager.self) private var authManager
 
@@ -196,6 +200,25 @@ struct ProfileView: View {
                 }
                 .listRowBackground(Color.cardSurface)
 
+                #if os(iOS)
+                    Section("Photos") {
+                        Button {
+                            showPhotoSync = true
+                        } label: {
+                            Label("Sync Photos", systemImage: "photo.on.rectangle.angled")
+                        }
+
+                        Toggle(isOn: $photoAutoSyncEnabled) {
+                            Label("Auto-Sync Photos", systemImage: "arrow.triangle.2.circlepath")
+                        }
+
+                        Text("Automatically links photos from your library to each day and fills in locations from your photos' metadata.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    .listRowBackground(Color.cardSurface)
+                #endif
+
                 Section("Data") {
                     if let url = csvExportURL {
                         ShareLink(item: url) {
@@ -246,6 +269,11 @@ struct ProfileView: View {
             .scrollContentBackground(.hidden)
             .navigationTitle("Profile")
             .cosmicBackground()
+            #if os(iOS)
+            .sheet(isPresented: $showPhotoSync) {
+                PhotoSyncView()
+            }
+            #endif
         }
     }
 
