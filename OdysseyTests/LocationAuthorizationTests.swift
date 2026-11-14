@@ -196,4 +196,83 @@ final class LocationAuthorizationTests: XCTestCase {
             XCTAssertEqual((error as? CLError)?.code, .locationUnknown)
         }
     }
+
+    // MARK: - Applying a location to an entry
+
+    private func snapshot(
+        latitude: Double = 40.7128,
+        longitude: Double = -74.0060,
+        city: String? = "New York",
+        at timestamp: Date
+    ) -> LocationSnapshot {
+        LocationSnapshot(
+            latitude: latitude, longitude: longitude,
+            city: city, state: city == nil ? nil : "NY", country: city == nil ? nil : "US",
+            timestamp: timestamp
+        )
+    }
+
+    /// The first location is written as one unit, stamped with the fix's own time.
+    @MainActor
+    func testApplyLocationWritesFirstFixAsUnit() {
+        let entry = DailyEntry(date: Calendar.current.startOfDay(for: noon))
+        let fixTime = noon.addingTimeInterval(-600)
+
+        XCTAssertTrue(applyLocation(snapshot(at: fixTime), to: entry))
+        XCTAssertEqual(entry.latitude, 40.7128)
+        XCTAssertEqual(entry.city, "New York")
+        XCTAssertEqual(entry.state, "NY")
+        XCTAssertEqual(entry.locationCapturedAt, fixTime)
+    }
+
+    /// A later passive fix doesn't move the day's location or mix in another place's name.
+    @MainActor
+    func testApplyLocationKeepsFirstLocation() {
+        let entry = DailyEntry(date: Calendar.current.startOfDay(for: noon))
+        applyLocation(snapshot(at: noon), to: entry)
+
+        let boston = snapshot(latitude: 42.36, longitude: -71.06, city: "Boston", at: noon.addingTimeInterval(3600))
+        XCTAssertFalse(applyLocation(boston, to: entry))
+        XCTAssertEqual(entry.city, "New York")
+        XCTAssertEqual(entry.latitude, 40.7128)
+    }
+
+    /// Coordinates saved first (e.g. an SLC wake suspended mid-geocode) get their place name when
+    /// the same coordinates come back named.
+    @MainActor
+    func testApplyLocationFillsPlaceForSameCoordinates() {
+        let entry = DailyEntry(date: Calendar.current.startOfDay(for: noon))
+        XCTAssertTrue(applyLocation(snapshot(city: nil, at: noon), to: entry))
+        XCTAssertNil(entry.city)
+
+        XCTAssertTrue(applyLocation(snapshot(at: noon), to: entry))
+        XCTAssertEqual(entry.city, "New York")
+        XCTAssertEqual(entry.country, "US")
+    }
+
+    /// A snapshot whose fix belongs to another day is not applied to this day's entry.
+    @MainActor
+    func testApplySnapshotIgnoresLocationFromAnotherDay() throws {
+        let container = try DataContainer.create(inMemory: true)
+        let context = container.mainContext
+        let today = Calendar.current.startOfDay(for: Date())
+        let yesterdayFix = today.addingTimeInterval(-60 * 60)
+
+        let data = SnapshotData(
+            day: today,
+            location: snapshot(at: yesterdayFix),
+            stepCount: 1234, walkingDistanceMeters: nil,
+            sleepHours: nil, sleepREMHours: nil, sleepDeepHours: nil, sleepCoreHours: nil,
+            sleepAwakeMinutes: nil, sleepOnset: nil, sleepInterruptionCount: nil,
+            workoutDataJSON: nil, workoutCount: nil, totalWorkoutMinutes: nil, workoutIntensityScore: nil,
+            restingHeartRate: nil, averageHeartRate: nil,
+            healthSkippedLocked: false,
+            screenTimeSeconds: nil, pickups: nil
+        )
+
+        XCTAssertTrue(applySnapshotData(data, to: context))
+        let entry = try XCTUnwrap(DailyEntryRepository(context: context).fetchEntry(for: today))
+        XCTAssertEqual(entry.stepCount, 1234)
+        XCTAssertNil(entry.latitude, "Yesterday's fix must not label today's entry")
+    }
 }

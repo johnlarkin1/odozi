@@ -80,25 +80,30 @@ actor HealthKitService {
         }
     }
 
-    /// Registers one `HKObserverQuery` per read type. Each firing runs the shared (debounced)
-    /// snapshot path, which itself skips HealthKit while the device is locked. Idempotent —
-    /// no-op if already observing.
+    /// Registers one `HKObserverQuery` per read type. Each firing runs the shared (coalesced,
+    /// debounced) snapshot path, which itself skips HealthKit while the device is locked.
+    /// Idempotent — no-op if already observing.
+    ///
+    /// Must also run from `didFinishLaunching`: when HealthKit relaunches a terminated app for a
+    /// background delivery, the update goes to observer queries that exist at that point — the
+    /// foreground path never runs on a background launch.
     func startObserving() {
         guard HealthKitService.isAvailable, observerQueries.isEmpty else { return }
         for type in backgroundSampleTypes {
             let typeID = type.identifier
             let query = HKObserverQuery(sampleType: type, predicate: nil) { _, completionHandler, error in
-                // Acknowledge before doing any work. If iOS suspends the app mid-capture the
-                // handler would otherwise never fire, and iOS stops delivering background
-                // updates for that type entirely.
-                completionHandler()
-
                 if let error {
                     logger.error("HealthKit observer error for \(typeID, privacy: .public): \(error.localizedDescription)")
+                    completionHandler()
                     return
                 }
-                Task {
+                // Call the completion handler only once the capture is done (Apple's contract):
+                // that's what keeps the app awake long enough to save. captureAndApply holds its
+                // own background-task assertion, is debounced, and returns quickly when skipped,
+                // so this always completes — HealthKit backs off if it isn't called.
+                Task { @MainActor in
                     await BackgroundSnapshotService.captureAndApply(trigger: "HealthKit observer")
+                    completionHandler()
                 }
             }
             store.execute(query)

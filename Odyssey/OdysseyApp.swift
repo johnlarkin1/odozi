@@ -18,6 +18,7 @@ struct OdysseyApp: App {
     @State private var showAchievementWelcome = false
     @State private var retroactiveUnlockCount = 0
     @State private var oldEntryCount = 0
+    @State private var isCatchingUp = false
 
     let container: ModelContainer?
     let containerError: Error?
@@ -28,15 +29,18 @@ struct OdysseyApp: App {
 
     init() {
         do {
-            #if DEBUG
-                let c = if Self.isScreenshotMode {
-                    try DataContainer.createSeededContainer()
-                } else {
-                    try DataContainer.create()
-                }
-            #else
-                let c = try DataContainer.create()
-            #endif
+            // The shared container: background captures (BGTasks, location/HealthKit wakes) write
+            // through this same instance, so the UI sees their changes immediately.
+            let c = try MainActor.assumeIsolated {
+                #if DEBUG
+                    if Self.isScreenshotMode {
+                        let seeded = try DataContainer.createSeededContainer()
+                        DataContainer.setShared(seeded)
+                        return seeded
+                    }
+                #endif
+                return try DataContainer.shared()
+            }
             container = c
             containerError = nil
 
@@ -140,6 +144,11 @@ struct OdysseyApp: App {
                 }
             }
             .onChange(of: scenePhase) { _, newPhase in
+                // A catch-up suspended mid-way when the app was backgrounded must not block the
+                // next activation's — the guard is only for the .inactive → .active bounce.
+                if newPhase == .background {
+                    isCatchingUp = false
+                }
                 if newPhase == .active, container != nil, hasCompletedOnboarding {
                     Task {
                         await foregroundCatchUp()
@@ -182,6 +191,10 @@ struct OdysseyApp: App {
     @MainActor
     private func foregroundCatchUp() async {
         guard let container else { return }
+        // Permission prompts bounce the scene through .inactive → .active; don't stack runs.
+        guard !isCatchingUp else { return }
+        isCatchingUp = true
+        defer { isCatchingUp = false }
         let context = container.mainContext
 
         // Re-register screen time monitoring on every foreground (defensive best practice —
@@ -205,12 +218,9 @@ struct OdysseyApp: App {
             await HealthKitService.shared.startObserving()
         }
 
-        // Always capture and apply snapshot — applySnapshotData only writes non-nil values
-        // and uses fetchOrCreateToday(), so repeated calls are safe
-        let service = BackgroundSnapshotService()
-        let data = await service.captureSnapshot()
-        applySnapshotData(data, to: context)
-        NotificationCenter.default.post(name: .snapshotDidUpdate, object: nil)
+        // Same shared path as every background trigger (forced: the user is looking). Joins a
+        // capture already in flight, e.g. one a HealthKit observer started at launch.
+        await BackgroundSnapshotService.captureAndApply(trigger: "foreground", force: true)
 
         // Screen Time extension writes async to SharedDefaults — poll until available.
         // The DeviceActivity extension needs time to compute and write data,
