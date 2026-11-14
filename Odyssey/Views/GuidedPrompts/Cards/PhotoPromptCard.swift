@@ -22,7 +22,7 @@ struct PhotoPromptCard: View {
                     ZStack(alignment: .topTrailing) {
                         Image(uiImage: uiImage)
                             .resizable()
-                            .aspectRatio(contentMode: .fill)
+                            .scaledToFill()
                             .frame(maxWidth: 280, maxHeight: 280)
                             .clipShape(RoundedRectangle(cornerRadius: 16))
                             .overlay(
