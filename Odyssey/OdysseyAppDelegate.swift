@@ -10,7 +10,7 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Back
 class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterDelegate {
     func application(
         _: UIApplication,
-        didFinishLaunchingWithOptions _: [UIApplication.LaunchOptionsKey: Any]?
+        didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
     ) -> Bool {
         // Register notification categories and delegate
         NotificationService.registerAllCategories()
@@ -19,6 +19,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         // Everything below must happen on *every* launch, before this method returns — including
         // background relaunches, where the SwiftUI scene never becomes active and
         // `foregroundCatchUp` never runs.
+
+        // Passive location: when iOS relaunches a terminated app for a significant location change,
+        // it delivers the fix to whichever location manager exists now, and keeps delivering only
+        // if monitoring is restarted in this process. Never prompts.
+        if launchOptions?[.location] != nil {
+            logger.info("Relaunched in the background for a significant location change")
+        }
+        LocationMonitoringService.shared.resumeMonitoringIfAuthorized()
 
         // HealthKit background delivery is routed to observer queries that exist at launch.
         // Observing needs only previously granted read access — it shows no UI.
