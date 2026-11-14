@@ -39,8 +39,10 @@ final class GuidedPromptViewModel {
         // because the prompt cards treat 0/"" as "not answered", and it lets users
         // who hit "Add journal details" on an auto-captured day pick up anything
         // they'd previously typed.
+        // fetch, not fetchOrCreate: merely opening the flow mustn't insert an empty row (it would
+        // autosave). submit() creates the entry when there's something to save.
         let repository = DailyEntryRepository(context: modelContext)
-        guard let entry = try? repository.fetchOrCreate(for: targetDate) else { return }
+        guard let entry = try? repository.fetchEntry(for: targetDate) else { return }
 
         responses.feeling = entry.feeling
         responses.singleWordFeeling = entry.singleWordFeeling
@@ -182,7 +184,11 @@ final class GuidedPromptViewModel {
 
     func loadCurrentLocation() {
         let repository = DailyEntryRepository(context: modelContext)
-        guard let entry = try? repository.fetchOrCreate(for: targetDate) else { return }
+        guard let entry = try? repository.fetchEntry(for: targetDate) else {
+            currentLocationDisplay = "No location captured"
+            locationCapturedAt = nil
+            return
+        }
 
         if let city = entry.city, let state = entry.state {
             currentLocationDisplay = "\(city), \(state)"
@@ -195,6 +201,8 @@ final class GuidedPromptViewModel {
     }
 
     func updateLocationFromGPS() async {
+        // One capture at a time: the button, the card's onAppear and submit() can all ask.
+        guard !isUpdatingLocation else { return }
         isUpdatingLocation = true
         locationErrorMessage = nil
         defer { isUpdatingLocation = false }
@@ -205,28 +213,33 @@ final class GuidedPromptViewModel {
     /// Fires on LocationCard.onAppear for today's entry when no coordinates
     /// are stored yet. Silent on failure — the explicit button handles retries.
     func autoCaptureLocationIfNeeded() async {
-        guard Calendar.current.isDateInToday(targetDate) else { return }
+        guard !isPastEntry else { return }
         let repository = DailyEntryRepository(context: modelContext)
-        guard let entry = try? repository.fetchOrCreate(for: targetDate),
-              entry.latitude == nil || entry.longitude == nil
-        else { return }
+        let entry = try? repository.fetchEntry(for: targetDate)
+        guard entry?.latitude == nil || entry?.longitude == nil else { return }
         await updateLocationFromGPS()
     }
 
     private func performLocationCapture(allowPermissionPrompt: Bool) async {
-        do {
-            let repository = DailyEntryRepository(context: modelContext)
-            let entry = try repository.fetchOrCreate(for: targetDate)
+        // Current GPS describes today, not a past day being edited.
+        guard !isPastEntry else {
+            locationErrorMessage = "Location can only be captured for today's entry."
+            return
+        }
 
+        do {
             let service = LocationCaptureService()
             let snapshot = try await service.captureCurrentLocation()
 
+            // Create the row only once there's something to put in it.
+            let repository = DailyEntryRepository(context: modelContext)
+            let entry = try repository.fetchOrCreate(for: targetDate)
             entry.latitude = snapshot.latitude
             entry.longitude = snapshot.longitude
             entry.city = snapshot.city
             entry.state = snapshot.state
             entry.country = snapshot.country
-            entry.locationCapturedAt = Date()
+            entry.locationCapturedAt = snapshot.timestamp
             entry.updatedAt = Date()
 
             try modelContext.save()
@@ -234,9 +247,8 @@ final class GuidedPromptViewModel {
             locationErrorMessage = nil
             loadCurrentLocation()
         } catch LocationCaptureError.permissionNotDetermined where allowPermissionPrompt {
-            // First tap with undetermined status: request auth, then retry once.
-            CLLocationManager().requestWhenInUseAuthorization()
-            try? await Task.sleep(for: .milliseconds(400))
+            // First tap with undetermined status: ask, wait for the user's actual answer, retry once.
+            _ = await LocationAuthorization.shared.requestWhenInUse()
             await performLocationCapture(allowPermissionPrompt: false)
         } catch LocationCaptureError.permissionNotDetermined {
             locationPermissionDenied = false
@@ -244,7 +256,7 @@ final class GuidedPromptViewModel {
             loadCurrentLocation()
         } catch LocationCaptureError.permissionDenied {
             locationPermissionDenied = true
-            locationErrorMessage = "Location is off for Odyssey. Enable it in Settings."
+            locationErrorMessage = "Location is off for Odozi. Enable it in Settings."
             loadCurrentLocation()
         } catch {
             locationPermissionDenied = false

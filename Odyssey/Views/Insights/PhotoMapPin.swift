@@ -7,7 +7,7 @@ struct PhotoMapPin: View {
     var body: some View {
         Image(uiImage: image)
             .resizable()
-            .aspectRatio(contentMode: .fill)
+            .scaledToFill()
             .frame(width: 40, height: 40)
             .clipShape(Circle())
             .overlay(

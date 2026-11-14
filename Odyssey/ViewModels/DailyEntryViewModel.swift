@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import os
 import SwiftData
@@ -124,17 +125,21 @@ final class DailyEntryViewModel {
     }
 
     func updateLocation() async throws {
-        let entry = try repository.fetchOrCreateToday()
+        // Ask on first use instead of failing silently with permissionNotDetermined.
+        if LocationAuthorization.shared.status == .notDetermined {
+            _ = await LocationAuthorization.shared.requestWhenInUse()
+        }
 
         let service = LocationCaptureService()
         let snapshot = try await service.captureCurrentLocation()
 
+        let entry = try repository.fetchOrCreateToday()
         entry.latitude = snapshot.latitude
         entry.longitude = snapshot.longitude
         entry.city = snapshot.city
         entry.state = snapshot.state
         entry.country = snapshot.country
-        entry.locationCapturedAt = Date()
+        entry.locationCapturedAt = snapshot.timestamp
         entry.updatedAt = Date()
 
         try modelContext.save()

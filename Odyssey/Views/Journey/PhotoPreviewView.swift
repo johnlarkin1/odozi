@@ -31,7 +31,7 @@ struct PhotoPreviewView: View {
             if let image {
                 Image(uiImage: image)
                     .resizable()
-                    .aspectRatio(contentMode: .fit)
+                    .scaledToFit()
                     .scaleEffect(scale)
                     .offset(x: offset.width, y: offset.height + dragOffset)
                     .gesture(
