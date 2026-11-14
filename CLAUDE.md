@@ -49,13 +49,13 @@ make help
 - Shared data between app and extensions via `UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")`
 
 **Key data flow:**
-1. `OdysseyApp` is the @main entry point; requests location, Screen Time, HealthKit permissions
-2. `AppDelegate` registers dual background tasks: `com.odyssey.snapshot` (8 PM) and `com.odyssey.processing` (2 AM fallback)
-3. `BackgroundSnapshotService` runs location + HealthKit concurrently via `async let`, reads Screen Time from shared defaults
-4. `LocationCaptureService` uses `requestLocation()` single-shot + `CLGeocoder` reverse geocoding
-5. `HealthKitService` fetches steps, walking distance, and sleep analysis
+1. `OdysseyApp` is the @main entry point; requests location, Screen Time, HealthKit permissions. It uses `DataContainer.shared()` — the one `ModelContainer` every in-process writer (UI, BGTasks, wakes) must share
+2. `AppDelegate.didFinishLaunching` runs on **every** launch, including background relaunches where the scene never becomes active. It re-arms significant-location-change monitoring (`LocationMonitoringService.resumeMonitoringIfAuthorized()`), starts HealthKit observer queries, registers the BGTasks `com.odyssey.snapshot` (user-chosen time) and `com.odyssey.processing` (7 AM fallback), and submits whichever aren't already pending (`SnapshotScheduler.ensureScheduled()`)
+3. Every capture trigger — foreground, BGTasks, SLC wakes, HealthKit observers, unlock retry — goes through `BackgroundSnapshotService.captureAndApply(trigger:force:)`: coalesced (one run in flight), debounced (1h unless forced), and wrapped in a background-task assertion
+4. Location: `LocationAuthorization.shared` is the observable source of truth for permission (shared with macOS). Passive capture needs **Always**; SLC wakes save the delivered fix's coordinates immediately, then reverse-geocode (`PlaceResolver`, timeout-bounded). The day's first location sticks; `applyLocation` writes it as one unit stamped with the fix's own time, and only same-day fixes count
+5. `HealthKitService` fetches steps, walking distance, sleep, workouts and heart rate; skipped while the device is locked (protected data), retried on unlock
 6. Screen Time pipeline: `TotalActivityReport.makeConfiguration()` writes to shared UserDefaults → main app reads on foreground
-7. Foreground catch-up: on every `.active` scene phase, checks if today's snapshot exists and runs if missing
+7. Foreground catch-up: on every `.active` scene phase, re-registers monitoring/permissions and runs a forced `captureAndApply`
 
 **Navigation (4 tabs):**
 - **Today** — Greeting, entry status card, launches GuidedPromptFlowView as fullScreenCover
@@ -122,5 +122,6 @@ When building a new feature, follow this flow:
 - FamilyControls/DeviceActivity APIs require a **physical device** — simulator builds will fail for extension targets
 - App Group `group.com.johnlarkin.Odyssey` shared across all 3 targets
 - HealthKit entitlement on main app target only
-- BGTaskScheduler identifiers: `com.odyssey.snapshot`, `com.odyssey.processing`
+- BGTaskScheduler identifiers: `com.odyssey.snapshot`, `com.odyssey.processing` (constants on `SnapshotScheduler`)
+- Never create a throwaway `CLLocationManager()` to request permission — it deallocates before the user answers. Use `LocationAuthorization.shared.requestWhenInUse()`
 - **Never use `withAnimation(.repeatForever())` in `.onAppear`** — this creates a permanent animation transaction that leaks to sibling views, causing unintended opacity/scale oscillations. Instead, use declarative `.animation(.repeatForever(), value: state)` on the specific views that should animate, and set the state without `withAnimation` in `.onAppear`.
