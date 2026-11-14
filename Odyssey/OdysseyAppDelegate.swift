@@ -16,20 +16,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         NotificationService.registerAllCategories()
         UNUserNotificationCenter.current().delegate = self
 
-        // Register primary snapshot task (user-chosen capture time)
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.snapshot", using: nil) { task in
-            guard let refreshTask = task as? BGAppRefreshTask else { return }
-            self.handleSnapshot(task: refreshTask)
+        // Everything below must happen on *every* launch, before this method returns — including
+        // background relaunches, where the SwiftUI scene never becomes active and
+        // `foregroundCatchUp` never runs.
+
+        // HealthKit background delivery is routed to observer queries that exist at launch.
+        // Observing needs only previously granted read access — it shows no UI.
+        if HealthKitService.isAvailable, UserDefaults.standard.bool(forKey: "hasCompletedOnboarding") {
+            Task {
+                await HealthKitService.shared.startObserving()
+            }
         }
 
-        // Register fallback processing task (early morning, after the phone is likely unlocked)
-        BGTaskScheduler.shared.register(forTaskWithIdentifier: "com.odyssey.processing", using: nil) { task in
-            guard let processingTask = task as? BGProcessingTask else { return }
-            self.handleProcessing(task: processingTask)
-        }
-
-        scheduleSnapshotTask()
-        scheduleProcessingTask()
+        registerBackgroundTasks()
+        // Only submit what isn't already pending: cancelling and resubmitting on every launch
+        // pushed an overdue request back out (and re-rolled the randomized time).
+        SnapshotScheduler.ensureScheduled()
 
         return true
     }
@@ -67,97 +69,71 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
         completionHandler([.banner, .sound])
     }
 
-    // MARK: - Primary: BGAppRefreshTask at 8 PM
-
-    private func handleSnapshot(task: BGAppRefreshTask) {
-        scheduleSnapshotTask()
-
-        let snapshotTask = Task {
-            do {
-                let container = try DataContainer.create()
-                let service = BackgroundSnapshotService()
-                let data = await service.captureSnapshot()
-                await MainActor.run {
-                    applySnapshotData(data, to: container.mainContext)
-                }
-                task.setTaskCompleted(success: true)
-            } catch {
-                logger.error("Snapshot task failed: \(error)")
-                task.setTaskCompleted(success: false)
-            }
-        }
-
-        task.expirationHandler = {
-            snapshotTask.cancel()
-        }
-    }
-
-    private func scheduleSnapshotTask() {
-        SnapshotScheduler.scheduleSnapshotTask()
-    }
-
     // MARK: - Retry when the device unlocks
 
     // A BGTask (or SLC/observer wake) that ran while the phone was locked can't read HealthKit —
-    // captureHealthData skips it and marks "skipped-locked". When protected data becomes
-    // available, run one more capture to backfill. This fires on every unlock, so it goes
-    // through the debounced shared path rather than capturing dozens of times a day.
+    // captureHealthData skips it and marks "skipped-locked", and that run doesn't stamp the
+    // debounce. When protected data becomes available, run one more capture to backfill. This
+    // fires on every unlock, so it goes through the debounced shared path.
     func applicationProtectedDataDidBecomeAvailable(_: UIApplication) {
         Task {
             await BackgroundSnapshotService.captureAndApply(trigger: "protected-data-available")
         }
     }
 
-    // MARK: - Fallback: BGProcessingTask (early morning)
+    // MARK: - Background tasks
 
-    private func handleProcessing(task: BGProcessingTask) {
-        scheduleProcessingTask()
-
-        let processingTask = Task {
-            do {
-                let container = try DataContainer.create()
-                let service = BackgroundSnapshotService()
-                let data = await service.captureSnapshot()
-                await MainActor.run {
-                    applySnapshotData(data, to: container.mainContext)
-                }
-                task.setTaskCompleted(success: true)
-            } catch {
-                logger.error("Processing task failed: \(error)")
-                task.setTaskCompleted(success: false)
+    /// Primary: a `BGAppRefreshTask` at the user's chosen capture time. Fallback: a
+    /// `BGProcessingTask` early in the morning, after the phone is likely unlocked. Both run the
+    /// same shared capture path as every other trigger.
+    private func registerBackgroundTasks() {
+        // `using: .main` so the launch handler runs on the main actor, where the capture lives.
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: SnapshotScheduler.snapshotTaskID, using: .main) { task in
+            MainActor.assumeIsolated {
+                SnapshotScheduler.scheduleSnapshotTask()
+                Self.run(task, trigger: "BGAppRefreshTask")
             }
         }
-
-        task.expirationHandler = {
-            processingTask.cancel()
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: SnapshotScheduler.processingTaskID, using: .main) { task in
+            MainActor.assumeIsolated {
+                SnapshotScheduler.scheduleProcessingTask()
+                Self.run(task, trigger: "BGProcessingTask")
+            }
         }
     }
 
-    private func scheduleProcessingTask() {
-        let request = BGProcessingTaskRequest(identifier: "com.odyssey.processing")
-        request.requiresNetworkConnectivity = false
-        request.requiresExternalPower = false
-
-        let calendar = Calendar.current
-        let now = Date()
-        // 7 AM: late enough that the phone has usually been unlocked at least once (so HealthKit
-        // is readable), while still an idle window iOS is willing to schedule processing tasks in.
-        guard var target = calendar.date(bySettingHour: 7, minute: 0, second: 0, of: now) else {
-            logger.warning("Failed to compute processing target date")
-            return
+    @MainActor
+    private static func run(_ task: BGTask, trigger: String) {
+        let completion = BGTaskCompletion(task)
+        let work = Task { @MainActor in
+            await BackgroundSnapshotService.captureAndApply(trigger: trigger, force: true)
+            completion.complete(success: !Task.isCancelled)
         }
-
-        if target <= now {
-            guard let next = calendar.date(byAdding: .day, value: 1, to: target) else { return }
-            target = next
+        task.expirationHandler = {
+            logger.warning("\(trigger, privacy: .public) expired before the capture finished")
+            work.cancel()
+            completion.complete(success: false)
         }
+    }
+}
 
-        request.earliestBeginDate = target
+/// Calls `setTaskCompleted` exactly once. The work finishing and the expiration handler (which
+/// may run on another thread) race; whichever comes first reports, the other is a no-op.
+private final class BGTaskCompletion: @unchecked Sendable {
+    private let task: BGTask
+    private let isDone = OSAllocatedUnfairLock(initialState: false)
 
-        do {
-            try BGTaskScheduler.shared.submit(request)
-        } catch {
-            logger.error("Could not schedule processing task: \(error)")
+    init(_ task: BGTask) {
+        self.task = task
+    }
+
+    func complete(success: Bool) {
+        let isFirst = isDone.withLock { isDone in
+            defer { isDone = true }
+            return !isDone
+        }
+        if isFirst {
+            task.setTaskCompleted(success: success)
         }
     }
 }

@@ -37,9 +37,13 @@ enum DataContainer {
         UserDefaults.standard.set(Date(), forKey: quotaDisabledDateKey)
     }
 
-    /// Observe CloudKit sync events and auto-disable on quota exceeded
+    private nonisolated(unsafe) static var cloudKitObserver: NSObjectProtocol?
+
+    /// Observe CloudKit sync events and auto-disable on quota exceeded. Registers once per process,
+    /// however many times a container is created.
     static func observeCloudKitErrors() {
-        NotificationCenter.default.addObserver(
+        guard cloudKitObserver == nil else { return }
+        cloudKitObserver = NotificationCenter.default.addObserver(
             forName: NSPersistentCloudKitContainer.eventChangedNotification,
             object: nil,
             queue: .main
@@ -60,6 +64,29 @@ enum DataContainer {
             }
         }
     }
+
+    @MainActor private static var sharedContainer: ModelContainer?
+
+    /// The process-wide container. Every in-process writer — the UI, BGTask handlers, and the
+    /// significant-location-change / HealthKit / unlock wakes — must share it: separate containers
+    /// over the same store don't see each other's unsaved state, can insert duplicate rows for the
+    /// same day, and (with iCloud on) each start their own CloudKit mirroring.
+    @MainActor
+    static func shared() throws -> ModelContainer {
+        if let sharedContainer { return sharedContainer }
+        let container = try create()
+        sharedContainer = container
+        return container
+    }
+
+    #if DEBUG
+        /// Lets screenshot / preview mode install its seeded in-memory container as the shared one,
+        /// so background paths write to the same store the UI shows.
+        @MainActor
+        static func setShared(_ container: ModelContainer) {
+            sharedContainer = container
+        }
+    #endif
 
     static func create(inMemory: Bool = false) throws -> ModelContainer {
         #if os(watchOS)
