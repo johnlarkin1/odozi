@@ -303,7 +303,11 @@ actor HealthKitService {
 
     func fetchWorkouts(for date: Date) async throws -> [WorkoutSummary] {
         guard let interval = dayInterval(for: date) else { return [] }
-        let predicate = HKQuery.predicateForSamples(withStart: interval.start, end: interval.end)
+        // .strictStartDate: a workout belongs to the day it started. The default overlap match
+        // counted one that crossed midnight on both days.
+        let predicate = HKQuery.predicateForSamples(
+            withStart: interval.start, end: interval.end, options: .strictStartDate
+        )
 
         let descriptor = HKSampleQueryDescriptor(
             predicates: [.workout(predicate)],
