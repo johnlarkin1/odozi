@@ -117,7 +117,7 @@ const jsonLd = {
   alternateName: "Odozi: Mood Journal",
   applicationCategory: "HealthApplication",
   applicationSubCategory: "Lifestyle",
-  operatingSystem: "iOS 17",
+  operatingSystem: "iOS 26",
   offers: {
     "@type": "Offer",
     price: "0",

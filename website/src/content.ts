@@ -233,7 +233,7 @@ export const faqs = [
   },
   {
     question: "Is there an Android version?",
-    answer: "Not yet. iOS only for now (iPhone, iOS 17+).",
+    answer: "Not yet. iOS only for now (iPhone, iOS 26+).",
   },
   {
     question: "Can I export my data?",
@@ -285,7 +285,7 @@ export const support = {
       body: "Uninstalling removes everything on-device. If CloudKit sync was on, also delete the Odozi container from Settings, [your name], iCloud, Manage Account Storage, Odozi.",
     },
   ],
-  platform: "iPhone only, iOS 17 or later.",
+  platform: "iPhone only, iOS 26 or later.",
   knownIssues:
     "Nothing reported right now. Latest status lives on GitHub Issues.",
   troubleshooting: [
