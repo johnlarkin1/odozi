@@ -43,7 +43,7 @@ jobs:
 
   test:
     needs: determine-ref
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
         with:
@@ -93,7 +93,7 @@ jobs:
 
   deploy:
     needs: [determine-ref, test]
-    runs-on: macos-15
+    runs-on: macos-26
     steps:
       - uses: actions/checkout@v4
         with:

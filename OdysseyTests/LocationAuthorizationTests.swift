@@ -275,6 +275,20 @@ final class LocationAuthorizationTests: XCTestCase {
         XCTAssertEqual(entry.stepCount, 1234)
         XCTAssertNil(entry.latitude, "Yesterday's fix must not label today's entry")
     }
+
+    // MARK: - Place parsing (MapKit has no administrativeArea)
+
+    func testStateParsedFromShortCityContext() {
+        XCTAssertEqual(Place.state(fromShortCityContext: "Brooklyn, NY", city: "Brooklyn"), "NY")
+        XCTAssertEqual(Place.state(fromShortCityContext: "Austin, TX, United States", city: "Austin"), "TX")
+    }
+
+    func testStateIsNilWithoutStateContext() {
+        XCTAssertNil(Place.state(fromShortCityContext: "London", city: "London"))
+        XCTAssertNil(Place.state(fromShortCityContext: nil, city: "Paris"))
+        XCTAssertNil(Place.state(fromShortCityContext: "Paris, France", city: nil))
+        XCTAssertNil(Place.state(fromShortCityContext: "Somewhere Else, CA", city: "Brooklyn"))
+    }
 }
 
 // MARK: - Significant-location-change monitoring

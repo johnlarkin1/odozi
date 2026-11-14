@@ -1,4 +1,5 @@
 import CoreLocation
+import MapKit
 import Observation
 import os
 #if canImport(UIKit)
@@ -168,42 +169,80 @@ extension LocationAuthorization: CLLocationManagerDelegate {
 // MARK: - Reverse geocoding
 
 /// A human-readable place for a coordinate.
-struct Place: Sendable {
+struct Place: Sendable, Equatable {
     let city: String?
+    /// State / province, when the region has one (e.g. "NY").
     let state: String?
+    /// ISO 3166-1 region code (e.g. "US").
     let country: String?
+
+    /// MapKit has no `administrativeArea`; its short city-with-context string is "City, State"
+    /// where a state applies (the short style omits the country). Take the part after the city.
+    static func state(fromShortCityContext context: String?, city: String?) -> String? {
+        guard let context, let city, !city.isEmpty else { return nil }
+        let prefix = city + ", "
+        guard context.hasPrefix(prefix) else { return nil }
+        let state = context.dropFirst(prefix.count)
+            .split(separator: ",", maxSplits: 1).first
+            .map { $0.trimmingCharacters(in: .whitespaces) }
+        return state?.isEmpty == false ? state : nil
+    }
+}
+
+@available(macOS 26.0, *)
+extension Place {
+    init(mapItem: MKMapItem) {
+        let address = mapItem.addressRepresentations
+        let city = address?.cityName
+        self.init(
+            city: city,
+            state: Self.state(fromShortCityContext: address?.cityWithContext(.short), city: city),
+            country: address?.region?.identifier
+        )
+    }
 }
 
 @MainActor
 enum PlaceResolver {
-    /// Reverse-geocodes `location`, giving up after `timeout`. Geocoding needs the network and is
-    /// rate-limited, so it must never be allowed to hold a background capture hostage: on timeout,
-    /// cancellation or failure this returns nil and the caller keeps the bare coordinates.
+    /// Reverse-geocodes `location` with MapKit, giving up after `timeout`. Geocoding needs the
+    /// network and is rate-limited, so it must never be allowed to hold a background capture
+    /// hostage: on timeout, cancellation or failure this returns nil and the caller keeps the bare
+    /// coordinates (they're named on a later capture).
     static func place(for location: CLLocation, timeout: Duration = .seconds(5)) async -> Place? {
-        await GeocodeRequest().run(location, timeout: timeout)
+        #if os(macOS)
+            // The Mac target still supports macOS 14, but it never captures location (it has no
+            // location usage description), so there's nothing to name before macOS 26.
+            guard #available(macOS 26.0, *) else { return nil }
+        #endif
+        return await GeocodeRequest().run(location, timeout: timeout)
     }
 }
 
-/// One reverse-geocode round-trip with a timeout and cancellation. Same shape as
+/// One `MKReverseGeocodingRequest` round-trip with a timeout and cancellation. Same shape as
 /// `SingleLocationRequest`: main-actor state, a single continuation, first finisher wins.
+@available(macOS 26.0, *)
 @MainActor
 private final class GeocodeRequest {
-    private let geocoder = CLGeocoder()
+    private var request: MKReverseGeocodingRequest?
     private var continuation: CheckedContinuation<Place?, Never>?
     private var timeoutTask: Task<Void, Never>?
 
     func run(_ location: CLLocation, timeout: Duration) async -> Place? {
-        await withTaskCancellationHandler {
+        guard let request = MKReverseGeocodingRequest(location: location) else {
+            logger.info("Reverse geocode: invalid location")
+            return nil
+        }
+        self.request = request
+
+        return await withTaskCancellationHandler {
             await withCheckedContinuation { continuation in
                 self.continuation = continuation
-                geocoder.reverseGeocodeLocation(location) { placemarks, error in
-                    let place = placemarks?.first.map {
-                        Place(city: $0.locality, state: $0.administrativeArea, country: $0.isoCountryCode)
-                    }
+                // MapKit calls this on the main actor.
+                request.getMapItems { mapItems, error in
                     if let error {
                         logger.info("Reverse geocode failed: \(error.localizedDescription, privacy: .public)")
                     }
-                    Task { @MainActor in self.finish(place) }
+                    self.finish(mapItems?.first.map(Place.init(mapItem:)))
                 }
                 timeoutTask = Task { @MainActor in
                     try? await Task.sleep(for: timeout)
@@ -218,7 +257,7 @@ private final class GeocodeRequest {
     }
 
     private func cancel() {
-        geocoder.cancelGeocode()
+        request?.cancel()
         finish(nil)
     }
 
