@@ -380,7 +380,7 @@
                                 let service = BackgroundSnapshotService()
                                 let snapshot = await service.captureSnapshot()
                                 applySnapshotData(snapshot, to: modelContext)
-                                let city = snapshot.city ?? "Unknown"
+                                let city = snapshot.location?.city ?? "Unknown"
                                 let steps = snapshot.stepCount.map { "\($0) steps" } ?? "no steps"
                                 return "Snapshot: \(city) · \(steps)"
                             }
