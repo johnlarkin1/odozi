@@ -98,23 +98,28 @@ final class LocationAuthorizationTests: XCTestCase {
 
     // MARK: - Fallback when a live fix never arrives
 
-    /// A background wake under When-In-Use auth frequently never gets a live fix, so the request
-    /// times out. A recent cached fix must be used rather than losing the whole snapshot —
-    /// location and health are awaited together, so failing here used to drop both.
-    func testFallbackUsesRecentCachedFix() {
-        let now = Date()
-        let cached = CLLocation(
+    /// A fixed midday "now" so the same-day rule never makes these tests depend on wall-clock time.
+    private var noon: Date {
+        Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: Date())!
+    }
+
+    private func fix(ageHours: Double, from now: Date, accuracy: Double = 65) -> CLLocation {
+        CLLocation(
             coordinate: CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060),
             altitude: 0,
-            horizontalAccuracy: 65,
+            horizontalAccuracy: accuracy,
             verticalAccuracy: -1,
-            timestamp: now.addingTimeInterval(-2 * 60 * 60) // 2 hours old
+            timestamp: now.addingTimeInterval(-ageHours * 60 * 60)
         )
+    }
 
+    /// A background wake frequently never gets a live fix, so the request times out. A recent
+    /// same-day cached fix must be used rather than losing the location entirely.
+    func testFallbackUsesRecentCachedFix() {
         let result = LocationFallback.result(
-            cached: cached,
+            cached: fix(ageHours: 2, from: noon),
             error: CLError(.locationUnknown),
-            now: now
+            now: noon
         )
 
         switch result {
@@ -122,26 +127,17 @@ final class LocationAuthorizationTests: XCTestCase {
             XCTAssertEqual(location.coordinate.latitude, 40.7128, accuracy: 0.0001)
             XCTAssertEqual(location.coordinate.longitude, -74.0060, accuracy: 0.0001)
         case .failure:
-            XCTFail("A 2-hour-old cached fix should be used as the fallback")
+            XCTFail("A 2-hour-old same-day cached fix should be used as the fallback")
         }
     }
 
-    /// Beyond a day the cached fix is likely from a different place entirely — recording it
-    /// would silently mislabel the journal day, which is worse than a blank location.
+    /// An old cached fix is likely from a different place — recording it would silently mislabel
+    /// the journal day, which is worse than a blank location.
     func testFallbackRejectsStaleCachedFix() {
-        let now = Date()
-        let stale = CLLocation(
-            coordinate: CLLocationCoordinate2D(latitude: 40.7128, longitude: -74.0060),
-            altitude: 0,
-            horizontalAccuracy: 65,
-            verticalAccuracy: -1,
-            timestamp: now.addingTimeInterval(-48 * 60 * 60) // 2 days old
-        )
-
         let result = LocationFallback.result(
-            cached: stale,
+            cached: fix(ageHours: 48, from: noon),
             error: CLError(.locationUnknown),
-            now: now
+            now: noon
         )
 
         switch result {
@@ -150,6 +146,23 @@ final class LocationAuthorizationTests: XCTestCase {
         case let .failure(error):
             XCTAssertEqual((error as? CLError)?.code, .locationUnknown)
         }
+    }
+
+    /// A fix from last night must not land on today's entry, however recent it is.
+    func testFallbackRejectsFixFromPreviousDay() {
+        let earlyMorning = Calendar.current.date(bySettingHour: 0, minute: 30, second: 0, of: Date())!
+        let lastNight = fix(ageHours: 1, from: earlyMorning) // 11:30 PM yesterday
+
+        XCTAssertFalse(LocationFallback.isUsable(lastNight, now: earlyMorning))
+        if case .success = LocationFallback.result(cached: lastNight, error: CLError(.locationUnknown), now: earlyMorning) {
+            XCTFail("A fix from the previous calendar day must not be attributed to today")
+        }
+    }
+
+    /// A negative horizontal accuracy marks an invalid fix.
+    func testInvalidFixIsNotUsable() {
+        XCTAssertFalse(LocationFallback.isUsable(fix(ageHours: 0, from: noon, accuracy: -1), now: noon))
+        XCTAssertTrue(LocationFallback.isUsable(fix(ageHours: 0, from: noon), now: noon))
     }
 
     /// With no cached fix at all, the original error surfaces so the caller records that location

@@ -1,6 +1,7 @@
 import SwiftData
 import SwiftUI
 #if os(iOS)
+    import CoreLocation
     import DeviceActivity
 #endif
 
@@ -187,6 +188,10 @@ struct ProfileView: View {
                 .listRowBackground(Color.cardSurface)
 
                 Section("Location") {
+                    #if os(iOS)
+                        AutomaticLocationStatusRow()
+                    #endif
+
                     NavigationLink {
                         LocationTimingSettingsView()
                     } label: {
@@ -355,3 +360,67 @@ struct ProfileView: View {
         return path
     }
 }
+
+#if os(iOS)
+    /// Shows whether passive (background) location capture can work, and links to Settings when it
+    /// can't. Without "Always" access iOS never wakes Odozi for location, so places only fill in
+    /// when the app is opened — previously nothing in the app said so.
+    private struct AutomaticLocationStatusRow: View {
+        private var authorization: LocationAuthorization { .shared }
+
+        var body: some View {
+            switch authorization.status {
+            case .authorizedAlways:
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Label("Automatic Location", systemImage: "location.circle.fill")
+                        Spacer()
+                        Text("On")
+                            .foregroundStyle(.secondary)
+                    }
+                    if authorization.accuracy == .reducedAccuracy {
+                        Text("Precise Location is off, so places may be approximate.")
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                }
+            case .notDetermined:
+                Button {
+                    Task {
+                        if await authorization.requestWhenInUse() == .authorizedWhenInUse {
+                            LocationMonitoringService.shared.register()
+                        }
+                    }
+                } label: {
+                    settingsLabel(
+                        title: "Turn On Automatic Location",
+                        detail: "Let Odozi note where you were each day."
+                    )
+                }
+            default:
+                Button {
+                    if let url = URL(string: UIApplication.openSettingsURLString) {
+                        UIApplication.shared.open(url)
+                    }
+                } label: {
+                    settingsLabel(
+                        title: "Turn On Automatic Location",
+                        detail: authorization.status == .authorizedWhenInUse
+                            ? "Set Location to \"Always\" in Settings so Odozi can fill in where you were without opening the app."
+                            : "Location is off for Odozi. Turn it on in Settings to add places to your days."
+                    )
+                }
+            }
+        }
+
+        private func settingsLabel(title: String, detail: String) -> some View {
+            VStack(alignment: .leading, spacing: 4) {
+                Label(title, systemImage: "location.slash")
+                    .foregroundStyle(Color.accentAmber)
+                Text(detail)
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
+        }
+    }
+#endif

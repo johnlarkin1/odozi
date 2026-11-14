@@ -160,6 +160,8 @@ actor BackgroundSnapshotService {
                 SharedDefaults.setLocationCaptureOutcome("denied")
             case .permissionNotDetermined:
                 SharedDefaults.setLocationCaptureOutcome("notDetermined")
+            case .needsAlwaysAuthorization:
+                SharedDefaults.setLocationCaptureOutcome("needsAlways")
             case .locationUnavailable:
                 SharedDefaults.setLocationCaptureOutcome("unavailable")
             }
