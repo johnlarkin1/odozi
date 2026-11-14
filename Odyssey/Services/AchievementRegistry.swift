@@ -44,7 +44,8 @@ enum AchievementConditions {
         let calendar = Calendar.current
         return entries.contains { entry in
             guard entry.hasUserSubmitted else { return false }
-            return calendar.component(.hour, from: entry.updatedAt) < hour
+            // updatedAt moves on every background capture; use when the user actually wrote.
+            return calendar.component(.hour, from: entry.firstSubmittedAt ?? entry.updatedAt) < hour
         }
     }
 
@@ -52,7 +53,8 @@ enum AchievementConditions {
         let calendar = Calendar.current
         return entries.contains { entry in
             guard entry.hasUserSubmitted else { return false }
-            return calendar.component(.hour, from: entry.updatedAt) >= hour
+            // updatedAt moves on every background capture; use when the user actually wrote.
+            return calendar.component(.hour, from: entry.firstSubmittedAt ?? entry.updatedAt) >= hour
         }
     }
 
