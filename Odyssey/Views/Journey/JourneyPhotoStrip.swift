@@ -27,7 +27,7 @@ struct JourneyPhotoStrip: View {
                         } label: {
                             Image(uiImage: image)
                                 .resizable()
-                                .aspectRatio(contentMode: .fill)
+                                .scaledToFill()
                                 .frame(width: 64, height: 64)
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
                                 .overlay(
@@ -45,7 +45,7 @@ struct JourneyPhotoStrip: View {
                             ZStack(alignment: .topTrailing) {
                                 Image(nsImage: nsImage)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fill)
+                                    .scaledToFill()
                                     .frame(width: 64, height: 64)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .overlay(
@@ -69,7 +69,7 @@ struct JourneyPhotoStrip: View {
                             ZStack(alignment: .topTrailing) {
                                 Image(uiImage: uiImage)
                                     .resizable()
-                                    .aspectRatio(contentMode: .fill)
+                                    .scaledToFill()
                                     .frame(width: 64, height: 64)
                                     .clipShape(RoundedRectangle(cornerRadius: 8))
                                     .overlay(

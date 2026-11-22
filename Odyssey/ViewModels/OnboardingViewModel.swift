@@ -12,8 +12,6 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Onbo
 final class OnboardingViewModel {
     var currentStep: OnboardingStep = .welcome
 
-    private let locationManager = CLLocationManager()
-
     var currentStepIndex: Int {
         OnboardingStep.allCases.firstIndex(of: currentStep) ?? 0
     }
@@ -66,17 +64,26 @@ final class OnboardingViewModel {
 
     // MARK: - Permission Requests
 
+    @MainActor
     func requestLocationAccess() {
-        locationManager.requestWhenInUseAuthorization()
-        // Bring the shared monitoring service to life so its delegate observes the grant and
-        // requests the Always upgrade contextually (the Apple-recommended two-step flow), then
-        // starts significant-location-change monitoring once Always is granted.
-        #if os(iOS)
-            Task { @MainActor in
-                LocationMonitoringService.shared.register()
-            }
-        #endif
-        goToNext()
+        Task {
+            // Wait for the user's answer (a throwaway manager here used to deallocate before the
+            // grant could be observed), then — the Apple-recommended two-step flow — ask for the
+            // Always upgrade that background capture needs. Monitoring starts once it's granted.
+            let status = await LocationAuthorization.shared.requestWhenInUse()
+            #if os(iOS)
+                if status == .authorizedWhenInUse || status == .authorizedAlways {
+                    LocationMonitoringService.shared.register()
+                }
+            #else
+                _ = status
+            #endif
+            // The answer can arrive after the user has already moved on (Next tapped during the
+            // timeout), and repeated taps resume several waiters with the same answer — only
+            // advance if we're still on this step, or onboarding skips Health.
+            guard currentStep == .location else { return }
+            goToNext()
+        }
     }
 
     func requestHealthKitAccess() {
