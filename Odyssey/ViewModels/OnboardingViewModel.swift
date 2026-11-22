@@ -78,6 +78,10 @@ final class OnboardingViewModel {
             #else
                 _ = status
             #endif
+            // The answer can arrive after the user has already moved on (Next tapped during the
+            // timeout), and repeated taps resume several waiters with the same answer — only
+            // advance if we're still on this step, or onboarding skips Health.
+            guard currentStep == .location else { return }
             goToNext()
         }
     }

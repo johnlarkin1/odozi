@@ -79,6 +79,9 @@ final class LocationAuthorization: NSObject {
 
     @ObservationIgnored private let manager: CLLocationManager
     @ObservationIgnored private var waiters: [CheckedContinuation<CLAuthorizationStatus, Never>] = []
+    /// Gives up on the current prompt. Cancelled once the waiters are resumed, so a stale timer
+    /// from an earlier request can never resume a later one while its prompt is still up.
+    @ObservationIgnored private var waitTimeout: Task<Void, Never>?
 
     override private init() {
         let manager = CLLocationManager()
@@ -93,6 +96,14 @@ final class LocationAuthorization: NSObject {
         status == .authorizedAlways || status == .authorizedWhenInUse
     }
 
+    /// The live authorization status. Prefer this over `status` when gating work: `status` is
+    /// updated through an async hop from the delegate, so right after a change in Settings (or on a
+    /// background wake) it can briefly lag the manager.
+    var currentStatus: CLAuthorizationStatus {
+        refresh()
+        return status
+    }
+
     /// The most recent fix the system has cached for this app, if any.
     var lastKnownLocation: CLLocation? {
         manager.location
@@ -105,15 +116,22 @@ final class LocationAuthorization: NSObject {
     func requestWhenInUse(timeout: Duration = .seconds(60)) async -> CLAuthorizationStatus {
         refresh()
         guard status == .notDetermined else { return status }
-        return await withCheckedContinuation { continuation in
-            waiters.append(continuation)
-            guard waiters.count == 1 else { return }
-            manager.requestWhenInUseAuthorization()
-            Task { @MainActor in
-                try? await Task.sleep(for: timeout)
-                self.resumeWaiters()
+        #if os(macOS)
+            // The Mac app has no location entitlement, so no prompt would ever appear and callers
+            // would show a spinner for the whole timeout. Report the undetermined status now.
+            return status
+        #else
+            return await withCheckedContinuation { continuation in
+                waiters.append(continuation)
+                guard waiters.count == 1 else { return }
+                manager.requestWhenInUseAuthorization()
+                waitTimeout = Task { @MainActor in
+                    try? await Task.sleep(for: timeout)
+                    guard !Task.isCancelled else { return }
+                    self.resumeWaiters()
+                }
             }
-        }
+        #endif
     }
 
     private func refresh() {
@@ -125,6 +143,8 @@ final class LocationAuthorization: NSObject {
     /// so the delegate and the timeout can't resume the same continuation twice.
     private func resumeWaiters() {
         refresh()
+        waitTimeout?.cancel()
+        waitTimeout = nil
         let pending = waiters
         waiters.removeAll()
         for waiter in pending {
@@ -217,7 +237,7 @@ private final class GeocodeRequest {
 final class LocationCaptureService {
     /// Gets a live fix (falling back to a recent same-day cached one) and reverse-geocodes it.
     func captureCurrentLocation() async throws -> LocationSnapshot {
-        switch LocationAuthorization.shared.status {
+        switch LocationAuthorization.shared.currentStatus {
         case .denied, .restricted:
             throw LocationCaptureError.permissionDenied
         case .notDetermined:
@@ -251,7 +271,7 @@ final class LocationCaptureService {
             // use a same-day cached fix if there is one, otherwise report that Always is needed.
             // `.background` only: `.inactive` is still foreground (cold launch before activation,
             // a system alert or the permission prompt on screen) and iOS serves it a live fix.
-            if LocationAuthorization.shared.status == .authorizedWhenInUse,
+            if LocationAuthorization.shared.currentStatus == .authorizedWhenInUse,
                UIApplication.shared.applicationState == .background {
                 return try LocationFallback.result(
                     cached: LocationAuthorization.shared.lastKnownLocation,

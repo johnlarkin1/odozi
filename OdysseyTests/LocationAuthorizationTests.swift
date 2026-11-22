@@ -159,6 +159,22 @@ final class LocationAuthorizationTests: XCTestCase {
         }
     }
 
+    /// Same calendar day isn't enough on its own: a fix older than the 4-hour limit is likely from
+    /// somewhere else (a 7 AM fix at noon). Pins the limit, which a 48-hour fix can't.
+    func testFallbackRejectsSameDayFixPastAgeLimit() {
+        let morning = fix(ageHours: 5, from: noon)
+        XCTAssertTrue(Calendar.current.isDate(morning.timestamp, inSameDayAs: noon))
+        XCTAssertFalse(LocationFallback.isUsable(morning, now: noon))
+        XCTAssertTrue(LocationFallback.isUsable(fix(ageHours: 3.5, from: noon), now: noon))
+    }
+
+    /// A fix stamped in the future (clock skew, a bad cache) is rejected beyond a minute of slack.
+    func testFallbackRejectsFutureFix() {
+        XCTAssertFalse(LocationFallback.isUsable(fix(ageHours: -0.5, from: noon), now: noon))
+        XCTAssertTrue(LocationFallback.isUsable(fix(ageHours: -0.5 / 60, from: noon), now: noon),
+                      "30 seconds of skew is tolerated")
+    }
+
     /// A negative horizontal accuracy marks an invalid fix.
     func testInvalidFixIsNotUsable() {
         XCTAssertFalse(LocationFallback.isUsable(fix(ageHours: 0, from: noon, accuracy: -1), now: noon))
