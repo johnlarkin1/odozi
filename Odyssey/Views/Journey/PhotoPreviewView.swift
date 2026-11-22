@@ -94,7 +94,7 @@ struct PhotoPreviewView: View {
                     .tint(.white)
             }
         }
-        .opacity(image != nil ? 1.0 - min(abs(dragOffset) / 300, 0.5) : 1.0)
+        .opacity(image != nil ? 1.0 - min(Double(abs(dragOffset)) / 300, 0.5) : 1.0)
         .overlay(alignment: .topTrailing) {
             Button {
                 dismiss()
