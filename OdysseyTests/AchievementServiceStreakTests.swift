@@ -170,3 +170,34 @@ extension AchievementServiceTests {
         XCTAssertFalse(AchievementConditions.hasComeback(entries: [entry], latest: entry))
     }
 }
+
+/// Early Bird / Night Owl must read when the user wrote the entry, not `updatedAt`, which every
+/// background capture moves.
+final class TimeOfDayAchievementTests: XCTestCase {
+    private func entry(submittedAt submitted: Date?, updatedAt updated: Date) -> DailyEntry {
+        let entry = DailyEntry(date: Calendar.current.startOfDay(for: updated))
+        entry.hasUserSubmitted = true
+        entry.firstSubmittedAt = submitted
+        entry.updatedAt = updated
+        return entry
+    }
+
+    private func today(hour: Int) -> Date {
+        Calendar.current.date(bySettingHour: hour, minute: 0, second: 0, of: Date())!
+    }
+
+    func testFirstSubmittedAtTakesPrecedenceOverUpdatedAt() {
+        // Written at 07:00, then touched by a background capture at 23:00.
+        let entries = [entry(submittedAt: today(hour: 7), updatedAt: today(hour: 23))]
+
+        XCTAssertTrue(AchievementConditions.hasEntryAtHour(entries: entries, before: 9), "Early Bird")
+        XCTAssertFalse(AchievementConditions.hasEntryAtHour(entries: entries, onOrAfter: 22), "not Night Owl")
+    }
+
+    func testLegacyEntriesWithoutFirstSubmittedAtFallBackToUpdatedAt() {
+        let entries = [entry(submittedAt: nil, updatedAt: today(hour: 23))]
+
+        XCTAssertTrue(AchievementConditions.hasEntryAtHour(entries: entries, onOrAfter: 22))
+        XCTAssertFalse(AchievementConditions.hasEntryAtHour(entries: entries, before: 9))
+    }
+}
