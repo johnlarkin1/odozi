@@ -59,7 +59,7 @@ your year: your top mood, most-visited places, health milestones, most-used
 words, and more. Share your journey, keep the memories.
 
 ---
-Odozi requires iOS 17.0 or later.
+Odozi requires iOS 26.0 or later.
 Health and Screen Time features require a physical device.
 
 --------------------------------------------------------------------------------

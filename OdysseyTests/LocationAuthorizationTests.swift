@@ -275,6 +275,36 @@ final class LocationAuthorizationTests: XCTestCase {
         XCTAssertEqual(entry.stepCount, 1234)
         XCTAssertNil(entry.latitude, "Yesterday's fix must not label today's entry")
     }
+
+    // MARK: - Place parsing (MapKit has no administrativeArea)
+
+    func testStateParsedFromShortCityContext() {
+        XCTAssertEqual(Place.state(fromShortCityContext: "Brooklyn, NY", city: "Brooklyn"), "NY")
+        XCTAssertEqual(Place.state(fromShortCityContext: "Austin, TX, United States", city: "Austin"), "TX")
+    }
+
+    func testStateIsNilWithoutStateContext() {
+        XCTAssertNil(Place.state(fromShortCityContext: "London", city: "London"))
+        XCTAssertNil(Place.state(fromShortCityContext: nil, city: "Paris"))
+        XCTAssertNil(Place.state(fromShortCityContext: "Paris, France", city: nil))
+        XCTAssertNil(Place.state(fromShortCityContext: "Somewhere Else, CA", city: "Brooklyn"))
+    }
+
+    /// Outside the US the short context ends in the country ("Paris, France"); that's not a state.
+    func testCountryIsNotTakenAsState() {
+        XCTAssertNil(Place.state(fromShortCityContext: "Paris, France", city: "Paris", regionNames: ["France"]))
+        XCTAssertNil(Place.state(fromShortCityContext: "Tokyo, japan", city: "Tokyo", regionNames: ["Japan"]),
+                     "compared case-insensitively")
+        XCTAssertEqual(
+            Place.state(fromShortCityContext: "London, England", city: "London", regionNames: ["United Kingdom"]),
+            "England",
+            "a constituent country is the admin area, as CLPlacemark reported it"
+        )
+        XCTAssertEqual(
+            Place.state(fromShortCityContext: "Austin, TX", city: "Austin", regionNames: ["United States"]),
+            "TX"
+        )
+    }
 }
 
 // MARK: - Significant-location-change monitoring

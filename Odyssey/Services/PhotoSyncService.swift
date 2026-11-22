@@ -41,13 +41,12 @@
         /// Upper bound on identifiers stored per day so a burst of photos on one
         /// day can't bloat a single entry.
         static let maxPhotosPerDay = 30
-        /// Spacing between reverse-geocode requests. `CLGeocoder` rate-limits, so
-        /// on a first sync spanning many un-located days we pace the calls to
-        /// avoid tripping throttling and silently dropping place names.
+        /// Spacing between reverse-geocode requests. MapKit geocoding is
+        /// rate-limited, so on a first sync spanning many un-located days we pace
+        /// the calls to avoid tripping throttling and silently dropping place names.
         static let geocodeThrottle: Duration = .milliseconds(250)
 
         private let photoService: PhotoLibraryService
-        private let geocoder = CLGeocoder()
 
         init(photoService: PhotoLibraryService = .shared) {
             self.photoService = photoService
@@ -130,7 +129,8 @@
                         entry.locationCapturedAt = entry.locationCapturedAt ?? Date()
                         if didGeocode { try? await Task.sleep(for: Self.geocodeThrottle) }
                         didGeocode = true
-                        if let place = await reverseGeocode(latitude: coordinate.latitude, longitude: coordinate.longitude) {
+                        let location = CLLocation(latitude: coordinate.latitude, longitude: coordinate.longitude)
+                        if let place = await PlaceResolver.place(for: location) {
                             if entry.city == nil { entry.city = place.city }
                             if entry.state == nil { entry.state = place.state }
                             if entry.country == nil { entry.country = place.country }
@@ -155,17 +155,6 @@
                 }
             }
             return summary
-        }
-
-        private func reverseGeocode(
-            latitude: Double,
-            longitude: Double
-        ) async -> (city: String?, state: String?, country: String?)? {
-            let location = CLLocation(latitude: latitude, longitude: longitude)
-            guard let placemark = try? await geocoder.reverseGeocodeLocation(location).first else {
-                return nil
-            }
-            return (placemark.locality, placemark.administrativeArea, placemark.isoCountryCode)
         }
 
         // MARK: - Pure helpers (unit-tested)

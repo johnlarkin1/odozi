@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Odyssey is an iOS mental wellness tracking app built with SwiftUI. It features a guided step-by-step daily journaling flow, passive background data capture (GPS + reverse geocoding, HealthKit, Screen Time), rich visualizations (mood trends, maps, streaks, word clouds), and a Spotify Wrapped-style year-in-review feature with shareable cards. Uses SwiftData for persistence and targets iOS 17+.
+Odyssey is an iOS mental wellness tracking app built with SwiftUI. It features a guided step-by-step daily journaling flow, passive background data capture (GPS + MapKit reverse geocoding, HealthKit, Screen Time), rich visualizations (mood trends, maps, streaks, word clouds), and a Spotify Wrapped-style year-in-review feature with shareable cards. Uses SwiftData for persistence and targets iOS 26+.
 
 **Contact & Branding:**
 - Contact email: john@odozi.app (use this everywhere, NOT john@johnjlarkin.com)
@@ -34,7 +34,7 @@ make help
 
 ## Architecture
 
-**Pattern:** MVVM with SwiftUI + `@Observable` (iOS 17+)
+**Pattern:** MVVM with SwiftUI + `@Observable` (iOS 26+)
 
 **Targets:**
 - **Odyssey** — Main app target
@@ -52,7 +52,7 @@ make help
 1. `OdysseyApp` is the @main entry point; requests location, Screen Time, HealthKit permissions. It uses `DataContainer.shared()` — the one `ModelContainer` every in-process writer (UI, BGTasks, wakes) must share
 2. `AppDelegate.didFinishLaunching` runs on **every** launch, including background relaunches where the scene never becomes active. It re-arms significant-location-change monitoring (`LocationMonitoringService.resumeMonitoringIfAuthorized()`), starts HealthKit observer queries, registers the BGTasks `com.odyssey.snapshot` (user-chosen time) and `com.odyssey.processing` (7 AM fallback), and submits whichever aren't already pending (`SnapshotScheduler.ensureScheduled()`)
 3. Every capture trigger — foreground, BGTasks, SLC wakes, HealthKit observers, unlock retry — goes through `BackgroundSnapshotService.captureAndApply(trigger:force:)`: coalesced (one run in flight), debounced (1h unless forced), and wrapped in a background-task assertion
-4. Location: `LocationAuthorization.shared` is the observable source of truth for permission (shared with macOS). Passive capture needs **Always**; SLC wakes save the delivered fix's coordinates immediately, then reverse-geocode (`PlaceResolver`, timeout-bounded). The day's first location sticks; `applyLocation` writes it as one unit stamped with the fix's own time, and only same-day fixes count
+4. Location: `LocationAuthorization.shared` is the observable source of truth for permission (shared with macOS). Passive capture needs **Always**; SLC wakes save the delivered fix's coordinates immediately, then reverse-geocode (`PlaceResolver` → `MKReverseGeocodingRequest`, timeout-bounded). The day's first location sticks; `applyLocation` writes it as one unit stamped with the fix's own time, and only same-day fixes count
 5. `HealthKitService` fetches steps, walking distance, sleep, workouts and heart rate; skipped while the device is locked (protected data), retried on unlock
 6. Screen Time pipeline: `TotalActivityReport.makeConfiguration()` writes to shared UserDefaults → main app reads on foreground
 7. Foreground catch-up: on every `.active` scene phase, re-registers monitoring/permissions and runs a forced `captureAndApply`
@@ -114,7 +114,7 @@ When building a new feature, follow this flow:
 
 ## Key Conventions
 
-- iOS 17+ target (SwiftData, new MapKit, Swift Charts)
+- iOS 26+ target (SwiftData, new MapKit, Swift Charts). Reverse geocoding uses MapKit's `MKReverseGeocodingRequest` via `PlaceResolver` — `CLGeocoder` is deprecated, don't reintroduce it
 - Dark mode enforced app-wide via `.environment(\.colorScheme, .dark)`
 - Design tokens in `Color+Extensions.swift`: `.accentAmber`, `.accentTeal`, `.successGreen`, `.coralRed`, `.cardSurface`
 - Colors stored as hex strings in SwiftData (see `UIColor+Extensions.swift`)
