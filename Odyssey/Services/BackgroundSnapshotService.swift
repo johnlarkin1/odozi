@@ -1,3 +1,4 @@
+import CoreLocation
 import Foundation
 import os
 import SwiftData
@@ -8,11 +9,10 @@ import SwiftData
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "BackgroundSnapshot")
 
 struct SnapshotData: Sendable {
-    let latitude: Double?
-    let longitude: Double?
-    let city: String?
-    let state: String?
-    let country: String?
+    /// The journal day this snapshot belongs to. Fixed when the capture starts, so a run that
+    /// straddles midnight queries and writes one day consistently.
+    let day: Date
+    let location: LocationSnapshot?
     let stepCount: Int?
     let walkingDistanceMeters: Double?
     let sleepHours: Double?
@@ -28,80 +28,279 @@ struct SnapshotData: Sendable {
     let workoutIntensityScore: Int?
     let restingHeartRate: Double?
     let averageHeartRate: Double?
+    /// HealthKit was skipped because the device was locked (its data is encrypted at rest).
+    let healthSkippedLocked: Bool
     let screenTimeSeconds: Double?
     let pickups: Int?
 }
 
-/// The background triggers all need somewhere to write, and `DataContainer.create()` builds a
-/// brand-new `ModelContainer` — and so a duplicate persistent store over the same App Group
-/// file — on every call. Cache one and hand it out.
-@MainActor
-private enum BackgroundContainer {
-    private static var cached: ModelContainer?
+#if canImport(UIKit)
+    /// A UIKit background-task assertion: asks iOS for extra time to finish (and save) work that
+    /// started while the app was being woken in — or sent to — the background. Without one, the
+    /// process can be suspended between the capture and the SwiftData save.
+    @MainActor
+    final class BackgroundTaskAssertion {
+        private var identifier: UIBackgroundTaskIdentifier = .invalid
 
-    static func shared() throws -> ModelContainer {
-        if let cached { return cached }
-        let container = try DataContainer.create()
-        cached = container
-        return container
+        init(name: String) {
+            identifier = UIApplication.shared.beginBackgroundTask(withName: name) { [weak self] in
+                MainActor.assumeIsolated { self?.end() }
+            }
+        }
+
+        /// Idempotent. Must be called when the work finishes, or iOS terminates the app.
+        func end() {
+            guard identifier != .invalid else { return }
+            UIApplication.shared.endBackgroundTask(identifier)
+            identifier = .invalid
+        }
+    }
+#endif
+
+/// Coalesces concurrent capture triggers into one run at a time. Pure coordination with no I/O,
+/// so the join / re-run / debounce rules are unit-testable with a fake operation.
+///
+/// Rules:
+/// - A caller that arrives while a run is in flight joins it instead of starting another.
+/// - Joining is enough, unless the caller is forced (the user is waiting) and the run it joined
+///   can't stand in for one: a background-triggered run, which may have started before the scene
+///   was active, or a run cut short by cancellation (e.g. a BGTask expiring). Then it runs again.
+/// - A non-forced caller is skipped when `isDebounced` says so. The check and the start happen
+///   on the main actor with no suspension between them, so the gate is atomic.
+@MainActor
+final class CaptureCoordinator {
+    enum Outcome: Equatable {
+        case ran, joined, debounced
+    }
+
+    private struct Run {
+        let id: Int
+        let task: Task<Void, Never>
+        let isForced: Bool
+    }
+
+    private var current: Run?
+    private var nextRunID = 0
+
+    var isRunning: Bool {
+        current != nil
+    }
+
+    func run(
+        force: Bool,
+        isDebounced: () -> Bool,
+        operation: @escaping @MainActor () async -> Void
+    ) async -> Outcome {
+        while let running = current {
+            await running.task.value
+            let stoodIn = running.isForced && !running.task.isCancelled
+            guard force, !Task.isCancelled, !stoodIn else { return .joined }
+            // Otherwise loop: join whatever started meanwhile, or fall through and run.
+        }
+
+        if !force, isDebounced() {
+            return .debounced
+        }
+
+        nextRunID += 1
+        let id = nextRunID
+        let task = Task { @MainActor in
+            await operation()
+            // Free the slot from inside the run, before it completes. Anyone awaiting
+            // `task.value` then already sees it free; clearing it in the awaiting owner raced
+            // the joiners, which usually resumed first and saw a stale run.
+            if self.current?.id == id {
+                self.current = nil
+            }
+        }
+        current = Run(id: id, task: task, isForced: force)
+
+        // This caller's cancellation (e.g. its BGTask expiring) stops the shared run; forced
+        // joiners notice the cancellation and run again.
+        await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
+        return .ran
     }
 }
 
 actor BackgroundSnapshotService {
-    // The same instance the observer queries and background delivery are registered on. Two
-    // instances would work (HKHealthStore is a thin proxy), but having the observer fire on one
-    // and the fetch it triggers run on another is needlessly confusing.
+    // The same instance the observer queries and background delivery are registered on.
     private let healthKitService = HealthKitService.shared
 
     /// Minimum gap between background-triggered captures. Significant-location-change deliveries
     /// arrive in bursts while travelling, the six HealthKit observer queries can all fire at once
     /// when a workout syncs, and protected-data-available fires on every unlock — without this,
-    /// each of those runs a full location + health capture for a value that changes once a day.
+    /// each of those runs a full capture for values that change slowly.
     static let backgroundCaptureInterval: TimeInterval = 60 * 60
 
-    /// The single path every background trigger should use: capture a snapshot and apply it to
-    /// today's entry. `applySnapshotData` only writes non-nil values and goes through
-    /// `fetchOrCreateToday()`, so repeated runs are safe — the debounce is about avoiding wasted
-    /// work, not about correctness.
+    /// Coalesces concurrent triggers into one capture at a time (see `CaptureCoordinator`).
+    @MainActor private static let coordinator = CaptureCoordinator()
+
+    // MARK: - Entry points
+
+    /// The single path every trigger uses — foreground, BGTasks, SLC wakes, HealthKit observers and
+    /// the unlock retry: capture a snapshot and apply it to today's entry. `applySnapshotData` only
+    /// writes non-nil values, so repeated runs are safe.
     ///
     /// - Parameters:
     ///   - trigger: what woke us, for the log line.
-    ///   - force: skip the debounce. Used by the foreground and BGTask paths, which the OS
-    ///     already rate-limits and which the user is actually waiting on.
+    ///   - force: skip the debounce. Used by the foreground and BGTask paths, which the OS already
+    ///     rate-limits and which the user is actually waiting on. A forced call still joins a
+    ///     capture that's already in flight rather than duplicating it.
+    @MainActor
     static func captureAndApply(trigger: String, force: Bool = false) async {
-        if !force, let last = SharedDefaults.lastCaptureRunDate {
-            let age = Date().timeIntervalSince(last)
-            if age < backgroundCaptureInterval {
-                logger.info("Skipping \(trigger, privacy: .public) capture — last run \(Int(age))s ago")
-                return
-            }
-        }
+        // Held while joining too: a caller waiting on someone else's run still needs the app awake.
+        #if canImport(UIKit)
+            let assertion = BackgroundTaskAssertion(name: "snapshot")
+            defer { assertion.end() }
+        #endif
 
-        do {
-            let container = try await BackgroundContainer.shared()
-            let data = await BackgroundSnapshotService().captureSnapshot()
-            await MainActor.run {
-                applySnapshotData(data, to: container.mainContext)
+        let outcome = await coordinator.run(
+            force: force,
+            isDebounced: { isDebounced(trigger: trigger) },
+            operation: { await runCapture(trigger: trigger) }
+        )
+        if outcome == .joined {
+            logger.info("\(trigger, privacy: .public) joined the capture already in flight")
+        }
+    }
+
+    @MainActor
+    private static func isDebounced(trigger: String) -> Bool {
+        guard let last = SharedDefaults.lastCaptureRunDate else { return false }
+        let age = Date().timeIntervalSince(last)
+        guard age < backgroundCaptureInterval else { return false }
+        logger.info("Skipping \(trigger, privacy: .public) capture — last run \(Int(age))s ago")
+        return true
+    }
+
+    /// Whether a finished run starts the debounce window. Not when HealthKit was skipped because
+    /// the phone was locked, nor when a BGTask expiring cut the run short — otherwise the triggers
+    /// that would complete it (the unlock retry, the next wake) are debounced away for an hour.
+    static func shouldStampDebounce(healthSkippedLocked: Bool, wasCancelled: Bool) -> Bool {
+        !healthSkippedLocked && !wasCancelled
+    }
+
+    /// Called synchronously from the significant-location-change delegate callback with the fix
+    /// iOS delivered. Saves that fix's coordinates straight away — a wake only gets a few seconds,
+    /// and coordinates are what matter; the place name can be filled in later — then runs the
+    /// usual (debounced) capture for everything else, which also names the coordinates.
+    @MainActor
+    static func handleSignificantLocationChange(_ fix: CLLocation) {
+        #if canImport(UIKit)
+            let assertion = BackgroundTaskAssertion(name: "slc-capture")
+        #endif
+        Task { @MainActor in
+            #if canImport(UIKit)
+                defer { assertion.end() }
+            #endif
+            let saved = recordCoordinates(of: fix)
+            if saved {
+                // Name the coordinates now rather than waiting out the debounce.
+                await fillMissingPlace(day: Calendar.current.startOfDay(for: fix.timestamp))
+                NotificationCenter.default.post(name: .snapshotDidUpdate, object: nil)
             }
+            await captureAndApply(trigger: "significant-location-change")
+        }
+    }
+
+    // MARK: - Capture pipeline
+
+    @MainActor
+    private static func runCapture(trigger: String) async {
+        do {
+            let context = try DataContainer.shared().mainContext
+            let day = Calendar.current.startOfDay(for: Date())
+
+            // Coordinates saved by an earlier wake that was suspended mid-geocode get named here.
+            await fillMissingPlace(day: day)
+
+            // Only ask CoreLocation for a live fix when today has no location yet. The day's first
+            // location sticks, so re-requesting on every foreground just burns battery and
+            // geocoder quota.
+            let hasLocation = try DailyEntryRepository(context: context).fetchEntry(for: day)?.latitude != nil
+            let data = await BackgroundSnapshotService().captureSnapshot(day: day, includeLocation: !hasLocation)
+
+            guard applySnapshotData(data, to: context) else { return }
+
+            if shouldStampDebounce(healthSkippedLocked: data.healthSkippedLocked, wasCancelled: Task.isCancelled) {
+                SharedDefaults.markCaptureRun()
+            }
+            NotificationCenter.default.post(name: .snapshotDidUpdate, object: nil)
             logger.info("Applied snapshot from \(trigger, privacy: .public)")
         } catch {
             logger.error("Snapshot from \(trigger, privacy: .public) failed: \(error)")
         }
     }
 
-    func captureSnapshot() async -> SnapshotData {
-        let today = Calendar.current.startOfDay(for: Date())
+    /// Writes `fix`'s coordinates to its day's entry if that day has no location yet.
+    /// Returns whether anything was saved.
+    @MainActor
+    private static func recordCoordinates(of fix: CLLocation) -> Bool {
+        do {
+            let context = try DataContainer.shared().mainContext
+            let entry = try DailyEntryRepository(context: context).fetchOrCreate(for: fix.timestamp)
+            let snapshot = LocationSnapshot(
+                latitude: fix.coordinate.latitude,
+                longitude: fix.coordinate.longitude,
+                city: nil, state: nil, country: nil,
+                timestamp: fix.timestamp
+            )
+            // fetchOrCreate only inserts when the day has no entry, and then applyLocation always
+            // writes — so a `false` here never leaves an empty row behind.
+            guard applyLocation(snapshot, to: entry) else { return false }
+            entry.updatedAt = Date()
+            try context.save()
+            SharedDefaults.setLocationCaptureOutcome("ok slc")
+            logger.info("Saved SLC coordinates for today")
+            return true
+        } catch {
+            logger.error("Failed to save SLC coordinates: \(error)")
+            return false
+        }
+    }
+
+    /// If `day`'s entry has coordinates but was never named (e.g. iOS suspended a wake mid-geocode,
+    /// or the network was down), reverse-geocode and fill them in. "Never named" means no place
+    /// field at all: a place can legitimately have no city (rural areas, parks, at sea), and
+    /// treating that as unnamed would re-geocode on every trigger for the rest of the day.
+    @MainActor
+    private static func fillMissingPlace(day: Date) async {
+        do {
+            let context = try DataContainer.shared().mainContext
+            guard let entry = try DailyEntryRepository(context: context).fetchEntry(for: day),
+                  entry.city == nil, entry.state == nil, entry.country == nil,
+                  let latitude = entry.latitude,
+                  let longitude = entry.longitude
+            else { return }
+
+            let location = CLLocation(latitude: latitude, longitude: longitude)
+            guard let place = await PlaceResolver.place(for: location) else { return }
+            // The entry may have been edited while we were geocoding — only name the same point.
+            guard entry.city == nil, entry.state == nil, entry.country == nil,
+                  entry.latitude == latitude, entry.longitude == longitude else { return }
+            entry.city = place.city
+            entry.state = place.state
+            entry.country = place.country
+            try context.save()
+        } catch {
+            logger.error("Failed to fill in place name: \(error)")
+        }
+    }
+
+    func captureSnapshot(day: Date? = nil, includeLocation: Bool = true) async -> SnapshotData {
+        let day = day ?? Calendar.current.startOfDay(for: Date())
 
         // Run location and HealthKit concurrently
-        async let locationResult = captureLocation()
-        async let healthResult = captureHealthData(for: today)
+        async let locationResult = captureLocation(if: includeLocation)
+        async let healthResult = captureHealthData(for: day)
         let screenTimeResult = readScreenTimeFromDefaults()
 
         let location = await locationResult
         let health = await healthResult
-
-        // Stamp when this run completed so DevTools / logs can show capture liveness.
-        SharedDefaults.markCaptureRun()
 
         // Encode workout data — only compute summary fields if encoding succeeds
         var workoutJSON: Data?
@@ -118,16 +317,11 @@ actor BackgroundSnapshotService {
             } catch {
                 logger.error("Failed to encode workout data: \(error)")
             }
-        } else {
-            logger.info("No workouts found for \(today)")
         }
 
         return SnapshotData(
-            latitude: location?.latitude,
-            longitude: location?.longitude,
-            city: location?.city,
-            state: location?.state,
-            country: location?.country,
+            day: day,
+            location: location,
             stepCount: health.steps,
             walkingDistanceMeters: health.distance,
             sleepHours: health.sleep?.totalHours,
@@ -143,12 +337,14 @@ actor BackgroundSnapshotService {
             workoutIntensityScore: intensityScore,
             restingHeartRate: health.restingHeartRate,
             averageHeartRate: health.averageHeartRate,
+            healthSkippedLocked: health.skippedLocked,
             screenTimeSeconds: screenTimeResult?.seconds,
             pickups: screenTimeResult?.pickups
         )
     }
 
-    private func captureLocation() async -> LocationSnapshot? {
+    private func captureLocation(if include: Bool) async -> LocationSnapshot? {
+        guard include else { return nil }
         do {
             let service = await LocationCaptureService()
             let snapshot = try await service.captureCurrentLocation()
@@ -181,12 +377,17 @@ actor BackgroundSnapshotService {
         let workouts: [WorkoutSummary]
         let restingHeartRate: Double?
         let averageHeartRate: Double?
+        var skippedLocked = false
+
+        static let empty = HealthData(
+            steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil
+        )
     }
 
     private func captureHealthData(for date: Date) async -> HealthData {
         guard HealthKitService.isAvailable else {
             SharedDefaults.setHealthCaptureOutcome("unavailable")
-            return HealthData(steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil)
+            return .empty
         }
 
         // HealthKit is encrypted while the device is locked; querying then just fails silently
@@ -195,7 +396,9 @@ actor BackgroundSnapshotService {
         guard await Self.isProtectedDataAvailable() else {
             logger.warning("Protected data unavailable (device locked) — skipping HealthKit capture")
             SharedDefaults.setHealthCaptureOutcome("skipped-locked")
-            return HealthData(steps: nil, distance: nil, sleep: nil, workouts: [], restingHeartRate: nil, averageHeartRate: nil)
+            var skipped = HealthData.empty
+            skipped.skippedLocked = true
+            return skipped
         }
 
         var steps: Int?
@@ -266,14 +469,20 @@ actor BackgroundSnapshotService {
     }
 }
 
+/// Applies a snapshot to its day's entry and saves. Returns whether the save succeeded.
 @MainActor
-func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
+@discardableResult
+func applySnapshotData(_ data: SnapshotData, to context: ModelContext) -> Bool {
     let repository = DailyEntryRepository(context: context)
 
     do {
-        let entry = try repository.fetchOrCreateToday()
+        let entry = try repository.fetchOrCreate(for: data.day)
 
-        applyLocationData(from: data, to: entry)
+        // A fix from a different day (e.g. a cached one across midnight) must not label this entry.
+        if let location = data.location,
+           Calendar.current.isDate(location.timestamp, inSameDayAs: data.day) {
+            applyLocation(location, to: entry)
+        }
         applyHealthKitData(from: data, to: entry)
         try applySleepScore(for: entry, data: data, context: context)
         applyWorkoutAndHeartRateData(from: data, to: entry)
@@ -282,18 +491,41 @@ func applySnapshotData(_ data: SnapshotData, to context: ModelContext) {
         entry.updatedAt = Date()
 
         try context.save()
+        return true
     } catch {
         logger.error("Failed to save snapshot: \(error)")
+        return false
     }
 }
 
-private func applyLocationData(from data: SnapshotData, to entry: DailyEntry) {
-    if entry.latitude == nil, let lat = data.latitude { entry.latitude = lat }
-    if entry.longitude == nil, let lon = data.longitude { entry.longitude = lon }
-    if entry.city == nil, let city = data.city { entry.city = city }
-    if entry.state == nil, let state = data.state { entry.state = state }
-    if entry.country == nil, let country = data.country { entry.country = country }
-    if entry.locationCapturedAt == nil, data.latitude != nil { entry.locationCapturedAt = Date() }
+/// Writes a location to `entry` as one unit — coordinates, place name and the fix's own timestamp
+/// together, never a mix of fields from different fixes. The day's first location sticks (a later
+/// passive capture doesn't move it); the one exception is the same coordinates coming back with a
+/// place name, after an earlier geocode failed. Manual "update location" actions bypass this.
+///
+/// Returns whether anything changed.
+@MainActor
+@discardableResult
+func applyLocation(_ location: LocationSnapshot, to entry: DailyEntry) -> Bool {
+    if entry.latitude == nil || entry.longitude == nil {
+        entry.latitude = location.latitude
+        entry.longitude = location.longitude
+        entry.city = location.city
+        entry.state = location.state
+        entry.country = location.country
+        entry.locationCapturedAt = location.timestamp
+        return true
+    }
+
+    if entry.city == nil, location.city != nil,
+       entry.latitude == location.latitude, entry.longitude == location.longitude {
+        entry.city = location.city
+        entry.state = location.state
+        entry.country = location.country
+        return true
+    }
+
+    return false
 }
 
 private func applyHealthKitData(from data: SnapshotData, to entry: DailyEntry) {
