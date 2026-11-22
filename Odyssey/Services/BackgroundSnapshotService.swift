@@ -57,6 +57,75 @@ struct SnapshotData: Sendable {
     }
 #endif
 
+/// Coalesces concurrent capture triggers into one run at a time. Pure coordination with no I/O,
+/// so the join / re-run / debounce rules are unit-testable with a fake operation.
+///
+/// Rules:
+/// - A caller that arrives while a run is in flight joins it instead of starting another.
+/// - Joining is enough, unless the caller is forced (the user is waiting) and the run it joined
+///   can't stand in for one: a background-triggered run, which may have started before the scene
+///   was active, or a run cut short by cancellation (e.g. a BGTask expiring). Then it runs again.
+/// - A non-forced caller is skipped when `isDebounced` says so. The check and the start happen
+///   on the main actor with no suspension between them, so the gate is atomic.
+@MainActor
+final class CaptureCoordinator {
+    enum Outcome: Equatable {
+        case ran, joined, debounced
+    }
+
+    private struct Run {
+        let id: Int
+        let task: Task<Void, Never>
+        let isForced: Bool
+    }
+
+    private var current: Run?
+    private var nextRunID = 0
+
+    var isRunning: Bool {
+        current != nil
+    }
+
+    func run(
+        force: Bool,
+        isDebounced: () -> Bool,
+        operation: @escaping @MainActor () async -> Void
+    ) async -> Outcome {
+        while let running = current {
+            await running.task.value
+            let stoodIn = running.isForced && !running.task.isCancelled
+            guard force, !Task.isCancelled, !stoodIn else { return .joined }
+            // Otherwise loop: join whatever started meanwhile, or fall through and run.
+        }
+
+        if !force, isDebounced() {
+            return .debounced
+        }
+
+        nextRunID += 1
+        let id = nextRunID
+        let task = Task { @MainActor in
+            await operation()
+            // Free the slot from inside the run, before it completes. Anyone awaiting
+            // `task.value` then already sees it free; clearing it in the awaiting owner raced
+            // the joiners, which usually resumed first and saw a stale run.
+            if self.current?.id == id {
+                self.current = nil
+            }
+        }
+        current = Run(id: id, task: task, isForced: force)
+
+        // This caller's cancellation (e.g. its BGTask expiring) stops the shared run; forced
+        // joiners notice the cancellation and run again.
+        await withTaskCancellationHandler {
+            await task.value
+        } onCancel: {
+            task.cancel()
+        }
+        return .ran
+    }
+}
+
 actor BackgroundSnapshotService {
     // The same instance the observer queries and background delivery are registered on.
     private let healthKitService = HealthKitService.shared
@@ -67,12 +136,8 @@ actor BackgroundSnapshotService {
     /// each of those runs a full capture for values that change slowly.
     static let backgroundCaptureInterval: TimeInterval = 60 * 60
 
-    /// The capture currently running, if any. Concurrent triggers join it instead of starting a
-    /// second one — the check and the assignment both happen on the main actor with no suspension
-    /// in between, so this gate is atomic.
-    @MainActor private static var inFlight: Task<Void, Never>?
-    /// Whether the in-flight run was forced (foreground/BGTask) rather than a background trigger.
-    @MainActor private static var inFlightIsForced = false
+    /// Coalesces concurrent triggers into one capture at a time (see `CaptureCoordinator`).
+    @MainActor private static let coordinator = CaptureCoordinator()
 
     // MARK: - Entry points
 
@@ -87,42 +152,36 @@ actor BackgroundSnapshotService {
     ///     capture that's already in flight rather than duplicating it.
     @MainActor
     static func captureAndApply(trigger: String, force: Bool = false) async {
-        if let running = inFlight {
-            let runningWasForced = inFlightIsForced
-            logger.info("\(trigger, privacy: .public) joined the capture already in flight")
-            await running.value
-            // A forced caller (the user just opened the app) that joined a background-triggered
-            // run — e.g. a HealthKit observer firing at launch, before the scene was active — still
-            // gets its own capture. Otherwise joining is enough.
-            guard force, !runningWasForced, inFlight == nil else { return }
-        }
-
-        if !force, let last = SharedDefaults.lastCaptureRunDate {
-            let age = Date().timeIntervalSince(last)
-            if age < backgroundCaptureInterval {
-                logger.info("Skipping \(trigger, privacy: .public) capture — last run \(Int(age))s ago")
-                return
-            }
-        }
-
+        // Held while joining too: a caller waiting on someone else's run still needs the app awake.
         #if canImport(UIKit)
             let assertion = BackgroundTaskAssertion(name: "snapshot")
             defer { assertion.end() }
         #endif
 
-        let work = Task { @MainActor in
-            await runCapture(trigger: trigger)
+        let outcome = await coordinator.run(
+            force: force,
+            isDebounced: { isDebounced(trigger: trigger) },
+            operation: { await runCapture(trigger: trigger) }
+        )
+        if outcome == .joined {
+            logger.info("\(trigger, privacy: .public) joined the capture already in flight")
         }
-        inFlight = work
-        inFlightIsForced = force
-        // Propagate cancellation (e.g. a BGTask expiring) into the shared run.
-        await withTaskCancellationHandler {
-            await work.value
-        } onCancel: {
-            work.cancel()
-        }
-        inFlight = nil
-        inFlightIsForced = false
+    }
+
+    @MainActor
+    private static func isDebounced(trigger: String) -> Bool {
+        guard let last = SharedDefaults.lastCaptureRunDate else { return false }
+        let age = Date().timeIntervalSince(last)
+        guard age < backgroundCaptureInterval else { return false }
+        logger.info("Skipping \(trigger, privacy: .public) capture — last run \(Int(age))s ago")
+        return true
+    }
+
+    /// Whether a finished run starts the debounce window. Not when HealthKit was skipped because
+    /// the phone was locked, nor when a BGTask expiring cut the run short — otherwise the triggers
+    /// that would complete it (the unlock retry, the next wake) are debounced away for an hour.
+    static func shouldStampDebounce(healthSkippedLocked: Bool, wasCancelled: Bool) -> Bool {
+        !healthSkippedLocked && !wasCancelled
     }
 
     /// Called synchronously from the significant-location-change delegate callback with the fix
@@ -167,10 +226,7 @@ actor BackgroundSnapshotService {
 
             guard applySnapshotData(data, to: context) else { return }
 
-            // Don't stamp a run whose HealthKit half was skipped because the phone was locked, or
-            // one cut short by a BGTask expiring — otherwise the triggers that would complete it
-            // (the unlock retry, the next wake) are debounced away for an hour.
-            if !data.healthSkippedLocked, !Task.isCancelled {
+            if shouldStampDebounce(healthSkippedLocked: data.healthSkippedLocked, wasCancelled: Task.isCancelled) {
                 SharedDefaults.markCaptureRun()
             }
             NotificationCenter.default.post(name: .snapshotDidUpdate, object: nil)

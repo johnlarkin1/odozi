@@ -104,7 +104,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
 
     @MainActor
     private static func run(_ task: BGTask, trigger: String) {
-        let completion = BGTaskCompletion(task)
+        let completion = OneShotCompletion { task.setTaskCompleted(success: $0) }
         let work = Task { @MainActor in
             await BackgroundSnapshotService.captureAndApply(trigger: trigger, force: true)
             completion.complete(success: !Task.isCancelled)
@@ -117,23 +117,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UNUserNotificationCenterD
     }
 }
 
-/// Calls `setTaskCompleted` exactly once. The work finishing and the expiration handler (which
-/// may run on another thread) race; whichever comes first reports, the other is a no-op.
-private final class BGTaskCompletion: @unchecked Sendable {
-    private let task: BGTask
+/// Delivers a completion exactly once. Used for `setTaskCompleted`: the work finishing and the
+/// expiration handler (which may run on another thread) race; whichever comes first reports, the
+/// other is a no-op.
+final class OneShotCompletion: @unchecked Sendable {
+    private let body: @Sendable (Bool) -> Void
     private let isDone = OSAllocatedUnfairLock(initialState: false)
 
-    init(_ task: BGTask) {
-        self.task = task
+    init(_ body: @escaping @Sendable (Bool) -> Void) {
+        self.body = body
     }
 
-    func complete(success: Bool) {
+    /// Returns whether this call delivered the completion.
+    @discardableResult
+    func complete(success: Bool) -> Bool {
         let isFirst = isDone.withLock { isDone in
             defer { isDone = true }
             return !isDone
         }
         if isFirst {
-            task.setTaskCompleted(success: success)
+            body(success)
         }
+        return isFirst
     }
 }

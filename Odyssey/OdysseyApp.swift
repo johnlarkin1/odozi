@@ -19,6 +19,8 @@ struct OdysseyApp: App {
     @State private var retroactiveUnlockCount = 0
     @State private var oldEntryCount = 0
     @State private var isCatchingUp = false
+    /// Identifies the current catch-up, so a suspended older run can't clear the flag for a newer one.
+    @State private var catchUpGeneration = 0
 
     let container: ModelContainer?
     let containerError: Error?
@@ -194,7 +196,13 @@ struct OdysseyApp: App {
         // Permission prompts bounce the scene through .inactive → .active; don't stack runs.
         guard !isCatchingUp else { return }
         isCatchingUp = true
-        defer { isCatchingUp = false }
+        catchUpGeneration += 1
+        let generation = catchUpGeneration
+        defer {
+            if catchUpGeneration == generation {
+                isCatchingUp = false
+            }
+        }
         let context = container.mainContext
 
         // Re-register screen time monitoring on every foreground (defensive best practice —
