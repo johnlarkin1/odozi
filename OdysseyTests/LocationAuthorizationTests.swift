@@ -276,3 +276,122 @@ final class LocationAuthorizationTests: XCTestCase {
         XCTAssertNil(entry.latitude, "Yesterday's fix must not label today's entry")
     }
 }
+
+// MARK: - Significant-location-change monitoring
+
+/// Records what `LocationMonitoringService` asks of CoreLocation.
+private final class FakeSignificantChangeManager: SignificantChangeLocationManaging {
+    var authorizationStatus: CLAuthorizationStatus
+    weak var delegate: (any CLLocationManagerDelegate)?
+    private(set) var starts = 0
+    private(set) var stops = 0
+    private(set) var alwaysRequests = 0
+
+    init(status: CLAuthorizationStatus) {
+        authorizationStatus = status
+    }
+
+    func requestAlwaysAuthorization() {
+        alwaysRequests += 1
+    }
+
+    func startMonitoringSignificantLocationChanges() {
+        starts += 1
+    }
+
+    func stopMonitoringSignificantLocationChanges() {
+        stops += 1
+    }
+}
+
+@MainActor
+final class LocationMonitoringServiceTests: XCTestCase {
+    private func makeService(
+        status: CLAuthorizationStatus,
+        available: Bool = true
+    ) -> (LocationMonitoringService, FakeSignificantChangeManager) {
+        let manager = FakeSignificantChangeManager(status: status)
+        let service = LocationMonitoringService(manager: manager, isMonitoringAvailable: { available })
+        return (service, manager)
+    }
+
+    /// The launch-time path re-arms monitoring when Always is granted — what lets an SLC relaunch
+    /// deliver its fix — and starts it only once however often it's called.
+    func testResumeStartsMonitoringOnceWithAlways() {
+        let (service, manager) = makeService(status: .authorizedAlways)
+
+        service.resumeMonitoringIfAuthorized()
+        service.resumeMonitoringIfAuthorized()
+        service.register()
+
+        XCTAssertTrue(service.isMonitoring)
+        XCTAssertEqual(manager.starts, 1, "start-once guard")
+        XCTAssertTrue(manager.delegate === service, "the delegate is set at init, before any delivery")
+    }
+
+    /// Launch must never prompt — it can run in the background.
+    func testResumeNeverPromptsOrStartsWithoutAlways() {
+        for status: CLAuthorizationStatus in [.authorizedWhenInUse, .notDetermined, .denied] {
+            let (service, manager) = makeService(status: status)
+            service.resumeMonitoringIfAuthorized()
+            XCTAssertFalse(service.isMonitoring, "status \(status.rawValue)")
+            XCTAssertEqual(manager.starts, 0)
+            XCTAssertEqual(manager.alwaysRequests, 0)
+        }
+    }
+
+    /// The foreground path asks for the Always upgrade when only When-In-Use is granted.
+    func testRegisterRequestsAlwaysUpgradeFromWhenInUse() {
+        let (service, manager) = makeService(status: .authorizedWhenInUse)
+        service.register()
+        XCTAssertEqual(manager.alwaysRequests, 1)
+        XCTAssertEqual(manager.starts, 0)
+    }
+
+    func testRegisterStopsMonitoringWhenAccessIsRevoked() {
+        let (service, manager) = makeService(status: .authorizedAlways)
+        service.resumeMonitoringIfAuthorized()
+
+        manager.authorizationStatus = .denied
+        service.register()
+
+        XCTAssertFalse(service.isMonitoring)
+        XCTAssertEqual(manager.stops, 1)
+    }
+
+    func testNoMonitoringWhenUnavailableOnDevice() {
+        let (service, manager) = makeService(status: .authorizedAlways, available: false)
+        service.resumeMonitoringIfAuthorized()
+        XCTAssertFalse(service.isMonitoring)
+        XCTAssertEqual(manager.starts, 0)
+    }
+
+    // MARK: Fix selection
+
+    private func location(minutesAgo: Double, from now: Date, accuracy: Double = 50) -> CLLocation {
+        CLLocation(
+            coordinate: CLLocationCoordinate2D(latitude: 40.7, longitude: -74.0),
+            altitude: 0,
+            horizontalAccuracy: accuracy,
+            verticalAccuracy: -1,
+            timestamp: now.addingTimeInterval(-minutesAgo * 60)
+        )
+    }
+
+    func testBestFixIsTheNewestUsableOne() {
+        let noon = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: Date())!
+        let older = location(minutesAgo: 30, from: noon)
+        let newest = location(minutesAgo: 2, from: noon)
+        let invalid = location(minutesAgo: 1, from: noon, accuracy: -1)
+
+        let best = LocationMonitoringService.bestFix(from: [older, newest, invalid], now: noon)
+        XCTAssertEqual(best?.timestamp, newest.timestamp, "skips the invalid last fix, takes the newest valid one")
+    }
+
+    func testBestFixIgnoresQueuedStaleFixes() {
+        let noon = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: Date())!
+        let stale = location(minutesAgo: 6 * 60, from: noon) // queued from this morning, past the 4 h limit
+        XCTAssertNil(LocationMonitoringService.bestFix(from: [stale], now: noon))
+        XCTAssertNil(LocationMonitoringService.bestFix(from: [], now: noon))
+    }
+}

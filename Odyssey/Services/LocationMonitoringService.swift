@@ -4,6 +4,18 @@ import os
 
 private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "LocationMonitoring")
 
+/// The slice of `CLLocationManager` that `LocationMonitoringService` uses, so tests can drive it
+/// with a fake instead of real CoreLocation.
+protocol SignificantChangeLocationManaging: AnyObject {
+    var authorizationStatus: CLAuthorizationStatus { get }
+    var delegate: (any CLLocationManagerDelegate)? { get set }
+    func requestAlwaysAuthorization()
+    func startMonitoringSignificantLocationChanges()
+    func stopMonitoringSignificantLocationChanges()
+}
+
+extension CLLocationManager: SignificantChangeLocationManaging {}
+
 /// Owns the long-lived `CLLocationManager` for **passive** background location capture via
 /// significant-location-change (SLC) monitoring.
 ///
@@ -16,18 +28,36 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Loca
 ///   becomes active, so a manager created lazily from a foreground path never receives it.
 ///   `AppDelegate` calls `resumeMonitoringIfAuthorized()` for exactly this reason.
 ///
-/// It does *not* need `allowsBackgroundLocationUpdates` or the `location` background mode; those
-/// are for continuous standard updates.
+/// It does *not* need `allowsBackgroundLocationUpdates` or the `location` background mode (and
+/// Info.plist deliberately doesn't declare it — App Review flags an unused one); those are for
+/// continuous standard updates.
 @MainActor
 final class LocationMonitoringService: NSObject {
     static let shared = LocationMonitoringService()
 
-    private let manager = CLLocationManager()
-    private var isMonitoring = false
+    private let manager: any SignificantChangeLocationManaging
+    private let isMonitoringAvailable: () -> Bool
+    private(set) var isMonitoring = false
 
-    override private init() {
+    override private convenience init() {
+        self.init(
+            manager: CLLocationManager(),
+            isMonitoringAvailable: CLLocationManager.significantLocationChangeMonitoringAvailable
+        )
+    }
+
+    /// Injectable for tests; the app uses `shared`.
+    init(manager: any SignificantChangeLocationManaging, isMonitoringAvailable: @escaping () -> Bool) {
+        self.manager = manager
+        self.isMonitoringAvailable = isMonitoringAvailable
         super.init()
         manager.delegate = self
+    }
+
+    /// The newest fix in an SLC delivery that's usable for today (valid, recent, same day).
+    /// Deliveries are ordered oldest first and can include queued, stale fixes after a relaunch.
+    nonisolated static func bestFix(from locations: [CLLocation], now: Date = Date()) -> CLLocation? {
+        locations.last { LocationFallback.isUsable($0, now: now) }
     }
 
     /// The app's current location authorization, read from the retained manager.
@@ -60,7 +90,7 @@ final class LocationMonitoringService: NSObject {
 
     private func startMonitoring() {
         guard !isMonitoring else { return }
-        guard CLLocationManager.significantLocationChangeMonitoringAvailable() else {
+        guard isMonitoringAvailable() else {
             logger.warning("Significant-location-change monitoring unavailable on this device")
             return
         }
@@ -109,7 +139,7 @@ extension LocationMonitoringService: CLLocationManagerDelegate {
         MainActor.assumeIsolated {
             // Use the fix iOS just delivered. Asking for a *new* one from the background is slow,
             // often never answered, and wastes the wake's short time budget.
-            guard let fix = locations.last(where: { LocationFallback.isUsable($0) }) else {
+            guard let fix = Self.bestFix(from: locations) else {
                 logger.info("SLC delivery had no usable fix (\(locations.count) locations)")
                 return
             }
