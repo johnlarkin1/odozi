@@ -289,6 +289,22 @@ final class LocationAuthorizationTests: XCTestCase {
         XCTAssertNil(Place.state(fromShortCityContext: "Paris, France", city: nil))
         XCTAssertNil(Place.state(fromShortCityContext: "Somewhere Else, CA", city: "Brooklyn"))
     }
+
+    /// Outside the US the short context ends in the country ("Paris, France"); that's not a state.
+    func testCountryIsNotTakenAsState() {
+        XCTAssertNil(Place.state(fromShortCityContext: "Paris, France", city: "Paris", regionNames: ["France"]))
+        XCTAssertNil(Place.state(fromShortCityContext: "Tokyo, japan", city: "Tokyo", regionNames: ["Japan"]),
+                     "compared case-insensitively")
+        XCTAssertEqual(
+            Place.state(fromShortCityContext: "London, England", city: "London", regionNames: ["United Kingdom"]),
+            "England",
+            "a constituent country is the admin area, as CLPlacemark reported it"
+        )
+        XCTAssertEqual(
+            Place.state(fromShortCityContext: "Austin, TX", city: "Austin", regionNames: ["United States"]),
+            "TX"
+        )
+    }
 }
 
 // MARK: - Significant-location-change monitoring

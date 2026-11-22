@@ -177,15 +177,22 @@ struct Place: Sendable, Equatable {
     let country: String?
 
     /// MapKit has no `administrativeArea`; its short city-with-context string is "City, State"
-    /// where a state applies (the short style omits the country). Take the part after the city.
-    static func state(fromShortCityContext context: String?, city: String?) -> String? {
+    /// where a state applies. Take the part after the city — unless that part is the country:
+    /// the short style only omits "United States", so outside the US it reads e.g. "Paris, France".
+    ///
+    /// - Parameter regionNames: names the country might appear under (MapKit's `regionName`, the
+    ///   localized name for the region code). A part matching one of them isn't a state.
+    static func state(fromShortCityContext context: String?, city: String?, regionNames: [String] = []) -> String? {
         guard let context, let city, !city.isEmpty else { return nil }
         let prefix = city + ", "
         guard context.hasPrefix(prefix) else { return nil }
-        let state = context.dropFirst(prefix.count)
+        guard let state = context.dropFirst(prefix.count)
             .split(separator: ",", maxSplits: 1).first
-            .map { $0.trimmingCharacters(in: .whitespaces) }
-        return state?.isEmpty == false ? state : nil
+            .map({ $0.trimmingCharacters(in: .whitespaces) }),
+            !state.isEmpty
+        else { return nil }
+        let isCountry = regionNames.contains { $0.caseInsensitiveCompare(state) == .orderedSame }
+        return isCountry ? nil : state
     }
 }
 
@@ -194,10 +201,19 @@ extension Place {
     init(mapItem: MKMapItem) {
         let address = mapItem.addressRepresentations
         let city = address?.cityName
+        let regionCode = address?.region?.identifier
+        let regionNames = [
+            address?.regionName,
+            regionCode.flatMap { Locale.current.localizedString(forRegionCode: $0) }
+        ].compactMap { $0 }
         self.init(
             city: city,
-            state: Self.state(fromShortCityContext: address?.cityWithContext(.short), city: city),
-            country: address?.region?.identifier
+            state: Self.state(
+                fromShortCityContext: address?.cityWithContext(.short),
+                city: city,
+                regionNames: regionNames
+            ),
+            country: regionCode
         )
     }
 }
