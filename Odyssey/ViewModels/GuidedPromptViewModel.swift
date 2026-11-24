@@ -101,78 +101,26 @@ final class GuidedPromptViewModel {
     }
 
     func submit() {
-        let repository = DailyEntryRepository(context: modelContext)
+        // Skipped steps are left alone, so their defaults (e.g. sleepQuality = 5) never
+        // become phantom answers.
+        let answered = Set(PromptStep.allCases).subtracting(skippedSteps)
 
         do {
-            let entry = try repository.fetchOrCreate(for: targetDate)
-
-            // Only write fields for steps the user didn't skip — prevents phantom
-            // defaults (e.g., sleepQuality=5) for steps the user explicitly skipped.
-            if !skippedSteps.contains(.mood) {
-                entry.feeling = responses.feeling
-            }
-            if !skippedSteps.contains(.feeling) {
-                entry.singleWordFeeling = responses.singleWordFeeling
-                entry.feelingColorHex = responses.feelingColorHex
-            }
-            if !skippedSteps.contains(.sleep) {
-                entry.sleepQuality = responses.sleepQuality
-            }
-            if !skippedSteps.contains(.gratitude) {
-                entry.gratitude = responses.gratitude
-            }
-            if !skippedSteps.contains(.win) {
-                entry.win = responses.win
-            }
-            if !skippedSteps.contains(.tension) {
-                entry.tension = responses.tension
-            }
-            if !skippedSteps.contains(.journal) {
-                entry.journalEntry = responses.journalEntry
-            }
-            if !skippedSteps.contains(.drinks) {
-                entry.drinks = responses.drinks
-            }
-
-            if let photoData = responses.attachedPhotoData {
-                var existing = entry.attachedPhotoData ?? []
-                existing.append(photoData)
-                entry.attachedPhotoData = existing
-                if let thumbnail = PhotoLibraryService.generateMapThumbnail(from: photoData) {
-                    entry.mapThumbnailData = thumbnail
-                    entry.showOnPhotoMap = true
-                } else {
-                    guidedPromptLogger.error("Failed to generate map thumbnail from attached photo (\(photoData.count) bytes)")
-                }
-            }
-
-            // Only mark as submitted if the user actually provided content.
-            if entry.hasPromptData {
-                entry.hasUserSubmitted = true
-                if entry.firstSubmittedAt == nil {
-                    entry.firstSubmittedAt = Date()
-                }
-            }
-            entry.updatedAt = Date()
-
-            try modelContext.save()
-            NotificationCenter.default.post(name: .didSaveFirstEntry, object: nil)
+            let result = try EntrySubmitter(context: modelContext)
+                .submit(responses, answered: answered, for: targetDate)
 
             // Capture GPS so the new entry shows up on the map immediately
             // instead of waiting for the next BackgroundSnapshotService run.
             // Non-blocking: a failure here is fine (background task will try
             // again at 8 PM / 2 AM). Only runs for today's entry — past
             // entries should keep whatever location they already have.
-            let needsLocation = entry.latitude == nil || entry.longitude == nil
+            let needsLocation = result.entry.latitude == nil || result.entry.longitude == nil
             if needsLocation, Calendar.current.isDateInToday(targetDate) {
                 Task { await updateLocationFromGPS() }
             }
 
-            let achievementService = AchievementService(modelContext: modelContext)
-            let allEntries = (try? modelContext.fetch(FetchDescriptor<DailyEntry>())) ?? []
-            let unlocked = achievementService.evaluateAll(entries: allEntries, latestEntry: entry)
-            if !unlocked.isEmpty {
-                newlyUnlockedAchievements = unlocked
+            if !result.unlockedAchievements.isEmpty {
+                newlyUnlockedAchievements = result.unlockedAchievements
             }
         } catch {
             guidedPromptLogger.error("Failed to save guided prompt entry: \(error)")
