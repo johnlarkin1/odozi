@@ -91,3 +91,20 @@ final class ExtractionValidatorTests: XCTestCase {
         XCTAssertTrue(said.contains(quote: "I finally fixed the bug"))
     }
 }
+
+final class TranscriptCleanerTests: XCTestCase {
+    func testRemovesFillersAndTidiesSpacing() {
+        XCTAssertEqual(
+            TranscriptCleaner.clean("  um, today was uh   pretty good. Umm I fixed the bug  "),
+            "Today was pretty good. I fixed the bug"
+        )
+    }
+
+    func testKeepsWordsThatContainFillers() {
+        XCTAssertEqual(TranscriptCleaner.clean("the umbrella was huge"), "The umbrella was huge")
+    }
+
+    func testEmptyStaysEmpty() {
+        XCTAssertEqual(TranscriptCleaner.clean("  uh  "), "")
+    }
+}

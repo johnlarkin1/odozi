@@ -21,9 +21,14 @@ struct OnDeviceJournalExtractor: JournalExtractor {
             let response = try await session.respond(
                 to: "Transcript:\n\(transcript)",
                 generating: GeneratedVoiceEntry.self,
-                options: GenerationOptions(sampling: .greedy)
+                options: Self.options
             )
-            return response.content.extraction
+            var extraction = response.content.extraction
+            // The journal is the transcript itself, tidied in code. Asking the model to rewrite
+            // the whole note made it loop until it ran out of context, and risks it dropping or
+            // inventing content.
+            extraction.journal = TranscriptCleaner.clean(transcript)
+            return extraction
         } catch let error as LanguageModelSession.GenerationError {
             switch error {
             case .guardrailViolation, .refusal:
@@ -40,12 +45,18 @@ struct OnDeviceJournalExtractor: JournalExtractor {
         }
     }
 
+    /// Low temperature for consistent answers, and a cap so a repetitive generation fails fast
+    /// instead of running for most of a minute. The answers are short; 400 tokens is ample.
+    /// (Greedy sampling made the small model repeat itself until the context window filled.)
+    static let options = GenerationOptions(temperature: 0.2, maximumResponseTokens: 400)
+
     static let instructions = """
     You turn a spoken daily journal note into answers for a journaling app. The speaker is the \
     app's user, talking about their own day. Use only what they said.
 
     Rules:
     - Leave an answer empty when they didn't talk about it. Never invent details.
+    - Keep every answer short: one sentence at most. Evidence is a short exact quote.
     - mood: their overall mood today from 1 (awful) to 10 (amazing). Infer it from how they \
     describe the day if they don't give a number. moodEvidence: the exact words you based it on.
     - sleepQuality: how well they slept last night from 1 to 10, inferred if needed. Only when \
@@ -56,8 +67,6 @@ struct OnDeviceJournalExtractor: JournalExtractor {
     color that best matches that feeling.
     - gratitude, win, tension: something they're grateful for, something that went well, \
     something stressful. Keep their own words and first person; just remove filler like "um".
-    - journal: everything they said, lightly cleaned up into first-person prose. Keep all the \
-    content and their voice; don't summarize or add anything.
     """
 }
 
@@ -85,8 +94,6 @@ struct GeneratedVoiceEntry {
     var drinks: Int?
     @Guide(description: "Exact words about drinking")
     var drinksEvidence: String?
-    @Guide(description: "Everything they said as lightly cleaned-up first-person prose")
-    var journal: String
 
     var extraction: VoiceExtraction {
         VoiceExtraction(
@@ -100,8 +107,7 @@ struct GeneratedVoiceEntry {
             win: win,
             tension: tension,
             drinks: drinks,
-            drinksEvidence: drinksEvidence,
-            journal: journal
+            drinksEvidence: drinksEvidence
         )
     }
 }

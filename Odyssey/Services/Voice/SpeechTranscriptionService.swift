@@ -200,7 +200,7 @@ private final class TapWriter: @unchecked Sendable {
             AVFormatIDKey: kAudioFormatMPEG4AAC,
             AVSampleRateKey: inputFormat.sampleRate,
             AVNumberOfChannelsKey: inputFormat.channelCount,
-            AVEncoderBitRateKey: 32000 * Int(inputFormat.channelCount),
+            AVEncoderBitRateKey: 32000 * Int(inputFormat.channelCount)
         ]
         file = try AVAudioFile(
             forWriting: fileURL,

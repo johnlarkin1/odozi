@@ -58,7 +58,7 @@ final class VoiceEntryPlanTests: XCTestCase {
             plan.conflicts,
             [
                 VoiceConflict(step: .mood, existing: "6", proposed: "3"),
-                VoiceConflict(step: .gratitude, existing: "coffee", proposed: "Sam"),
+                VoiceConflict(step: .gratitude, existing: "coffee", proposed: "Sam")
             ]
         )
         XCTAssertFalse(plan.estimated.contains(.mood), "Unwritten answers aren't flagged")

@@ -36,7 +36,7 @@ struct VoiceEntryPlan: Equatable {
     ///   - existing: The day's entry, if there is one.
     init(extraction: VoiceExtraction?, transcript: String, existing: DailyEntry?) {
         let current = Answers(entry: existing)
-        let journalText = extraction?.journal ?? transcript.trimmingCharacters(in: .whitespacesAndNewlines)
+        let journalText = extraction?.journal ?? TranscriptCleaner.clean(transcript)
         let voice = extraction ?? VoiceExtraction(journal: journalText.isEmpty ? nil : journalText)
 
         consider(.mood, voice.mood.map(String.init), current: current.mood) {
