@@ -50,7 +50,7 @@ enum ExtractionValidator {
         if words.contains(where: { $0.first?.isNumber == true }) { return true }
         let countWords: Set<String> = [
             "zero", "no", "none", "one", "a", "two", "couple", "three", "four", "five", "six", "seven",
-            "eight", "nine", "ten", "didnt", "didn", "sober", "dry", "nothing", "single",
+            "eight", "nine", "ten", "didnt", "didn", "sober", "dry", "nothing", "single"
         ]
         return words.contains(where: countWords.contains)
     }
@@ -113,6 +113,20 @@ struct TranscriptText {
     private static let stopwords: Set<String> = [
         "the", "and", "for", "that", "this", "with", "was", "were", "had", "have", "has", "but", "really",
         "just", "about", "today", "very", "being", "felt", "feel", "feeling", "got", "get", "its", "able",
-        "finally", "grateful", "thankful", "stressed", "stress", "win", "tension",
+        "finally", "grateful", "thankful", "stressed", "stress", "win", "tension"
     ]
+}
+
+/// Tidies a raw transcript into journal text without changing what was said: drops filler
+/// words, collapses whitespace, and capitalizes the first letter.
+enum TranscriptCleaner {
+    static func clean(_ transcript: String) -> String {
+        let fillerPattern = #"(?i)(?<![\w'])(um+|uh+|uhm+|erm+|hmm+)(?![\w'])[,.]?\s*"#
+        var text = transcript.replacingOccurrences(of: fillerPattern, with: "", options: .regularExpression)
+        text = text.replacingOccurrences(of: #"[ \t]+"#, with: " ", options: .regularExpression)
+        text = text.replacingOccurrences(of: #" +([,.!?])"#, with: "$1", options: .regularExpression)
+        text = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard let first = text.first else { return "" }
+        return first.uppercased() + text.dropFirst()
+    }
 }
