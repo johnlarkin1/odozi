@@ -111,6 +111,9 @@ final class EditablePastEntriesDemo: FeatureDemoBase {
         let dayButtons = app.buttons.matching(
             NSPredicate(format: "label MATCHES %@", "^[0-9]{1,2}$")
         )
+        // Don't rely on the fixed pause alone: on a slow CI runner the month
+        // change may still be rendering.
+        guard wait(for: dayButtons.firstMatch) else { return nil }
         for i in 0 ..< min(dayButtons.count, 20) {
             let button = dayButtons.element(boundBy: i)
             if button.exists && button.isHittable {
