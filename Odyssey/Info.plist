@@ -31,6 +31,10 @@
 	<string>Odozi captures your location to add context to your journal entries.</string>
 	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
 	<string>Odozi captures your location in the background to automatically add place context to your daily journal, even when the app is closed. Location is only sampled on meaningful movement and stays on your device.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Odozi uses the microphone when you record a voice note about your day. Recordings are transcribed on your device and stay on your device.</string>
+	<key>NSSpeechRecognitionUsageDescription</key>
+	<string>Odozi turns your voice notes into journal text using on-device speech recognition. Your audio never leaves your device.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>Odozi surfaces photos from your library to enrich your journal entries with visual memories from each day.</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
