@@ -15,10 +15,6 @@ struct VoiceRecordingStore {
     /// The folder recordings live in.
     let directory: URL
 
-    init(directory: URL) {
-        self.directory = directory
-    }
-
     /// The store in the App Group container, falling back to Application Support when the
     /// group container isn't available (e.g. unit tests without the entitlement).
     static var shared: VoiceRecordingStore {
