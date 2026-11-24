@@ -414,6 +414,15 @@
 		1231FC7789278595F9CB1F99 /* VoiceRecordingStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3D4CC04ADA8810FE34E2314 /* VoiceRecordingStore.swift */; };
 		318BFEFEFDA5711600F86412 /* EntrySubmitterTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E8A0E0CC7E0E4C831DEB55BF /* EntrySubmitterTests.swift */; };
 		4E81A30A623E2B1286603E8B /* VoiceRecordingStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B20BB92979E6F2DF5C83A1A3 /* VoiceRecordingStoreTests.swift */; };
+		0B2F519AA3E9C944FB72B48E /* VoiceExtraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = B4AC30552DCC46CCC9AAF416 /* VoiceExtraction.swift */; };
+		3C53EF3D79890D15DC045BF3 /* ExtractionValidator.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE0B9F7394527F41A3431EFE /* ExtractionValidator.swift */; };
+		1440597CF06C9391B9C8C210 /* VoiceEntryPlan.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2BC12811BC540901020F42B1 /* VoiceEntryPlan.swift */; };
+		0B72517E7E372813B50A603A /* OnDeviceJournalExtractor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8D41570FCAEB09E92D5F12BE /* OnDeviceJournalExtractor.swift */; };
+		3F4C185DAE4BB16ED5B1123C /* VoiceNoteProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 79A2D1BF1458C6226595E617 /* VoiceNoteProcessor.swift */; };
+		503BD0550AE41ED09B8358F2 /* SpeechTranscriptionService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6E5F239865D2DFA905A22DCA /* SpeechTranscriptionService.swift */; };
+		087140C09447F505960A8F1B /* ExtractionValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3086DD6323B70844094AA568 /* ExtractionValidatorTests.swift */; };
+		E87595A95674CCD74C2513C7 /* VoiceEntryPlanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF10A7AC401E373038D809A /* VoiceEntryPlanTests.swift */; };
+		C7B7BB6E6350D2DB9889F6CA /* VoiceNoteProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFA2F17E2066FF01A6A8036 /* VoiceNoteProcessorTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -771,6 +780,15 @@
 		F3D4CC04ADA8810FE34E2314 /* VoiceRecordingStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRecordingStore.swift; sourceTree = "<group>"; };
 		E8A0E0CC7E0E4C831DEB55BF /* EntrySubmitterTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntrySubmitterTests.swift; sourceTree = "<group>"; };
 		B20BB92979E6F2DF5C83A1A3 /* VoiceRecordingStoreTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceRecordingStoreTests.swift; sourceTree = "<group>"; };
+		B4AC30552DCC46CCC9AAF416 /* VoiceExtraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceExtraction.swift; sourceTree = "<group>"; };
+		CE0B9F7394527F41A3431EFE /* ExtractionValidator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractionValidator.swift; sourceTree = "<group>"; };
+		2BC12811BC540901020F42B1 /* VoiceEntryPlan.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryPlan.swift; sourceTree = "<group>"; };
+		8D41570FCAEB09E92D5F12BE /* OnDeviceJournalExtractor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnDeviceJournalExtractor.swift; sourceTree = "<group>"; };
+		79A2D1BF1458C6226595E617 /* VoiceNoteProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteProcessor.swift; sourceTree = "<group>"; };
+		6E5F239865D2DFA905A22DCA /* SpeechTranscriptionService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpeechTranscriptionService.swift; sourceTree = "<group>"; };
+		3086DD6323B70844094AA568 /* ExtractionValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractionValidatorTests.swift; sourceTree = "<group>"; };
+		FAF10A7AC401E373038D809A /* VoiceEntryPlanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryPlanTests.swift; sourceTree = "<group>"; };
+		2DFA2F17E2066FF01A6A8036 /* VoiceNoteProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteProcessorTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -892,6 +910,7 @@
 		0AD2F828193D154D701922A9 /* Services */ = {
 			isa = PBXGroup;
 			children = (
+				C210303645A60F84CB4ED990 /* Voice */,
 				F3D4CC04ADA8810FE34E2314 /* VoiceRecordingStore.swift */,
 				685B2DC6078E46DB92E61C54 /* WeeklyDigestNotificationManager.swift */,
 				0E4954B25C2747C8A0430510 /* WeeklyDigestService.swift */,
@@ -1163,6 +1182,9 @@
 		5FAFBC1E2B49E1A80018504E /* OdysseyTests */ = {
 			isa = PBXGroup;
 			children = (
+				2DFA2F17E2066FF01A6A8036 /* VoiceNoteProcessorTests.swift */,
+				FAF10A7AC401E373038D809A /* VoiceEntryPlanTests.swift */,
+				3086DD6323B70844094AA568 /* ExtractionValidatorTests.swift */,
 				B20BB92979E6F2DF5C83A1A3 /* VoiceRecordingStoreTests.swift */,
 				E8A0E0CC7E0E4C831DEB55BF /* EntrySubmitterTests.swift */,
 				D685D4290EDF41CDBCE7DB51 /* WeeklyDigestServiceTests.swift */,
@@ -1485,6 +1507,19 @@
 			path = Onboarding;
 			sourceTree = "<group>";
 		};
+		C210303645A60F84CB4ED990 /* Voice */ = {
+			isa = PBXGroup;
+			children = (
+				6E5F239865D2DFA905A22DCA /* SpeechTranscriptionService.swift */,
+				79A2D1BF1458C6226595E617 /* VoiceNoteProcessor.swift */,
+				8D41570FCAEB09E92D5F12BE /* OnDeviceJournalExtractor.swift */,
+				2BC12811BC540901020F42B1 /* VoiceEntryPlan.swift */,
+				CE0B9F7394527F41A3431EFE /* ExtractionValidator.swift */,
+				B4AC30552DCC46CCC9AAF416 /* VoiceExtraction.swift */,
+			);
+			path = Voice;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1787,6 +1822,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				503BD0550AE41ED09B8358F2 /* SpeechTranscriptionService.swift in Sources */,
+				3F4C185DAE4BB16ED5B1123C /* VoiceNoteProcessor.swift in Sources */,
+				0B72517E7E372813B50A603A /* OnDeviceJournalExtractor.swift in Sources */,
+				1440597CF06C9391B9C8C210 /* VoiceEntryPlan.swift in Sources */,
+				3C53EF3D79890D15DC045BF3 /* ExtractionValidator.swift in Sources */,
+				0B2F519AA3E9C944FB72B48E /* VoiceExtraction.swift in Sources */,
 				BB8D1B9B15DF3C7BDBBFEFB0 /* VoiceRecordingStore.swift in Sources */,
 				E647E7877FA48D15EE2BC59C /* EntrySubmitter.swift in Sources */,
 				8643E7DD254B48029820CA09 /* WeeklyDigestService.swift in Sources */,
@@ -1955,6 +1996,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7B7BB6E6350D2DB9889F6CA /* VoiceNoteProcessorTests.swift in Sources */,
+				E87595A95674CCD74C2513C7 /* VoiceEntryPlanTests.swift in Sources */,
+				087140C09447F505960A8F1B /* ExtractionValidatorTests.swift in Sources */,
 				4E81A30A623E2B1286603E8B /* VoiceRecordingStoreTests.swift in Sources */,
 				318BFEFEFDA5711600F86412 /* EntrySubmitterTests.swift in Sources */,
 				6C64645FB7764D87A5889C47 /* WeeklyDigestServiceTests.swift in Sources */,
