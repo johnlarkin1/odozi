@@ -11,6 +11,9 @@ private let logger = Logger(subsystem: "com.johnlarkin.Odyssey", category: "Onbo
 @Observable
 final class OnboardingViewModel {
     var currentStep: OnboardingStep = .welcome
+    /// Set after Screen Time permission is granted so the flow can ask which apps and
+    /// categories to measure. Without a selection nothing is monitored.
+    var showScreenTimeAppPicker = false
 
     var currentStepIndex: Int {
         OnboardingStep.allCases.firstIndex(of: currentStep) ?? 0
@@ -110,6 +113,11 @@ final class OnboardingViewModel {
                     try await authorizationCenter.requestAuthorization(for: .individual)
                     logger.info("Screen Time API access granted.")
                     setupDeviceActivityMonitoring()
+                    if ScreenTimeMonitoringManager.setupState == .noSelection {
+                        // goToNext() happens when the app picker sheet is dismissed.
+                        await MainActor.run { showScreenTimeAppPicker = true }
+                        return
+                    }
                 } catch {
                     logger.error("Screen Time API access error: \(error)")
                 }

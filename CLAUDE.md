@@ -54,7 +54,7 @@ make help
 3. Every capture trigger — foreground, BGTasks, SLC wakes, HealthKit observers, unlock retry — goes through `BackgroundSnapshotService.captureAndApply(trigger:force:)`: coalesced (one run in flight), debounced (1h unless forced), and wrapped in a background-task assertion
 4. Location: `LocationAuthorization.shared` is the observable source of truth for permission (shared with macOS). Passive capture needs **Always**; SLC wakes save the delivered fix's coordinates immediately, then reverse-geocode (`PlaceResolver` → `MKReverseGeocodingRequest`, timeout-bounded). The day's first location sticks; `applyLocation` writes it as one unit stamped with the fix's own time, and only same-day fixes count
 5. `HealthKitService` fetches steps, walking distance, sleep, workouts and heart rate; skipped while the device is locked (protected data), retried on unlock
-6. Screen Time pipeline: `TotalActivityReport.makeConfiguration()` writes to shared UserDefaults → main app reads on foreground
+6. Screen Time pipeline: `ScreenTimeMonitoringManager` registers threshold events (`st_<minutes>`) on the apps/categories the user picked; `DeviceActivityMonitorExtension` writes the highest threshold reached to shared UserDefaults → main app reads on foreground. Nothing is captured until the user picks at least one app or category (Today tile shows "Set up"). The Report extension only *displays* usage; iOS sandboxes it so it cannot write data out. `register()` is idempotent; don't stop/restart monitoring mid-day without `force`
 7. Foreground catch-up: on every `.active` scene phase, re-registers monitoring/permissions and runs a forced `captureAndApply`
 
 **Navigation (4 tabs):**

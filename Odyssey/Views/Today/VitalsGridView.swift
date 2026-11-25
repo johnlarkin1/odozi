@@ -8,6 +8,8 @@ struct VitalsGridView: View {
     let entry: DailyEntry?
     let streak: Int
     var screenTimeFallback: Double?
+    /// True when Screen Time can't be captured until the user grants access or picks apps.
+    var screenTimeNeedsSetup: Bool = false
     var onTapVital: ((VitalType) -> Void)?
     var animateIn: Bool = false
 
@@ -106,7 +108,7 @@ struct VitalsGridView: View {
             }
             return "\(minutes)m"
         }
-        return "--"
+        return screenTimeNeedsSetup ? "Set up" : "--"
     }
 
     private var nextMilestoneLabel: String {
