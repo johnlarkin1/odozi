@@ -91,7 +91,10 @@ enum Topic {
     private var cues: [String] {
         switch self {
         case .sleep:
-            return ["sleep", "slept", "bed", "nap", "rested", "resting", "restless", "insomnia", "woke", "wake", "awake", "tired", "exhausted"]
+            return [
+                "sleep", "slept", "bed", "nap", "rested", "resting", "restless", "insomnia", "woke", "wake", "awake",
+                "tired", "exhausted"
+            ]
         case .gratitude:
             return ["grateful", "gratitude", "thankful", "thank", "appreciat", "blessed", "lucky", "glad"]
         case .tension:
