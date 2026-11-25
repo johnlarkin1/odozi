@@ -10,9 +10,17 @@ struct JourneyTimelineSlider: View {
     var body: some View {
         VStack(spacing: 8) {
             if let entry = currentEntry {
-                Text(entry.date.shortFormatted)
-                    .font(.caption.weight(.medium))
-                    .foregroundStyle(.white)
+                // Matches the callout on the highlighted map pin.
+                HStack(spacing: 6) {
+                    Circle()
+                        .fill(entry.moodGradientColor)
+                        .frame(width: 8, height: 8)
+                    Text(entry.date.shortFormatted)
+                        .font(.subheadline.weight(.semibold))
+                        .foregroundStyle(.white)
+                        .contentTransition(.numericText())
+                }
+                .animation(.snappy, value: entry.date)
             }
 
             Slider(value: $value, in: range, step: 1) { editing in
@@ -21,6 +29,7 @@ struct JourneyTimelineSlider: View {
                 }
             }
             .tint(Color.accentAmber)
+            .sensoryFeedback(.selection, trigger: Int(value))
             .onChange(of: value) { _, newValue in
                 onChanged?(newValue)
             }
