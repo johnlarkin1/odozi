@@ -26,11 +26,10 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
             return
         }
 
-        // Reset day's counters
-        defaults.set(0.0, forKey: screenTimeSecondsKey)
-        defaults.set(0, forKey: maxThresholdMinutesKey)
-        defaults.set(Self.todayDateString(), forKey: intervalDateKey)
-        defaults.set(Date().timeIntervalSince1970, forKey: screenTimeLastUpdatedKey)
+        // Reset the counters only when a new day starts. The system also delivers
+        // intervalDidStart when monitoring is (re)started mid-day, and wiping here
+        // then would throw away the screen time already captured today.
+        resetIfNewDay(defaults)
     }
 
     override func eventDidReachThreshold(
@@ -49,6 +48,10 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
             logger.warning("Could not parse threshold from event: \(event.rawValue)")
             return
         }
+
+        // Midnight safety net: if today's intervalDidStart never arrived, yesterday's max
+        // would otherwise block every threshold today.
+        resetIfNewDay(defaults)
 
         // Dedup: only update if this threshold is higher than previous max
         let currentMax = defaults.integer(forKey: maxThresholdMinutesKey)
@@ -71,6 +74,17 @@ class DeviceActivityMonitorExtension: DeviceActivityMonitor {
     }
 
     // MARK: - Helpers
+
+    /// Zeroes the day's counters when the stored interval date isn't today.
+    private func resetIfNewDay(_ defaults: UserDefaults) {
+        let today = Self.todayDateString()
+        guard defaults.string(forKey: intervalDateKey) != today else { return }
+        logger.info("New day \(today): resetting screen time counters")
+        defaults.set(0.0, forKey: screenTimeSecondsKey)
+        defaults.set(0, forKey: maxThresholdMinutesKey)
+        defaults.set(today, forKey: intervalDateKey)
+        defaults.set(Date().timeIntervalSince1970, forKey: screenTimeLastUpdatedKey)
+    }
 
     static func parseThresholdMinutes(from event: DeviceActivityEvent.Name) -> Int? {
         let raw = event.rawValue

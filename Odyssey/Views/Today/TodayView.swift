@@ -25,6 +25,24 @@ struct TodayView: View {
     @State private var animateIn = false
     @State private var isUpdatingLocation = false
     @State private var todayEntry: DailyEntry?
+    #if os(iOS)
+        @State private var screenTimeNeedsSetup = false
+        @State private var showingScreenTimeSetup = false
+    #endif
+
+    private var screenTimeNeedsSetupForGrid: Bool {
+        #if os(iOS)
+            screenTimeNeedsSetup
+        #else
+            false
+        #endif
+    }
+
+    #if os(iOS)
+        private func refreshScreenTimeSetup() {
+            screenTimeNeedsSetup = ScreenTimeMonitoringManager.setupState != .ready
+        }
+    #endif
 
     var body: some View {
         NavigationStack(path: $navigationPath) {
@@ -66,12 +84,20 @@ struct TodayView: View {
                             entry: todayEntry,
                             streak: vm.currentStreak,
                             screenTimeFallback: SharedDefaults.getScreenTime()?.seconds,
+                            screenTimeNeedsSetup: screenTimeNeedsSetupForGrid,
                             onTapVital: { vital in
                                 switch vital {
                                 case .steps: navigationPath.append(MetricDefinition.steps)
                                 case .sleep: navigationPath.append(MetricDefinition.sleepHours)
                                 case .workout: navigationPath.append(MetricDefinition.workoutMinutes)
-                                case .screenTime: navigationPath.append(MetricDefinition.screenTime)
+                                case .screenTime:
+                                    #if os(iOS)
+                                        if screenTimeNeedsSetup {
+                                            showingScreenTimeSetup = true
+                                            return
+                                        }
+                                    #endif
+                                    navigationPath.append(MetricDefinition.screenTime)
                                 case .streak: navigationPath.append(TodayDrillDown.streak)
                                 }
                             },
@@ -137,6 +163,10 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                         GuidedPromptFlowView(entryDate: guidedFlowDate)
                     }
+            .sheet(isPresented: $showingScreenTimeSetup, onDismiss: refreshScreenTimeSetup) {
+                ScreenTimeSetupSheet()
+            }
+            .onAppear(perform: refreshScreenTimeSetup)
             #endif
                     .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
                         if shouldShow {
@@ -147,6 +177,9 @@ struct TodayView: View {
                     }
                     .onChange(of: scenePhase) { _, newPhase in
                         if newPhase == .active {
+                            #if os(iOS)
+                                refreshScreenTimeSetup()
+                            #endif
                             viewModel?.checkForTodayEntry()
                             todayEntry = viewModel?.fetchTodayEntry()
                             insightsViewModel?.loadEntries()

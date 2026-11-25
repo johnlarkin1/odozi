@@ -47,6 +47,17 @@ struct OnboardingFlowView: View {
             BackupPromptModal()
                 .environment(authManager)
         }
+        #if os(iOS)
+        .sheet(
+            isPresented: $viewModel.showScreenTimeAppPicker,
+            onDismiss: {
+                if viewModel.currentStep == .screenTime {
+                    viewModel.goToNext()
+                }
+            },
+            content: { ScreenTimeSetupSheet() }
+        )
+        #endif
         .onChange(of: authManager.isSignedIn) { _, isSignedIn in
             if isSignedIn && viewModel.currentStep == .account {
                 viewModel.goToNext()
