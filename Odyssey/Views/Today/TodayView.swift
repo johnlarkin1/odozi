@@ -18,6 +18,7 @@ struct TodayView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.scenePhase) private var scenePhase
     @State private var showingGuidedFlow = false
+    @State private var showingVoiceEntry = false
     @State private var guidedFlowDate: Date?
     @State private var viewModel: DailyEntryViewModel?
     @State private var insightsViewModel: InsightsViewModel?
@@ -44,6 +45,10 @@ struct TodayView: View {
                         onTapOrb: { navigationPath.append(MetricDefinition.mood) },
                         animateIn: animateIn
                     )
+
+                    #if os(iOS)
+                        voiceEntryButton
+                    #endif
 
                     // [C] Week Pulse
                     if let vm = viewModel {
@@ -137,6 +142,13 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                         GuidedPromptFlowView(entryDate: guidedFlowDate)
                     }
+                    .fullScreenCover(isPresented: $showingVoiceEntry, onDismiss: {
+                        viewModel?.checkForTodayEntry()
+                        todayEntry = viewModel?.fetchTodayEntry()
+                        insightsViewModel?.loadEntries()
+                    }) {
+                        VoiceEntryView()
+                    }
             #endif
                     .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
                         if shouldShow {
@@ -220,6 +232,27 @@ struct TodayView: View {
         .offset(y: animateIn ? 0 : -10)
         .animation(.easeOut(duration: 0.5), value: animateIn)
     }
+
+    // MARK: - Voice Entry
+
+    #if os(iOS)
+        private var voiceEntryButton: some View {
+            Button {
+                showingVoiceEntry = true
+            } label: {
+                Label("Talk through your day", systemImage: "mic.fill")
+                    .font(.subheadline.weight(.semibold))
+                    .foregroundStyle(Color.accentAmber)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Capsule().fill(Color.accentAmber.opacity(0.15)))
+            }
+            .accessibilityHint("Record a voice note and Odozi fills in your answers")
+            .accessibilityIdentifier("voiceEntryButton")
+            .opacity(animateIn ? 1 : 0)
+            .animation(.easeOut(duration: 0.4).delay(0.2), value: animateIn)
+        }
+    #endif
 
     // MARK: - Location Capsule
 

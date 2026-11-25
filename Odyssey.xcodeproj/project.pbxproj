@@ -423,6 +423,12 @@
 		087140C09447F505960A8F1B /* ExtractionValidatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3086DD6323B70844094AA568 /* ExtractionValidatorTests.swift */; };
 		E87595A95674CCD74C2513C7 /* VoiceEntryPlanTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = FAF10A7AC401E373038D809A /* VoiceEntryPlanTests.swift */; };
 		C7B7BB6E6350D2DB9889F6CA /* VoiceNoteProcessorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2DFA2F17E2066FF01A6A8036 /* VoiceNoteProcessorTests.swift */; };
+		FC8FD98ADFC5795E2C94A3BB /* VoiceEntryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CE2415FD4A41FE5BFE6E993D /* VoiceEntryView.swift */; };
+		E910B01989F430592848A6D3 /* VoiceResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 10E74920260AA518CF51ECC3 /* VoiceResultsView.swift */; };
+		C55888F9F8E80AD7F34D8FDF /* VoiceEntryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 63C6A4ACA82B45BBF9DC5B56 /* VoiceEntryViewModel.swift */; };
+		871A315F87E34F52983FF68D /* ScriptedVoiceNote.swift in Sources */ = {isa = PBXBuildFile; fileRef = DA28352E57B79207B4E42381 /* ScriptedVoiceNote.swift */; };
+		C7BFDAA1161F3988531A4085 /* VoiceEntryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CAAC3750CAA38DF4025CEF1 /* VoiceEntryViewModelTests.swift */; };
+		F34BFA72570C091AC86925E4 /* VoiceEntryDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = D592400118B04D326B7AC9C3 /* VoiceEntryDemo.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -789,6 +795,12 @@
 		3086DD6323B70844094AA568 /* ExtractionValidatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExtractionValidatorTests.swift; sourceTree = "<group>"; };
 		FAF10A7AC401E373038D809A /* VoiceEntryPlanTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryPlanTests.swift; sourceTree = "<group>"; };
 		2DFA2F17E2066FF01A6A8036 /* VoiceNoteProcessorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceNoteProcessorTests.swift; sourceTree = "<group>"; };
+		CE2415FD4A41FE5BFE6E993D /* VoiceEntryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryView.swift; sourceTree = "<group>"; };
+		10E74920260AA518CF51ECC3 /* VoiceResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceResultsView.swift; sourceTree = "<group>"; };
+		63C6A4ACA82B45BBF9DC5B56 /* VoiceEntryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryViewModel.swift; sourceTree = "<group>"; };
+		DA28352E57B79207B4E42381 /* ScriptedVoiceNote.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScriptedVoiceNote.swift; sourceTree = "<group>"; };
+		7CAAC3750CAA38DF4025CEF1 /* VoiceEntryViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryViewModelTests.swift; sourceTree = "<group>"; };
+		D592400118B04D326B7AC9C3 /* VoiceEntryDemo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VoiceEntryDemo.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -1058,6 +1070,7 @@
 		5F96AA772B4A073500999B84 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				63C6A4ACA82B45BBF9DC5B56 /* VoiceEntryViewModel.swift */,
 				5F96AA782B4A07B600999B84 /* DailyEntryViewModel.swift */,
 				10C33226E46E079F8BB989E1 /* GuidedPromptViewModel.swift */,
 				5F47CA2315DEC2DCC4804FD0 /* JournalViewModel.swift */,
@@ -1182,6 +1195,7 @@
 		5FAFBC1E2B49E1A80018504E /* OdysseyTests */ = {
 			isa = PBXGroup;
 			children = (
+				7CAAC3750CAA38DF4025CEF1 /* VoiceEntryViewModelTests.swift */,
 				2DFA2F17E2066FF01A6A8036 /* VoiceNoteProcessorTests.swift */,
 				FAF10A7AC401E373038D809A /* VoiceEntryPlanTests.swift */,
 				3086DD6323B70844094AA568 /* ExtractionValidatorTests.swift */,
@@ -1235,6 +1249,7 @@
 		5FAFBC382B49E7090018504E /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				9040A5AD006185D2AE6FF674 /* VoiceEntry */,
 				51F1A03810F24B4BA2B13A68 /* Notifications */,
 				5FAFBC472B49F70B0018504E /* LottieView.swift */,
 				5F96AA892B4C310800999B84 /* ScreenTimeSelectAppsContentView.swift */,
@@ -1415,6 +1430,7 @@
 		D8BD3A053465073874D54BCE /* FeatureDemos */ = {
 			isa = PBXGroup;
 			children = (
+				D592400118B04D326B7AC9C3 /* VoiceEntryDemo.swift */,
 				C39F1B6D1BC805FABFA2F980 /* FeatureDemoBase.swift */,
 				EPE1111111111111111111102 /* EditablePastEntriesDemo.swift */,
 				2C87191FFF15D31AEA9D54DC /* FullWalkthroughDemo.swift */,
@@ -1510,6 +1526,7 @@
 		C210303645A60F84CB4ED990 /* Voice */ = {
 			isa = PBXGroup;
 			children = (
+				DA28352E57B79207B4E42381 /* ScriptedVoiceNote.swift */,
 				6E5F239865D2DFA905A22DCA /* SpeechTranscriptionService.swift */,
 				79A2D1BF1458C6226595E617 /* VoiceNoteProcessor.swift */,
 				8D41570FCAEB09E92D5F12BE /* OnDeviceJournalExtractor.swift */,
@@ -1518,6 +1535,15 @@
 				B4AC30552DCC46CCC9AAF416 /* VoiceExtraction.swift */,
 			);
 			path = Voice;
+			sourceTree = "<group>";
+		};
+		9040A5AD006185D2AE6FF674 /* VoiceEntry */ = {
+			isa = PBXGroup;
+			children = (
+				10E74920260AA518CF51ECC3 /* VoiceResultsView.swift */,
+				CE2415FD4A41FE5BFE6E993D /* VoiceEntryView.swift */,
+			);
+			path = VoiceEntry;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -1822,6 +1848,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				871A315F87E34F52983FF68D /* ScriptedVoiceNote.swift in Sources */,
+				C55888F9F8E80AD7F34D8FDF /* VoiceEntryViewModel.swift in Sources */,
+				E910B01989F430592848A6D3 /* VoiceResultsView.swift in Sources */,
+				FC8FD98ADFC5795E2C94A3BB /* VoiceEntryView.swift in Sources */,
 				503BD0550AE41ED09B8358F2 /* SpeechTranscriptionService.swift in Sources */,
 				3F4C185DAE4BB16ED5B1123C /* VoiceNoteProcessor.swift in Sources */,
 				0B72517E7E372813B50A603A /* OnDeviceJournalExtractor.swift in Sources */,
@@ -1996,6 +2026,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C7BFDAA1161F3988531A4085 /* VoiceEntryViewModelTests.swift in Sources */,
 				C7B7BB6E6350D2DB9889F6CA /* VoiceNoteProcessorTests.swift in Sources */,
 				E87595A95674CCD74C2513C7 /* VoiceEntryPlanTests.swift in Sources */,
 				087140C09447F505960A8F1B /* ExtractionValidatorTests.swift in Sources */,
@@ -2037,6 +2068,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F34BFA72570C091AC86925E4 /* VoiceEntryDemo.swift in Sources */,
 				5FAFBC2A2B49E1A80018504E /* OdysseyUITests.swift in Sources */,
 				5FAFBC2C2B49E1A80018504E /* OdysseyUITestsLaunchTests.swift in Sources */,
 				AA00000000000001SCREEN01 /* AppStoreScreenshotTests.swift in Sources */,
