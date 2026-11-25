@@ -13,6 +13,7 @@ struct JourneyExplorerView: View {
                     // Globe map
                     JourneyGlobeView(
                         entries: vm.filteredEntries,
+                        selectedDate: vm.selectedEntry?.date,
                         cameraPosition: Binding(
                             get: { vm.cameraPosition },
                             set: { vm.cameraPosition = $0 }

@@ -13,8 +13,6 @@ import Observation
 class ScreenTimeSelectAppsModel {
     var activitySelection = FamilyActivitySelection()
 
-    private static let defaultsKey = "selectedAppsToMonitor"
-
     init() {
         loadSelection()
     }
@@ -22,16 +20,16 @@ class ScreenTimeSelectAppsModel {
     func saveSelection() {
         let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
         if let encoded = try? JSONEncoder().encode(activitySelection) {
-            defaults?.set(encoded, forKey: Self.defaultsKey)
+            defaults?.set(encoded, forKey: ScreenTimeMonitoringManager.selectionKey)
         }
         #if os(iOS) && !targetEnvironment(simulator)
-            ScreenTimeMonitoringManager.register()
+            ScreenTimeMonitoringManager.register(force: true)
         #endif
     }
 
     private func loadSelection() {
         let defaults = UserDefaults(suiteName: "group.com.johnlarkin.Odyssey")
-        if let data = defaults?.data(forKey: Self.defaultsKey),
+        if let data = defaults?.data(forKey: ScreenTimeMonitoringManager.selectionKey),
            let decoded = try? JSONDecoder().decode(FamilyActivitySelection.self, from: data) {
             activitySelection = decoded
         }
