@@ -46,6 +46,7 @@
 		1A2B3C4D5E6F7A8B9C0D1E2F /* PhotoLibraryService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1B2C3D4E5F6A7B8C9D0E1F2 /* PhotoLibraryService.swift */; };
 		PHSYNC0001BUILD0001 /* PhotoSyncService.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHSYNC0001FILE0001 /* PhotoSyncService.swift */; };
 		PHSYNC0002BUILD0002 /* PhotoSyncView.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHSYNC0002FILE0002 /* PhotoSyncView.swift */; };
+		PHLIBTST0001BUILD0001 /* PhotoLibraryServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHLIBTST0001FILE0001 /* PhotoLibraryServiceTests.swift */; };
 		PHSYNC0003BUILD0003 /* PhotoSyncServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHSYNC0003FILE0003 /* PhotoSyncServiceTests.swift */; };
 		PHSYNC0004BUILD0004 /* PhotoSyncDemo.swift in Sources */ = {isa = PBXBuildFile; fileRef = PHSYNC0004FILE0004 /* PhotoSyncDemo.swift */; };
 		1A346A475B0A0B8DFC6E7D4B /* TrendCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6ECC6BD469E6111D22872AA2 /* TrendCalculator.swift */; };
@@ -645,6 +646,7 @@
 		A1B2C3D4E5F6A7B8C9D0E1F2 /* PhotoLibraryService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoLibraryService.swift; sourceTree = "<group>"; };
 		PHSYNC0001FILE0001 /* PhotoSyncService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoSyncService.swift; sourceTree = "<group>"; };
 		PHSYNC0002FILE0002 /* PhotoSyncView.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoSyncView.swift; sourceTree = "<group>"; };
+		PHLIBTST0001FILE0001 /* PhotoLibraryServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoLibraryServiceTests.swift; sourceTree = "<group>"; };
 		PHSYNC0003FILE0003 /* PhotoSyncServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoSyncServiceTests.swift; sourceTree = "<group>"; };
 		PHSYNC0004FILE0004 /* PhotoSyncDemo.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PhotoSyncDemo.swift; sourceTree = "<group>"; };
 		A646E4D89D7224EB162B2857 /* UserPreferences.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
@@ -1180,6 +1182,7 @@
 				NEWTEST0006FILE0006 /* YearInReviewViewModelTests.swift */,
 				NEWTEST0007FILE0007 /* JourneyExplorerViewModelTests.swift */,
 				NEWTEST0008FILE0008 /* DataRetentionServiceTests.swift */,
+				PHLIBTST0001FILE0001 /* PhotoLibraryServiceTests.swift */,
 				PHSYNC0003FILE0003 /* PhotoSyncServiceTests.swift */,
 			);
 			path = OdysseyTests;
@@ -1967,6 +1970,7 @@
 				NEWTEST0006BUILD006 /* YearInReviewViewModelTests.swift in Sources */,
 				NEWTEST0007BUILD007 /* JourneyExplorerViewModelTests.swift in Sources */,
 				NEWTEST0008BUILD008 /* DataRetentionServiceTests.swift in Sources */,
+				PHLIBTST0001BUILD0001 /* PhotoLibraryServiceTests.swift in Sources */,
 				PHSYNC0003BUILD0003 /* PhotoSyncServiceTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
