@@ -134,6 +134,29 @@ actor PhotoLibraryService {
         return image.jpegData(compressionQuality: compressionQuality)
     }
 
+    /// JPEG data for the first library photo linked to a day, used to build a
+    /// map-pin thumbnail when the entry has no attached photo. Prefers the
+    /// identifiers the photo sync linked to the entry (in their stored order)
+    /// and falls back to the first photo taken that day. Returns nil without
+    /// prompting when Photos access hasn't been granted.
+    func firstPhotoJpegData(identifiers: [String], day: Date) async -> Data? {
+        let status = currentAuthorizationStatus()
+        guard status == .authorized || status == .limited else { return nil }
+
+        var asset: PHAsset?
+        if !identifiers.isEmpty {
+            let result = PHAsset.fetchAssets(withLocalIdentifiers: identifiers, options: nil)
+            var byID: [String: PHAsset] = [:]
+            result.enumerateObjects { asset, _, _ in byID[asset.localIdentifier] = asset }
+            asset = identifiers.lazy.compactMap { byID[$0] }.first
+        }
+        if asset == nil {
+            asset = fetchAssets(for: day).first
+        }
+        guard let asset else { return nil }
+        return await loadJpegData(for: asset)
+    }
+
     static func generateMapThumbnail(from jpegData: Data, size: CGFloat = 80) -> Data? {
         guard let image = UIImage(data: jpegData) else {
             photoLibraryLogger.warning("Failed to create UIImage from data (\(jpegData.count) bytes) for map thumbnail")
@@ -163,5 +186,47 @@ actor PhotoLibraryService {
             uiImage.draw(in: CGRect(origin: .zero, size: newSize))
         }
         return compressed.jpegData(compressionQuality: 0.8)
+    }
+}
+
+/// Turns a day's "Show on Photo Map" pin on or off. Shared by the day detail
+/// toggle and the Explore card's pin button so both behave the same.
+@MainActor
+enum PhotoMapPinning {
+    /// Sets `entry.showOnPhotoMap`, building the pin thumbnail first when
+    /// turning it on. The thumbnail comes from the first attached photo, or
+    /// else from the day's photos in the library (which is where days that
+    /// only have auto-linked photos get theirs). Returns the resulting value:
+    /// `false` when turning on failed because no photo could be loaded.
+    @discardableResult
+    static func setShowOnPhotoMap(
+        _ show: Bool,
+        for entry: DailyEntry,
+        libraryJpeg: (_ identifiers: [String], _ day: Date) async -> Data? = { ids, day in
+            await PhotoLibraryService.shared.firstPhotoJpegData(identifiers: ids, day: day)
+        }
+    ) async -> Bool {
+        if show, entry.mapThumbnailData == nil {
+            guard let thumbnail = await makeThumbnail(for: entry, libraryJpeg: libraryJpeg) else {
+                photoLibraryLogger.warning("No photo available to pin \(entry.date.shortFormatted) on the photo map")
+                return entry.showOnPhotoMap
+            }
+            entry.mapThumbnailData = thumbnail
+        }
+        entry.showOnPhotoMap = show
+        entry.updatedAt = Date()
+        return show
+    }
+
+    private static func makeThumbnail(
+        for entry: DailyEntry,
+        libraryJpeg: (_ identifiers: [String], _ day: Date) async -> Data?
+    ) async -> Data? {
+        if let attached = entry.attachedPhotoData?.first,
+           let thumbnail = PhotoLibraryService.generateMapThumbnail(from: attached) {
+            return thumbnail
+        }
+        guard let jpeg = await libraryJpeg(entry.autoPhotoIdentifiers ?? [], entry.date) else { return nil }
+        return PhotoLibraryService.generateMapThumbnail(from: jpeg)
     }
 }

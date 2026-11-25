@@ -49,6 +49,7 @@ struct JourneyGlobeView: View {
         .mapStyle(.imagery(elevation: .realistic))
         .onAppear { buildThumbnailCache() }
         .onChange(of: entries.count) { buildThumbnailCache() }
+        .onChange(of: photoPinDates) { buildThumbnailCache() }
     }
 
     @ViewBuilder
@@ -74,6 +75,13 @@ struct JourneyGlobeView: View {
 
     private var locatedEntries: [DailyEntry] {
         entries.filter { $0.latitude != nil && $0.longitude != nil }
+    }
+
+    /// Days currently pinned with a photo. Rebuilding the cache when this
+    /// changes makes a pin appear (or disappear) as soon as it's toggled,
+    /// not only when the number of entries changes.
+    private var photoPinDates: [Date] {
+        locatedEntries.filter(\.hasMapPhoto).map(\.date)
     }
 
     private var selectedEntry: DailyEntry? {
