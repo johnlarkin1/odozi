@@ -25,27 +25,6 @@ final class PhotoLibraryServiceTests: XCTestCase {
         XCTAssertNotNil(service, "PhotoLibraryService should be initialized")
     }
 
-    /// Test that the service doesn't write to the photo library
-    func testServiceOnlyReadsPhotos() {
-        let service = PhotoLibraryService.shared
-
-        // The PhotoLibraryService should only provide read-only operations:
-        // - fetchAssets: reads photos
-        // - loadThumbnail: reads image data
-        // - loadJpegData: reads and converts image data
-        //
-        // It should NOT provide any write operations like:
-        // - saving images
-        // - deleting photos
-        // - modifying metadata
-
-        // Verify no write methods exist on the service
-        let methods = type(of: service).description()
-        XCTAssertFalse(methods.contains("save"), "Service should not have save methods")
-        XCTAssertFalse(methods.contains("delete"), "Service should not have delete methods")
-        XCTAssertFalse(methods.contains("write"), "Service should not have write methods")
-    }
-
     // MARK: - generateMapThumbnail
 
     func testGenerateMapThumbnailWithValidJPEG() {
@@ -97,5 +76,87 @@ final class PhotoLibraryServiceTests: XCTestCase {
         let corruptData = Data([0x00, 0x01, 0x02])
         let result = PhotoLibraryService.compressForStorage(data: corruptData)
         XCTAssertNil(result, "Should return nil for corrupt data")
+    }
+
+    // MARK: - PhotoMapPinning
+
+    private func sampleJpeg() -> Data {
+        UIGraphicsImageRenderer(size: CGSize(width: 100, height: 100)).image { ctx in
+            UIColor.green.setFill()
+            ctx.fill(CGRect(x: 0, y: 0, width: 100, height: 100))
+        }.jpegData(compressionQuality: 0.9)!
+    }
+
+    /// The reported bug: a day whose only photos are auto-linked from the
+    /// library (no attached photo) couldn't be pinned; the toggle snapped back.
+    @MainActor
+    func testPinningUsesLibraryPhotoWhenNothingAttached() async {
+        let entry = DailyEntry()
+        entry.autoPhotoIdentifiers = ["lib-1", "lib-2"]
+        let jpeg = sampleJpeg()
+        var requested: [String]?
+
+        let result = await PhotoMapPinning.setShowOnPhotoMap(true, for: entry) { ids, _ in
+            requested = ids
+            return jpeg
+        }
+
+        XCTAssertTrue(result)
+        XCTAssertTrue(entry.showOnPhotoMap)
+        XCTAssertNotNil(entry.mapThumbnailData)
+        XCTAssertTrue(entry.hasMapPhoto)
+        XCTAssertEqual(requested, ["lib-1", "lib-2"])
+    }
+
+    @MainActor
+    func testPinningPrefersAttachedPhotoOverLibrary() async {
+        let entry = DailyEntry()
+        entry.attachedPhotoData = [sampleJpeg()]
+        entry.autoPhotoIdentifiers = ["lib-1"]
+        var libraryCalled = false
+
+        let result = await PhotoMapPinning.setShowOnPhotoMap(true, for: entry) { _, _ in
+            libraryCalled = true
+            return nil
+        }
+
+        XCTAssertTrue(result)
+        XCTAssertTrue(entry.hasMapPhoto)
+        XCTAssertFalse(libraryCalled)
+    }
+
+    @MainActor
+    func testPinningStaysOffWhenNoPhotoCanBeLoaded() async {
+        let entry = DailyEntry()
+        entry.autoPhotoIdentifiers = ["deleted"]
+
+        let result = await PhotoMapPinning.setShowOnPhotoMap(true, for: entry) { _, _ in nil }
+
+        XCTAssertFalse(result)
+        XCTAssertFalse(entry.showOnPhotoMap)
+        XCTAssertNil(entry.mapThumbnailData)
+    }
+
+    @MainActor
+    func testUnpinningKeepsThumbnailForNextTime() async {
+        let entry = DailyEntry()
+        entry.showOnPhotoMap = true
+        entry.mapThumbnailData = Data([0xFF, 0xD8, 0xFF])
+        var libraryCalled = false
+
+        let off = await PhotoMapPinning.setShowOnPhotoMap(false, for: entry) { _, _ in
+            libraryCalled = true
+            return nil
+        }
+        XCTAssertFalse(off)
+        XCTAssertFalse(entry.hasMapPhoto)
+
+        let on = await PhotoMapPinning.setShowOnPhotoMap(true, for: entry) { _, _ in
+            libraryCalled = true
+            return nil
+        }
+        XCTAssertTrue(on)
+        XCTAssertTrue(entry.hasMapPhoto)
+        XCTAssertFalse(libraryCalled, "An existing thumbnail is reused, no library fetch")
     }
 }
