@@ -48,13 +48,15 @@ struct OnboardingFlowView: View {
                 .environment(authManager)
         }
         #if os(iOS)
-        .sheet(isPresented: $viewModel.showScreenTimeAppPicker, onDismiss: {
-            if viewModel.currentStep == .screenTime {
-                viewModel.goToNext()
-            }
-        }) {
-            ScreenTimeSetupSheet()
-        }
+        .sheet(
+            isPresented: $viewModel.showScreenTimeAppPicker,
+            onDismiss: {
+                if viewModel.currentStep == .screenTime {
+                    viewModel.goToNext()
+                }
+            },
+            content: { ScreenTimeSetupSheet() }
+        )
         #endif
         .onChange(of: authManager.isSignedIn) { _, isSignedIn in
             if isSignedIn && viewModel.currentStep == .account {

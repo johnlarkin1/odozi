@@ -72,7 +72,11 @@ struct ScreenTimeSetupSheet: View {
         NavigationStack {
             List {
                 Section {
-                    Text("iOS doesn't let apps read your total Screen Time directly. Odozi measures time spent in the apps and categories you choose. Select every category to track your whole day.")
+                    Text(
+                        "iOS doesn't let apps read your total Screen Time directly. "
+                            + "Odozi measures time spent in the apps and categories you choose. "
+                            + "Select every category to track your whole day."
+                    )
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                 }
