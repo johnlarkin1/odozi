@@ -31,10 +31,17 @@ struct VoiceResultsView: View {
                 }
             }
             .padding(.horizontal, 20)
-            .padding(.top, 56)
+            .padding(.top, 8)
             .padding(.bottom, 24)
         }
-        .safeAreaInset(edge: .bottom) { buttons }
+        // An opaque strip under the status bar and the close button, so the list scrolls
+        // beneath it instead of showing through.
+        .safeAreaInset(edge: .top, spacing: 0) {
+            Color.black
+                .frame(height: 56)
+                .background(Color.black.ignoresSafeArea(edges: .top))
+        }
+        .safeAreaInset(edge: .bottom, spacing: 0) { buttons }
     }
 
     private var header: some View {
@@ -151,7 +158,14 @@ struct VoiceResultsView: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
-        .background(Color.black)
+        .background(Color.black.ignoresSafeArea(edges: .bottom))
+        .overlay(alignment: .top) {
+            // Fade the list into the button bar instead of cutting it off.
+            LinearGradient(colors: [.black.opacity(0), .black], startPoint: .top, endPoint: .bottom)
+                .frame(height: 24)
+                .offset(y: -24)
+                .allowsHitTesting(false)
+        }
     }
 }
 
@@ -183,6 +197,7 @@ private struct AnswerRow: View {
                 Text(value)
                     .font(.body)
                     .lineLimit(step == .journal ? 6 : 3)
+                    .truncationMode(.tail)
             }
             Spacer(minLength: 0)
         }

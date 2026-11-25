@@ -142,13 +142,15 @@ struct TodayView: View {
             .fullScreenCover(isPresented: $showingGuidedFlow) {
                         GuidedPromptFlowView(entryDate: guidedFlowDate)
                     }
-                    .fullScreenCover(isPresented: $showingVoiceEntry, onDismiss: {
-                        viewModel?.checkForTodayEntry()
-                        todayEntry = viewModel?.fetchTodayEntry()
-                        insightsViewModel?.loadEntries()
-                    }) {
-                        VoiceEntryView()
-                    }
+                    .fullScreenCover(
+                        isPresented: $showingVoiceEntry,
+                        onDismiss: {
+                            viewModel?.checkForTodayEntry()
+                            todayEntry = viewModel?.fetchTodayEntry()
+                            insightsViewModel?.loadEntries()
+                        },
+                        content: { VoiceEntryView() }
+                    )
             #endif
                     .onChange(of: NavigationState.shared.showGuidedPrompt) { _, shouldShow in
                         if shouldShow {

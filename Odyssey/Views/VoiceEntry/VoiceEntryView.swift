@@ -35,9 +35,11 @@ struct VoiceEntryView: View {
             .padding(.trailing, 16)
             .padding(.top, 12)
         }
-        .fullScreenCover(isPresented: $showingGuidedFlow, onDismiss: { dismiss() }) {
-            GuidedPromptFlowView()
-        }
+        .fullScreenCover(
+            isPresented: $showingGuidedFlow,
+            onDismiss: { dismiss() },
+            content: { GuidedPromptFlowView() }
+        )
         .onAppear {
             if viewModel == nil {
                 viewModel = VoiceEntryViewModel.makeDefault(modelContext: modelContext)
