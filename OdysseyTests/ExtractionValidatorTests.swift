@@ -86,6 +86,49 @@ final class ExtractionValidatorTests: XCTestCase {
         XCTAssertEqual(result, VoiceExtraction())
     }
 
+    // Regressions from the real on-device model: for "I finished the presentation for work today
+    // and I'm relieved it's done." it returned a sleep score quoting the whole note, invented a
+    // gratitude, and copied one sentence into gratitude, win and tension.
+    private let shortNote = "I finished the presentation for work today and I'm relieved it's done."
+
+    func testSleepEvidenceMustBeAboutSleep() {
+        let raw = VoiceExtraction(sleepQuality: 8, sleepEvidence: shortNote)
+        XCTAssertNil(ExtractionValidator.validate(raw, transcript: shortNote).sleepQuality)
+    }
+
+    func testGratitudeNeedsTheSpeakerToExpressIt() {
+        let raw = VoiceExtraction(gratitude: "I'm relieved it's done.")
+        XCTAssertNil(ExtractionValidator.validate(raw, transcript: shortNote).gratitude)
+    }
+
+    func testOneSentenceFillsOnlyOneField() {
+        let line = "I'm relieved it's done."
+        let raw = VoiceExtraction(gratitude: line, win: line, tension: line)
+        let result = ExtractionValidator.validate(raw, transcript: shortNote)
+        XCTAssertNil(result.gratitude)
+        XCTAssertNil(result.tension)
+        XCTAssertEqual(result.win, line)
+    }
+
+    func testDuplicateAcrossCuedFieldsKeepsTheFirst() {
+        let said = "I'm grateful but stressed that the launch slipped."
+        let line = "the launch slipped"
+        let raw = VoiceExtraction(gratitude: line, tension: line)
+        let result = ExtractionValidator.validate(raw, transcript: said)
+        XCTAssertEqual(result.gratitude, line)
+        XCTAssertNil(result.tension)
+    }
+
+    func testInventedSentenceWithLookalikeWordIsDropped() {
+        let raw = VoiceExtraction(win: "Grateful for the opportunity to present")
+        XCTAssertNil(ExtractionValidator.validate(raw, transcript: shortNote).win)
+    }
+
+    func testCloseWordFormsStillMatch() {
+        XCTAssertTrue(TranscriptText("we walked to the park").wasSaid("walking"))
+        XCTAssertFalse(TranscriptText("the presentation went well").wasSaid("present"))
+    }
+
     func testFillerWordsAreIgnoredWhenMatching() {
         let said = TranscriptText("um I uh finally fixed the bug")
         XCTAssertTrue(said.contains(quote: "I finally fixed the bug"))

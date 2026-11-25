@@ -19,7 +19,8 @@ enum ExtractionValidator {
             result.moodEvidence = evidence
         }
         if let sleep = extraction.sleepQuality, (1 ... 10).contains(sleep),
-           let evidence = nonEmpty(extraction.sleepEvidence), said.contains(quote: evidence) {
+           let evidence = nonEmpty(extraction.sleepEvidence), said.contains(quote: evidence),
+           Topic.sleep.isMentioned(in: evidence) {
             result.sleepQuality = sleep
             result.sleepEvidence = evidence
         }
@@ -37,9 +38,20 @@ enum ExtractionValidator {
             result.feelingColor = extraction.feelingColor
         }
 
-        result.gratitude = grounded(extraction.gratitude, in: said)
-        result.win = grounded(extraction.win, in: said)
-        result.tension = grounded(extraction.tension, in: said)
+        // Gratitude and tension need the speaker to have actually talked about them; a win is
+        // anything that went well, so it needs no cue word. One sentence can answer only one of
+        // the three: the model tends to copy the same line into all of them.
+        var used: Set<String> = []
+        func claim(_ text: String?, topic: Topic?) -> String? {
+            guard let text = grounded(text, in: said) else { return nil }
+            if let topic, !topic.isMentioned(in: transcript) { return nil }
+            let key = TranscriptText.words(in: text).joined(separator: " ")
+            guard used.insert(key).inserted else { return nil }
+            return text
+        }
+        result.gratitude = claim(extraction.gratitude, topic: .gratitude)
+        result.tension = claim(extraction.tension, topic: .tension)
+        result.win = claim(extraction.win, topic: nil)
         result.journal = nonEmpty(extraction.journal)
         return result
     }
@@ -57,7 +69,7 @@ enum ExtractionValidator {
 
     private static func grounded(_ text: String?, in said: TranscriptText) -> String? {
         guard let text = nonEmpty(text) else { return nil }
-        return said.overlap(with: text) >= 0.5 ? text : nil
+        return said.overlap(with: text) >= 0.6 ? text : nil
     }
 
     private static func nonEmpty(_ text: String?) -> String? {
@@ -68,16 +80,41 @@ enum ExtractionValidator {
     }
 }
 
+/// Cue words showing the speaker talked about a topic.
+enum Topic {
+    case sleep, gratitude, tension
+
+    func isMentioned(in text: String) -> Bool {
+        TranscriptText.words(in: text).contains { word in cues.contains { word.hasPrefix($0) } }
+    }
+
+    private var cues: [String] {
+        switch self {
+        case .sleep:
+            return ["sleep", "slept", "bed", "nap", "rested", "resting", "restless", "insomnia", "woke", "wake", "awake", "tired", "exhausted"]
+        case .gratitude:
+            return ["grateful", "gratitude", "thankful", "thank", "appreciat", "blessed", "lucky", "glad"]
+        case .tension:
+            return [
+                "stress", "anxi", "worr", "tense", "tension", "frustrat", "annoy", "upset", "angry", "overwhelm",
+                "hard", "tough", "rough", "difficult", "struggl", "nervous", "dread", "argu", "fight", "fought"
+            ]
+        }
+    }
+}
+
 /// A normalized transcript for loose matching: lowercase words, punctuation and filler removed.
 struct TranscriptText {
     let words: [String]
     private let joined: String
-    private let stems: Set<String>
+    private let wordSet: Set<String>
+    private let stemIndex: [String: [String]]
 
     init(_ text: String) {
         words = Self.words(in: text)
         joined = " " + words.joined(separator: " ") + " "
-        stems = Set(words.map(Self.stem))
+        wordSet = Set(words)
+        stemIndex = Dictionary(grouping: Set(words), by: Self.stem)
     }
 
     static func words(in text: String) -> [String] {
@@ -93,7 +130,7 @@ struct TranscriptText {
         let quoteWords = Self.words(in: quote)
         guard !quoteWords.isEmpty else { return false }
         if joined.contains(" " + quoteWords.joined(separator: " ") + " ") { return true }
-        let hits = quoteWords.filter { stems.contains(Self.stem($0)) }.count
+        let hits = quoteWords.filter(wasSaid).count
         return Double(hits) / Double(quoteWords.count) >= 0.7
     }
 
@@ -101,12 +138,22 @@ struct TranscriptText {
     func overlap(with text: String) -> Double {
         let content = Self.words(in: text).filter { $0.count > 2 && !Self.stopwords.contains($0) }
         guard !content.isEmpty else { return 0 }
-        let hits = content.filter { stems.contains(Self.stem($0)) }.count
+        let hits = content.filter(wasSaid).count
         return Double(hits) / Double(content.count)
     }
 
+    /// The word, or a close form of it, was said: "walked" matches "walking", but "present"
+    /// doesn't match "presentation".
+    func wasSaid(_ word: String) -> Bool {
+        if wordSet.contains(word) { return true }
+        guard word.count >= 4 else { return false }
+        return (stemIndex[Self.stem(word)] ?? []).contains { said in
+            abs(said.count - word.count) <= 3 && (said.hasPrefix(word.dropLast(2)) || word.hasPrefix(said.dropLast(2)))
+        }
+    }
+
     private static func stem(_ word: String) -> String {
-        String(word.prefix(5))
+        String(word.prefix(4))
     }
 
     private static let fillers: Set<String> = ["um", "uh", "uhm", "erm", "hmm", "mm"]
