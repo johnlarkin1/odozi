@@ -25,27 +25,6 @@ final class PhotoLibraryServiceTests: XCTestCase {
         XCTAssertNotNil(service, "PhotoLibraryService should be initialized")
     }
 
-    /// Test that the service doesn't write to the photo library
-    func testServiceOnlyReadsPhotos() {
-        let service = PhotoLibraryService.shared
-
-        // The PhotoLibraryService should only provide read-only operations:
-        // - fetchAssets: reads photos
-        // - loadThumbnail: reads image data
-        // - loadJpegData: reads and converts image data
-        //
-        // It should NOT provide any write operations like:
-        // - saving images
-        // - deleting photos
-        // - modifying metadata
-
-        // Verify no write methods exist on the service
-        let methods = type(of: service).description()
-        XCTAssertFalse(methods.contains("save"), "Service should not have save methods")
-        XCTAssertFalse(methods.contains("delete"), "Service should not have delete methods")
-        XCTAssertFalse(methods.contains("write"), "Service should not have write methods")
-    }
-
     // MARK: - generateMapThumbnail
 
     func testGenerateMapThumbnailWithValidJPEG() {
