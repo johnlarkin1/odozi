@@ -11,6 +11,8 @@ struct JourneyDayDetailCard: View {
     var onAutoPhotoTapped: ((Int) -> Void)?
     var onAttachedPhotoTapped: ((Int) -> Void)?
 
+    @State private var isPinning = false
+
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
             // Header: date, mood, location
@@ -42,23 +44,27 @@ struct JourneyDayDetailCard: View {
                 if entry.hasPhotos {
                     Button {
                         let newValue = !entry.showOnPhotoMap
-                        if newValue && entry.mapThumbnailData == nil {
-                            if let firstPhoto = entry.attachedPhotoData?.first,
-                               let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto) {
-                                entry.mapThumbnailData = thumbnail
+                        isPinning = true
+                        Task {
+                            await PhotoMapPinning.setShowOnPhotoMap(newValue, for: entry)
+                            isPinning = false
+                        }
+                    } label: {
+                        Group {
+                            if isPinning {
+                                ProgressView()
+                                    .controlSize(.small)
                             } else {
-                                return
+                                Image(systemName: entry.showOnPhotoMap ? "mappin.circle.fill" : "mappin.circle")
+                                    .font(.body)
+                                    .foregroundStyle(entry.showOnPhotoMap ? Color.accentTeal : .secondary)
                             }
                         }
-                        entry.showOnPhotoMap = newValue
-                        entry.updatedAt = Date()
-                    } label: {
-                        Image(systemName: entry.showOnPhotoMap ? "mappin.circle.fill" : "mappin.circle")
-                            .font(.body)
-                            .foregroundStyle(entry.showOnPhotoMap ? Color.accentTeal : .secondary)
-                            .padding(8)
-                            .background(Circle().fill(Color.cardSurface))
+                        .padding(8)
+                        .background(Circle().fill(Color.cardSurface))
                     }
+                    .disabled(isPinning)
+                    .accessibilityLabel(entry.showOnPhotoMap ? "Remove from Photo Map" : "Show on Photo Map")
                 }
 
                 NavigationLink(destination: JournalEntryDetailView(entry: entry)) {

@@ -11,6 +11,9 @@ struct JournalEntryDetailView: View {
     @Environment(\.modelContext) private var modelContext
     @State private var resolvedEntry: DailyEntry?
     @State private var showingGuidedFlow = false
+    /// Value the photo-map toggle is moving to while its thumbnail loads.
+    @State private var photoMapPending: Bool?
+    @State private var photoMapFailed = false
 
     init(entry: DailyEntry) {
         _resolvedEntry = State(initialValue: entry)
@@ -376,27 +379,36 @@ struct JournalEntryDetailView: View {
 
     @ViewBuilder
     private func photoMapToggle(_ entry: DailyEntry) -> some View {
-        HStack {
-            Label("Show on Photo Map", systemImage: "map.fill")
-                .font(.subheadline)
-            Spacer()
-            Toggle("", isOn: Binding(
-                get: { entry.showOnPhotoMap },
-                set: { newValue in
-                    if newValue, entry.mapThumbnailData == nil {
-                        if let firstPhoto = entry.attachedPhotoData?.first,
-                           let thumbnail = PhotoLibraryService.generateMapThumbnail(from: firstPhoto) {
-                            entry.mapThumbnailData = thumbnail
-                        } else {
-                            return
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Label("Show on Photo Map", systemImage: "map.fill")
+                    .font(.subheadline)
+                Spacer()
+                if photoMapPending != nil {
+                    ProgressView()
+                        .controlSize(.small)
+                }
+                Toggle("", isOn: Binding(
+                    get: { photoMapPending ?? entry.showOnPhotoMap },
+                    set: { newValue in
+                        photoMapPending = newValue
+                        photoMapFailed = false
+                        Task {
+                            let result = await PhotoMapPinning.setShowOnPhotoMap(newValue, for: entry)
+                            photoMapFailed = newValue && !result
+                            photoMapPending = nil
                         }
                     }
-                    entry.showOnPhotoMap = newValue
-                    entry.updatedAt = Date()
-                }
-            ))
-            .labelsHidden()
-            .tint(.accentTeal)
+                ))
+                .labelsHidden()
+                .tint(.accentTeal)
+                .disabled(photoMapPending != nil)
+            }
+            if photoMapFailed {
+                Text("Couldn't load a photo from this day. Check that Odozi can access your Photos.")
+                    .font(.caption)
+                    .foregroundStyle(.secondary)
+            }
         }
         .padding(16)
         .background(RoundedRectangle(cornerRadius: 16).fill(Color.cardSurface))

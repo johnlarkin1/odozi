@@ -95,6 +95,9 @@ struct MapVisualizationView: View {
             .onChange(of: entries.count) {
                 buildThumbnailCache()
             }
+            .onChange(of: photoPinDates) {
+                buildThumbnailCache()
+            }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -126,6 +129,13 @@ struct MapVisualizationView: View {
 
     private var uniqueCountries: Set<String> {
         Set(locatedEntries.compactMap(\.country))
+    }
+
+    /// Days currently pinned with a photo. Rebuilding the cache when this
+    /// changes makes a pin appear (or disappear) as soon as it's toggled,
+    /// not only when the number of entries changes.
+    private var photoPinDates: [Date] {
+        locatedEntries.filter(\.hasMapPhoto).map(\.date)
     }
 
     private func buildThumbnailCache() {
