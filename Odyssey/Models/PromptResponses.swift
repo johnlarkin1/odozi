@@ -1,6 +1,6 @@
 import Foundation
 
-struct PromptResponses {
+struct PromptResponses: Equatable {
     var feeling: Int = 5
     var singleWordFeeling: String = ""
     var feelingColorHex: String = "#FFFFFF"
