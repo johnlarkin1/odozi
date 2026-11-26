@@ -166,4 +166,27 @@ final class DailyEntryRepositoryTests: XCTestCase {
         let all = try context.fetch(FetchDescriptor<DailyEntry>())
         XCTAssertEqual(all.count, 2)
     }
+
+    func testDedupeKeepsVoiceNotesFromBothRows() throws {
+        let cal = Calendar.current
+        let today = cal.startOfDay(for: Date())
+
+        let first = DailyEntry(date: today)
+        first.hasUserSubmitted = true
+        first.voiceTranscript = "morning note"
+        first.voiceAudioFilenames = ["a.m4a"]
+        context.insert(first)
+
+        let second = DailyEntry(date: cal.date(byAdding: .hour, value: 4, to: today)!)
+        second.voiceTranscript = "evening note"
+        second.voiceAudioFilenames = ["b.m4a"]
+        context.insert(second)
+        try context.save()
+
+        XCTAssertEqual(try repository.dedupeByCalendarDay(), 1)
+
+        let survivor = try XCTUnwrap(context.fetch(FetchDescriptor<DailyEntry>()).first)
+        XCTAssertEqual(survivor.voiceTranscript, "morning note\n\nevening note")
+        XCTAssertEqual(Set(survivor.voiceAudioFilenames ?? []), ["a.m4a", "b.m4a"])
+    }
 }

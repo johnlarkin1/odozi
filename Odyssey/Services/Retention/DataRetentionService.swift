@@ -56,7 +56,11 @@ enum DataRetentionService {
             return
         }
 
+        // Voice recordings are files outside the store (see VoiceRecordingStore), so they
+        // have to be removed explicitly or they'd outlive their entries.
+        let recordings = VoiceRecordingStore.shared
         for entry in oldEntries {
+            recordings.deleteRecordings(for: entry)
             context.delete(entry)
         }
 

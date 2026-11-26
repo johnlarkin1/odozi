@@ -88,6 +88,13 @@ final class DailyEntry {
     var showOnPhotoMap: Bool = false
     @Attribute(.externalStorage) var mapThumbnailData: Data?
 
+    // Voice journaling. The raw (unedited) speech-to-text of every voice note recorded for this
+    // day, separated by blank lines; the cleaned-up text goes into `journalEntry` instead.
+    var voiceTranscript: String = ""
+    // File names inside `VoiceRecordingStore`. Only names are stored, never the audio itself, so
+    // recordings stay on this device and never sync through CloudKit.
+    var voiceAudioFilenames: [String]?
+
     // User submission flag
     var hasUserSubmitted: Bool = false
     var firstSubmittedAt: Date?

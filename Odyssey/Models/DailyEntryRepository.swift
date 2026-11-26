@@ -146,6 +146,24 @@ struct DailyEntryRepository {
         if dst.win.isEmpty { dst.win = src.win }
         if dst.tension.isEmpty { dst.tension = src.tension }
         if dst.journalEntry.isEmpty { dst.journalEntry = src.journalEntry }
+        mergeVoice(into: dst, from: src)
+    }
+
+    /// Voice notes are additive: keep every transcript and every recording from both rows.
+    private static func mergeVoice(into dst: DailyEntry, from src: DailyEntry) {
+        if !src.voiceTranscript.isEmpty, src.voiceTranscript != dst.voiceTranscript {
+            dst.voiceTranscript = dst.voiceTranscript.isEmpty
+                ? src.voiceTranscript
+                : dst.voiceTranscript + "\n\n" + src.voiceTranscript
+        }
+        let srcAudio = src.voiceAudioFilenames ?? []
+        if !srcAudio.isEmpty {
+            var merged = dst.voiceAudioFilenames ?? []
+            for name in srcAudio where !merged.contains(name) {
+                merged.append(name)
+            }
+            dst.voiceAudioFilenames = merged
+        }
     }
 
     private static func mergeLocation(into dst: DailyEntry, from src: DailyEntry) {
