@@ -100,8 +100,6 @@ platform :ios do
       output_name: "Odyssey.ipa",
       include_bitcode: false,
       xcargs: "-allowProvisioningUpdates",
-      # Export otherwise signs with the newest "Apple Distribution" identity, which on a machine
-      # holding several isn't necessarily match's. Set to match's cert SHA-1 (e.g. in .env.local).
       export_options: ENV["EXPORT_SIGNING_CERT"] ? { signingCertificate: ENV["EXPORT_SIGNING_CERT"] } : nil
     )
 
@@ -145,8 +143,6 @@ platform :ios do
       output_name: "Odyssey.ipa",
       include_bitcode: false,
       xcargs: "-allowProvisioningUpdates",
-      # Export otherwise signs with the newest "Apple Distribution" identity, which on a machine
-      # holding several isn't necessarily match's. Set to match's cert SHA-1 (e.g. in .env.local).
       export_options: ENV["EXPORT_SIGNING_CERT"] ? { signingCertificate: ENV["EXPORT_SIGNING_CERT"] } : nil
     )
 
