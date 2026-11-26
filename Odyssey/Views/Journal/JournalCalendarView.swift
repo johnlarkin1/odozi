@@ -24,6 +24,8 @@ struct JournalCalendarView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
+                .accessibilityLabel("Previous month")
+                .accessibilityIdentifier("calendar.previousMonth")
 
                 Spacer()
 
@@ -41,6 +43,8 @@ struct JournalCalendarView: View {
                         .contentShape(Rectangle())
                 }
                 .buttonStyle(.borderless)
+                .accessibilityLabel("Next month")
+                .accessibilityIdentifier("calendar.nextMonth")
             }
 
             // Day headers

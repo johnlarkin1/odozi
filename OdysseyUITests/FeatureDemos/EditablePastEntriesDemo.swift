@@ -94,12 +94,26 @@ final class EditablePastEntriesDemo: FeatureDemoBase {
     /// Return the first calendar day cell that looks like a blank past day.
     /// Uses a label prefix match on the calendar's accessibility identifiers.
     private func firstBlankCalendarCell() -> XCUIElement? {
+        // SCREENSHOT_MODE seeds an entry for each of the last 30 days, so the
+        // current month's past days are usually all filled — the old "first
+        // hittable day" probe opened a day *with* data and never saw the
+        // placeholder. Two months back is always older than the seed window,
+        // so every past day there is blank, whatever today's date is.
+        let previousMonth = app.buttons["calendar.previousMonth"]
+        guard wait(for: previousMonth) else { return nil }
+        previousMonth.tap()
+        previousMonth.tap()
+        pause(1)
+
         // The calendar cells render their accessibility label as the day
-        // number; empty-day cells navigate to EmptyDayDate. We probe by
-        // walking day buttons and picking the first one that is hittable.
+        // number; empty-day cells navigate to EmptyDayDate. Pick the first
+        // hittable one.
         let dayButtons = app.buttons.matching(
             NSPredicate(format: "label MATCHES %@", "^[0-9]{1,2}$")
         )
+        // Don't rely on the fixed pause alone: on a slow CI runner the month
+        // change may still be rendering.
+        guard wait(for: dayButtons.firstMatch) else { return nil }
         for i in 0 ..< min(dayButtons.count, 20) {
             let button = dayButtons.element(boundBy: i)
             if button.exists && button.isHittable {
